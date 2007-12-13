@@ -137,6 +137,8 @@
 	</target>
 	  
 	<target name="build" description="Creates the peerunit jar file" depends="compile">
+		<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.tester.TesterImpl" base="${build.dir}"></rmic>
+		<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.coord.CoordinatorImpl" base="${build.dir}"></rmic>
 		<jar basedir="${build.dir}" jarfile="${peerunit.jar}" update="no">
 		    <fileset 
 		    	dir="${build.dir}"
@@ -145,15 +147,11 @@
 	</target>
 	
 	<target name="deploy" depends="init">
-		<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.tester.TesterImpl" base="${dist.dir}"></rmic>
-		<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.coord.CoordinatorImpl" base="${dist.dir}"></rmic>
 		<deploy>
 			<nodeset refid="lina"/>			
 		   	<application name="peerunit-deploy">
 			   		<fileset dir="${dist.dir}">
 				   	   	<include name="peerunit.jar" />
-			   			<include name="fr/inria/peerunit/rmi/coord/*.class"/> 		
-			   			<include name="fr/inria/peerunit/rmi/tester/*.class"/> 		
 			   	   </fileset>
 		   	</application>													
 		</deploy>		

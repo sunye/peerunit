@@ -108,6 +108,8 @@ public class SimpleTest extends TesterImpl{
 	public void joinNet(){	
 
 		try {		
+			// Wait a while due to the bootstrapper performance
+			Thread.sleep(10000);
 			if(test.getPeerName()!=0){
 				//	Loads pastry settings
 				Environment env = new Environment();
@@ -196,46 +198,46 @@ public class SimpleTest extends TesterImpl{
 	 */
 	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void get(){
-		try {			
-			// Wait a little while
-			Thread.sleep(1000);
+		// Lookup 
+		List<PastContent> expectedContent=(List<PastContent>)test.get(1);			
+		Id contentKey;			
 
-			// Lookup 
-			List<PastContent> expectedContent=(List<PastContent>)test.get(1);			
-			Id contentKey;			
-
-			// Get the keys to lookup for data			
-			for (PastContent key : expectedContent) {
-				contentKey=key.getId();
-				if(contentKey!=null){
-					log.info("[PastryTest] Lookup Expected "+contentKey.toString());
-					peer.lookup(contentKey);				
-				}
+		// Get the keys to lookup for data			
+		for (PastContent key : expectedContent) {
+			contentKey=key.getId();
+			if(contentKey!=null){
+				log.info("Lookup Expected "+contentKey.toString());
+				peer.lookup(contentKey);				
 			}
-				
-			// A list to store the retrieved data
-			List<String> actuals= new ArrayList<String>();
-			for (Object actual : peer.getResultSet()) {
-				if(actual!=null){
-					if(!actuals.contains(actual.toString())){
-						log.info("[Local verdict] Actual "+actual.toString());
-						actuals.add(actual.toString());
-					}
-				}		
-			}										
+		}
 
-			// Generating the expecteds list
-			List<String> expecteds=new ArrayList<String>();
-			for(PastContent expected : expectedContent){
-				expecteds.add(expected.toString());
-			}
-
-			// Assigning a verdict
-			log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
-			Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);	
+		// Wait a little while for a response
+		try {
+			Thread.sleep(16000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} 
+		}
+
+		// A list to store the retrieved data
+		List<String> actuals= new ArrayList<String>();
+		for (Object actual : peer.getResultSet()) {
+			if(actual!=null){
+				if(!actuals.contains(actual.toString())){
+					log.info("[Local verdict] Actual "+actual.toString());
+					actuals.add(actual.toString());
+				}
+			}		
+		}										
+
+		// Generating the expecteds list
+		List<String> expecteds=new ArrayList<String>();
+		for(PastContent expected : expectedContent){
+			expecteds.add(expected.toString());
+		}
+
+		// Assigning a verdict
+		log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
+		Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);	
 	}
 
 	/**
