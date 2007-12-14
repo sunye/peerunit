@@ -31,7 +31,7 @@ import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 /**
- * Test E5 on experiments list
+ * Test Insert/Retrieve in an Expanding System 
  * @author almeida
  *
  */

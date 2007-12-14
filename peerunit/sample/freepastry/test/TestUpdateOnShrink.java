@@ -24,16 +24,16 @@ import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Peer;
 
 /**
- * Test E2B on experiments list
+ * Test routing table update in a shrinking system
  * @author almeida
  *
  */
-public class TestFindSuccTheorem  extends TesterImpl{
-	private static Logger log = Logger.getLogger(TestFindSuccTheorem.class.getName());
+public class TestUpdateOnShrink  extends TesterImpl{
+	private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	static TestFindSuccTheorem test;
+	static TestUpdateOnShrink test;
 
 	Peer peer=new Peer();
 
@@ -42,13 +42,13 @@ public class TestFindSuccTheorem  extends TesterImpl{
 	boolean iAmBootsrapper=false;
 
 	public static void main(String[] str) {		
-		test = new TestFindSuccTheorem();
+		test = new TestUpdateOnShrink();
 		test.export(test.getClass());		
 		// Log creation
 		FileHandler handler;
 		try {
 			System.out.println("NAME "+test.getPeerName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestFindSuccTheorem.log.peer"+test.getPeerName(),true);
+			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestUpdateOnShrink.log.peer"+test.getPeerName(),true);
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
 		} catch (SecurityException e) {			

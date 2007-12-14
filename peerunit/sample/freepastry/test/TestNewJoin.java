@@ -23,7 +23,7 @@ import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Peer;
 
 /**
- * Test E2A on experiments list
+ * Test routing table update in an expanding system
  * @author almeida
  *
  */

@@ -29,7 +29,7 @@ import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
- * Test E1 on experiments list
+ * Test the recovery from peer isolation
  * @author almeida
  *
  */

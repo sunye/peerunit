@@ -27,7 +27,7 @@ import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
-public class TestFindSuccTheorem extends TesterImpl{
+public class TestUpdateOnShrink extends TesterImpl{
 
 	private static final long serialVersionUID = 1L;
 
@@ -39,13 +39,13 @@ public class TestFindSuccTheorem extends TesterImpl{
 
 	static ChordImpl chordPrint = null;
 
-	private static Logger log = Logger.getLogger(TestFindSuccTheorem.class.getName());
+	private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
 	private static DbCallback callback= new DbCallback();
 
-	static TestFindSuccTheorem test;
+	static TestUpdateOnShrink test;
 
 	int sleep=TesterUtil.getSleep();
 
@@ -60,13 +60,13 @@ public class TestFindSuccTheorem extends TesterImpl{
 	 * @param args
 	 */
 	public static void main(String[] str) {		
-		test = new TestFindSuccTheorem();
+		test = new TestUpdateOnShrink();
 		test.export(test.getClass());		
 		// Log creation
 		FileHandler handler;
 		try {
 			System.out.println("NAME "+test.getName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestFindSuccTheorem.log.peer"+test.getName(),true);
+			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestUpdateOnShrink.log.peer"+test.getName(),true);
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
 		} catch (SecurityException e) {			

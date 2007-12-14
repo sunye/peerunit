@@ -24,7 +24,8 @@ import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Peer;
 
 /**
- * Test E1 on experiments list
+ * Testing the recovery from peer isolation
+ * 
  * @author almeida
  *
  */

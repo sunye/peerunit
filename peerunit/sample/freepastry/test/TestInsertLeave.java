@@ -30,7 +30,7 @@ import freepastry.Peer;
 
 
 /**
- * Test E5 on experiments list
+ * Test Insert/Retrieve in a Shrinking System 
  * @author almeida
  *
  */

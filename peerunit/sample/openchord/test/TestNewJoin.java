@@ -27,7 +27,7 @@ import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
- * Test E2A on experiments list
+ * Test routing table update in an expanding system
  * @author almeida
  *
  */
@@ -273,7 +273,7 @@ public class TestNewJoin extends TesterImpl{
 					timeToUpdate++;
 				}
 				if(!tableUpdated)
-					inconclusive("Routing Table wasn't updated. Still finding all volatiles. Increase qty of loops.");
+					inconclusive("Routing Table wasn't updated. Increase qty of loops.");
 				else
 					log.info("List updated, the verdict may be PASS. Table updated "+timeToUpdate+" times.");
 			}
