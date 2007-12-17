@@ -5,9 +5,6 @@ public class Timeout implements Runnable {
 		private Thread thread;
 
 		public Timeout(Thread t, long millis) {
-			//assert t != null;
-			//assert thread != null;
-
 			timeout = millis;
 			thread = t;
 		}

@@ -19,12 +19,12 @@ public class MethodDescription implements Comparable<MethodDescription>, Seriali
 	
 	private int timeout;
 	
-	public MethodDescription(String n, String tc, int i, String a, int t) {
-		name = n;
-		testCase = tc;
-		step = i;
-		annotation=a;
-		timeout=t;
+	public void setDescription(String name, String testCase, int step, String annotation, int timeout){
+		this.name = name;
+		this.testCase = testCase;
+		this.step = step;
+		this.annotation=annotation;
+		this.timeout=timeout;
 	}
 
 	public int compareTo(MethodDescription o) {

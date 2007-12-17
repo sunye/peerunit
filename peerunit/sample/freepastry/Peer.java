@@ -56,6 +56,15 @@ public class Peer {
 	private List<PastContent> insertedContent=new ArrayList<PastContent>();
 	
 	private List<PastContent> failedContent=new ArrayList<PastContent>();
+	
+	private boolean bootstrapper=false;
+	
+	public boolean join(int bindport, InetSocketAddress bootaddress, Environment environ,Logger log , boolean bootstrapper) throws InterruptedException,IOException {
+		this.bootstrapper=bootstrapper;
+		return join(bindport,  bootaddress,  environ, log);
+	}
+
+		
 
 	/**
 	 * This method sets up a PastryNode.  It will bootstrap to an 
@@ -75,33 +84,35 @@ public class Peer {
 		// construct the PastryNodeFactory, this is how we use rice.pastry.socket
 		factory = new SocketPastryNodeFactory(nidFactory, bindport, env);
 
-		// This will return null if we there is no node at that location
-		bootHandle = ((SocketPastryNodeFactory)factory).getNodeHandle(bootaddress);	
-		log.info("Trying to join a FreePastry ring.");
-		
-		// Just to inform the amount of networks  
-		if(bootHandle == null){
-			log.info("I will create a new network");			
-		}
-		
-		// construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
-		node = factory.newNode(bootHandle);
-		System.out.println("Node addr "+node.toString());			
-		// the node may require sending several messages to fully boot into the ring
-		synchronized(node) {			
-			int tryes=0;
-			while(!node.isReady() && !node.joinFailed()) {
-				// delay so we don't busy-wait				
-					node.wait(200);				
-				
-				// abort if can't join
-				if (node.joinFailed()) {
-					log.severe("Could not join the FreePastry ring.  Reason:"+node.joinFailedReason());
-					throw new IOException("Could not join the FreePastry ring.  Reason:"+node.joinFailedReason());					
-				}else  if(tryes > 300){
-					return false;
+		if(bootstrapper){
+			bootHandle=null;
+			log.info("I will create a new network");
+			//	 construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
+			node = factory.newNode(bootHandle);
+		}else{
+			// This will return null if we there is no node at that location
+			bootHandle = ((SocketPastryNodeFactory)factory).getNodeHandle(bootaddress);			
+			log.info("Trying to join a FreePastry ring.");
+			
+			// construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
+			node = factory.newNode(bootHandle);
+			
+			// the node may require sending several messages to fully boot into the ring
+			synchronized(node) {			
+				int tryes=0;
+				while(!node.isReady() && !node.joinFailed()) {
+					// delay so we don't busy-wait				
+						node.wait(200);				
+					
+					// abort if can't join
+					if (node.joinFailed()) {
+						log.severe("Could not join the FreePastry ring.  Reason:"+node.joinFailedReason());
+						throw new IOException("Could not join the FreePastry ring.  Reason:"+node.joinFailedReason());					
+					}else  if(tryes > 300){
+						return false;
+					}
+					tryes++;
 				}
-				tryes++;
 			}
 		}
 		
@@ -127,8 +138,8 @@ public class Peer {
 	}
 		
 	public InetSocketAddress getInetSocketAddress(InetAddress add){
-		String workStr=node.getLocalHandle().toString().substring(node.getLocalHandle().toString().lastIndexOf(":")+1, node.getLocalHandle().toString().lastIndexOf("[")-1);
 		log.info("getLocalHandle() "+node.getLocalHandle().toString());
+		String workStr=node.getLocalHandle().toString().substring(node.getLocalHandle().toString().lastIndexOf(":")+1, node.getLocalHandle().toString().lastIndexOf("]"));
 		log.info("workStr "+workStr);
 		int port=Integer.valueOf(workStr);		
 		InetSocketAddress inet= new InetSocketAddress(add,port);
@@ -137,7 +148,7 @@ public class Peer {
 
 	public int getPort(){
 		int port=0;
-		String workStr=node.getLocalHandle().toString().substring(node.getLocalHandle().toString().lastIndexOf(":")+1, node.getLocalHandle().toString().lastIndexOf("[")-1);
+		String workStr=node.getLocalHandle().toString().substring(node.getLocalHandle().toString().lastIndexOf(":")+1, node.getLocalHandle().toString().lastIndexOf("]"));
 		port=Integer.valueOf(workStr);
 		return port;
 	}

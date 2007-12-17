@@ -80,11 +80,13 @@ public class TestInsertStable  extends TesterImpl{
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
-			if(!peer.join(bindport, bootaddress, env, log)){						
+			if(!peer.join(bindport, bootaddress, env, log,true)){						
 				inconclusive("I couldn't become a boostrapper, sorry");						
 			}
 
 			test.put(-1,peer.getInetSocketAddress(bootaddr));
+			//log.info("Cached boot address: "+bootaddress.toString());
+			//test.put(-1,bootaddress);
 			log.info("Net created");
 
 			while(!peer.isReady())
@@ -99,7 +101,7 @@ public class TestInsertStable  extends TesterImpl{
 		}				
 	}
 	
-	@Test(place=-1,timeout=1000000, name = "action1", step = 2)
+	@Test(from=1,to=3,timeout=1000000, name = "action1", step = 2)
 	public void startingInitNet(){	
 
 		try {			
@@ -119,7 +121,8 @@ public class TestInsertStable  extends TesterImpl{
 				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-1);
 				log.info("Getting cached boot "+bootaddress.toString());
 				if(!peer.join(bindport, bootaddress, env, log)){					
-					inconclusive("Couldn't boostrap, sorry");						
+					inconclusive("Couldn't boostrap, sorry");				
+					test.put(test.getPeerName(),"INCONCLUSIVE");
 				}
 				log.info("Running on port "+peer.getPort());
 				log.info("Time to bootstrap");
@@ -191,7 +194,9 @@ public class TestInsertStable  extends TesterImpl{
 					if(expecteds.size()<TesterUtil.getExpectedPeers()){
 						expecteds.add(new MyPastContent(peer.localFactory.buildId(content), content).toString());
 					}
-					peer.lookup(peer.localFactory.buildId(content));
+					if(bootstrapped(i)){
+						peer.lookup(peer.localFactory.buildId(content));
+					}
 				}
 	
 				Thread.sleep(sleep);
@@ -221,4 +226,25 @@ public class TestInsertStable  extends TesterImpl{
 	public void end() {		
 		log.info("[PastryTest] Peer bye bye");
 	}	
+	
+	/**
+	 * Returns true if the peer bootstrapped properly
+	 * @param i
+	 * @return
+	 */
+	private boolean bootstrapped(int i){
+		
+		try {
+			for(Integer peer: test.getCollection().keySet()){
+				if(peer.intValue()==i)
+					return false;
+					
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
 }

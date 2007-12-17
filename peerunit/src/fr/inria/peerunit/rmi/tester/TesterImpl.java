@@ -1,8 +1,10 @@
 package fr.inria.peerunit.rmi.tester;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -34,7 +36,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 	private Object objectClass;
 
-	private  int peerName = -1;
+	private  int testerName = -1;
 
 	private boolean stop=false;
 
@@ -65,8 +67,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 					timeoutThread.start();
 				}	
 				newMethod=false;
-				log.info("[TesterImpl] Is Invoke thread alive?");
-				
+				log.finest("Is Invoke thread alive?");				
 			}
 			try {
 				Thread.sleep(TesterUtil.getWaitForMethod());
@@ -74,12 +75,13 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 				e.printStackTrace();			
 			}
 		}		
-		log.info("[TesterImpl] Stopping Tester ");		
+		log.info("Stopping Tester ");		
 		System.exit(0);
 	}
 	
 	public void export(Class c) {
 		testClass = c;
+		boolean exported=false;
 		try {
 
 			objectClass = testClass.newInstance();
@@ -88,35 +90,53 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			UnicastRemoteObject.exportObject(this);
 
 			coord = (Coordinator) registry.lookup("Coordinator");
-			peerName = coord.namer(this);
+			testerName = coord.namer(this);
 
 			// Log creation
 			FileHandler handler = new FileHandler(TesterUtil.getLogfolder()
-					+ "peer" + peerName + ".log");
+					+ "tester" + testerName + ".log");
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
 			
 			// Parsing creation
 			String parserClass=TesterUtil.getParserClass();
-			log.info("[TesterImpl] Parsing class used is " + parserClass);	
+			log.finest("Parsing class used is " + parserClass);	
 			parser = (Parser)Class.forName(parserClass).newInstance();
-			parser.setPeerName(peerName);
+			parser.setPeerName(testerName);
 			
-			log.info("[TesterImpl] MY NAME IS " + peerName);			
+			log.info("My name is tester" + testerName);			
 			for (MethodDescription m : parser.parse(testClass)) {
 				coord.register(this, m);
 			}
-			log.info("[TesterImpl] Registration finished ");
-			tg = new ThreadGroup("Thread-group"+peerName);	
-			log.info("[TesterImpl] Thread-group created ");
-		} catch (InstantiationException e) {
-			e.printStackTrace();
+			log.finest("Registration finished ");
+			tg = new ThreadGroup("Thread-group"+testerName);	
+			log.finest("Thread-group created ");
+			exported=true;
 		} catch (RemoteException e) {
-			log.severe("[TesterImpl] Registration error ");
+			log.severe("RemoteException");
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (InstantiationException e) {
+			log.severe("InstantiationException");
 			e.printStackTrace();
-			System.exit(2);
+		} catch (IllegalAccessException e) {
+			log.severe("IllegalAccessException");
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			log.severe("ClassNotFoundException ");
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally{
+			if(!exported){
+				executionInterrupt(true);
+			}
 		}
 	}
 
@@ -127,7 +147,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	}
 
 	public int getPeerName() throws RemoteException {
-		return peerName;
+		return testerName;
 	}
 	
 	/**
@@ -163,7 +183,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 				error=true;
 			}
 			
-			log.info("[TesterImpl] Test Case local verdict to peer "+peerName+" is "+v.toString());
+			log.info("[TesterImpl] Test Case local verdict to peer "+testerName+" is "+v.toString());
 			coord.quit(this,error,v);			
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -245,7 +265,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 		public void run() {
 			boolean error = true;
-			log.info("[TesterImpl-Invoke] Peer " + peerName + " executing test case "
+			log.info("[TesterImpl-Invoke] Peer " + testerName + " executing test case "
 					+ testCase + " in " + testClass.getSimpleName());
 			Method m=null;
 			try {
