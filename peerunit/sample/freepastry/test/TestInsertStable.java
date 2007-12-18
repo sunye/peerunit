@@ -160,7 +160,7 @@ public class TestInsertStable  extends TesterImpl{
 	@Test(place=-1,timeout=1000000, name = "action3", step = 0)
 	public void testInsert(){
 		try {
-			Thread.sleep(sleep);		
+			Thread.sleep(test.getPeerName()*1000);
 			final String s = "" + test.getPeerName();
 
 			// build the past content
@@ -190,11 +190,10 @@ public class TestInsertStable  extends TesterImpl{
 					content=""+i;
 					
 					
-					
-					if(expecteds.size()<TesterUtil.getExpectedPeers()){
-						expecteds.add(new MyPastContent(peer.localFactory.buildId(content), content).toString());
-					}
 					if(bootstrapped(i)){
+						if(expecteds.size()<TesterUtil.getExpectedPeers()){
+							expecteds.add(new MyPastContent(peer.localFactory.buildId(content), content).toString());
+						}					
 						peer.lookup(peer.localFactory.buildId(content));
 					}
 				}
@@ -204,7 +203,7 @@ public class TestInsertStable  extends TesterImpl{
 				log.info("Retrieval "+timeToFind);
 				for (Object actual : peer.getResultSet()) {
 					if(actual!=null){
-						log.info("[Local verdict] Actual "+actual.toString());
+						log.info("Actual "+actual.toString());
 
 						if(!actuals.contains(actual.toString())){
 							actuals.add(actual.toString());
@@ -215,8 +214,8 @@ public class TestInsertStable  extends TesterImpl{
 				Thread.sleep(sleep);
 				timeToFind++;
 			}
-			log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
-			Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);	
+			log.info("Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
+			Assert.assertListEquals("[Local verdict] ",expecteds, actuals);	
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -224,7 +223,7 @@ public class TestInsertStable  extends TesterImpl{
 	
 	@AfterClass(timeout=100000,place=-1)
 	public void end() {		
-		log.info("[PastryTest] Peer bye bye");
+		log.info("Peer bye bye");
 	}	
 	
 	/**

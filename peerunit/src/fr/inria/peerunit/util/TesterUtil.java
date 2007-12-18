@@ -21,6 +21,7 @@ public class TesterUtil {
 	private static int  waitForMethod;
 	private static int  loopToFail;
 	private static int  churnPercentage;
+	private static String logLevel;
 	
 	private static String getProperty(String property) throws Exception {
 		if (props == null) {
@@ -188,5 +189,13 @@ public class TesterUtil {
 			e.printStackTrace();
 		}
 		return churnPercentage;
+	}
+	public static String getLogLevel(){
+		try {
+			logLevel=TesterUtil.getProperty("tester.log.level");			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return logLevel;
 	}
 }

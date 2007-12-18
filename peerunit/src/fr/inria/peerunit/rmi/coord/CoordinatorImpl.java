@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.Coordinator;
@@ -68,6 +69,7 @@ public class CoordinatorImpl implements Coordinator , Runnable, Serializable{
 			FileHandler handler = new FileHandler(TesterUtil.getLogfile());
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);			
+			log.setLevel(Level.parse(TesterUtil.getLogLevel()));
 			
 			CoordinatorImpl cii = new CoordinatorImpl();
 			Coordinator stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
@@ -77,7 +79,7 @@ public class CoordinatorImpl implements Coordinator , Runnable, Serializable{
 			else
 				servAddr=TesterUtil.getServerAddr();
 			
-			log.info("New Coordinator address is : "+servAddr);
+			log.log(Level.INFO,"New Coordinator address is : "+servAddr);
 			
 			// Bind the remote object's stub in the registry
 			Registry registry = LocateRegistry.createRegistry(1099);
@@ -88,17 +90,19 @@ public class CoordinatorImpl implements Coordinator , Runnable, Serializable{
 			Thread updateThread = new Thread(cii, "StockInfoUpdate");
 			updateThread.start();			
 		} catch (RemoteException e) {
-			log.severe("Coordinator can't export the object");
+			log.log(Level.SEVERE,"RemoteException",e);
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
-			log.severe("Coordinator can't get the host address");
+			log.log(Level.SEVERE,"UnknownHostException",e);
 			e.printStackTrace();
-		} catch (SecurityException e) {			
+		} catch (SecurityException e) {	
+			log.log(Level.SEVERE,"SecurityException",e);
 			e.printStackTrace();
 		} catch (IOException e) {
+			log.log(Level.SEVERE,"IOException",e);
 			e.printStackTrace();
 		} catch (AlreadyBoundException e) {
-			// TODO Auto-generated catch block
+			log.log(Level.SEVERE,"AlreadyBoundException",e);
 			e.printStackTrace();
 		}	
 	}
@@ -125,7 +129,7 @@ public class CoordinatorImpl implements Coordinator , Runnable, Serializable{
 		}		
 		
 		for (MethodDescription key : testerMap.keySet()){
-			log.finest("Execution sequence: "+key.toString());
+			log.log(Level.FINEST,"Execution sequence: "+key.toString());
 		}
 		
 		synchronized (this) {
@@ -138,28 +142,28 @@ public class CoordinatorImpl implements Coordinator , Runnable, Serializable{
 					
 					for (Tester peer : testerSet.getTesters()) {
 						if(!peersInError.contains(peer)){
-							log.finest("Peer : "+peer.getPeerName()+" will execute "+key.toString());
+							log.log(Level.FINEST,"Peer : "+peer.getPeerName()+" will execute "+key.toString());
 							executor.submit(new MethodExecute(peer, key));							
 						}
 					}
 					expectedPeers.set(testerSet.getPeersQty());
 					
-					log.finest("Waiting to begin the next test "+key.toString());					
+					log.log(Level.FINEST,"Waiting to begin the next test "+key.toString());					
 					while(redLight())
 						Thread.sleep(1000);		
 				
 				}		
 				// reseting
-				log.finest("[CoordinatorImpl] Reseting semaphore ");				
+				log.log(Level.FINEST,"Reseting semaphore ");				
 				testerMap.clear();
 			
 				// waiting everyone to execute quit to give the global verdict
 				while(regPeers.size()>0){
-					log.finest("Waiting everybody leave to judge ");
+					log.log(Level.FINEST,"Waiting everybody leave to judge ");
 					Thread.sleep(200);
 				}
 				
-				log.info("Test Verdict with index "+relaxIndex+"% is "+verdict.toString());				
+				log.log(Level.INFO,"Test Verdict with index "+relaxIndex+"% is "+verdict.toString());				
 				peers.set(0);
 				regPeers.clear();
 				executor.shutdown();
@@ -179,7 +183,7 @@ public class CoordinatorImpl implements Coordinator , Runnable, Serializable{
 	public synchronized  int namer(Tester t) throws RemoteException {		
 		if (t.getPeerName()==-1){
 			peerName=peers.getAndIncrement();					
-			log.finest("New Registered Peer: "+peerName+" new client " + t);			
+			log.log(Level.FINEST,"New Registered Peer: "+peerName+" new client " + t);			
 		}		
 		return peerName;
 	}
@@ -188,7 +192,7 @@ public class CoordinatorImpl implements Coordinator , Runnable, Serializable{
 		if(regPeers.size()==0){			
 			return false;
 		}else	if(peers.intValue() >= (expectedPeers.intValue()-peersInError.size())){			
-			log.finest("Reseting semaphore ");
+			log.log(Level.FINEST,"Reseting semaphore ");
 			peers.set(0);
 			return false;
 		}		
@@ -203,21 +207,21 @@ public class CoordinatorImpl implements Coordinator , Runnable, Serializable{
 	public void quit(Tester t,boolean error,Verdicts localVerdict) throws RemoteException {
 		expectedPeers.decrementAndGet();
 		regPeers.remove(t);		
-		log.info("Test Case local verdict "+localVerdict.toString());
+		log.log(Level.INFO,"Test Case local verdict "+localVerdict.toString());
 		verdict.setGlobalVerdict(localVerdict, relaxIndex);
 		
 		if(error){
 			peersInError.add(t);
-			log.severe("Tester quits by error "+t.toString());
+			log.log(Level.FINEST,"Tester quits by error "+t.toString());
 		}else{			
-			log.info("Tester finished "+t.toString());			
+			log.log(Level.INFO,"Tester finished "+t.toString());			
 		}
-		log.finest("Expecting "+regPeers.size());
-		log.finest("Judged "+verdict.getJudged());
+		log.log(Level.FINEST,"Expecting "+regPeers.size());
+		log.log(Level.FINEST,"Judged "+verdict.getJudged());
 	}
 	
 	public void put(Integer key,Object object)  throws RemoteException {
-		log.finest("Caching global variable key "+key);			
+		log.log(Level.FINEST,"Caching global variable key "+key);			
 		cacheMap.put(key, object);		
 	}
 	

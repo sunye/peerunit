@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.Parser;
@@ -12,8 +13,7 @@ import fr.inria.peerunit.rmi.tester.TesterImpl;
 
 public class ParserImpl implements Parser{
 	private List<MethodDescription> mList = new ArrayList<MethodDescription>();
-	private static final Logger log = Logger.getLogger(TesterImpl.class
-			.getName());
+	private static  Logger log;
 	private int peerName=-1;
 
 	public List<MethodDescription> parse(Class c) {
@@ -66,16 +66,16 @@ public class ParserImpl implements Parser{
 	private boolean verify(Method m, int place,int from, int to) {
 		if (((from > -1) && (to > -1))
 				&& ((peerName >= from) && (peerName <= to))) {
-			log.finest("I will execute " + m.getName());
+			log.log(Level.FINEST,"I will execute " + m.getName());
 			return true;
 		} else if (peerName == place) {
-			log.finest("I will execute " + m.getName());
+			log.log(Level.FINEST,"I will execute " + m.getName());
 			return true;
 		} else if ((place == -1) && (from == -1) && (to == -1)) {
-			log.finest("I will execute " + m.getName());
+			log.log(Level.FINEST,"I will execute " + m.getName());
 			return true;
 		} else {
-			log.finest("I do nothing in " + m.getName());
+			log.log(Level.FINEST,"I do nothing in " + m.getName());
 			return false;
 		}
 	}
@@ -89,6 +89,10 @@ public class ParserImpl implements Parser{
 
 	public void setPeerName(int peerName) {
 		this.peerName=peerName;		
+	}
+	
+	public void setLogger(Logger log) {
+		this.log=log;		
 	}
 }
 

@@ -1,6 +1,7 @@
 package fr.inria.peerunit;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import fr.inria.peerunit.parser.MethodDescription;
 
@@ -24,4 +25,10 @@ public interface Parser {
 	 * @param peerName
 	 */
 	public void setPeerName(int peerName);
+	
+	/**
+	 * Sets the logger
+	 * @param Logger
+	 */
+	public void setLogger(Logger log);
 }

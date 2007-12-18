@@ -23,7 +23,7 @@ do
         fi
         j=`expr $j + 1`
 done
-rm /tmp/almeida/peer*
+rm /tmp/almeida/teste*
 rm /tmp/almeida/Test*.log*
-rm /tmp/almeida/passpartout.log*
+rm /tmp/almeida/peerunit.log*
 rm -rf storage*/

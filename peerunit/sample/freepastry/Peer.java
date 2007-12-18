@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rice.Continuation;
@@ -86,13 +87,13 @@ public class Peer {
 
 		if(bootstrapper){
 			bootHandle=null;
-			log.info("I will create a new network");
+			log.log(Level.INFO,"I will create a new network");
 			//	 construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
 			node = factory.newNode(bootHandle);
 		}else{
 			// This will return null if we there is no node at that location
 			bootHandle = ((SocketPastryNodeFactory)factory).getNodeHandle(bootaddress);			
-			log.info("Trying to join a FreePastry ring.");
+			log.log(Level.INFO,"Trying to join a FreePastry ring.");
 			
 			// construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
 			node = factory.newNode(bootHandle);
@@ -106,7 +107,7 @@ public class Peer {
 					
 					// abort if can't join
 					if (node.joinFailed()) {
-						log.severe("Could not join the FreePastry ring.  Reason:"+node.joinFailedReason());
+						log.log(Level.SEVERE,"Could not join the FreePastry ring.  Reason:"+node.joinFailedReason());
 						throw new IOException("Could not join the FreePastry ring.  Reason:"+node.joinFailedReason());					
 					}else  if(tryes > 300){
 						return false;
@@ -134,13 +135,12 @@ public class Peer {
 
 		// We could cache the idf from whichever app we use, but it doesn't matter
 		localFactory = new rice.pastry.commonapi.PastryIdFactory(env);
+		log.info("Started with node id : "+node.getLocalHandle().toString());
 		return true;
 	}
 		
-	public InetSocketAddress getInetSocketAddress(InetAddress add){
-		log.info("getLocalHandle() "+node.getLocalHandle().toString());
+	public InetSocketAddress getInetSocketAddress(InetAddress add){		
 		String workStr=node.getLocalHandle().toString().substring(node.getLocalHandle().toString().lastIndexOf(":")+1, node.getLocalHandle().toString().lastIndexOf("]"));
-		log.info("workStr "+workStr);
 		int port=Integer.valueOf(workStr);		
 		InetSocketAddress inet= new InetSocketAddress(add,port);
 		return inet;	
@@ -155,11 +155,11 @@ public class Peer {
 
 	public void insert(PastContent content){
 		
-		log.info("Storing content "+content.toString());
+		log.log(Level.INFO,"Storing content "+content.toString());
 		final PastContent myContent =content;
 		
 		// pick a random past appl on a random node
-		log.info("Inserting " + myContent + " at node "+app.getLocalNodeHandle());
+		log.log(Level.INFO,"Inserting " + myContent + " at node "+app.getLocalNodeHandle());
 
 		app.insert(myContent, new Continuation() {
 			// the result is an Array of Booleans for each insert
@@ -170,13 +170,13 @@ public class Peer {
 					if (results[ctr].booleanValue()) 
 						numSuccessfulStores++;
 				}
-				log.info(myContent + " successfully stored at " + 
+				log.log(Level.INFO,myContent + " successfully stored at " + 
 						numSuccessfulStores + " locations.");
 				insertedContent.add(myContent);
 			}
 
 			public void receiveException(Exception result) {
-				log.info("Error storing "+myContent);
+				log.log(Level.SEVERE,"Error storing "+myContent,result);
 				failedContent.add(myContent);
 				result.printStackTrace();
 			}
@@ -188,13 +188,13 @@ public class Peer {
 		// wait 5 seconds
 		
 		// let's do the "get" operation
-		log.info("Looking up ...");
+		log.log(Level.INFO,"Looking up ...");
 
 		final Id lookupKey = key;
-		log.info("Looking up " + lookupKey + " at node "+app.getLocalNodeHandle());
+		log.log(Level.INFO,"Looking up " + lookupKey + " at node "+app.getLocalNodeHandle());
 		app.lookup(lookupKey,true, new Continuation() {
 			public void receiveResult(Object result) {
-				log.info("Successfully looked up " + result + " for key "+lookupKey+".");
+				log.log(Level.INFO,"Successfully looked up " + result + " for key "+lookupKey+".");
 				if(result==null){
 					nullResult.add(lookupKey);
 				}else{
@@ -205,34 +205,11 @@ public class Peer {
 			}
 
 			public void receiveException(Exception result) {
-				log.info("Error looking up "+lookupKey);
+				log.log(Level.SEVERE,"Error looking up "+lookupKey,result);
 				result.printStackTrace();
 			}
 		});
 	}
-	
-	public void lookupHandles( Id key){
-		// wait 5 seconds
-	
-		// let's do the "get" operation
-		System.out.println("Looking up ...");
-		
-		final Id lookupKey = key;
-		System.out.println("Looking up " + lookupKey + " at node "+app.getLocalNodeHandle());
-		app.lookupHandles(lookupKey, app.getReplicationFactor(),new Continuation() {
-			public void receiveResult(Object result) {
-				System.out.println("Successfully looked up " + result + " for key "+lookupKey+".");
-				resultSet.add(result);
-			}
-
-			public void receiveException(Exception result) {
-				System.out.println("Error looking up "+lookupKey);
-				result.printStackTrace();
-			}
-		});
-	}
-	
-	
 	
 	public List<Object> getResultSet(){
 		return resultSet;

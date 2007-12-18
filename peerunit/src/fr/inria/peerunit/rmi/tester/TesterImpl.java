@@ -11,6 +11,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.Coordinator;
@@ -57,17 +58,17 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	public void run(){			
 		while(!stop){
 			if(newMethod){
-				log.info("[TesterImpl] Lets create Invoke thread ");
+				log.log(Level.FINEST,"Creating Invoke thread ");
 				Invoke i=new Invoke(methodDescription);
 				invokationThread = new Thread(tg,i);		
 				invokationThread.start();
-				log.info("[TesterImpl] Lets verify the timeout Invoke thread ");
+				log.log(Level.FINEST,"Verify the timeout of the Invoke thread ");
 				if (methodDescription.getTimeout() > 0) {
 					timeoutThread = new Thread(tg,new Timeout(invokationThread, methodDescription.getTimeout()));						
 					timeoutThread.start();
 				}	
 				newMethod=false;
-				log.finest("Is Invoke thread alive?");				
+				log.log(Level.FINEST,"Is Invoke thread alive?");				
 			}
 			try {
 				Thread.sleep(TesterUtil.getWaitForMethod());
@@ -75,7 +76,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 				e.printStackTrace();			
 			}
 		}		
-		log.info("Stopping Tester ");		
+		log.log(Level.INFO,"Stopping Tester ");		
 		System.exit(0);
 	}
 	
@@ -98,40 +99,43 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
 			
+			log.setLevel(Level.parse(TesterUtil.getLogLevel()));
+			
 			// Parsing creation
 			String parserClass=TesterUtil.getParserClass();
-			log.finest("Parsing class used is " + parserClass);	
+			log.log(Level.FINEST,"Parsing class used is " + parserClass);	
 			parser = (Parser)Class.forName(parserClass).newInstance();
 			parser.setPeerName(testerName);
+			parser.setLogger(log);
 			
-			log.info("My name is tester" + testerName);			
+			log.log(Level.INFO,"My name is tester" + testerName);			
 			for (MethodDescription m : parser.parse(testClass)) {
 				coord.register(this, m);
 			}
-			log.finest("Registration finished ");
+			log.log(Level.FINEST,"Registration finished ");
 			tg = new ThreadGroup("Thread-group"+testerName);	
-			log.finest("Thread-group created ");
+			log.log(Level.FINEST,"Thread-group created ");
 			exported=true;
 		} catch (RemoteException e) {
-			log.severe("RemoteException");
+			log.log(Level.SEVERE,"RemoteException",e);
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			log.severe("InstantiationException");
+			log.log(Level.SEVERE,"InstantiationException",e);
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			log.severe("IllegalAccessException");
+			log.log(Level.SEVERE,"IllegalAccessException",e);
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			log.severe("ClassNotFoundException ");
+			log.log(Level.SEVERE,"ClassNotFoundException ",e);
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
+			log.log(Level.SEVERE,"SecurityException ",e);
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			log.log(Level.SEVERE,"IOException ",e);
 			e.printStackTrace();
 		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
+			log.log(Level.SEVERE,"NotBoundException ",e);
 			e.printStackTrace();
 		} finally{
 			if(!exported){
@@ -142,7 +146,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 	public synchronized void execute(MethodDescription m)
 	throws RemoteException {
-		log.info("[TesterImpl] Permission to execute "+m.getName());
+		log.log(Level.FINEST,"Permission to execute "+m.getName());
 		setMethodDescription(m);				
 	}
 
@@ -160,18 +164,19 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	 */
 	public void kill() {	
 		executionInterrupt(true);		
-		log.info("[TesterImpl] Test Case finished by kill ");		
+		log.log(Level.INFO,"Test Case finished by kill ");		
 	}	
 
 	private void executionOk(String methodAnnotation) {
 		try {
 			coord.greenLight();	
-			log.info("[TesterImpl] Executed "+methodAnnotation);
+			log.log(Level.FINEST,"Executed "+methodAnnotation);
 			if(parser.isLastMethod(methodAnnotation)){
-				log.info("[TesterImpl] Test Case finished by annotation "+methodAnnotation);								
+				log.log(Level.FINEST,"Test Case finished by annotation "+methodAnnotation);								
 				executionInterrupt(false);	
 			}				
 		} catch (RemoteException e) {
+			log.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 	}
@@ -183,9 +188,10 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 				error=true;
 			}
 			
-			log.info("[TesterImpl] Test Case local verdict to peer "+testerName+" is "+v.toString());
+			log.log(Level.INFO,"Test Case local verdict to peer "+testerName+" is "+v.toString());
 			coord.quit(this,error,v);			
 		} catch (RemoteException e) {
+			log.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 		stop=true;
@@ -206,6 +212,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		try {
 			coord.put(key, object);
 		} catch (RemoteException e) {
+			log.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 	}
@@ -219,6 +226,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		try {
 			coord.clearCollection();
 		} catch (RemoteException e) {
+			log.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 	}
@@ -234,6 +242,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		try {
 			object = coord.get(key);
 		} catch (RemoteException e) {
+			log.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 		return object;
@@ -265,7 +274,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 		public void run() {
 			boolean error = true;
-			log.info("[TesterImpl-Invoke] Peer " + testerName + " executing test case "
+			log.log(Level.INFO,"Peer " + testerName + " executing test case "
 					+ testCase + " in " + testClass.getSimpleName());
 			Method m=null;
 			try {
@@ -274,36 +283,36 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 					m.invoke(objectClass, (Object[]) null);
 				}
 				error = false;
-			} catch (SecurityException e1) {
-				log.warning("[TesterImpl-Invoke] SecurityException ");
-				e1.printStackTrace();
-			} catch (NoSuchMethodException e1) {
-				log.warning("[TesterImpl-Invoke] NoSuchMethodException ");
-				e1.printStackTrace();
+			} catch (SecurityException e) {
+				log.log(Level.SEVERE,"SecurityException ",e);
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				log.log(Level.SEVERE,"NoSuchMethodException ",e);
+				e.printStackTrace();
 			} catch (IllegalArgumentException e) {
-				log.warning("[TesterImpl-Invoke] IllegalArgumentException ");
+				log.log(Level.SEVERE,"IllegalArgumentException ",e);
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				log.warning("[TesterImpl-Invoke] IllegalAccessException ");
+				log.log(Level.SEVERE,"IllegalAccessException ",e);
 				e.printStackTrace();			
 			}catch (InvocationTargetException e) {
 				Oracle oracle=new Oracle(e.getCause());				
 				if(v==Verdicts.FAIL){
-					log.info("[TesterImpl-Invoke] FAIL Verdict ");					
+					log.log(Level.SEVERE,"FAIL Verdict ",e);					
 					error = false;
 				}else{
 					v=oracle.getVerdict();
 					e.printStackTrace();
 				}
 			}catch (Exception e) {			
-				log.warning("[TesterImpl-Invoke] Exception ");
+				log.log(Level.SEVERE,"Exception ",e);
 				e.printStackTrace();		
 			} finally {
 				if (error) {				
-					log.warning("[TesterImpl-Invoke] Executed in "+m.getName());
+					log.log(Level.WARNING," Executed in "+m.getName());
 					executionInterrupt(true);		
 				} else{
-					log.info("[TesterImpl-Invoke] Executed "+testCase);					
+					log.log(Level.INFO," Executed "+testCase);					
 					executionOk(annotation);
 				}					
 			}
