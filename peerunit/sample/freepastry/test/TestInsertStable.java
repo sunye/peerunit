@@ -101,7 +101,7 @@ public class TestInsertStable  extends TesterImpl{
 		}				
 	}
 	
-	@Test(from=1,to=3,timeout=1000000, name = "action1", step = 2)
+	@Test(place=-1,timeout=1000000, name = "action1", step = 2)
 	public void startingInitNet(){	
 
 		try {			
@@ -161,13 +161,15 @@ public class TestInsertStable  extends TesterImpl{
 	public void testInsert(){
 		try {
 			Thread.sleep(test.getPeerName()*1000);
-			final String s = "" + test.getPeerName();
+			String s;
+			for(int i=0;i< TesterUtil.getObjects();i++){
+				s = "" + ((test.getPeerName()*10)+i);
 
-			// build the past content
-			final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
-
-			peer.insert(myContent);			
-
+				// 	build the past content
+				PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+				peer.insert(myContent);
+			
+			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -185,7 +187,8 @@ public class TestInsertStable  extends TesterImpl{
 			List<String> expecteds= new ArrayList<String>();
 			int timeToFind=0;			
 			while(timeToFind < TesterUtil.getLoopToFail()){
-				for(int i=0;i< TesterUtil.getExpectedPeers();i++){
+				for(int i=0;i< ((TesterUtil.getExpectedPeers()*10)+TesterUtil.getObjects());i++){
+					log.info("lookup for "+i);
 					// Build the content
 					content=""+i;
 					
