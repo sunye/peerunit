@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 i=0
-while [ $i -le 3 ]
+while [ $i -le 7 ]
 do
 #        java openchord.test.ScalabilityTest &
 #        java freepastry.test.TestQueryTheorem &

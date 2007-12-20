@@ -163,7 +163,7 @@ public class TestInsertStable  extends TesterImpl{
 			Thread.sleep(test.getPeerName()*1000);
 			String s;
 			for(int i=0;i< TesterUtil.getObjects();i++){
-				s = "" + ((test.getPeerName()*10)+i);
+				s = "" + ((test.getPeerName()*TesterUtil.getObjects())+i);
 
 				// 	build the past content
 				PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
@@ -187,14 +187,14 @@ public class TestInsertStable  extends TesterImpl{
 			List<String> expecteds= new ArrayList<String>();
 			int timeToFind=0;			
 			while(timeToFind < TesterUtil.getLoopToFail()){
-				for(int i=0;i< ((TesterUtil.getExpectedPeers()*10)+TesterUtil.getObjects());i++){
+				for(int i=0;i< ((TesterUtil.getExpectedPeers()*TesterUtil.getObjects()));i++){
 					log.info("lookup for "+i);
 					// Build the content
 					content=""+i;
 					
 					
 					if(bootstrapped(i)){
-						if(expecteds.size()<TesterUtil.getExpectedPeers()){
+						if(expecteds.size()<((TesterUtil.getExpectedPeers()*TesterUtil.getObjects()))){
 							expecteds.add(new MyPastContent(peer.localFactory.buildId(content), content).toString());
 						}					
 						peer.lookup(peer.localFactory.buildId(content));

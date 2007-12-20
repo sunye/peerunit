@@ -52,8 +52,8 @@
 	   <taskdef name="remotejava" classname="fr.inria.ant.RemoteJava" classpath="${user.home}/library/deploy.jar" />
    	<typedef name="node" classname="fr.inria.ant.Node" classpath="${user.home}/library/deploy.jar" />
 		<nodeset id="lina" directory="/tmp/${user.name}"  keyfile="${user.home}/.ssh/id_rsa" passphrase="">     				
-			 <!--<node ip="172.16.9.64" javahome="/home/almeida/java" user="${user.name}"/> 
-			<node ip="172.16.9.101" javahome="/usr/local/jdk1.5.0" user="${user.name}"/> -->
+			 <!--<node ip="172.16.9.64" javahome="/home/almeida/java" user="${user.name}"/>  -->
+			<node ip="172.16.9.101" javahome="/usr/local" user="${user.name}"/>
   		   <node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true" user="${user.name}"/> 
 			<node ip="172.16.9.33" javahome="/home/almeida/jdk1.5.0_07" trust="true" user="${user.name}"/> 
 			<!-- <node ip="172.16.9.22" javahome="/usr/lib/jvm/java-1.5.0-sun" trust="true" user="almeida-e"/>  -->
