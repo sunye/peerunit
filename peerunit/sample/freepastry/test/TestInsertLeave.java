@@ -96,11 +96,13 @@ public class TestInsertLeave  extends TesterImpl{
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
-			if(!peer.join(bindport, bootaddress, env, log)){						
+			if(!peer.join(bindport, bootaddress, env, log,true)){						
 				inconclusive("I couldn't become a boostrapper, sorry");						
 			}
 
 			test.put(-2,peer.getInetSocketAddress(bootaddr));
+			//log.info("Cached boot address: "+bootaddress.toString());
+			//test.put(-1,bootaddress);
 			log.info("Net created");
 
 			while(!peer.isReady())
@@ -147,42 +149,40 @@ public class TestInsertLeave  extends TesterImpl{
 	public void startingInitNet(){	
 
 		try {			
-			// waiting to create the net
-			while(test.getCollection().size() ==0){
-				Thread.sleep(sleep);
+			// Wait a while due to the bootstrapper performance
+			Thread.sleep(sleep);
+			if(test.getPeerName()!=0){
+				log.info("Joining in first");
+				//	Loads pastry settings
+				Environment env = new Environment();
+
+				// the port to use locally
+				FreeLocalPort port= new FreeLocalPort();				
+				int bindport = port.getPort();
+				log.info("LocalPort:"+bindport); 
+
+				Thread.sleep(test.getPeerName()*1000);
+				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-2);
+				log.info("Getting cached boot "+bootaddress.toString());
+				if(!peer.join(bindport, bootaddress, env, log)){					
+					inconclusive("Couldn't boostrap, sorry");				
+					test.put(test.getPeerName(),"INCONCLUSIVE");
+				}
+				log.info("Running on port "+peer.getPort());
+				log.info("Time to bootstrap");
+
 			}
-
-
-			log.info("Joining in first");
-			//	Loads pastry settings
-			Environment env = new Environment();
-
-			// the port to use locally
-			FreeLocalPort port= new FreeLocalPort();				
-			int bindport = port.getPort();
-			log.info("LocalPort:"+bindport); 
-
-			Thread.sleep(test.getPeerName()*1000);
-			InetSocketAddress bootaddress= (InetSocketAddress)test.get(-2);
-			log.info("Getting cached boot "+bootaddress.toString());
-			if(!peer.join(bindport, bootaddress, env, log)){						
-				inconclusive("Couldn't boostrap, sorry");						
-			}
-			log.info("Running on port "+peer.getPort());
-			log.info("Time to bootstrap");
-
-
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e) {			
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
+		} catch (IOException e) { 			
+				e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}	
 	}
 
 	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
