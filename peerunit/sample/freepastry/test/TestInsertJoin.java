@@ -92,7 +92,7 @@ public class TestInsertJoin  extends TesterImpl{
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
-			if(!peer.join(bindport, bootaddress, env, log)){						
+			if(!peer.join(bindport, bootaddress, env, log,true)){						
 				inconclusive("I couldn't become a boostrapper, sorry");						
 			}
 
@@ -353,24 +353,9 @@ public class TestInsertJoin  extends TesterImpl{
 		log.info("[PastryTest] Peer bye bye");
 	}
 	private boolean chosenOne(int name){		
-		try {
-			if(objList.isEmpty()){
-				objList=test.getCollection();
-			}
-			Set<Integer> keySet=objList.keySet();
-			Object nameChose;
-			for(Integer key: keySet){
-				nameChose=objList.get(key);
-				if (nameChose instanceof Integer) {
-					Integer new_name = (Integer) nameChose;
-					if(new_name.intValue()==name){
-						return true;
-					}
-				}
-			}			
-		} catch (RemoteException e) {			
-			e.printStackTrace();
-		}
-		return false;
+		if((name % 2) ==0)
+			return true;
+		else
+			return false;
 	}
 }
