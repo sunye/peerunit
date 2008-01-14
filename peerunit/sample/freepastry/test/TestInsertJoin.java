@@ -353,7 +353,7 @@ public class TestInsertJoin  extends TesterImpl{
 		log.info("[PastryTest] Peer bye bye");
 	}
 	private boolean chosenOne(int name){		
-		if((name % 2) ==0)
+		if(((name % 2) ==0)&&(name!=0))
 			return true;
 		else
 			return false;
