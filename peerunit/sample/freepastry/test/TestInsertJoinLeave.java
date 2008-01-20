@@ -219,7 +219,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 	public void testRetrieve(){		
 		
 		try {
-			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("join")&&(test.getPeerName()!=0)){
+			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("join")){
 				Thread.sleep(sleep);
 	
 				// Lookup first time
@@ -267,7 +267,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		try {
 			Thread.sleep(sleep);
 
-			if(chosenOne(test.getPeerName()).equalsIgnoreCase("join")&&(test.getPeerName()!=0)){
+			if(chosenOne(test.getPeerName()).equalsIgnoreCase("join")){
 				log.info("Joining in second ");
 				//	Loads pastry settings
 				Environment env = new Environment();
@@ -309,7 +309,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testInitialRetrieve(){		
 		try {
-			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("leave")&&(test.getPeerName()==0)){
+			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("leave")){
 				List<String> actuals=new ArrayList<String>();
 				Thread.sleep(sleep);				
 				Id contentKey;
@@ -379,7 +379,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 	@Test(place=-1,timeout=1000000, name = "action9", step = 0)
 	public void testRetrieveByOthers(){		
 		try {			
-			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("leave")&&(test.getPeerName()==0)){
+			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("leave")){
 				Thread.sleep(sleep);
 
 				// Lookup first time
