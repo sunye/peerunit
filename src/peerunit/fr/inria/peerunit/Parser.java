@@ -12,20 +12,20 @@ public interface Parser {
 	 * @return List of methods to be executed
 	 */
 	public List<MethodDescription> parse(Class c) ;
-	
+
 	/**
-	 * Veirifies if the method is the last one to be executed by its annotation
+	 * Verifies if the method is the last one to be executed by its annotation
 	 * @param method
 	 * @return true if the method is the last one to be executed
 	 */
 	public boolean isLastMethod(String methodAnnotation);
-	
+
 	/**
 	 * Sets the name of the peer that executes the methods
 	 * @param peerName
 	 */
-	public void setPeerName(int peerName);
-	
+	//public void setPeerName(int peerName);
+
 	/**
 	 * Sets the logger
 	 * @param Logger
