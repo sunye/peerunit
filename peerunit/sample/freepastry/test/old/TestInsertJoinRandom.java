@@ -1,4 +1,4 @@
-package freepastry.test;
+package freepastry.test.old;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -34,12 +34,12 @@ import freepastry.Peer;
  * @author almeida
  *
  */
-public class TestInsertJoin  extends TesterImpl{
-	private static Logger log = Logger.getLogger(TestInsertJoin.class.getName());
+public class TestInsertJoinRandom  extends TesterImpl{
+	private static Logger log = Logger.getLogger(TestInsertJoinRandom.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	static TestInsertJoin test;
+	static TestInsertJoinRandom test;
 
 	Peer peer=new Peer();
 
@@ -52,7 +52,7 @@ public class TestInsertJoin  extends TesterImpl{
 	Map<Integer,Object> objList=new HashMap<Integer, Object>();
 
 	public static void main(String[] str) {		
-		test = new TestInsertJoin();
+		test = new TestInsertJoinRandom();
 		test.export(test.getClass());		
 		// Log creation
 		FileHandler handler;
@@ -353,9 +353,24 @@ public class TestInsertJoin  extends TesterImpl{
 		log.info("[PastryTest] Peer bye bye");
 	}
 	private boolean chosenOne(int name){		
-		if(((name % 2) ==0)&&(name!=0))
-			return true;
-		else
-			return false;
+		try {
+			if(objList.isEmpty()){
+				objList=test.getCollection();
+			}
+			Set<Integer> keySet=objList.keySet();
+			Object nameChose;
+			for(Integer key: keySet){
+				nameChose=objList.get(key);
+				if (nameChose instanceof Integer) {
+					Integer new_name = (Integer) nameChose;
+					if(new_name.intValue()==name){
+						return true;
+					}
+				}
+			}			
+		} catch (RemoteException e) {			
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

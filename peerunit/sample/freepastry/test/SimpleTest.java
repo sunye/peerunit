@@ -23,6 +23,7 @@ import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Peer;
+import freepastry.test.old.TestInsertLeaveB;
 
 public class SimpleTest extends TesterImpl{
 	// logger from jdk

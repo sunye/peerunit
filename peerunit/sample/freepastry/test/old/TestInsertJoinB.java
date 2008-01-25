@@ -1,4 +1,4 @@
-package freepastry.test;
+package freepastry.test.old;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -30,16 +30,16 @@ import freepastry.Peer;
 
 
 /**
- * Test Insert/Retrieve in an Expanding System 
+ * Test E4 on experiments list
  * @author almeida
  *
  */
-public class TestInsertJoinRandom  extends TesterImpl{
-	private static Logger log = Logger.getLogger(TestInsertJoinRandom.class.getName());
+public class TestInsertJoinB  extends TesterImpl{
+	private static Logger log = Logger.getLogger(TestInsertJoinB.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	static TestInsertJoinRandom test;
+	static TestInsertJoinB test;
 
 	Peer peer=new Peer();
 
@@ -48,17 +48,17 @@ public class TestInsertJoinRandom  extends TesterImpl{
 	List<Id> firstSuccessors=new ArrayList<Id>();
 
 	int churnPercentage=TesterUtil.getChurnPercentage();
-	
+
 	Map<Integer,Object> objList=new HashMap<Integer, Object>();
 
 	public static void main(String[] str) {		
-		test = new TestInsertJoinRandom();
+		test = new TestInsertJoinB();
 		test.export(test.getClass());		
 		// Log creation
 		FileHandler handler;
 		try {
 			System.out.println("NAME "+test.getPeerName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestInsertJoin.log.peer"+test.getPeerName(),true);
+			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestInsertJoinB.log.peer"+test.getPeerName(),true);
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
 		} catch (SecurityException e) {			
@@ -92,7 +92,7 @@ public class TestInsertJoinRandom  extends TesterImpl{
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
-			if(!peer.join(bindport, bootaddress, env, log,true)){						
+			if(!peer.join(bindport, bootaddress, env, log)){							
 				inconclusive("I couldn't become a boostrapper, sorry");						
 			}
 
@@ -162,7 +162,7 @@ public class TestInsertJoinRandom  extends TesterImpl{
 				Thread.sleep(test.getPeerName()*1000);
 				InetSocketAddress bootaddress= (InetSocketAddress)test.get(0);
 				log.info("Getting cached boot "+bootaddress.toString());
-				if(!peer.join(bindport, bootaddress, env, log)){					
+				if(!peer.join(bindport, bootaddress, env, log)){				
 					inconclusive("Couldn't boostrap, sorry");						
 				}
 				log.info("Running on port "+peer.getPort());
@@ -270,7 +270,7 @@ public class TestInsertJoinRandom  extends TesterImpl{
 				Thread.sleep(test.getPeerName()*1000);
 				InetSocketAddress bootaddress= (InetSocketAddress)test.get(0);
 				log.info("Getting cached boot "+bootaddress.toString());
-				if(!peer.join(bindport, bootaddress, env, log)){						
+				if(!peer.join(bindport, bootaddress, env, log)){							
 					inconclusive("Couldn't boostrap, sorry");						
 				}
 				while(!peer.isAlive()){
@@ -297,52 +297,48 @@ public class TestInsertJoinRandom  extends TesterImpl{
 	public void testRetrieveByOthers(){		
 		try {
 			Thread.sleep(sleep);
-
-			// Lookup first time
-			List<PastContent> keySet=(List<PastContent>)test.get(-1);				
-			Id contentKey;
-			for (PastContent key : keySet) {
-				contentKey=key.getId();
-				if(contentKey!=null){
-					log.info("[PastryTest] Lookup Expected "+contentKey.toString());
-					peer.lookup(contentKey);				
+			if(chosenOne(test.getPeerName())){
+				// Lookup first time
+				List<PastContent> keySet=(List<PastContent>)test.get(-1);				
+				Id contentKey;
+				for (PastContent key : keySet) {
+					contentKey=key.getId();
+					if(contentKey!=null){
+						log.info("[PastryTest] Lookup Expected "+contentKey.toString());
+						peer.lookup(contentKey);				
+					}
 				}
-			}
 
-			// Sleep 
-			try {
 				Thread.sleep(sleep);
-			} catch (Exception e) {
-				e.printStackTrace();		
-			}				
 
-			log.info("[PastryTest] Retrieved so far "+peer.getResultSet().size());
+				log.info("[PastryTest] Retrieved so far "+peer.getResultSet().size());
 
-			List<String> actuals= new ArrayList<String>();
-			int timeToFind=0;			
-			while(timeToFind < TesterUtil.getLoopToFail()){
-				log.info("Retrieval "+timeToFind);
-				for (Object actual : peer.getResultSet()) {
-					if(actual!=null){
-						log.info("[Local verdict] Actual "+actual.toString());
+				List<String> actuals= new ArrayList<String>();
+				int timeToFind=0;			
+				while(timeToFind < TesterUtil.getLoopToFail()){
+					log.info("Retrieval "+timeToFind);
+					for (Object actual : peer.getResultSet()) {
+						if(actual!=null){
+							log.info("[Local verdict] Actual "+actual.toString());
 
-						if(!actuals.contains(actual.toString())){
-							actuals.add(actual.toString());
-						}
-					}		
+							if(!actuals.contains(actual.toString())){
+								actuals.add(actual.toString());
+							}
+						}		
+					}
+					peer.pingNodes();
+					Thread.sleep(sleep);
+					timeToFind++;
 				}
-				peer.pingNodes();
-				Thread.sleep(sleep);
-				timeToFind++;
-			}
-			//if((test.getPeerName()%churnPercentage==0)&&(test.getPeerName()!=0)){
-			//if(chosenOne(test.getPeerName())){
+
 				List<String> expecteds=(List<String>)test.get(2);		
 				log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
 				Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);	
-			//}
-		
+			}
+
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}

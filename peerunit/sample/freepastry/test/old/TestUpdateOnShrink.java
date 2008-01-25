@@ -1,4 +1,4 @@
-package freepastry.test;
+package freepastry.test.old;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -1,4 +1,4 @@
-package freepastry.test;
+package freepastry.test.old;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -34,12 +34,12 @@ import freepastry.Peer;
  * @author almeida
  *
  */
-public class TestInsertLeave  extends TesterImpl{
-	private static Logger log = Logger.getLogger(TestInsertLeave.class.getName());
+public class TestInsertLeaveRandom  extends TesterImpl{
+	private static Logger log = Logger.getLogger(TestInsertLeaveRandom.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	static TestInsertLeave test;
+	static TestInsertLeaveRandom test;
 
 	Peer peer=new Peer();
 
@@ -56,7 +56,7 @@ public class TestInsertLeave  extends TesterImpl{
 	List<PastContent> keySet;
 
 	public static void main(String[] str) {		
-		test = new TestInsertLeave();
+		test = new TestInsertLeaveRandom();
 		test.export(test.getClass());		
 		// Log creation
 		FileHandler handler;
@@ -391,11 +391,24 @@ public class TestInsertLeave  extends TesterImpl{
 		log.info("[PastryTest] Peer bye bye");
 	}
 	private boolean chosenOne(int name){		
-		if(((name % 2) ==0)&&(name!=0)){
-			return true;
+		try {
+			if(objList.isEmpty()){
+				objList=test.getCollection();
+			}
+			Set<Integer> keySet=objList.keySet();
+			Object nameChose;
+			for(Integer key: keySet){
+				nameChose=objList.get(key);
+				if (nameChose instanceof Integer) {
+					Integer new_name = (Integer) nameChose;
+					if(new_name.intValue()==name){
+						return true;
+					}
+				}
+			}			
+		} catch (RemoteException e) {			
+			e.printStackTrace();
 		}
-		else{
-			return false;
-		}
+		return false;
 	}
 }

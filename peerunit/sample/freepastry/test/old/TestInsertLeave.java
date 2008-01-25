@@ -1,4 +1,4 @@
-package freepastry.test;
+package freepastry.test.old;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -30,16 +30,16 @@ import freepastry.Peer;
 
 
 /**
- * Test E4 on experiments list
+ * Test Insert/Retrieve in a Shrinking System 
  * @author almeida
  *
  */
-public class TestInsertJoinB  extends TesterImpl{
-	private static Logger log = Logger.getLogger(TestInsertJoinB.class.getName());
+public class TestInsertLeave  extends TesterImpl{
+	private static Logger log = Logger.getLogger(TestInsertLeave.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	static TestInsertJoinB test;
+	static TestInsertLeave test;
 
 	Peer peer=new Peer();
 
@@ -50,15 +50,19 @@ public class TestInsertJoinB  extends TesterImpl{
 	int churnPercentage=TesterUtil.getChurnPercentage();
 
 	Map<Integer,Object> objList=new HashMap<Integer, Object>();
+	
+	List<String> expecteds= new ArrayList<String>();
+	
+	List<PastContent> keySet;
 
 	public static void main(String[] str) {		
-		test = new TestInsertJoinB();
+		test = new TestInsertLeave();
 		test.export(test.getClass());		
 		// Log creation
 		FileHandler handler;
 		try {
 			System.out.println("NAME "+test.getPeerName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestInsertJoinB.log.peer"+test.getPeerName(),true);
+			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestInsertLeave.log.peer"+test.getPeerName(),true);
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
 		} catch (SecurityException e) {			
@@ -92,11 +96,13 @@ public class TestInsertJoinB  extends TesterImpl{
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
-			if(!peer.join(bindport, bootaddress, env, log)){							
+			if(!peer.join(bindport, bootaddress, env, log,true)){						
 				inconclusive("I couldn't become a boostrapper, sorry");						
 			}
 
-			test.put(0,peer.getInetSocketAddress(bootaddr));
+			test.put(-2,peer.getInetSocketAddress(bootaddr));
+			//log.info("Cached boot address: "+bootaddress.toString());
+			//test.put(-1,bootaddress);
 			log.info("Net created");
 
 			while(!peer.isReady())
@@ -135,7 +141,7 @@ public class TestInsertJoinB  extends TesterImpl{
 			netSize--;
 		}
 		for(Integer intObj: generated){
-			test.put(intObj.intValue()*10, intObj);
+			test.put(intObj.intValue()*100, intObj);
 		}
 	}
 
@@ -143,13 +149,9 @@ public class TestInsertJoinB  extends TesterImpl{
 	public void startingInitNet(){	
 
 		try {			
-			// waiting to create the net
-			while(test.getCollection().size() ==0){
-				Thread.sleep(sleep);
-			}
-
-			//if(test.getPeerName()%churnPercentage!=0){		
-			if(!chosenOne(test.getPeerName())&&(test.getPeerName()!=0)){
+			// Wait a while due to the bootstrapper performance
+			Thread.sleep(sleep);
+			if(test.getPeerName()!=0){
 				log.info("Joining in first");
 				//	Loads pastry settings
 				Environment env = new Environment();
@@ -160,26 +162,27 @@ public class TestInsertJoinB  extends TesterImpl{
 				log.info("LocalPort:"+bindport); 
 
 				Thread.sleep(test.getPeerName()*1000);
-				InetSocketAddress bootaddress= (InetSocketAddress)test.get(0);
+				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-2);
 				log.info("Getting cached boot "+bootaddress.toString());
-				if(!peer.join(bindport, bootaddress, env, log)){				
-					inconclusive("Couldn't boostrap, sorry");						
+				if(!peer.join(bindport, bootaddress, env, log)){					
+					inconclusive("Couldn't boostrap, sorry");				
+					test.put(test.getPeerName(),"INCONCLUSIVE");
 				}
 				log.info("Running on port "+peer.getPort());
 				log.info("Time to bootstrap");
 
 			}
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e) {			
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
+		} catch (IOException e) { 			
+				e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}	
 	}
 
 	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
@@ -213,10 +216,60 @@ public class TestInsertJoinB  extends TesterImpl{
 	public void testRetrieve(){		
 		try {
 			Thread.sleep(sleep);
-			//if(test.getPeerName()%churnPercentage!=0){
+
+			// Lookup first time
+			keySet=(List<PastContent>)test.get(-1);				
+			Id contentKey;
+			for (PastContent key : keySet) {
+				contentKey=key.getId();
+				if(contentKey!=null){
+					log.info("[PastryTest] Lookup Expected "+contentKey.toString());
+					peer.lookup(contentKey);				
+				}
+			}
+
+			// Sleep 
+			try {
+				Thread.sleep(sleep);
+			} catch (Exception e) {
+				e.printStackTrace();		
+			}				
+			
+			log.info("[PastryTest] Retrieved so far "+peer.getResultSet().size());
+
+			for (Object expected : peer.getResultSet()) {			
+				if(expected!=null){
+					log.info("Retrieve before depart "+expected.toString());
+					//expecteds.add(expected.toString());	
+				}		
+			}
+			/*if(test.getPeerName()==0){
+				test.put(2, expecteds);
+			}*/
+
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
+	public void leaving(){	
+		try{
+			if(chosenOne(test.getPeerName())){
+				log.info("Leaving early ");
+				test.kill();				
+			}			
+		} catch (RemoteException e) {			
+			e.printStackTrace();
+		}		
+	}
+	
+	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
+	public void testInitialRetrieve(){		
+		try {
 			if(!chosenOne(test.getPeerName())){
-				// Lookup first time
-				List<PastContent> keySet=(List<PastContent>)test.get(-1);				
+				List<String> actuals=new ArrayList<String>();
+				Thread.sleep(sleep);				
 				Id contentKey;
 				for (PastContent key : keySet) {
 					contentKey=key.getId();
@@ -232,74 +285,63 @@ public class TestInsertJoinB  extends TesterImpl{
 				} catch (Exception e) {
 					e.printStackTrace();		
 				}				
-				List<String> expecteds= new ArrayList<String>(keySet.size());
+				
 				log.info("[PastryTest] Retrieved so far "+peer.getResultSet().size());
 
-				for (Object expected : peer.getResultSet()) {			
-					if(expected!=null){
-						log.info("[Local verdict] Expected "+expected.toString());
-						expecteds.add(expected.toString());	
+				for (Object actual : peer.getResultSet()) {			
+					if(actual!=null){
+						log.info("Retrieve before depart "+actual.toString());
+						actuals.add(actual.toString());			
+						test.put(test.getPeerName(), actuals);
+						
 					}		
 				}
-				test.put(2, expecteds);
 			}
 		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
-
-	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
-	public void startingOtherHalfNet(){	
-
+	@Test(place=-1,timeout=1000000, name = "action8", step = 0)
+	public void buildExpecteds(){	
 		try {
-			Thread.sleep(sleep);
-
-			//if((test.getPeerName()%churnPercentage==0)&&(test.getPeerName()!=0)){
-			if(chosenOne(test.getPeerName())&&(test.getPeerName()!=0)){
-				log.info("Joining in second ");
-				//	Loads pastry settings
-				Environment env = new Environment();
-
-				// the port to use locally
-				FreeLocalPort port= new FreeLocalPort();				
-				int bindport = port.getPort();
-				log.info("LocalPort:"+bindport); 
-
-				Thread.sleep(test.getPeerName()*1000);
-				InetSocketAddress bootaddress= (InetSocketAddress)test.get(0);
-				log.info("Getting cached boot "+bootaddress.toString());
-				if(!peer.join(bindport, bootaddress, env, log)){							
-					inconclusive("Couldn't boostrap, sorry");						
+			Set<Integer> newKeySet=test.getCollection().keySet();
+			List<String> cached=new ArrayList<String>();
+			Object obj;
+			for(Integer key: newKeySet){
+				obj=test.get(key);
+				if ((key.intValue() >= 0 )&&(key.intValue() < 64)) {
+					cached=(List<String>) obj;					
 				}
-				while(!peer.isAlive()){
-					log.info("I'm not ready yet ");
-					Thread.sleep(sleep);
-				}
-				log.info("Running on port "+peer.getPort());
-				log.info("Time to bootstrap");	
+				
+				for(String cachedObj:cached){					
+					if(!expecteds.contains(cachedObj)){
+						expecteds.add(cachedObj);
+					}
+				}				
 			}
+			log.info("I may find "+expecteds.size()+" objects");
+			for(String exp:expecteds){
+				log.info("I may find "+exp);
+			}
+			
 		} catch (RemoteException e) {			
-			e.printStackTrace();	
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
+	@Test(place=-1,timeout=1000000, name = "action9", step = 0)
 	public void testRetrieveByOthers(){		
-		try {
-			Thread.sleep(sleep);
-			if(chosenOne(test.getPeerName())){
+		try {			
+			if(!chosenOne(test.getPeerName())){
+				Thread.sleep(sleep);
+
 				// Lookup first time
-				List<PastContent> keySet=(List<PastContent>)test.get(-1);				
+
 				Id contentKey;
 				for (PastContent key : keySet) {
 					contentKey=key.getId();
@@ -331,7 +373,7 @@ public class TestInsertJoinB  extends TesterImpl{
 					timeToFind++;
 				}
 
-				List<String> expecteds=(List<String>)test.get(2);		
+				//List<String> expecteds=(List<String>)test.get(2);		
 				log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
 				Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);	
 			}
@@ -349,24 +391,11 @@ public class TestInsertJoinB  extends TesterImpl{
 		log.info("[PastryTest] Peer bye bye");
 	}
 	private boolean chosenOne(int name){		
-		try {
-			if(objList.isEmpty()){
-				objList=test.getCollection();
-			}
-			Set<Integer> keySet=objList.keySet();
-			Object nameChose;
-			for(Integer key: keySet){
-				nameChose=objList.get(key);
-				if (nameChose instanceof Integer) {
-					Integer new_name = (Integer) nameChose;
-					if(new_name.intValue()==name){
-						return true;
-					}
-				}
-			}			
-		} catch (RemoteException e) {			
-			e.printStackTrace();
+		if(((name % 2) ==0)&&(name!=0)){
+			return true;
 		}
-		return false;
+		else{
+			return false;
+		}
 	}
 }
