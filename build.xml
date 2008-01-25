@@ -15,6 +15,7 @@
 	<property name="temp.config.dir" value="${temp.dir}/config" />
 	<property name="scripts.dir" value="${basedir}/scripts" />
 	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="tests.dir" value="${basedir}/src/sample" />
 
 	<!-- urls for library installation -->
 	<property name="openchord.url" value="http://downloads.sourceforge.net/open-chord/open-chord_1.0.2.zip"/>
@@ -30,11 +31,13 @@
 	<property name="log4j.jar" value="${lib.dir}/log4j-1.2.12.jar" />
 	<property name="jsch.jar" value="${lib.dir}/jsch-0.1.32.jar" />	
 	<property name="deploy.jar" value="${lib.dir}/deploy.jar" />
+	<property name="peerunit_tests.jar" value="${dist.dir}/peerunit_tests.jar" />	
 
 	<!-- paths -->
 	<path id="lib.jars">
 		<pathelement path="${openchord.jar}" />
 		<pathelement path="${peerunit.jar}" />
+		<pathelement path="${user.home}/library/FreePastry-2.1alpha3.jar" />
 	</path>
 
 	<path id="compile.classpath">
@@ -132,7 +135,9 @@
 	</target>
 	
 	<target name="compile">
-	  	<javac srcdir="${src.dir}" destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
+	  	<javac srcdir="${src.dir}/peerunit"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
+	   </javac>
+	  	<javac srcdir="${tests.dir}"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
 	   </javac>
 	</target>
 	  
@@ -143,6 +148,11 @@
 		    <fileset 
 		    	dir="${build.dir}"
 		    	includes="**/*.class"/>	    	
+		</jar>
+		<jar basedir="${tests.dir}" jarfile="${peerunit_tests.jar}" update="no">
+				    <fileset 
+				    	dir="${tests.dir}"
+				    	includes="**/*.class"/>	    	
 		</jar>
 	</target>
 	
