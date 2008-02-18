@@ -27,6 +27,7 @@ import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
+import freepastry.Network;
 import freepastry.Peer;
 
 
@@ -35,12 +36,12 @@ import freepastry.Peer;
  * @author almeida
  *
  */
-public class TestInsertJoinLeave  extends TesterImpl{
-	private static Logger log = Logger.getLogger(TestInsertJoinLeave.class.getName());
+public class TestInsertJoinLeaveNew  extends TesterImpl{
+	private static Logger log = Logger.getLogger(TestInsertJoinLeaveNew.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	static TestInsertJoinLeave test;
+	static TestInsertJoinLeaveNew test;
 
 	Peer peer=new Peer();
 
@@ -57,7 +58,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 	List<PastContent> keySet;
 
 	public static void main(String[] str) {		
-		test = new TestInsertJoinLeave();
+		test = new TestInsertJoinLeaveNew();
 		test.export(test.getClass());		
 		// Log creation
 		FileHandler handler;
@@ -80,43 +81,25 @@ public class TestInsertJoinLeave  extends TesterImpl{
 
 	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
-		try {	
+		try {
 			if(test.getPeerName()==0){
-				log.info("I am "+test.getPeerName());
-				//	Loads pastry settings
-				Environment env = new Environment();
-	
-				// the port to use locally
-				FreeLocalPort port= new FreeLocalPort();				
-				int bindport = port.getPort();
-				log.info("LocalPort:"+bindport); 
-	
-				// build the bootaddress from the command line args			
-				InetAddress bootaddr = InetAddress.getByName(TesterUtil.getBootstrap());
-				Integer bootport = new Integer(TesterUtil.getBootstrapPort());
-				InetSocketAddress bootaddress;
-	
-				bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
-				if(!peer.join(bindport, bootaddress, env, log,true)){						
-					inconclusive("I couldn't become a boostrapper, sorry");						
+				Network net= new Network();
+				if(!net.joinNetwork(peer, null, true, log)){
+					inconclusive("I couldn't become a boostrapper, sorry");
 				}
-	
-				test.put(-2,peer.getInetSocketAddress(bootaddr));
-				//log.info("Cached boot address: "+bootaddress.toString());
-				//test.put(-1,bootaddress);
+				
+				test.put(-10,net.getInetSocketAddress());
 				log.info("Net created");
 				
 				while(!peer.isReady())
-					Thread.sleep(sleep);
+					Thread.sleep(16000);
 			}
 			Thread.sleep(sleep);
-		} catch (IOException e) {			
-			e.printStackTrace();	
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}				
+		}			
 	}
 
 	@Test(place=0,timeout=1000000, name = "action2", step = 0)
@@ -157,31 +140,26 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		try {			
 		
 			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("join")&&(test.getPeerName()!=0)){
-				log.info("Joining in first");
-				//	Loads pastry settings
-				Environment env = new Environment();
-
-				// the port to use locally
-				FreeLocalPort port= new FreeLocalPort();				
-				int bindport = port.getPort();
-				log.info("LocalPort:"+bindport); 
-
+				log.info("Joining before volatility");
+				Network net= new Network();
 				Thread.sleep(test.getPeerName()*1000);
-				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-2);
+				
+				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-10);
 				log.info("Getting cached boot "+bootaddress.toString());
-				if(!peer.join(bindport, bootaddress, env, log)){					
-					inconclusive("Couldn't boostrap, sorry");						
+				
+				if(!net.joinNetwork(peer, bootaddress, false, log)){
+					inconclusive("I couldn't join, sorry");
 				}
+				
 				log.info("Running on port "+peer.getPort());
 				log.info("Time to bootstrap");
+
 
 			}
 		} catch (RemoteException e) {			
 			e.printStackTrace();	
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			e.printStackTrace();		
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -269,27 +247,20 @@ public class TestInsertJoinLeave  extends TesterImpl{
 			Thread.sleep(sleep);
 
 			if(chosenOne(test.getPeerName()).equalsIgnoreCase("join")){
-				log.info("Joining in second ");
-				//	Loads pastry settings
-				Environment env = new Environment();
-
-				// the port to use locally
-				FreeLocalPort port= new FreeLocalPort();				
-				int bindport = port.getPort();
-				log.info("LocalPort:"+bindport); 
-
+				log.info("Joining after volatility");
+				Network net= new Network();
 				Thread.sleep(test.getPeerName()*1000);
-				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-2);
+				
+				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-10);
 				log.info("Getting cached boot "+bootaddress.toString());
-				if(!peer.join(bindport, bootaddress, env, log)){						
-					inconclusive("Couldn't boostrap, sorry");						
+				
+				if(!net.joinNetwork(peer, bootaddress, false, log)){
+					inconclusive("I couldn't join, sorry");
 				}
-				while(!peer.isAlive()){
-					log.info("I'm not ready yet ");
-					Thread.sleep(sleep);
-				}
+				
 				log.info("Running on port "+peer.getPort());
-				log.info("Time to bootstrap");	
+				log.info("Time to bootstrap");
+
 			}else if(chosenOne(test.getPeerName()).equalsIgnoreCase("leave")){
 				log.info("Leaving early ");
 				test.kill();				
@@ -297,9 +268,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		} catch (RemoteException e) {			
 			e.printStackTrace();	
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			e.printStackTrace();		
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

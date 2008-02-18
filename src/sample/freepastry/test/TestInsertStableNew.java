@@ -53,9 +53,12 @@ public class TestInsertStableNew  extends TesterImpl{
 			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestInsertStable.log.peer"+test.getPeerName(),true);
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
+			Thread.sleep(2000);
 		} catch (SecurityException e) {			
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}		
 		test.run();
@@ -65,7 +68,7 @@ public class TestInsertStableNew  extends TesterImpl{
 		log.info("Starting test peer  ");
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action1", step = 1)
+	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {
 			if(test.getPeerName()==0){
@@ -76,11 +79,11 @@ public class TestInsertStableNew  extends TesterImpl{
 				
 				test.put(-1,net.getInetSocketAddress());
 				log.info("Net created");
-	
+				
 				while(!peer.isReady())
 					Thread.sleep(16000);
 			}
-
+			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -88,7 +91,7 @@ public class TestInsertStableNew  extends TesterImpl{
 		}				
 	}
 	
-	@Test(place=-1,timeout=1000000, name = "action2", step = 2)
+	@Test(place=-1,timeout=1000000, name = "action2", step = 0)
 	public void joiningNet(){	
 
 		try {			
@@ -137,10 +140,10 @@ public class TestInsertStableNew  extends TesterImpl{
 		}
 	}	
 	
-	@Test(place=0,timeout=10000000, name = "action4", step = 0)
+	@Test(place=-1,timeout=10000000, name = "action4", step = 0)
 	public void testInsert(){
 		try {			
-			//if(test.getPeerName()==0){
+			if(test.getPeerName()==0){
 				log.info("I will insert");
 				List<PastContent> resultSet=new ArrayList<PastContent>();
 				// these variables are final so that the continuation can access them
@@ -156,10 +159,10 @@ public class TestInsertStableNew  extends TesterImpl{
 				test.put(0, resultSet);
 
 				log.info("Inserted "+resultSet.size());
-				Thread.sleep(sleep*3);		
-			//}			
+			}			
 			
-		} catch (InterruptedException e) {
+			Thread.sleep(sleep*3);		
+		} catch (Exception e) {
 			e.printStackTrace();
 		} 
 	}

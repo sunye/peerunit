@@ -1,6 +1,5 @@
 package freepastry.test;
 
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -21,8 +20,8 @@ import rice.p2p.past.PastContent;
 import rice.tutorial.past.MyPastContent;
 import util.FreeLocalPort;
 import fr.inria.peerunit.parser.AfterClass;
-import fr.inria.peerunit.parser.Test;
 import fr.inria.peerunit.parser.BeforeClass;
+import fr.inria.peerunit.parser.Test;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.LogFormat;
@@ -35,12 +34,12 @@ import freepastry.Peer;
  * @author almeida
  *
  */
-public class TestInsertJoinLeave  extends TesterImpl{
-	private static Logger log = Logger.getLogger(TestInsertJoinLeave.class.getName());
+public class TestInsertLeave  extends TesterImpl{
+	private static Logger log = Logger.getLogger(TestInsertLeave.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	static TestInsertJoinLeave test;
+	static TestInsertLeave test;
 
 	Peer peer=new Peer();
 
@@ -57,7 +56,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 	List<PastContent> keySet;
 
 	public static void main(String[] str) {		
-		test = new TestInsertJoinLeave();
+		test = new TestInsertLeave();
 		test.export(test.getClass());		
 		// Log creation
 		FileHandler handler;
@@ -78,38 +77,37 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		log.info("[PastryTest] Starting test peer  ");
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
+	@Test(place=0,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {	
-			if(test.getPeerName()==0){
-				log.info("I am "+test.getPeerName());
-				//	Loads pastry settings
-				Environment env = new Environment();
-	
-				// the port to use locally
-				FreeLocalPort port= new FreeLocalPort();				
-				int bindport = port.getPort();
-				log.info("LocalPort:"+bindport); 
-	
-				// build the bootaddress from the command line args			
-				InetAddress bootaddr = InetAddress.getByName(TesterUtil.getBootstrap());
-				Integer bootport = new Integer(TesterUtil.getBootstrapPort());
-				InetSocketAddress bootaddress;
-	
-				bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
-				if(!peer.join(bindport, bootaddress, env, log,true)){						
-					inconclusive("I couldn't become a boostrapper, sorry");						
-				}
-	
-				test.put(-2,peer.getInetSocketAddress(bootaddr));
-				//log.info("Cached boot address: "+bootaddress.toString());
-				//test.put(-1,bootaddress);
-				log.info("Net created");
-				
-				while(!peer.isReady())
-					Thread.sleep(sleep);
+
+			log.info("I am "+test.getPeerName());
+			//	Loads pastry settings
+			Environment env = new Environment();
+
+			// the port to use locally
+			FreeLocalPort port= new FreeLocalPort();				
+			int bindport = port.getPort();
+			log.info("LocalPort:"+bindport); 
+
+			// build the bootaddress from the command line args			
+			InetAddress bootaddr = InetAddress.getByName(TesterUtil.getBootstrap());
+			Integer bootport = new Integer(TesterUtil.getBootstrapPort());
+			InetSocketAddress bootaddress;
+
+			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
+			if(!peer.join(bindport, bootaddress, env, log,true)){						
+				inconclusive("I couldn't become a boostrapper, sorry");						
 			}
-			Thread.sleep(sleep);
+
+			test.put(-2,peer.getInetSocketAddress(bootaddr));
+			//log.info("Cached boot address: "+bootaddress.toString());
+			//test.put(-1,bootaddress);
+			log.info("Net created");
+
+			while(!peer.isReady())
+				Thread.sleep(sleep);
+
 		} catch (IOException e) {			
 			e.printStackTrace();	
 		} catch (InterruptedException e) {
@@ -144,10 +142,6 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		}
 		for(Integer intObj: generated){
 			test.put(intObj.intValue()*100, intObj);
-			if(intObj.intValue()%2==0)
-				log.info("leave "+intObj.intValue());
-			else
-				log.info("join "+intObj.intValue());				
 		}
 	}
 
@@ -155,8 +149,9 @@ public class TestInsertJoinLeave  extends TesterImpl{
 	public void startingInitNet(){	
 
 		try {			
-		
-			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("join")&&(test.getPeerName()!=0)){
+			// Wait a while due to the bootstrapper performance
+			Thread.sleep(sleep);
+			if(test.getPeerName()!=0){
 				log.info("Joining in first");
 				//	Loads pastry settings
 				Environment env = new Environment();
@@ -170,23 +165,24 @@ public class TestInsertJoinLeave  extends TesterImpl{
 				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-2);
 				log.info("Getting cached boot "+bootaddress.toString());
 				if(!peer.join(bindport, bootaddress, env, log)){					
-					inconclusive("Couldn't boostrap, sorry");						
+					inconclusive("Couldn't boostrap, sorry");				
+					test.put(test.getPeerName(),"INCONCLUSIVE");
 				}
 				log.info("Running on port "+peer.getPort());
 				log.info("Time to bootstrap");
 
 			}
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e) {			
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
+		} catch (IOException e) { 			
+				e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}	
 	}
 
 	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
@@ -218,99 +214,60 @@ public class TestInsertJoinLeave  extends TesterImpl{
 
 	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testRetrieve(){		
-		
-		try {
-			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("join")){
-				Thread.sleep(sleep);
-	
-				// Lookup first time
-				keySet=(List<PastContent>)test.get(-1);				
-				Id contentKey;
-				for (PastContent key : keySet) {
-					contentKey=key.getId();
-					if(contentKey!=null){
-						log.info("[PastryTest] Lookup Expected "+contentKey.toString());
-						peer.lookup(contentKey);				
-					}
-				}
-	
-				// Sleep 
-				try {
-					Thread.sleep(sleep);
-				} catch (Exception e) {
-					e.printStackTrace();		
-				}				
-				
-				log.info("[PastryTest] Retrieved so far "+peer.getResultSet().size());
-	
-				for (Object expected : peer.getResultSet()) {			
-					if(expected!=null){
-						log.info("Retrieve before depart "+expected.toString());
-						expecteds.add(expected.toString());	
-					}		
-				}
-				if(test.getPeerName()==0){
-					test.put(2, expecteds);
-				}
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-
-	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
-	public void volatility(){	
-
 		try {
 			Thread.sleep(sleep);
 
-			if(chosenOne(test.getPeerName()).equalsIgnoreCase("join")){
-				log.info("Joining in second ");
-				//	Loads pastry settings
-				Environment env = new Environment();
-
-				// the port to use locally
-				FreeLocalPort port= new FreeLocalPort();				
-				int bindport = port.getPort();
-				log.info("LocalPort:"+bindport); 
-
-				Thread.sleep(test.getPeerName()*1000);
-				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-2);
-				log.info("Getting cached boot "+bootaddress.toString());
-				if(!peer.join(bindport, bootaddress, env, log)){						
-					inconclusive("Couldn't boostrap, sorry");						
+			// Lookup first time
+			keySet=(List<PastContent>)test.get(-1);				
+			Id contentKey;
+			for (PastContent key : keySet) {
+				contentKey=key.getId();
+				if(contentKey!=null){
+					log.info("[PastryTest] Lookup Expected "+contentKey.toString());
+					peer.lookup(contentKey);				
 				}
-				while(!peer.isAlive()){
-					log.info("I'm not ready yet ");
-					Thread.sleep(sleep);
-				}
-				log.info("Running on port "+peer.getPort());
-				log.info("Time to bootstrap");	
-			}else if(chosenOne(test.getPeerName()).equalsIgnoreCase("leave")){
-				log.info("Leaving early ");
-				test.kill();				
-			}	
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
+			}
+
+			// Sleep 
+			try {
+				Thread.sleep(sleep);
+			} catch (Exception e) {
+				e.printStackTrace();		
+			}				
+			
+			log.info("[PastryTest] Retrieved so far "+peer.getResultSet().size());
+
+			for (Object expected : peer.getResultSet()) {			
+				if(expected!=null){
+					log.info("Retrieve before depart "+expected.toString());
+					//expecteds.add(expected.toString());	
+				}		
+			}
+			/*if(test.getPeerName()==0){
+				test.put(2, expecteds);
+			}*/
+
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-	}	
+	}
+
+	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
+	public void leaving(){	
+		try{
+			if(chosenOne(test.getPeerName())){
+				log.info("Leaving early ");
+				test.kill();				
+			}			
+		} catch (RemoteException e) {			
+			e.printStackTrace();
+		}		
+	}
 	
 	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testInitialRetrieve(){		
 		try {
-			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("leave")){
+			if(!chosenOne(test.getPeerName())){
 				List<String> actuals=new ArrayList<String>();
 				Thread.sleep(sleep);				
 				Id contentKey;
@@ -380,7 +337,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 	@Test(place=-1,timeout=1000000, name = "action9", step = 0)
 	public void testRetrieveByOthers(){		
 		try {			
-			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("leave")){
+			if(!chosenOne(test.getPeerName())){
 				Thread.sleep(sleep);
 
 				// Lookup first time
@@ -433,29 +390,12 @@ public class TestInsertJoinLeave  extends TesterImpl{
 	public void end() {		
 		log.info("[PastryTest] Peer bye bye");
 	}
-	private String chosenOne(int name){		
-		try {
-			if(objList.isEmpty()){
-				objList=test.getCollection();
-			}
-			Set<Integer> keySet=objList.keySet();
-			Object nameChose;
-			
-			for(Integer key: keySet){
-				nameChose=objList.get(key);
-				if (nameChose instanceof Integer) {
-					Integer new_name = (Integer) nameChose;
-					if(new_name.intValue()==name){
-						if((new_name.intValue()/100)%2==0)
-							return "leave";
-						else
-							return "join";
-					}
-				}
-			}			
-		} catch (RemoteException e) {			
-			e.printStackTrace();
+	private boolean chosenOne(int name){		
+		if(((name % 2) ==0)&&(name!=0)){
+			return true;
 		}
-		return "remain";
+		else{
+			return false;
+		}
 	}
 }

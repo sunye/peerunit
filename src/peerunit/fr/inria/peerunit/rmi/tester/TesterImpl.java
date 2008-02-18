@@ -46,8 +46,6 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 	private MethodDescription methodDescription;
 
-	private ThreadGroup tg;
-
 	private Thread timeoutThread;
 
 	private Thread invokationThread=null;
@@ -59,13 +57,17 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	public void run(){
 		while(!stop){
 			if(newMethod){
-				log.log(Level.FINEST,"Creating Invoke thread ");
-				Invoke i=new Invoke(methodDescription);
-				invokationThread = new Thread(tg,i);
-				invokationThread.start();
-				log.log(Level.FINEST,"Verify the timeout of the Invoke thread ");
+				try {
+					log.log(Level.FINEST,"Creating Invoke thread ");
+					Invoke i = new Invoke(methodDescription);
+					invokationThread = new Thread(i); 
+					invokationThread.start();
+					log.log(Level.FINEST,"Verify the timeout of the Invoke thread ");
+				} catch (RuntimeException e) {
+					e.printStackTrace(); 
+				}
 				if (methodDescription.getTimeout() > 0) {
-					timeoutThread = new Thread(tg,new Timeout(invokationThread, methodDescription.getTimeout()));
+					timeoutThread = new Thread(new Timeout(invokationThread, methodDescription.getTimeout()));
 					timeoutThread.start();
 				}
 				newMethod=false;
@@ -81,7 +83,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		System.exit(0);
 	}
 
-	public void export(Class c) {
+	public void export(Class<? extends Tester> c) {
 		testClass = c;
 		boolean exported=false;
 		try {
@@ -115,8 +117,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			for (MethodDescription m : parser.parse(testClass)) {
 				coord.register(this, m);
 			}
-			log.log(Level.FINEST,"Registration finished ");
-			tg = new ThreadGroup("Thread-group"+testerName);
+			log.log(Level.FINEST,"Registration finished ");			
 			log.log(Level.FINEST,"Thread-group created ");
 			exported=true;
 		} catch (RemoteException e) {
@@ -278,8 +279,8 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 					+ testCase + " in " + testClass.getSimpleName());
 			Method m=null;
 			try {
-				m = testClass.getMethod(testCase, (Class[]) null);
-				if (testCase.equals(m.getName())) {
+				m = testClass.getMethod(testCase, (Class[]) null);				
+				if (testCase.equals(m.getName())) {					
 					m.invoke(objectClass, (Object[]) null);
 				}
 				error = false;
