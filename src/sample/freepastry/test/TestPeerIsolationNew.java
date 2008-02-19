@@ -74,7 +74,7 @@ public class TestPeerIsolationNew extends TesterImpl{
 			if(!net.joinNetwork(peer, null, true, log)){
 				inconclusive("I couldn't become a boostrapper, sorry");
 			}
-			
+
 			test.put(0,net.getInetSocketAddress());
 			log.info("Net created");
 
@@ -87,7 +87,7 @@ public class TestPeerIsolationNew extends TesterImpl{
 			e.printStackTrace();
 		}				
 	}
-	
+
 	@Test(place=-1,timeout=1000000, name = "action1", step = 2)
 	public void joiningNet(){	
 
@@ -98,14 +98,14 @@ public class TestPeerIsolationNew extends TesterImpl{
 				log.info("Joining in first");
 				Network net= new Network();
 				Thread.sleep(test.getPeerName()*1000);
-				
+
 				InetSocketAddress bootaddress= (InetSocketAddress)test.get(0);
 				log.info("Getting cached boot "+bootaddress.toString());
-				
+
 				if(!net.joinNetwork(peer, bootaddress, false, log)){
 					inconclusive("I couldn't join, sorry");
 				}
-				
+
 				log.info("Running on port "+peer.getPort());
 				log.info("Time to bootstrap");
 
@@ -119,69 +119,49 @@ public class TestPeerIsolationNew extends TesterImpl{
 		}	
 	}
 
-	/*@Test(name="action3",measure=true,step=0,timeout=10000000,place=-1)
-	public void chooseAPeer() {		
-		Random rand= new Random();		
-		Integer chosePeer;
-		try {
-			Thread.sleep(sleep);
-			if(test.getPeerName()==0){
-				chosePeer = rand.nextInt(TesterUtil.getExpectedPeers());				
-				log.info("Chose peer "+chosePeer);				
-				test.put(-1,chosePeer);
-			}
-
-		} catch (RemoteException e) {
-			e.printStackTrace();					
-		} catch (InterruptedException e) {
-			e.printStackTrace();					
-		}	
-	}*/
-
-	@Test(name="action4",measure=true,step=0,timeout=10000000,place=-1)
+	@Test(name="action4",measure=true,step=0,timeout=10000000,place=0)
 	public void listingTheNeighbours() {	
 		try {
-			Thread.sleep(sleep);
-			//Integer chosePeer=(Integer)test.get(-1);
 			
-			// Only the chose peer store its table now
-			if(test.getPeerName()==0){
-				//storing my table
-				test.put(-2, peer.getRoutingTable());
-	
-				for(NodeHandle nd: peer.getRoutingTable()){	
+			// Letting the system to stabilize
+			while(peer.getRoutingTable().size()==0)
+				Thread.sleep(sleep);
+
+			
+			test.put(1, peer.getRoutingTable());
+			
+			log.info("My ID "+peer.getId().toString());	
+			for(NodeHandle nd: peer.getRoutingTable()){
+				if(!peer.getId().toString().equalsIgnoreCase(nd.getNodeId().toString())){
 					volatiles.add(nd.getNodeId());
-					log.info(" Successor to leave "+nd.getNodeId());					
+					log.info(" Successor to leave "+nd.getNodeId());
 				}
 			}
+
 		} catch (InterruptedException e) {
-                        e.printStackTrace();
-		} catch (RemoteException e) {
-                        e.printStackTrace();
-		}
-		
+			e.printStackTrace();
+		} 
+
 	}
 
 
 	@Test(name="action5",measure=true,step=0,timeout=10000000,place=-1)
 	public void testLeave() {		
 		try {
-			Thread.sleep(sleep);		
+			// Waiting a while to get the global variable
+			Thread.sleep(2000);			
+			
+			if(test.getPeerName()!=0){
+				List<NodeHandle> actuals=(List<NodeHandle>)test.get(1);
 
-			List<NodeHandle> actuals=(List<NodeHandle>)test.get(-2);
-			//Integer chosePeer=(Integer)test.get(-1);
-
-                        log.info("Leaving early "+test.getPeerName());
-			if(test.getPeerName()!=0){	
-				//Checking if I am in the neighbour list to leave, excpet the chosen one
 				for(NodeHandle nd: actuals){
 					if(nd.getNodeId().toString().trim().equalsIgnoreCase(peer.getId().toString().trim())){
 						log.info("Leaving early");
 						test.kill();				
-					}
+					}						
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
@@ -190,61 +170,54 @@ public class TestPeerIsolationNew extends TesterImpl{
 	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
 	public void searchingNeighbour(){
 		try {
-			Thread.sleep(sleep);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}	
-
-		List<NodeHandle> actuals;
-
-		//Iterations to find someone in the routing table		
-		int timeToClean=0;		
-		Id obj=null;		
-		boolean tableUpdated=false;
-		//Id idAnalyzed=(Id)test.get(-1);
-		//Integer chosePeer=(Integer)test.get(-1);
-		while(!tableUpdated &&	timeToClean < TesterUtil.getLoopToFail()){
-			log.info(" Let's verify the table"+timeToClean);
-			try {
-				Thread.sleep(sleep);
-			} catch (Exception e) {
-				e.printStackTrace();		
-			}	
-
-			actuals= peer.getRoutingTable();		
-
-			for(NodeHandle nd: actuals){
-				obj=nd.getNodeId();
-				log.info(" Successor NodeId "+obj+" is volatile "+volatiles.contains(obj));
-
-				// Verify if obj hasn't the same id of itself. Verify if some nd isn't volatile anymore.
-				try {
-					if((test.getPeerName()==0)&& (obj != peer.getId()) && (!volatiles.contains(obj))){
-						log.info(" Table was updated, verdict may be PASS ");
-						tableUpdated=true;				
-						timeToClean=TesterUtil.getLoopToFail();
+			if(test.getPeerName()==0){
+				List<NodeHandle> actuals;
+		
+				//Iterations to find someone in the routing table		
+				int timeToClean=0;		
+				Id obj=null;		
+				boolean tableUpdated=false;
+		
+				while(!tableUpdated &&	(timeToClean < TesterUtil.getLoopToFail())){
+					log.info(" Let's verify the table"+timeToClean);
+					try {
+						Thread.sleep(1000);
+					} catch (Exception e) {
+						e.printStackTrace();		
+					}	
+		
+					actuals= peer.getRoutingTable();		
+		
+					for(NodeHandle nd: actuals){
+						obj=nd.getNodeId();
+						log.info(" Successor NodeId "+obj+" is volatile "+volatiles.contains(obj));
+		
+						if((obj != peer.getId()) && (!volatiles.contains(obj))){
+							log.info(" Table was updated, verdict may be PASS ");
+							tableUpdated=true;				
+							timeToClean=TesterUtil.getLoopToFail();
+						}
 					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		
+					log.info("Demanding the routing table update");
+					peer.pingNodes();
+					timeToClean++;
+				}	
+				if(!tableUpdated){
+						log.info(" Did not find a sucessor ");
+						fail("Routing Table wasn't updated. Still finding all volatiles. Increase qty of loops.");
 				}
 			}
-
-			log.info("Demanding the routing table update");
-			peer.pingNodes();
-			timeToClean++;
-		}
-
-		try {
-			if((!tableUpdated)&&(test.getPeerName()==0)){
-				log.info(" Did not find a sucessor ");
-				fail("Routing Table wasn't updated. Still finding all volatiles. Increase qty of loops.");
-			}
+			log.info(" Waiting to receive a  verdict ");
+			Thread.sleep(1000);
+			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
 	}
 
 	@AfterClass(timeout=100000,place=-1)
