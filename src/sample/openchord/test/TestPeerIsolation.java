@@ -123,7 +123,7 @@ public class TestPeerIsolation extends TesterImpl{
 
 		chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl(); 
 		try {
-			Thread.sleep(100*test.getPeerName());
+			Thread.sleep(1000*test.getPeerName());
 			log.info("LocalURL: "+localURL.toString());
 			chord.join(localURL,bootstrapURL);			
 
@@ -230,12 +230,7 @@ public class TestPeerIsolation extends TesterImpl{
 	}
 
 	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
-	public void searchingNeighbours(){
-		try {
-			Thread.sleep(sleep);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}	
+	public void searchingNeighbours(){		
 
 		Object obj=test.get(-1);
 		chordPrint=(ChordImpl)chord;
@@ -250,7 +245,7 @@ public class TestPeerIsolation extends TesterImpl{
 				while(!tableUpdated &&	timeToClean < TesterUtil.getLoopToFail()){
 					log.info(" Let's verify the table "+timeToClean);
 					try {
-						Thread.sleep(sleep);
+						Thread.sleep(1000);
 					} catch (Exception e) {
 						e.printStackTrace();		
 					}	
@@ -280,7 +275,7 @@ public class TestPeerIsolation extends TesterImpl{
 
 	@AfterClass(timeout=100000,place=-1)
 	public void end() {		
-		log.info("[PastryTest] Peer bye bye");
+		log.info("[OpenChord] Peer bye bye");
 	}
 
 }
