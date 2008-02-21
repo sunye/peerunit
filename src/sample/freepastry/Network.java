@@ -21,9 +21,9 @@ public class Network {
 		Environment env = new Environment();
 
 		// the port to use locally
-		//FreeLocalPort port= new FreeLocalPort();				
-		//int bindport = port.getPort(); 
-		int bindport=TesterUtil.getBootstrapPort();
+		FreeLocalPort port= new FreeLocalPort();				
+		int bindport = port.getPort(); 
+		int bootport=TesterUtil.getBootstrapPort();
 		
 		// build the bootaddress from the command line args			
 		InetAddress bootIP=null;
@@ -35,7 +35,7 @@ public class Network {
 		}
 
 		if(bootadd==null){
-			bootadd = new InetSocketAddress(bootIP,bindport);
+			bootadd = new InetSocketAddress(bootIP,bootport);
 		}
 
 		boolean joined=false;
