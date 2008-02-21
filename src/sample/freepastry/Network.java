@@ -12,7 +12,6 @@ import fr.inria.peerunit.util.TesterUtil;
 
 public class Network {
 	InetSocketAddress bootadd;
-	int bindport=TesterUtil.getBootstrapPort();
 
 
 	
@@ -21,8 +20,7 @@ public class Network {
 		Environment env = new Environment();
 
 		// the port to use locally
-		FreeLocalPort port= new FreeLocalPort();				
-		int bindport = port.getPort(); 
+		//int bindport = port.getPort(); 
 		int bootport=TesterUtil.getBootstrapPort();
 		
 		// build the bootaddress from the command line args			
@@ -40,10 +38,21 @@ public class Network {
 
 		boolean joined=false;
 		try {
-			if(!peer.join(bindport, bootadd, env, log,createNetwork))						
+			
+			int usedPort=0;
+			if(createNetwork){
+				usedPort=bootport;				
+			}
+			else{
+				FreeLocalPort port= new FreeLocalPort();				
+				usedPort=port.getPort();
+			}
+				
+			if(!peer.join(usedPort, bootadd, env, log,createNetwork))						
 				joined=false;						
 			else 
 				joined=true;
+			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
