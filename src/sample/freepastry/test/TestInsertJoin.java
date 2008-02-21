@@ -102,10 +102,7 @@ public class TestInsertJoin  extends TesterImpl{
 	public void startingInitNet(){	
 
 		try {			
-			// waiting to create the net
-			while(test.getCollection().size() ==0){
-				Thread.sleep(sleep);
-			}
+			
 
 			//if(test.getPeerName()%churnPercentage!=0){		
 			if(!chosenOne(test.getPeerName())){
