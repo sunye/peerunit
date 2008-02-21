@@ -17,9 +17,10 @@ public class Network {
 		Environment env = new Environment();
 
 		// the port to use locally
-		FreeLocalPort port= new FreeLocalPort();				
-		int bindport = port.getPort(); 
-
+		//FreeLocalPort port= new FreeLocalPort();				
+		//int bindport = port.getPort(); 
+		int bindport=TesterUtil.getBootstrapPort();
+		
 		// build the bootaddress from the command line args			
 		InetAddress bootIP=null;
 		try {
