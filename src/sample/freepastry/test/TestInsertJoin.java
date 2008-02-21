@@ -114,7 +114,7 @@ public class TestInsertJoin  extends TesterImpl{
 				InetSocketAddress bootaddress=net.getInetSocketAddress();
 				log.info("Getting cached boot "+bootaddress.toString());
 				
-				if(!net.joinNetwork(peer, false, log)){
+				if(!net.joinNetwork(peer, null,false, log)){
 					inconclusive("I couldn't join, sorry");
 				}
 				

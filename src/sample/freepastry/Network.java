@@ -14,36 +14,7 @@ public class Network {
 	InetSocketAddress bootadd;
 	int bindport=TesterUtil.getBootstrapPort();
 
-	public void Network(){
-		
-		// build the bootaddress from the command line args			
-		InetAddress bootIP=null;
-		try {
-			bootIP = InetAddress.getByName(TesterUtil.getBootstrap());
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		bootadd = new InetSocketAddress(bootIP,bindport);
-	}
-
-	public boolean joinNetwork(Peer peer,  boolean createNetwork, Logger log){
-		Environment env = new Environment();
-
-		boolean joined=false;
-		try {
-			if(!peer.join(bindport, bootadd, env, log,createNetwork))						
-				joined=false;						
-			else 
-				joined=true;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
-		return joined;
-	}
 	
 	public boolean joinNetwork(Peer peer, InetSocketAddress bootaddress, boolean createNetwork, Logger log){
 		bootadd=bootaddress;
