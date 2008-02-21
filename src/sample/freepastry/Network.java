@@ -12,6 +12,22 @@ import fr.inria.peerunit.util.TesterUtil;
 
 public class Network {
 	InetSocketAddress bootadd;
+	
+	public void Network(){
+		int bindport=TesterUtil.getBootstrapPort();
+		
+		// build the bootaddress from the command line args			
+		InetAddress bootIP=null;
+		try {
+			bootIP = InetAddress.getByName(TesterUtil.getBootstrap());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		bootadd = new InetSocketAddress(bootIP,bindport);
+	}
+	
 	public boolean joinNetwork(Peer peer, InetSocketAddress bootaddress, boolean createNetwork, Logger log){
 		bootadd=bootaddress;
 		Environment env = new Environment();
