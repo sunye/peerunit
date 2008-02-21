@@ -111,13 +111,13 @@ public class TestInsertJoin  extends TesterImpl{
 				Thread.sleep(test.getPeerName()*1000);
 				
 				//InetSocketAddress bootaddress= (InetSocketAddress)test.get(-10);
-				InetSocketAddress bootaddress=net.getInetSocketAddress();
-				log.info("Getting cached boot "+bootaddress.toString());
+				//InetSocketAddress bootaddress=net.getInetSocketAddress();
+				//log.info("Getting cached boot "+bootaddress.toString());
 				
 				if(!net.joinNetwork(peer, null,false, log)){
 					inconclusive("I couldn't join, sorry");
 				}
-				
+				log.info("Getting cached boot "+net.getInetSocketAddress().toString());
 				log.info("Running on port "+peer.getPort());
 				log.info("Time to bootstrap");
 
