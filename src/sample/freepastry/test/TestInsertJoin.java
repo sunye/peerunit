@@ -74,7 +74,7 @@ public class TestInsertJoin  extends TesterImpl{
 		log.info("[PastryTest] Starting test peer  ");
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
+	/*@Test(place=-1,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {	
 
@@ -96,8 +96,46 @@ public class TestInsertJoin  extends TesterImpl{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}			
-	}
+	}*/
 
+	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
+	public void startingInitNet(){	
+
+		try {			
+			// waiting to create the net
+			while(test.getCollection().size() ==0){
+				Thread.sleep(sleep);
+			}
+
+			//if(test.getPeerName()%churnPercentage!=0){		
+			if(!chosenOne(test.getPeerName())){
+				log.info("Joining in first");
+				Network net= new Network();
+				Thread.sleep(test.getPeerName()*1000);
+				
+				//InetSocketAddress bootaddress= (InetSocketAddress)test.get(-10);
+				InetSocketAddress bootaddress=new InetSocketAddress(TesterUtil.getBootstrap(),TesterUtil.getBootstrapPort());
+				log.info("Getting cached boot "+bootaddress.toString());
+				
+				if(!net.joinNetwork(peer, bootaddress, false, log)){
+					inconclusive("I couldn't join, sorry");
+				}
+				
+				log.info("Running on port "+peer.getPort());
+				log.info("Time to bootstrap");
+
+			}
+		} catch (RemoteException e) {			
+			e.printStackTrace();	
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Test(place=0,timeout=1000000, name = "action2", step = 0)
 	public void chosingPeer(){
 		Random rand=new Random();
@@ -126,42 +164,7 @@ public class TestInsertJoin  extends TesterImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action3", step = 0)
-	public void startingInitNet(){	
-
-		try {			
-			// waiting to create the net
-			while(test.getCollection().size() ==0){
-				Thread.sleep(sleep);
-			}
-
-			//if(test.getPeerName()%churnPercentage!=0){		
-			if(!chosenOne(test.getPeerName())&&(test.getPeerName()!=0)){
-				log.info("Joining in first");
-				Network net= new Network();
-				Thread.sleep(test.getPeerName()*1000);
-				
-				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-10);
-				log.info("Getting cached boot "+bootaddress.toString());
-				
-				if(!net.joinNetwork(peer, bootaddress, false, log)){
-					inconclusive("I couldn't join, sorry");
-				}
-				
-				log.info("Running on port "+peer.getPort());
-				log.info("Time to bootstrap");
-
-			}
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
 
 	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void testInsert(){
