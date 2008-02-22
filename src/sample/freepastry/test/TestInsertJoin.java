@@ -72,68 +72,10 @@ public class TestInsertJoin  extends TesterImpl{
 	@BeforeClass(place=-1,timeout=1000000)
 	public void bc(){
 		log.info("[PastryTest] Starting test peer  ");
-	}
+	}	
 
-	/*@Test(place=-1,timeout=1000000, name = "action1", step = 0)
-	public void startingNetwork(){
-		try {	
-
-			if(test.getPeerName()==0){
-				Network net= new Network();
-				if(!net.joinNetwork(peer, null, true, log)){
-					inconclusive("I couldn't become a boostrapper, sorry");
-				}
-				
-				test.put(-10,net.getInetSocketAddress());
-				log.info("Net created");
-				
-				while(!peer.isReady())
-					Thread.sleep(16000);
-			}
-			Thread.sleep(sleep);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}			
-	}*/
-
-	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
-	public void startingInitNet(){	
-
-		try {			
-			
-
-			//if(test.getPeerName()%churnPercentage!=0){		
-			if(!chosenOne(test.getPeerName())){
-				log.info("Joining in first");
-				Network net= new Network();
-				Thread.sleep(test.getPeerName()*1000);
-				
-				//InetSocketAddress bootaddress= (InetSocketAddress)test.get(-10);
-				//InetSocketAddress bootaddress=net.getInetSocketAddress();
-				//log.info("Getting cached boot "+bootaddress.toString());
-				
-				if(!net.joinNetwork(peer, null,false, log)){
-					inconclusive("I couldn't join, sorry");
-				}
-				log.info("Getting cached boot "+net.getInetSocketAddress().toString());
-				log.info("Running on port "+peer.getPort());
-				log.info("Time to bootstrap");
-
-			}
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 	
-	@Test(place=0,timeout=1000000, name = "action2", step = 0)
+	@Test(place=0,timeout=1000000, name = "action1", step = 0)
 	public void chosingPeer(){
 		Random rand=new Random();
 		List<Integer> generated=new ArrayList<Integer>();
@@ -160,6 +102,36 @@ public class TestInsertJoin  extends TesterImpl{
 			test.put(intObj.intValue()*10, intObj);
 		}
 	}
+	
+	@Test(place=-1,timeout=1000000, name = "action2", step = 0)
+	public void startingInitNet(){	
+
+		try {			
+			if(!chosenOne(test.getPeerName())){
+				log.info("Joining in first");
+				Network net= new Network();
+				Thread.sleep(test.getPeerName()*1000);
+							
+				if(!net.joinNetwork(peer, null,false, log)){
+					inconclusive("I couldn't join, sorry");
+				}
+				log.info("Getting cached boot "+net.getInetSocketAddress().toString());
+				log.info("Running on port "+peer.getPort());
+				log.info("Time to bootstrap");
+
+			}
+		} catch (RemoteException e) {			
+			e.printStackTrace();	
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+
 
 	
 
@@ -194,7 +166,7 @@ public class TestInsertJoin  extends TesterImpl{
 	public void testRetrieve(){		
 		try {
 			Thread.sleep(sleep);
-			//if(test.getPeerName()%churnPercentage!=0){
+
 			if(!chosenOne(test.getPeerName())){
 				// Lookup first time
 				List<PastContent> keySet=(List<PastContent>)test.get(-1);				
@@ -237,9 +209,8 @@ public class TestInsertJoin  extends TesterImpl{
 		try {
 			Thread.sleep(sleep);
 
-			//if((test.getPeerName()%churnPercentage==0)&&(test.getPeerName()!=0)){
 			if(chosenOne(test.getPeerName())&&(test.getPeerName()!=0)){
-				log.info("Joining in first");
+				log.info("Joining in second");
 				Network net= new Network();
 				Thread.sleep(test.getPeerName()*1000);
 				
@@ -268,54 +239,47 @@ public class TestInsertJoin  extends TesterImpl{
 	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testRetrieveByOthers(){		
 		try {
-			Thread.sleep(sleep);
-
-			// Lookup first time
-			List<PastContent> keySet=(List<PastContent>)test.get(-1);				
-			Id contentKey;
-			for (PastContent key : keySet) {
-				contentKey=key.getId();
-				if(contentKey!=null){
-					log.info("[PastryTest] Lookup Expected "+contentKey.toString());
-					peer.lookup(contentKey);				
+			if(chosenOne(test.getPeerName())&&(test.getPeerName()!=0)){				
+	
+				// Lookup first time
+				List<PastContent> keySet=(List<PastContent>)test.get(-1);				
+				Id contentKey;
+				for (PastContent key : keySet) {
+					contentKey=key.getId();
+					if(contentKey!=null){
+						log.info("[PastryTest] Lookup Expected "+contentKey.toString());
+						peer.lookup(contentKey);				
+					}
 				}
-			}
+				
+				log.info("[PastryTest] Retrieved so far "+peer.getResultSet().size());
+	
+				List<String> actuals= new ArrayList<String>();
+				int timeToFind=0;			
 
-			// Sleep 
-			try {
-				Thread.sleep(sleep);
-			} catch (Exception e) {
-				e.printStackTrace();		
-			}				
-
-			log.info("[PastryTest] Retrieved so far "+peer.getResultSet().size());
-
-			List<String> actuals= new ArrayList<String>();
-			int timeToFind=0;			
-			//while(timeToFind < TesterUtil.getLoopToFail()){
-			while (actuals.size() < OBJECTS) {	
-				log.info("Retrieval "+timeToFind);
-				for (Object actual : peer.getResultSet()) {				
-					if(actual!=null){
-						log.info("[Local verdict] Actual "+actual.toString());
-
-						if(!actuals.contains(actual.toString())){
-							actuals.add(actual.toString());
-						}
-					}		
+				while (actuals.size() < OBJECTS) {	
+					log.info("Retrieval "+timeToFind);
+					for (Object actual : peer.getResultSet()) {				
+						if(actual!=null){
+							log.info("[Local verdict] Actual "+actual.toString());
+	
+							if(!actuals.contains(actual.toString())){
+								actuals.add(actual.toString());
+							}
+						}		
+					}
+					peer.pingNodes();
+					Thread.sleep(1000);
+					timeToFind++;
 				}
-				peer.pingNodes();
-				Thread.sleep(1000);
-				timeToFind++;
-			}
-			//if((test.getPeerName()%churnPercentage==0)&&(test.getPeerName()!=0)){
-			//if(chosenOne(test.getPeerName())){
 				List<String> expecteds=(List<String>)test.get(2);		
 				log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
 				Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);	
-			//}
-		
+			}
+			
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
@@ -326,9 +290,24 @@ public class TestInsertJoin  extends TesterImpl{
 		log.info("[PastryTest] Peer bye bye");
 	}
 	private boolean chosenOne(int name){		
-		if(((name % 2) ==0)&&(name!=0))
-			return true;
-		else
-			return false;
+		try {
+			if(objList.isEmpty()){
+				objList=test.getCollection();
+			}
+			Set<Integer> keySet=objList.keySet();
+			Object nameChose;
+			for(Integer key: keySet){
+				nameChose=objList.get(key);
+				if (nameChose instanceof Integer) {
+					Integer new_name = (Integer) nameChose;
+					if(new_name.intValue()==name){
+						return true;
+					}
+				}
+			}			
+		} catch (RemoteException e) {			
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

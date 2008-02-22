@@ -152,34 +152,18 @@ public class TestUpdateOnShrink extends TesterImpl{
 	@Test(name="action4",measure=true,step=1,timeout=10000000,place=-1)
 	public void testLeave() {		
 		try {
-			Thread.sleep(sleep);			
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}		
-		
-		if(test.getName()%2==0){
-			log.info("Leaving early");
-			try {
+
+			if(test.getName()%2==0){
+				log.info("Leaving early");
 				chord.leave();
 				String insertValue=chord.getID().toString().substring(0,2)+" "+localURL.toString();
 				test.put(test.getName(), insertValue);
 				log.info("Cached "+ insertValue);				
-			} catch (ServiceException e) {				
-				e.printStackTrace();
-			}
-		}		
-		int maxSize=(TesterUtil.getExpectedPeers()/2);
-		log.info("MAX SIZE "+maxSize );
-		int newSize=0;
-		try {						
-			while(test.getCollection().size() < maxSize){
-				log.info("Cached size "+test.getCollection().size() );
-				Thread.sleep(1000);	
-				newSize++;
-				if(newSize == 15)
-					maxSize=test.getCollection().size();
-			}
-		} catch (RemoteException e) {
+			}		
+
+			// little time to cache the variables
+			Thread.sleep(sleep);	
+		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -190,11 +174,7 @@ public class TestUpdateOnShrink extends TesterImpl{
 
 	@Test(name="action5",measure=true,step=1,timeout=10000000,place=-1)
 	public void testRetrieve() {		
-		try {
-			Thread.sleep(sleep);			
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+
 		if(test.getName()%2!=0){
 			String[] immediateSuccessor=chordPrint.printSuccessorList().split("\n");
 			String successor=null;
@@ -216,12 +196,28 @@ public class TestUpdateOnShrink extends TesterImpl{
 					}
 				}				
 			}
+			int timeToClean=0;	
+			boolean tableUpdated=false;
+			while(timeToClean < TesterUtil.getLoopToFail()){
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				if(!listQuitPeers.contains(successor.trim())){
+					tableUpdated=true;		
+					break;
+				}
+				timeToClean++;
+			}
 			
-			if(listQuitPeers.contains(successor.trim())){
-					log.info("Contains in GV " + successor);
-					assertTrue("Successor wasn't updated correctly ",false);
-			}else log.info("Not Contains in GV " + successor);
-			
+			if(tableUpdated){
+				log.info("Contains in GV " + successor);
+				assertTrue("Successor updated correctly ",true);
+			}else{ 
+				log.info("Not Contains in GV " + successor);
+				assertTrue("Successor didn't updated correctly ",false);
+			}
 		}
 	}
 

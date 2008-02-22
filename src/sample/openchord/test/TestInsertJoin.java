@@ -177,7 +177,7 @@ public class TestInsertJoin extends TesterImpl{
 	public void initInitHalf() {
 		try{
 			if(!chosenOne(test.getPeerName())&&(test.getPeerName()!=0)){
-
+				log.info("Joining in first");
 				Thread.sleep(sleep);
 				log.info("Peer name "+test.getPeerName());
 
@@ -236,7 +236,7 @@ public class TestInsertJoin extends TesterImpl{
 			e.printStackTrace();
 		}
 
-		for (int i = 1; i < OBJECTS; i++) {					
+		for (int i = 0; i < OBJECTS; i++) {					
 			data = "" +i;
 			log.info("[TestDbpartout] Inserting data "+data);
 			key=new StringKey(data);			
@@ -277,8 +277,7 @@ public class TestInsertJoin extends TesterImpl{
 	public void initOtherHalf() {
 		try{
 			if(chosenOne(test.getPeerName())){
-
-				Thread.sleep(sleep);
+				log.info("Joining in second");
 				log.info("Peer name "+test.getPeerName());
 
 
@@ -320,6 +319,8 @@ public class TestInsertJoin extends TesterImpl{
 				}
 
 				log.info("Peer init");			    
+				// Let the Sys to stabilize
+				Thread.sleep(sleep);
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -330,25 +331,35 @@ public class TestInsertJoin extends TesterImpl{
 
 	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testRetrieveByOthers(){		
-		List<String> actuals=new ArrayList<String>();
+		
 		try {
-			Thread.sleep(sleep);
+			if(chosenOne(test.getPeerName())){
+				List<String> actuals=new ArrayList<String>();				
+	
+				
+				while(actuals.size()<OBJECTS){
 
-			for (int i = 0; i < OBJECTS; i++) {
-				data = ""+ i;
-				key=new StringKey(data);				
-				chord.retrieve(key,callback);			
+					for (int i = 0; i < OBJECTS; i++) {
+						data = ""+ i;
+						key=new StringKey(data);				
+						chord.retrieve(key,callback);			
+					}
+					for (String actual : callback.getResultSet()) {
+						if(!actuals.contains(actual)){
+							log.info("[Local verdict] Actual "+actual);
+							actuals.add(actual);			
+						}
+					}
+					Thread.sleep(1000);
+				}
+				List<String> expecteds=(List<String>)test.get(0);		
+				log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
+				Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);	
 			}
-			callback.retr ++;
-			Thread.sleep(sleep);
-			for (String actual : callback.getResultSet()) {
-				log.info("[Local verdict] Actual "+actual);
-				actuals.add(actual);			
-			}
-			List<String> expecteds=(List<String>)test.get(0);		
-			log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
-			Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);	
 		} catch (InterruptedException e) {				
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 	}

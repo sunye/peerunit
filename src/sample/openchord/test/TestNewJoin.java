@@ -253,7 +253,6 @@ public class TestNewJoin extends TesterImpl{
 	public void testFindAgain(){
 		try {
 			if(test.getPeerName()%2!=0){
-				Thread.sleep(sleep);
 
 				String[] succ=chordPrint.printSuccessorList().split("\n");
 
@@ -270,6 +269,7 @@ public class TestNewJoin extends TesterImpl{
 							}
 						}
 					}
+					Thread.sleep(1000);
 					timeToUpdate++;
 				}
 				if(!tableUpdated)
