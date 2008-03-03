@@ -98,7 +98,7 @@ public class TestNewJoin extends TesterImpl{
 	public void testFind(){
 		try {
 			Thread.sleep(sleep);
-			if((test.getPeerName()%2!=0)||(test.getPeerName()==0)){
+			if(test.getPeerName()%2!=0){
 				log.info("My ID "+peer.getId());
 				for(NodeHandle nd: peer.getRoutingTable()){
 					log.info("Successor NodeId "+nd.getId());	
@@ -115,7 +115,7 @@ public class TestNewJoin extends TesterImpl{
 
 		try {			
 			
-			if((test.getPeerName()!=0)&&(test.getPeerName()%2==0)){
+			if((test.getPeerName()!=0)){
 				log.info("Joining in first");
 				Network net= new Network();
 				Thread.sleep(test.getPeerName()*1000);
@@ -139,28 +139,10 @@ public class TestNewJoin extends TesterImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
-	public void updatingTables(){
-		try {		
-			Thread.sleep(sleep);
-
-			if((test.getPeerName()%2==0)&&(test.getPeerName()!=0)){		
-				log.info("My ID "+peer.getId());
-				for(NodeHandle nd: peer.getRoutingTable()){
-					log.info("Successor NodeId "+nd.getId());	
-					firstSuccessors.add(nd.getNodeId());
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();		
-		}	
-	}
-
-
 	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testFindAgain(){
 		try {
-			if((test.getPeerName()%2!=0)||(test.getPeerName()==0)){
+			if((test.getPeerName()%2!=0)){
 				List<NodeHandle> actuals;
 
 				//Iterations to clean the volatiles from the routing table
@@ -170,7 +152,7 @@ public class TestNewJoin extends TesterImpl{
 				while(!tableUpdated &&	timeToUpdate < TesterUtil.getLoopToFail()){
 					log.info("Verifying the "+timeToUpdate+" time ");
 					try {
-						Thread.sleep(sleep);
+						Thread.sleep(1000);
 					} catch (Exception e) {
 						e.printStackTrace();		
 					}	
