@@ -115,7 +115,7 @@ public class TestNewJoin extends TesterImpl{
 
 		try {			
 			
-			if((test.getPeerName()!=0)){
+			if(test.getPeerName()%2==0){
 				log.info("Joining in first");
 				Network net= new Network();
 				Thread.sleep(test.getPeerName()*1000);
