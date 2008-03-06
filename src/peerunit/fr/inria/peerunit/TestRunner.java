@@ -3,11 +3,7 @@
  */
 package fr.inria.peerunit;
 
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-
 import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.util.TesterUtil;
 
 /**
  * @author sunye
@@ -33,7 +29,7 @@ public class TestRunner {
 	public TestRunner(Class <? extends TestCase> klass) {
 		testcase = klass;
 		tester = new TesterImpl();
-		tester.export(klass);
+		tester.export(testcase);
 		tester.run();
 	}
 
@@ -51,7 +47,7 @@ public class TestRunner {
 				Class<? extends TestCase> tklass = klass.asSubclass(TestCase.class);
 				new TestRunner(tklass);
 			} catch (ClassCastException e) {
-				System.out.println("Error: Class "+name+ " should implement TestCase interface.");
+				System.out.println("Error: Class "+name+ " does not implement TestCase interface.");
 			} catch (ClassNotFoundException e) {
 				System.out.println("Error: Class "+name+ " not found.");
 			}
