@@ -59,7 +59,7 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 			.synchronizedList(new ArrayList<Tester>());
 
 	private GlobalVerdict verdict = new GlobalVerdict();
-    
+
 	/**
 	 * Caching global variables
 	 */
@@ -116,17 +116,19 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 		}
 	}
 
-	public synchronized void register(Tester t, MethodDescription m)
+	/**
+	 * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester, java.util.List)
+	 */
+	public synchronized void register(Tester t, List<MethodDescription> list)
 			throws RemoteException {
-		synchronized (this) {
+		for (MethodDescription m : list) {
 			if (!testerMap.containsKey(m)) {
 				testerMap.put(m, new TesterSet());
 			}
 			testerMap.get(m).add(t);
-			if (!regPeers.contains(t)) {
-				regPeers.add(t);
-			}
 		}
+		regPeers.add(t);
+
 	}
 
 	public void run() {
@@ -143,14 +145,14 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 		}
 		Chronometer chrono=new Chronometer();
 		synchronized (this) {
-			TesterSet testerSet = null;			
+			TesterSet testerSet = null;
 			try {
 
 				for (MethodDescription key : testerMap.keySet()) {
 
 					testerSet = testerMap.get(key);
 					chrono.start(key.getName());
-					
+
 					for (Tester peer : testerSet.getTesters()) {
 						if (!peersInError.contains(peer)) {
 							log.log(Level.FINEST, "Peer : "
@@ -162,12 +164,12 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 					expectedPeers.set(testerSet.getPeersQty());
 
 					//log.log(Level.FINEST, "Waiting to begin the next test "+ key.toString());
-					
+
 					while (redLight())
 						Thread.sleep(1000);
-					
+
 					chrono.stop(key.getName());
-					
+
 					log.log(Level.FINEST, key.toString()+" executed in "+chrono.getTime(key.getName())+" msec");
 				}
 				// reseting
@@ -182,12 +184,12 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 
 				log.log(Level.INFO, "Test Verdict with index " + relaxIndex
 						+ "% is " + verdict.toString());
-				
+
 				for(Map.Entry<String,Long> entry : chrono.getExecutionTime()){
 					log.log(Level.INFO, "Method " + entry.getKey()
 							+ " executed in " + entry.getValue()+" msec.");
 				}
-				
+
 				peers.set(0);
 				regPeers.clear();
 				executor.shutdown();

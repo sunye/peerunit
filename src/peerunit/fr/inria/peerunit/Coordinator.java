@@ -3,13 +3,20 @@ package fr.inria.peerunit;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Verdicts;
 
 public interface Coordinator extends Remote {
-	public void register(Tester t, MethodDescription m) throws RemoteException;
+	/**
+	 * @param tester
+	 * @param list
+	 * @throws RemoteException
+	 */
+	public void register(Tester tester, List<MethodDescription> list) throws RemoteException;
+
 	public int namer(Tester t) throws RemoteException;
 	public void greenLight() throws RemoteException;
 

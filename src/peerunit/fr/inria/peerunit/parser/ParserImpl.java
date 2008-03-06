@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import fr.inria.peerunit.Parser;
 import fr.inria.peerunit.exception.AnnotationFailure;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
 
 public class ParserImpl implements Parser {
 	//private
@@ -160,13 +159,5 @@ public class ParserImpl implements Parser {
 		return true;
 	}
 
-	class IdRange {
-		private int lower;
-		private int upper;
-
-		public IdRange(int place, int from, int to) {
-
-		}
-	}
 }
 

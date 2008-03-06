@@ -39,7 +39,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 	private Object objectClass;
 
-	private  int testerName = -1;
+	private  int id = -1;
 
 	private boolean stop=false;
 
@@ -61,7 +61,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			Registry registry = LocateRegistry.getRegistry(TesterUtil.getServerAddr());
 			UnicastRemoteObject.exportObject(this);
 			coord = (Coordinator) registry.lookup("Coordinator");
-			testerName = coord.namer(this);
+			id = coord.namer(this);
 			} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -113,7 +113,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 			// Log creation
 			FileHandler handler = new FileHandler(TesterUtil.getLogfolder()
-					+ "tester" + testerName + ".log");
+					+ "tester" + id + ".log");
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
 
@@ -126,12 +126,13 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			// parser.setPeerName(testerName);
 			// parser.setLogger(log);
 
-			parser  = new ParserImpl(testerName, log);
+			parser  = new ParserImpl(id, log);
 
-			log.log(Level.INFO,"My name is tester" + testerName);
-			for (MethodDescription m : parser.parse(testClass)) {
-				coord.register(this, m);
-			}
+			log.log(Level.INFO,"My name is tester" + id);
+
+
+			coord.register(this, parser.parse(testClass));
+
 			log.log(Level.FINEST,"Registration finished ");
 			log.log(Level.FINEST,"Thread-group created ");
 			exported=true;
@@ -164,7 +165,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	}
 
 	public int getPeerName() throws RemoteException {
-		return testerName;
+		return id;
 	}
 
 	/**
@@ -201,7 +202,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 				error=true;
 			}
 
-			log.log(Level.INFO,"Test Case local verdict to peer "+testerName+" is "+v.toString());
+			log.log(Level.INFO,"Test Case local verdict to peer "+id+" is "+v.toString());
 			coord.quit(this,error,v);
 		} catch (RemoteException e) {
 			log.log(Level.SEVERE,"RemoteException ",e);
@@ -287,7 +288,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 		public void run() {
 			boolean error = true;
-			log.log(Level.INFO,"Peer " + testerName + " executing test case "
+			log.log(Level.INFO,"Peer " + id + " executing test case "
 					+ testCase + " in " + testClass.getSimpleName());
 			Method m=null;
 			try {
