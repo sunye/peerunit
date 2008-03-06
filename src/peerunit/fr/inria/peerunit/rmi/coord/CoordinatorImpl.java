@@ -166,7 +166,7 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 					//log.log(Level.FINEST, "Waiting to begin the next test "+ key.toString());
 
 					while (redLight())
-						Thread.sleep(1000);
+						Thread.sleep(TesterUtil.getWaitForMethod());
 
 					chrono.stop(key.getName());
 
@@ -211,7 +211,7 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 	public synchronized int namer(Tester t) throws RemoteException {
 		if (t.getPeerName() == -1) {
 			peerName = peers.getAndIncrement();
-			log.log(Level.FINEST, "New Registered Peer: " + peerName
+			log.log(Level.INFO, "New Registered Peer: " + peerName
 					+ " new client " + t);
 		}
 		return peerName;

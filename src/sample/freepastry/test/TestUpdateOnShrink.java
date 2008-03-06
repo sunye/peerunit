@@ -1,9 +1,6 @@
 package freepastry.test;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +8,9 @@ import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import rice.environment.Environment;
 import rice.pastry.Id;
 import rice.pastry.NodeHandle;
-import util.FreeLocalPort;
+import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
@@ -29,27 +25,25 @@ import freepastry.Peer;
  * @author almeida
  *
  */
-public class TestUpdateOnShrink  extends TesterImpl{
+public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
 	private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	static TestUpdateOnShrink test;
+	//static TestUpdateOnShrink test;
 
 	Peer peer=new Peer();
 
 	int sleep=TesterUtil.getSleep();
 
 	boolean iAmBootsrapper=false;
-
-	public static void main(String[] str) {		
-		test = new TestUpdateOnShrink();
-		test.export(test.getClass());		
-		// Log creation
+	
+	@BeforeClass(place=-1,timeout=1000000)
+	public void bc(){
 		FileHandler handler;
 		try {
-			System.out.println("NAME "+test.getPeerName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestUpdateOnShrink.log.peer"+test.getPeerName(),true);
+			System.out.println("NAME "+super.getPeerName());
+			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestUpdateOnShrink.log.peer"+super.getPeerName(),true);
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
 		} catch (SecurityException e) {			
@@ -57,10 +51,6 @@ public class TestUpdateOnShrink  extends TesterImpl{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
-		test.run();
-	}
-	@BeforeClass(place=-1,timeout=1000000)
-	public void bc(){
 		log.info("[PastryTest] Starting test peer  ");
 	}
 	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
@@ -69,7 +59,7 @@ public class TestUpdateOnShrink  extends TesterImpl{
 			
 			log.info("Joining in first");
 			Network net= new Network();
-			Thread.sleep(test.getPeerName()*1000);
+			Thread.sleep(super.getPeerName()*1000);
 						
 			if(!net.joinNetwork(peer, null,false, log)){
 				inconclusive("I couldn't join, sorry");
@@ -105,10 +95,10 @@ public class TestUpdateOnShrink  extends TesterImpl{
 	public void testLeave() {		
 		try {
 			Thread.sleep(sleep);		
-			if(test.getPeerName()%2!=0){
-				test.put(test.getPeerName(), peer.getId());
+			if(super.getPeerName()%2!=0){
+				super.put(super.getPeerName(), peer.getId());
 				log.info("Leaving early");
-				test.kill();				
+				super.kill();				
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -120,16 +110,16 @@ public class TestUpdateOnShrink  extends TesterImpl{
 	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
 	public void testFindAgain(){
 		try {
-			if(test.getPeerName()%2==0){
+			if(super.getPeerName()%2==0){
 				List<Id> volatiles=new ArrayList<Id>();
 
-				Set<Integer> keySet=test.getCollection().keySet();
+				Set<Integer> keySet=super.getCollection().keySet();
 				Object gotValue;
 				for(Integer i: keySet){	
-					gotValue=test.get(i);								
+					gotValue=super.get(i);								
 					if(gotValue instanceof Id) {
 						volatiles.add((Id)gotValue);
-						log.info("Volatiles NodeId "+test.get(i));
+						log.info("Volatiles NodeId "+super.get(i));
 					}
 				}
 
@@ -186,7 +176,7 @@ public class TestUpdateOnShrink  extends TesterImpl{
 					timeToClean--;
 				}//while
 				if(!tableUpdated)
-					fail("Routing Table wasn't updated. Still finding all volatiles. Increase qty of loops.");
+					inconclusive("Routing Table wasn't updated. Still finding all volatiles. Increase qty of loops.");
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
