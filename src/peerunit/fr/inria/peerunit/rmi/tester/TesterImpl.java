@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.Parser;
+import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.parser.ParserImpl;
@@ -30,7 +31,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Class<? extends Tester> testClass;
+	private Class<? extends TestCase> testClass;
 
 	private static Logger log = Logger.getLogger(TesterImpl.class.getName());
 
@@ -54,17 +55,35 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 	private Verdicts v= Verdicts.PASS;
 
+
+	public TesterImpl() {
+		try {
+			Registry registry = LocateRegistry.getRegistry(TesterUtil.getServerAddr());
+			UnicastRemoteObject.exportObject(this);
+			coord = (Coordinator) registry.lookup("Coordinator");
+			testerName = coord.namer(this);
+			} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+	}
+
+
 	public void run(){
 		while(!stop){
 			if(newMethod){
 				try {
 					log.log(Level.FINEST,"Creating Invoke thread ");
 					Invoke i = new Invoke(methodDescription);
-					invokationThread = new Thread(i); 
+					invokationThread = new Thread(i);
 					invokationThread.start();
 					log.log(Level.FINEST,"Verify the timeout of the Invoke thread ");
 				} catch (RuntimeException e) {
-					e.printStackTrace(); 
+					e.printStackTrace();
 				}
 				if (methodDescription.getTimeout() > 0) {
 					timeoutThread = new Thread(new Timeout(invokationThread, methodDescription.getTimeout()));
@@ -83,18 +102,14 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		System.exit(0);
 	}
 
-	public void export(Class<? extends Tester> c) {
+	public void export(Class<? extends TestCase> c) {
 		testClass = c;
 		boolean exported=false;
 		try {
 
 			objectClass = testClass.newInstance();
 
-			Registry registry = LocateRegistry.getRegistry(TesterUtil.getServerAddr());
-			UnicastRemoteObject.exportObject(this);
 
-			coord = (Coordinator) registry.lookup("Coordinator");
-			testerName = coord.namer(this);
 
 			// Log creation
 			FileHandler handler = new FileHandler(TesterUtil.getLogfolder()
@@ -117,7 +132,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			for (MethodDescription m : parser.parse(testClass)) {
 				coord.register(this, m);
 			}
-			log.log(Level.FINEST,"Registration finished ");			
+			log.log(Level.FINEST,"Registration finished ");
 			log.log(Level.FINEST,"Thread-group created ");
 			exported=true;
 		} catch (RemoteException e) {
@@ -134,9 +149,6 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			e.printStackTrace();
 		} catch (IOException e) {
 			log.log(Level.SEVERE,"IOException ",e);
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			log.log(Level.SEVERE,"NotBoundException ",e);
 			e.printStackTrace();
 		} finally{
 			if(!exported){
@@ -279,8 +291,8 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 					+ testCase + " in " + testClass.getSimpleName());
 			Method m=null;
 			try {
-				m = testClass.getMethod(testCase, (Class[]) null);				
-				if (testCase.equals(m.getName())) {					
+				m = testClass.getMethod(testCase, (Class[]) null);
+				if (testCase.equals(m.getName())) {
 					m.invoke(objectClass, (Object[]) null);
 				}
 				error = false;
