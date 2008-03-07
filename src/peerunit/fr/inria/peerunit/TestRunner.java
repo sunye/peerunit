@@ -3,7 +3,10 @@
  */
 package fr.inria.peerunit;
 
+import java.util.logging.Logger;
+
 import fr.inria.peerunit.rmi.tester.TesterImpl;
+import freepastry.test.TestUpdateOnShrink;
 
 /**
  * @author sunye
@@ -25,7 +28,6 @@ public class TestRunner {
 	 */
 	private TesterImpl tester;
 
-
 	public TestRunner(Class <? extends TestCase> klass) {
 		testcase = klass;
 		tester = new TesterImpl();
@@ -44,7 +46,7 @@ public class TestRunner {
 			String name = args[0];
 			try {
 				Class<?> klass = Class.forName(name);
-				Class<? extends TestCase> tklass = klass.asSubclass(TestCase.class);
+				Class<? extends TestCase> tklass = klass.asSubclass(TestCase.class);				
 				new TestRunner(tklass);
 			} catch (ClassCastException e) {
 				System.out.println("Error: Class "+name+ " does not implement TestCase interface.");

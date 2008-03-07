@@ -30,8 +30,6 @@ public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
 
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	//static TestUpdateOnShrink test;
-
 	Peer peer=new Peer();
 
 	int sleep=TesterUtil.getSleep();
@@ -39,18 +37,7 @@ public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
 	boolean iAmBootsrapper=false;
 	
 	@BeforeClass(place=-1,timeout=1000000)
-	public void bc(){
-		FileHandler handler;
-		try {
-			System.out.println("NAME "+super.getPeerName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestUpdateOnShrink.log.peer"+super.getPeerName(),true);
-			handler.setFormatter(new LogFormat());
-			log.addHandler(handler);
-		} catch (SecurityException e) {			
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
+	public void bc(){	
 		log.info("[PastryTest] Starting test peer  ");
 	}
 	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
@@ -59,8 +46,9 @@ public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
 			
 			log.info("Joining in first");
 			Network net= new Network();
-			Thread.sleep(super.getPeerName()*1000);
+			Thread.sleep(this.getPeerName()*1000);
 						
+		
 			if(!net.joinNetwork(peer, null,false, log)){
 				inconclusive("I couldn't join, sorry");
 			}

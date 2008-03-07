@@ -33,11 +33,13 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 	private Class<? extends TestCase> testClass;
 
-	private static Logger log = Logger.getLogger(TesterImpl.class.getName());
+	private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
 
+	private static Logger PEER_LOG;
+	
 	private Coordinator coord;
 
-	private Object objectClass;
+	private TestCase testcase;
 
 	private  int id = -1;
 
@@ -61,7 +63,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			Registry registry = LocateRegistry.getRegistry(TesterUtil.getServerAddr());
 			UnicastRemoteObject.exportObject(this);
 			coord = (Coordinator) registry.lookup("Coordinator");
-			id = coord.namer(this);
+		
 			} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -73,15 +75,21 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	}
 
 
+	public void setId(int i) {
+		id = i;
+	}
+	
 	public void run(){
+		assert id >= 0;
+		
 		while(!stop){
 			if(newMethod){
 				try {
-					log.log(Level.FINEST,"Creating Invoke thread ");
+					LOG.log(Level.FINEST,"Creating Invoke thread ");
 					Invoke i = new Invoke(methodDescription);
 					invokationThread = new Thread(i);
 					invokationThread.start();
-					log.log(Level.FINEST,"Verify the timeout of the Invoke thread ");
+					LOG.log(Level.FINEST,"Verify the timeout of the Invoke thread ");
 				} catch (RuntimeException e) {
 					e.printStackTrace();
 				}
@@ -90,7 +98,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 					timeoutThread.start();
 				}
 				newMethod=false;
-				log.log(Level.FINEST,"Is Invoke thread alive?");
+				LOG.log(Level.FINEST,"Is Invoke thread alive?");
 			}
 			try {
 				Thread.sleep(TesterUtil.getWaitForMethod());
@@ -98,7 +106,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 				e.printStackTrace();
 			}
 		}
-		log.log(Level.INFO,"Stopping Tester ");
+		LOG.log(Level.INFO,"Stopping Tester ");
 		System.exit(0);
 	}
 
@@ -106,18 +114,23 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		testClass = c;
 		boolean exported=false;
 		try {
-
-			objectClass = testClass.newInstance();
-
-
-
-			// Log creation
+			id = coord.getNewId(this);
+			testcase = testClass.newInstance();
+			testcase.setId(id);
+			
+			// Create the peer (sut) logger file 
+			PEER_LOG = Logger.getLogger(testClass.getName());
+			FileHandler phandler = new FileHandler(TesterUtil.getLogfolder()+"/" + testClass.getName()+ ".log.peer"+id,true);
+			phandler.setFormatter(new LogFormat());
+			PEER_LOG.addHandler(phandler);
+			
+			// Create the tester logger file 
 			FileHandler handler = new FileHandler(TesterUtil.getLogfolder()
 					+ "tester" + id + ".log");
 			handler.setFormatter(new LogFormat());
-			log.addHandler(handler);
+			LOG.addHandler(handler);
 
-			log.setLevel(Level.parse(TesterUtil.getLogLevel()));
+			LOG.setLevel(Level.parse(TesterUtil.getLogLevel()));
 
 			// Parsing creation
 			//String parserClass=TesterUtil.getParserClass();
@@ -126,30 +139,30 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			// parser.setPeerName(testerName);
 			// parser.setLogger(log);
 
-			parser  = new ParserImpl(id, log);
+			parser  = new ParserImpl(id, LOG);
 
-			log.log(Level.INFO,"My name is tester" + id);
+			LOG.log(Level.INFO,"My name is tester" + id);
 
 
 			coord.register(this, parser.parse(testClass));
 
-			log.log(Level.FINEST,"Registration finished ");
-			log.log(Level.FINEST,"Thread-group created ");
+			LOG.log(Level.FINEST,"Registration finished ");
+			LOG.log(Level.FINEST,"Thread-group created ");
 			exported=true;
 		} catch (RemoteException e) {
-			log.log(Level.SEVERE,"RemoteException",e);
+			LOG.log(Level.SEVERE,"RemoteException",e);
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			log.log(Level.SEVERE,"InstantiationException",e);
+			LOG.log(Level.SEVERE,"InstantiationException",e);
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			log.log(Level.SEVERE,"IllegalAccessException",e);
+			LOG.log(Level.SEVERE,"IllegalAccessException",e);
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			log.log(Level.SEVERE,"SecurityException ",e);
+			LOG.log(Level.SEVERE,"SecurityException ",e);
 			e.printStackTrace();
 		} catch (IOException e) {
-			log.log(Level.SEVERE,"IOException ",e);
+			LOG.log(Level.SEVERE,"IOException ",e);
 			e.printStackTrace();
 		} finally{
 			if(!exported){
@@ -160,11 +173,15 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 	public synchronized void execute(MethodDescription m)
 	throws RemoteException {
-		log.log(Level.FINEST,"Permission to execute "+m.getName());
+		LOG.log(Level.FINEST,"Permission to execute "+m.getName());
 		setMethodDescription(m);
 	}
 
 	public int getPeerName() throws RemoteException {
+		return id;
+	}
+	
+	public int getId() {
 		return id;
 	}
 
@@ -178,19 +195,19 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	 */
 	public void kill() {
 		executionInterrupt(true);
-		log.log(Level.INFO,"Test Case finished by kill ");
+		LOG.log(Level.INFO,"Test Case finished by kill ");
 	}
 
 	private void executionOk(String methodAnnotation) {
 		try {
 			coord.greenLight();
-			log.log(Level.FINEST,"Executed "+methodAnnotation);
+			LOG.log(Level.FINEST,"Executed "+methodAnnotation);
 			if(parser.isLastMethod(methodAnnotation)){
-				log.log(Level.FINEST,"Test Case finished by annotation "+methodAnnotation);
+				LOG.log(Level.FINEST,"Test Case finished by annotation "+methodAnnotation);
 				executionInterrupt(false);
 			}
 		} catch (RemoteException e) {
-			log.log(Level.SEVERE,"RemoteException ",e);
+			LOG.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 	}
@@ -202,10 +219,10 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 				error=true;
 			}
 
-			log.log(Level.INFO,"Test Case local verdict to peer "+id+" is "+v.toString());
+			LOG.log(Level.INFO,"Test Case local verdict to peer "+id+" is "+v.toString());
 			coord.quit(this,error,v);
 		} catch (RemoteException e) {
-			log.log(Level.SEVERE,"RemoteException ",e);
+			LOG.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 		stop=true;
@@ -226,7 +243,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		try {
 			coord.put(key, object);
 		} catch (RemoteException e) {
-			log.log(Level.SEVERE,"RemoteException ",e);
+			LOG.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 	}
@@ -240,7 +257,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		try {
 			coord.clearCollection();
 		} catch (RemoteException e) {
-			log.log(Level.SEVERE,"RemoteException ",e);
+			LOG.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 	}
@@ -256,7 +273,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		try {
 			object = coord.get(key);
 		} catch (RemoteException e) {
-			log.log(Level.SEVERE,"RemoteException ",e);
+			LOG.log(Level.SEVERE,"RemoteException ",e);
 			e.printStackTrace();
 		}
 		return object;
@@ -288,45 +305,45 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 		public void run() {
 			boolean error = true;
-			log.log(Level.INFO,"Peer " + id + " executing test case "
+			LOG.log(Level.INFO,"Peer " + id + " executing test case "
 					+ testCase + " in " + testClass.getSimpleName());
 			Method m=null;
 			try {
 				m = testClass.getMethod(testCase, (Class[]) null);
 				if (testCase.equals(m.getName())) {
-					m.invoke(objectClass, (Object[]) null);
+					m.invoke(testcase, (Object[]) null);
 				}
 				error = false;
 			} catch (SecurityException e) {
-				log.log(Level.SEVERE,"SecurityException ",e);
+				LOG.log(Level.SEVERE,"SecurityException ",e);
 				e.printStackTrace();
 			} catch (NoSuchMethodException e) {
-				log.log(Level.SEVERE,"NoSuchMethodException ",e);
+				LOG.log(Level.SEVERE,"NoSuchMethodException ",e);
 				e.printStackTrace();
 			} catch (IllegalArgumentException e) {
-				log.log(Level.SEVERE,"IllegalArgumentException ",e);
+				LOG.log(Level.SEVERE,"IllegalArgumentException ",e);
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				log.log(Level.SEVERE,"IllegalAccessException ",e);
+				LOG.log(Level.SEVERE,"IllegalAccessException ",e);
 				e.printStackTrace();
 			}catch (InvocationTargetException e) {
 				Oracle oracle=new Oracle(e.getCause());
 				if(v==Verdicts.FAIL){
-					log.log(Level.SEVERE,"FAIL Verdict ",e);
+					LOG.log(Level.SEVERE,"FAIL Verdict ",e);
 					error = false;
 				}else{
 					v=oracle.getVerdict();
 					e.printStackTrace();
 				}
 			}catch (Exception e) {
-				log.log(Level.SEVERE,"Exception ",e);
+				LOG.log(Level.SEVERE,"Exception ",e);
 				e.printStackTrace();
 			} finally {
 				if (error) {
-					log.log(Level.WARNING," Executed in "+m.getName());
+					LOG.log(Level.WARNING," Executed in "+m.getName());
 					executionInterrupt(true);
 				} else{
-					log.log(Level.INFO," Executed "+testCase);
+					LOG.log(Level.INFO," Executed "+testCase);
 					executionOk(annotation);
 				}
 			}

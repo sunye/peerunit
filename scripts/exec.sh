@@ -11,7 +11,7 @@ i=0
 #        java passpartout.sample.meteor.TestQueryTheorem &
 #        java openchord.test.TestFindSuccTheorem &
 #        java -ea freepastry.test.TestFindSuccTheorem &
-#        java freepastry.test.TestPeerIsolation &
+#pack="freepastry.test.TestPeerIsolationNew"
 #        java freepastry.test.TestNewJoin &
 #        java freepastry.test.TestInsertJoin &
 #        java freepastry.test.TestInsertJoinB &
@@ -20,20 +20,22 @@ i=0
 #        java freepastry.test.TestInsertLeaveC &
 #        java freepastry.test.SimpleTest &
 #pack="freepastry.test.TestInsertStableNew"
-pack="freepastry.test.TestInsertJoin"
-#        java openchord.test.TestInsertJoin &
+#pack="freepastry.test.TestUpdateOnShrink"
+#pack="freepastry.test.TestInsertJoin"
+#pack="openchord.test.TestInsertJoin"
+#pack="openchord.test.TestUpdateOnShrink"
 #        java openchord.test.TestInsertJoinB &
 #        java openchord.test.TestInsertLeave &
 #        java openchord.test.TestInsertLeaveB &
 #        java openchord.test.TestInsert &
 #        java openchord.test.TestInsertMultiple &
-#        java openchord.test.TestNewJoin &
-#        java openchord.test.TestPeerIsolation &
+pack="openchord.test.TestNewJoin"
+#pack="openchord.test.TestPeerIsolation"
 #        java openchord.test.TestConsistentHashing &
 #        java openchord.test.TestInconclusive &
 #        java openchord.test.TestInconclusiveArray &
 echo ${pack}
-while [ $i -le 4 ]
+while [ $i -le 15 ]
 do
    ##      java -Dcom.sun.management.jmxremote -Xms256m -Xmx256m -Xss2048k emmarun -verbose -raw -out coverage${node_name}_${i}.es -Dreport.txt.out.file=coverage${node_name}_${i}.txt -cp peerunit.jar:FreePastry-2.0_02.jar ${pack} > log${i}.log &
          java ${pack} &

@@ -208,7 +208,7 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 	 * @see callback.Coordinator#namer(callback.Tester) Incremented with
 	 *      java.util.concurrent to handle the semaphore concurrency access
 	 */
-	public synchronized int namer(Tester t) throws RemoteException {
+	public synchronized int getNewId(Tester t) throws RemoteException {
 		if (t.getPeerName() == -1) {
 			peerName = peers.getAndIncrement();
 			log.log(Level.INFO, "New Registered Peer: " + peerName

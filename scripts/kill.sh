@@ -18,7 +18,7 @@ while [ $j -le $qtd ]
 do
         awk '{print $2}' ${full_pid_file} | head -n $j | tail -n 1 > teste
         ini=`cat teste`
-	if [ $ini -ne 61519 ] ; then
+	if [ $ini -ne 35834 ] ; then
                 kill $ini
         fi
         j=`expr $j + 1`

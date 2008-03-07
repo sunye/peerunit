@@ -162,6 +162,7 @@
 		   	<application name="peerunit-deploy">
 			   		<fileset dir="${dist.dir}">
 				   	   	<include name="peerunit.jar" />
+				   	   	<include name="peerunit_tests.jar" />
 			   	   </fileset>
 		   	</application>													
 		</deploy>		

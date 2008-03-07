@@ -222,7 +222,7 @@ public class TestNewJoin extends TesterImpl{
 			e.printStackTrace();
 		}			
 	}
-	@Test(name="action4",measure=true,step=1,timeout=10000000, place=-1)
+	/*@Test(name="action4",measure=true,step=1,timeout=10000000, place=-1)
 	public void routingTable2() {
 
 		try{	
@@ -247,7 +247,7 @@ public class TestNewJoin extends TesterImpl{
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}	
-	}
+	}*/
 
 	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testFindAgain(){
@@ -266,6 +266,7 @@ public class TestNewJoin extends TesterImpl{
 							log.info("New Successor List "+successor);					
 							if(!routingTable.contains(successor)){
 								tableUpdated=true;
+								break;
 							}
 						}
 					}
