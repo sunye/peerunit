@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import rice.pastry.Id;
 import rice.pastry.NodeHandle;
 import fr.inria.peerunit.TestCase;
+import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
@@ -20,12 +21,14 @@ import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
 
+import static fr.inria.peerunit.test.assertion.Assert.*;
+
 /**
  * Test routing table update in a shrinking system
  * @author almeida
  *
  */
-public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
+public class TestUpdateOnShrink  extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
@@ -35,64 +38,64 @@ public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
 	int sleep=TesterUtil.getSleep();
 
 	boolean iAmBootsrapper=false;
-	
+
 	@BeforeClass(place=-1,timeout=1000000)
-	public void bc(){	
+	public void bc(){
 		log.info("[PastryTest] Starting test peer  ");
 	}
 	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
-		try {			
-			
+		try {
+
 			log.info("Joining in first");
 			Network net= new Network();
 			Thread.sleep(this.getPeerName()*1000);
-						
-		
+
+
 			if(!net.joinNetwork(peer, null,false, log)){
 				inconclusive("I couldn't join, sorry");
 			}
 			log.info("Getting cached boot "+net.getInetSocketAddress().toString());
 			log.info("Running on port "+peer.getPort());
 			log.info("Time to bootstrap");
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+//		} catch (RemoteException e) {
+//			e.printStackTrace();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 
 	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void testFind(){
 		try {
 			Thread.sleep(sleep);
 		} catch (Exception e) {
-			e.printStackTrace();		
-		}		
+			e.printStackTrace();
+		}
 		log.info("My ID "+peer.getId());
 		for(NodeHandle nd: peer.getRoutingTable()){
-			log.info("Successor NodeId "+nd.getId());			
-		}		
+			log.info("Successor NodeId "+nd.getId());
+		}
 	}
 	@Test(name="action5",measure=true,step=0,timeout=10000000,place=-1)
-	public void testLeave() {		
+	public void testLeave() {
 		try {
-			Thread.sleep(sleep);		
+			Thread.sleep(sleep);
 			if(super.getPeerName()%2!=0){
 				super.put(super.getPeerName(), peer.getId());
 				log.info("Leaving early");
-				super.kill();				
+				super.kill();
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		}	
+		}
 	}
 
 	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
@@ -103,8 +106,8 @@ public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
 
 				Set<Integer> keySet=super.getCollection().keySet();
 				Object gotValue;
-				for(Integer i: keySet){	
-					gotValue=super.get(i);								
+				for(Integer i: keySet){
+					gotValue=super.get(i);
 					if(gotValue instanceof Id) {
 						volatiles.add((Id)gotValue);
 						log.info("Volatiles NodeId "+super.get(i));
@@ -118,16 +121,16 @@ public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
 				List<Id>  previousVolatilesInTable= new ArrayList<Id>();
 
 				//Iterations to clean the volatiles from the routing table
-				int timeToClean=TesterUtil.getLoopToFail();		
-				Id obj=null;		
+				int timeToClean=TesterUtil.getLoopToFail();
+				Id obj=null;
 				boolean tableUpdated=false;
 				while((timeToClean > 0)&&(!tableUpdated)){
 					try {
 						Thread.sleep(1000);
 					} catch (Exception e) {
-						e.printStackTrace();		
-					}	
-					actuals= peer.getRoutingTable();		
+						e.printStackTrace();
+					}
+					actuals= peer.getRoutingTable();
 
 					for(NodeHandle nd: actuals){
 						obj=nd.getNodeId();
@@ -143,21 +146,21 @@ public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
 							log.info("Previous NodeId "+id.toString());
 							if(!volatilesInTable.contains(id)){
 								log.info("Do not contains "+id.toString());
-								tableUpdated=true;	
+								tableUpdated=true;
 							}
 						}
 					}
-					
+
 					//Charging the previous list
 					previousVolatilesInTable.clear();
 					for(Id id : volatilesInTable){
-						previousVolatilesInTable.add(id);						
-					}			
+						previousVolatilesInTable.add(id);
+					}
 
 					log.info("In "+timeToClean+" contains "+volatilesInTable.size()+" on "+actuals.size());
 					//	Cleaning the actual list
 					volatilesInTable.clear();
-					
+
 					//Demanding the routing table update
 					peer.pingNodes();
 
@@ -172,7 +175,7 @@ public class TestUpdateOnShrink  extends TesterImpl implements TestCase{
 	}
 
 	@AfterClass(timeout=100000,place=-1)
-	public void end() {		
+	public void end() {
 		log.info("[PastryTest] Peer bye bye");
 	}
 }

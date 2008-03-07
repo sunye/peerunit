@@ -20,14 +20,15 @@ import de.uniba.wiai.lspi.chord.service.AsynChord;
 import de.uniba.wiai.lspi.chord.service.Key;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
+import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
+import static fr.inria.peerunit.test.assertion.Assert.*;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
-public class TestUpdateOnShrink extends TesterImpl{
+public class TestUpdateOnShrink extends TestCaseImpl{
 
 	private static final long serialVersionUID = 1L;
 
@@ -56,27 +57,11 @@ public class TestUpdateOnShrink extends TesterImpl{
 	private Collection<Key> insertedKeys= new ArrayList<Key>(OBJECTS);
 
 	URL localURL = null;
-	/**
-	 * @param args
-	 */
-	public static void main(String[] str) {		
-		test = new TestUpdateOnShrink();
-		test.export(test.getClass());		
-		// Log creation
-		FileHandler handler;
-		try {
-			System.out.println("NAME "+test.getName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestUpdateOnShrink.log.peer"+test.getName(),true);
-			handler.setFormatter(new LogFormat());
-			log.addHandler(handler);
-		} catch (SecurityException e) {			
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		callback.setCallback(OBJECTS, log);
-		test.run();
+	public TestUpdateOnShrink() {
+		super();callback.setCallback(OBJECTS, log);
+		// TODO Auto-generated constructor stub
 	}
+
 	@BeforeClass(place=-1,timeout=1000000)
 	public void bc(){
 		log.info("Starting test DHT ");
@@ -89,19 +74,19 @@ public class TestUpdateOnShrink extends TesterImpl{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		log.info("Peer name "+test.getName());		
+		log.info("Peer name "+test.getName());
 
-		de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile(); 
-		String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL]; 
+		de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
+		String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
 
 		try {
-			String address = InetAddress.getLocalHost().toString();			
-			address = address.substring(address.indexOf("/")+1,address.length());				
+			String address = InetAddress.getLocalHost().toString();
+			address = address.substring(address.indexOf("/")+1,address.length());
 			FreeLocalPort port= new FreeLocalPort();
-			log.info("Address: "+address+" on port "+port.getPort());			
+			log.info("Address: "+address+" on port "+port.getPort());
 			localURL = new URL(protocol + "://"+address+":"+port.getPort()+"/");
 		} catch (MalformedURLException e){
-			throw new RuntimeException(e); 
+			throw new RuntimeException(e);
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
@@ -112,30 +97,30 @@ public class TestUpdateOnShrink extends TesterImpl{
 			e1.printStackTrace();
 		}
 
-		chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl(); 
+		chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
 		try {
 			Thread.sleep(100*test.getName());
 			log.info("LocalURL: "+localURL.toString());
-			chord.join(localURL,bootstrapURL);			
+			chord.join(localURL,bootstrapURL);
 
-			log.info("Joining Chord DHT: "+chord.toString());				
-		} catch (ServiceException e) {			
+			log.info("Joining Chord DHT: "+chord.toString());
+		} catch (ServiceException e) {
 			e.printStackTrace();
-			log.severe("Peer init exception");		
+			log.severe("Peer init exception");
 		} catch (Exception e){
 			e.printStackTrace();
-			log.severe("Peer init exception");		
+			log.severe("Peer init exception");
 		}
 
-		log.info("Peer init");			    
+		log.info("Peer init");
 	}
 
 	@Test(name="action2",measure=true,step=1,timeout=10000000, place=-1)
 	public void find() {
 
 		chordPrint=(ChordImpl)chord;
-		try{			
-			Thread.sleep(sleep);		
+		try{
+			Thread.sleep(sleep);
 			log.info("My ID is "+chord.getID());
 			String[] succ=chordPrint.printSuccessorList().split("\n");
 			for (String succList : succ) {
@@ -143,14 +128,14 @@ public class TestUpdateOnShrink extends TesterImpl{
 			}
 
 		}catch (RuntimeException e) {
-			log.severe("Could not find !"+e);			
+			log.severe("Could not find !"+e);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Test(name="action4",measure=true,step=1,timeout=10000000,place=-1)
-	public void testLeave() {		
+	public void testLeave() {
 		try {
 
 			if(test.getName()%2==0){
@@ -158,11 +143,11 @@ public class TestUpdateOnShrink extends TesterImpl{
 				chord.leave();
 				String insertValue=chord.getID().toString().substring(0,2)+" "+localURL.toString();
 				test.put(test.getName(), insertValue);
-				log.info("Cached "+ insertValue);				
-			}		
+				log.info("Cached "+ insertValue);
+			}
 
 			// little time to cache the variables
-			Thread.sleep(sleep);	
+			Thread.sleep(sleep);
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -173,7 +158,7 @@ public class TestUpdateOnShrink extends TesterImpl{
 	}
 
 	@Test(name="action5",measure=true,step=1,timeout=10000000,place=-1)
-	public void testRetrieve() {		
+	public void testRetrieve() {
 
 		if(test.getName()%2!=0){
 			String[] immediateSuccessor=chordPrint.printSuccessorList().split("\n");
@@ -194,9 +179,9 @@ public class TestUpdateOnShrink extends TesterImpl{
 						listQuitPeers.add(quitPeer);
 						log.info("Quit peer "+quitPeer);
 					}
-				}				
+				}
 			}
-			int timeToClean=0;	
+			int timeToClean=0;
 			boolean tableUpdated=false;
 			while(timeToClean < TesterUtil.getLoopToFail()){
 				try {
@@ -205,16 +190,16 @@ public class TestUpdateOnShrink extends TesterImpl{
 					e.printStackTrace();
 				}
 				if(!listQuitPeers.contains(successor.trim())){
-					tableUpdated=true;		
+					tableUpdated=true;
 					break;
 				}
 				timeToClean++;
 			}
-			
+
 			if(tableUpdated){
 				log.info("Contains in GV " + successor);
 				assertTrue("Successor updated correctly ",true);
-			}else{ 
+			}else{
 				log.info("Not Contains in GV " + successor);
 				assertTrue("Successor didn't updated correctly ",false);
 			}
@@ -231,7 +216,7 @@ public class TestUpdateOnShrink extends TesterImpl{
 				e.printStackTrace();
 			} catch (ServiceException e) {
 				e.printStackTrace();
-			}	
+			}
 
 			log.info("Peer bye bye");
 		}

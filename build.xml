@@ -7,7 +7,7 @@
 
 	<!-- directories -->
 	<property name="lib.dir" value="${basedir}/lib" />
-	<property name="src.dir" value="${basedir}/src" />
+	<property name="src.dir" value="${basedir}/src/peerunit/" />
 	<property name="build.dir" value="${basedir}/bin" />
 	<property name="temp.dir" value="${basedir}/temp" />
 	<property name="config.dir" value="${basedir}/config" />
@@ -22,16 +22,16 @@
 	<property name="log4j.url" value="http://apache.crihan.fr/dist/logging/log4j/1.2.12/logging-log4j-1.2.12.zip"/>
 	<property name="jsch.url" value="http://mesh.dl.sourceforge.net/sourceforge/jsch/jsch-0.1.32.jar"/>
 	<property name="deploy.url" value="http://www.sciences.univ-nantes.fr/lina/gdd/members/sunye/deploy.jar"/>
-	
+
 	<!-- jar files -->
-	<property name="openchord.file" value="openchord_1.0.2.jar" />	
-	<property name="openchord.jar" value="${lib.dir}/${openchord.file}" />	
-	<property name="openchord-deploy.jar" value="${user.home}/${openchord.file}" />	
-	<property name="peerunit.jar" value="${dist.dir}/peerunit.jar" />	
+	<property name="openchord.file" value="openchord_1.0.2.jar" />
+	<property name="openchord.jar" value="${lib.dir}/${openchord.file}" />
+	<property name="openchord-deploy.jar" value="${user.home}/${openchord.file}" />
+	<property name="peerunit.jar" value="${dist.dir}/peerunit.jar" />
 	<property name="log4j.jar" value="${lib.dir}/log4j-1.2.12.jar" />
-	<property name="jsch.jar" value="${lib.dir}/jsch-0.1.32.jar" />	
+	<property name="jsch.jar" value="${lib.dir}/jsch-0.1.32.jar" />
 	<property name="deploy.jar" value="${lib.dir}/deploy.jar" />
-	<property name="peerunit_tests.jar" value="${dist.dir}/peerunit_tests.jar" />	
+	<property name="peerunit_tests.jar" value="${dist.dir}/peerunit_tests.jar" />
 
 	<!-- paths -->
 	<path id="lib.jars">
@@ -44,41 +44,42 @@
 		<path refid="lib.jars" />
 		<pathelement path="${src.dir}" />
 	</path>
-	
+
 	<!-- Node definition -->
 
-	
+
 	<target name="init">
 	   <taskdef name="execute" classname="fr.inria.ant.ExecuteTask" classpath="${user.home}/library/deploy.jar" />
 	   <taskdef name="deploy" classname="fr.inria.ant.DeployTask" classpath="${user.home}/library/deploy.jar" />
 	   <typedef name="nodeset" classname="fr.inria.ant.NodeSet" classpath="${user.home}/library/deploy.jar" />
 	   <taskdef name="remotejava" classname="fr.inria.ant.RemoteJava" classpath="${user.home}/library/deploy.jar" />
    	<typedef name="node" classname="fr.inria.ant.Node" classpath="${user.home}/library/deploy.jar" />
-		<nodeset id="lina" directory="/tmp/${user.name}"  keyfile="${user.home}/.ssh/id_rsa" passphrase="">     				
+		<nodeset id="lina" directory="/tmp/${user.name}"  keyfile="${user.home}/.ssh/id_rsa" passphrase="">
 			 <!--<node ip="172.16.9.64" javahome="/home/almeida/java" user="${user.name}"/>  -->
 			<node ip="172.16.9.101" javahome="/usr/local/diablo-jdk1.5.0" user="${user.name}"/>
-			<node ip="172.16.9.33" javahome="/home/almeida/jdk1.5.0_07" trust="true" user="${user.name}"/> 
-			<!--<node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true" user="${user.name}"/> 
+			<node ip="172.16.9.33" javahome="/home/almeida/jdk1.5.0_07" trust="true" user="${user.name}"/>
+			<!--<node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true" user="${user.name}"/>
 			 <node ip="172.16.9.22" javahome="/usr/lib/jvm/java-1.5.0-sun" trust="true" user="almeida-e"/>  -->
 		</nodeset>
 		<nodeset id="lina2" directory="/tmp/${user.name}" user="${user.name}" keyfile="${user.home}/.ssh/id_rsa" passphrase="">
-			<node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true"/> 
-			<node ip="172.16.9.101" javahome="/usr/local/jdk1.5.0"/> 
-  		    <node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true"/> 
-			<node ip="172.16.9.33" javahome="/home/almeida/jdk1.5.0_07" trust="true"/> 
-			<node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true"/> 
-			<node ip="172.16.9.101" javahome="/usr/local/jdk1.5.0"/> 
-  		    <node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true"/> 
-			<node ip="172.16.9.33" javahome="/home/almeida/jdk1.5.0_07" trust="true"/> 
-		</nodeset>				
+			<node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true"/>
+			<node ip="172.16.9.101" javahome="/usr/local/jdk1.5.0"/>
+  		    <node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true"/>
+			<node ip="172.16.9.33" javahome="/home/almeida/jdk1.5.0_07" trust="true"/>
+			<node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true"/>
+			<node ip="172.16.9.101" javahome="/usr/local/jdk1.5.0"/>
+  		    <node ip="172.16.9.221" javahome="/opt/jdk1.5.0_07" trust="true"/>
+			<node ip="172.16.9.33" javahome="/home/almeida/jdk1.5.0_07" trust="true"/>
+		</nodeset>
 	</target>
-	
-	
+
+
 	<!-- Prepare environment -->
 	<target name="prepare" >
 		<mkdir dir="${lib.dir}" />
 		<mkdir dir="${temp.dir}"/>
 		<mkdir dir="${config.dir}"/>
+		<mkdir dir="${dist.dir}"/>
 	</target>
 
 	<!-- Install -->
@@ -87,12 +88,12 @@
 		<antcall target="openchord.install"/>
 		<antcall target="clean"/>
 	</target>
-	
+
 	<target name="deployer.install" unless="jsch.available">
 		<get dest="${jsch.jar}" src="${jsch.url}" usetimestamp="true"/>
 		<get dest="${deploy.jar}" src="${deploy.url}" usetimestamp="true"/>
 	</target>
-	
+
 	  <target name="log4j.install" unless="log4j.available">
 	    <get dest="${temp.dir}/log4j.zip" src="${log4j.url}" usetimestamp="true"/>
 	  	<unzip src="${temp.dir}/log4j.zip" dest="${temp.dir}">
@@ -102,7 +103,7 @@
 	  	</unzip>
 	  	<move file="${temp.dir}/logging-log4j-1.2.12/dist/lib/log4j-1.2.12.jar" tofile="${log4j.jar}">
 	  	</move>
-	  </target>	
+	  </target>
 
 	<target name="openchord.install" unless="openchord.available" >
 		<path refid="lib.jars" />
@@ -115,12 +116,12 @@
 	  		<property name="srcdir" value="${openchord.dir}/src"/>
 	  		<property name="impdir" value="${lib.dir}"/>
 	  		<property name="distdir" value="${openchord.dir}/dist"/>
-	  		<property name="dist_file" value="openchord_1.0.2.jar"/>	
+	  		<property name="dist_file" value="openchord_1.0.2.jar"/>
 	  		<property name="docdir" value="${openchord.dir}/docs/api"/>
 		</ant>
 	  	<move todir="${lib.dir}">
 	  		<fileset dir="${openchord.dir}/dist">
-	  		    <include name="**/*.jar"/>	  		
+	  		    <include name="**/*.jar"/>
 	  		</fileset>
 	  	</move>
 	</target>
@@ -133,66 +134,66 @@
 		    <fileset dir="${temp.dir}"/>
 		</delete>
 	</target>
-	
+
 	<target name="compile">
 	  	<javac srcdir="${src.dir}/peerunit"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
 	   </javac>
 	  	<javac srcdir="${tests.dir}"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
 	   </javac>
 	</target>
-	  
+
 	<target name="build" description="Creates the peerunit jar file" depends="compile">
 		<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.tester.TesterImpl" base="${build.dir}"></rmic>
 		<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.coord.CoordinatorImpl" base="${build.dir}"></rmic>
 		<jar basedir="${build.dir}" jarfile="${peerunit.jar}" update="no">
-		    <fileset 
+		    <fileset
 		    	dir="${build.dir}"
-		    	includes="**/*.class"/>	    	
+		    	includes="**/*.class"/>
 		</jar>
 		<jar basedir="${tests.dir}" jarfile="${peerunit_tests.jar}" update="no">
-				    <fileset 
+				    <fileset
 				    	dir="${tests.dir}"
-				    	includes="**/*.class"/>	    	
+				    	includes="**/*.class"/>
 		</jar>
 	</target>
-	
+
 	<target name="deploy" depends="init">
 		<deploy>
-			<nodeset refid="lina"/>			
+			<nodeset refid="lina"/>
 		   	<application name="peerunit-deploy">
 			   		<fileset dir="${dist.dir}">
 				   	   	<include name="peerunit.jar" />
 				   	   	<include name="peerunit_tests.jar" />
 			   	   </fileset>
-		   	</application>													
-		</deploy>		
+		   	</application>
+		</deploy>
 		<deploy>
-				<nodeset refid="lina"/>			
-		
+				<nodeset refid="lina"/>
+
 			<application name="peerunit-deploy-properties">
 			   		<fileset dir="${basedir}">
-			   			<include name="config/*"/> 
+			   			<include name="config/*"/>
 			   			<include name="build.xml" />
 			   			<include name="scripts/kill.sh"/>
 			   			<include name="scripts/exec.sh"/>
 			   	   </fileset>
 		   	</application>
-		</deploy>	
+		</deploy>
 	</target>
 
-	
-	<target name="kill" depends="init">	
+
+	<target name="kill" depends="init">
 		<exec executable="ps" outputproperty="process">
-			<arg value="aux" line=" -C rmiregistry -o pid="/>			
+			<arg value="aux" line=" -C rmiregistry -o pid="/>
 		</exec>
 		<exec executable="kill">
 			<arg line="${process}"/>
 		</exec>
 	</target>
-	
-	<target name="killjava" depends="init">	
+
+	<target name="killjava" depends="init">
 		<exec executable="ps" outputproperty="process">
-			<arg value="aux" line=" -C java -o pid="/>			
+			<arg value="aux" line=" -C java -o pid="/>
 		</exec>
 		<exec executable="kill">
 			<arg line="${process}"/>

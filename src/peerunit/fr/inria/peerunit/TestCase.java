@@ -3,7 +3,7 @@
  */
 package fr.inria.peerunit;
 
-import java.rmi.RemoteException;
+import fr.inria.peerunit.rmi.tester.TesterImpl;
 
 /**
  * @author sunye
@@ -12,7 +12,8 @@ import java.rmi.RemoteException;
  *
  */
 public interface TestCase {
-	
-	public void setId(int i) throws RemoteException;
 
+	public void setId(int i);
+
+	public void setTester(TesterImpl ti);
 }

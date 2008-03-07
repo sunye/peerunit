@@ -1,5 +1,5 @@
 package freepastry.test;
-
+import static fr.inria.peerunit.test.assertion.Assert.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -14,6 +14,7 @@ import rice.environment.Environment;
 import rice.pastry.Id;
 import rice.pastry.NodeHandle;
 import util.FreeLocalPort;
+import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
@@ -28,7 +29,7 @@ import freepastry.Peer;
  * @author almeida
  *
  */
-public class TestNewJoin extends TesterImpl{
+public class TestNewJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
@@ -42,23 +43,6 @@ public class TestNewJoin extends TesterImpl{
 	List<Id> firstSuccessors=new ArrayList<Id>();
 
 
-	public static void main(String[] str) {		
-		test = new TestNewJoin();
-		test.export(test.getClass());		
-		// Log creation
-		FileHandler handler;
-		try {
-			System.out.println("NAME "+test.getPeerName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestNewJoin.log.peer"+test.getPeerName(),true);
-			handler.setFormatter(new LogFormat());
-			log.addHandler(handler);
-		} catch (SecurityException e) {			
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
-		test.run();
-	}
 	@BeforeClass(place=-1,timeout=1000000)
 	public void bc(){
 		log.info("[PastryTest] Starting test peer  ");
@@ -66,15 +50,15 @@ public class TestNewJoin extends TesterImpl{
 
 
 	@Test(place=-1,timeout=1000000, name = "action2", step = 0)
-	public void startingHalfNet(){	
+	public void startingHalfNet(){
 
-		try {			
+		try {
 
 			if(test.getPeerName()%2!=0){
 				log.info("Joining in first");
 				Network net= new Network();
 				Thread.sleep(test.getPeerName()*1000);
-							
+
 				if(!net.joinNetwork(peer, null,false, log)){
 					inconclusive("I couldn't join, sorry");
 				}
@@ -83,8 +67,8 @@ public class TestNewJoin extends TesterImpl{
 				log.info("Time to bootstrap");
 
 			}
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -101,25 +85,25 @@ public class TestNewJoin extends TesterImpl{
 			if(test.getPeerName()%2!=0){
 				log.info("My ID "+peer.getId());
 				for(NodeHandle nd: peer.getRoutingTable()){
-					log.info("Successor NodeId "+nd.getId());	
+					log.info("Successor NodeId "+nd.getId());
 					firstSuccessors.add(nd.getNodeId());
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();		
-		}	
+			e.printStackTrace();
+		}
 
 	}
 	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
-	public void startingOtherHalfNet(){	
+	public void startingOtherHalfNet(){
 
-		try {			
-			
+		try {
+
 			if(test.getPeerName()%2==0){
 				log.info("Joining in first");
 				Network net= new Network();
 				Thread.sleep(test.getPeerName()*1000);
-							
+
 				if(!net.joinNetwork(peer, null,false, log)){
 					inconclusive("I couldn't join, sorry");
 				}
@@ -128,8 +112,8 @@ public class TestNewJoin extends TesterImpl{
 				log.info("Time to bootstrap");
 
 			}
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -146,22 +130,22 @@ public class TestNewJoin extends TesterImpl{
 				List<NodeHandle> actuals;
 
 				//Iterations to clean the volatiles from the routing table
-				int timeToUpdate=0;		
-				Id obj=null;		
+				int timeToUpdate=0;
+				Id obj=null;
 				boolean tableUpdated=false;
 				while(!tableUpdated &&	timeToUpdate < TesterUtil.getLoopToFail()){
 					log.info("Verifying the "+timeToUpdate+" time ");
 					try {
 						Thread.sleep(1000);
 					} catch (Exception e) {
-						e.printStackTrace();		
-					}	
-					actuals= peer.getRoutingTable();		
+						e.printStackTrace();
+					}
+					actuals= peer.getRoutingTable();
 
 					for(NodeHandle nd: actuals){
 						obj=nd.getNodeId();
 						log.info(" Successor NodeId "+obj);
-						if(!firstSuccessors.contains(obj)){		
+						if(!firstSuccessors.contains(obj)){
 							log.info("List updated, the verdict may be PASS ");
 							tableUpdated=true;
 						}
@@ -185,7 +169,7 @@ public class TestNewJoin extends TesterImpl{
 	}
 
 	@AfterClass(timeout=100000,place=-1)
-	public void end() {		
+	public void end() {
 		log.info("[PastryTest] Peer bye bye");
 	}
 }

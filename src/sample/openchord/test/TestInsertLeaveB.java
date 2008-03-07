@@ -23,10 +23,11 @@ import de.uniba.wiai.lspi.chord.service.AsynChord;
 import de.uniba.wiai.lspi.chord.service.Key;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
+import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
+import static fr.inria.peerunit.test.assertion.Assert.*;
 import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
@@ -35,7 +36,7 @@ import fr.inria.peerunit.util.TesterUtil;
  * @author almeida
  *
  */
-public class TestInsertLeaveB extends TesterImpl{
+public class TestInsertLeaveB extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestInsertLeaveB.class.getName());
 	private static final int OBJECTS=TesterUtil.getObjects();
 
@@ -65,26 +66,12 @@ public class TestInsertLeaveB extends TesterImpl{
 
 	URL localURL = null;
 
-	Map<Integer,Object> objList=new HashMap<Integer, Object>();	
+	Map<Integer,Object> objList=new HashMap<Integer, Object>();
 
-	public static void main(String[] str) {		
-		test = new TestInsertLeaveB();
-		test.export(test.getClass());		
-		// Log creation
-		FileHandler handler;
-		try {
-			System.out.println("NAME "+test.getPeerName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestInsertLeaveB.log.peer"+test.getPeerName(),true);
-			handler.setFormatter(new LogFormat());
-			log.addHandler(handler);
-		} catch (SecurityException e) {			
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		callback.setCallback(OBJECTS, log);
-		test.run();
+	public TestInsertLeaveB() {
+		super();callback.setCallback(OBJECTS, log);
 	}
+
 	@BeforeClass(place=-1,timeout=1000000)
 	public void bc(){
 		log.info("Starting test DHT ");
@@ -99,17 +86,17 @@ public class TestInsertLeaveB extends TesterImpl{
 			log.info("Peer name "+test.getPeerName());
 
 
-			de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile(); 
-			String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL]; 
+			de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
+			String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
 
 			try {
-				String address = InetAddress.getLocalHost().toString();			
-				address = address.substring(address.indexOf("/")+1,address.length());				
+				String address = InetAddress.getLocalHost().toString();
+				address = address.substring(address.indexOf("/")+1,address.length());
 				FreeLocalPort port= new FreeLocalPort();
-				log.info("Address: "+address+" on port "+port.getPort());			
+				log.info("Address: "+address+" on port "+port.getPort());
 				localURL = new URL(protocol + "://"+address+":"+port.getPort()+"/");
 			} catch (MalformedURLException e){
-				throw new RuntimeException(e); 
+				throw new RuntimeException(e);
 			} catch (UnknownHostException e) {
 				throw new RuntimeException(e);
 			}
@@ -120,28 +107,28 @@ public class TestInsertLeaveB extends TesterImpl{
 				e1.printStackTrace();
 			}
 
-			chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl(); 
-			try {				
+			chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
+			try {
 				log.info("LocalURL: "+localURL.toString());
-				chord.join(localURL,bootstrapURL);			
+				chord.join(localURL,bootstrapURL);
 
-				log.info("Joining Chord DHT: "+chord.toString());		
+				log.info("Joining Chord DHT: "+chord.toString());
 
-			} catch (ServiceException e) {			
+			} catch (ServiceException e) {
 				e.printStackTrace();
-				log.severe("Peer init exception");		
+				log.severe("Peer init exception");
 			} catch (Exception e){
 				e.printStackTrace();
-				log.severe("Peer init exception");		
+				log.severe("Peer init exception");
 			}
 
-			log.info("Peer init");			    
+			log.info("Peer init");
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} catch (RemoteException e) {			
+		} catch (RemoteException e) {
 			e.printStackTrace();
-		}			
+		}
 	}
 
 	@Test(place=0,timeout=1000000, name = "action2", step = 0)
@@ -156,7 +143,7 @@ public class TestInsertLeaveB extends TesterImpl{
 			peerChose=false;
 			while(!peerChose){
 				chosePeer=rand.nextInt(TesterUtil.getExpectedPeers());
-				if(chosePeer!=0){			
+				if(chosePeer!=0){
 					Integer genInt=new Integer(chosePeer);
 					if(!generated.contains(genInt)){
 						generated.add(genInt);
@@ -174,68 +161,68 @@ public class TestInsertLeaveB extends TesterImpl{
 
 	@Test(place=-1,timeout=1000000, name = "action3", step = 0)
 	public void stabilize(){
-		int timeToFind=0;			
+		int timeToFind=0;
 		while(timeToFind < TesterUtil.getLoopToFail()){
-			try{			
+			try{
 				Thread.sleep(sleep);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			timeToFind++;			
+			timeToFind++;
 		}
-			
+
 	}
-	
+
 	@Test(place=0,timeout=1000000, name = "action4", step = 0)
 	public void testInsert(){
-		try{			
+		try{
 			Thread.sleep(sleep);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		Map<Key, String> map= new HashMap<Key, String>();
-		for (int i = 0; i < OBJECTS; i++) {					
+		for (int i = 0; i < OBJECTS; i++) {
 			data = "" +i;
 			log.info("[TestDbpartout] Inserting data "+data);
-			key=new StringKey(data);			
+			key=new StringKey(data);
 			chord.insert(key,data,callback);
 			map.put(key, data);
-		}				
+		}
 
 		while(!callback.isInserted()){
-			try{			
+			try{
 				Thread.sleep(sleep);
 			} catch (InterruptedException e) {
 				log.warning("Thread problem on inserting");
 				e.printStackTrace();
 			}
-		}		
+		}
 		List<String> expecteds=new ArrayList<String>();
-		for(Key expectedKey: callback.getInsertedKeys()){			
+		for(Key expectedKey: callback.getInsertedKeys()){
 			expecteds.add(map.get(expectedKey));
 		}
 		test.put(0, expecteds);
 	}
 
 	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
-	public void testRetrieve(){		
+	public void testRetrieve(){
 		try {
 			Thread.sleep(sleep);
-			
-			int timeToFind=0;			
+
+			int timeToFind=0;
 			while(timeToFind < TesterUtil.getLoopToFail()){
 				for (int i = 0; i < OBJECTS; i++) {
 					data = ""+ i;
-					key=new StringKey(data);				
-					chord.retrieve(key,callback);			
-				}					
+					key=new StringKey(data);
+					chord.retrieve(key,callback);
+				}
 				callback.retr ++;
 				Thread.sleep(sleep);
 				for (String actual : callback.getResultSet()) {
 					log.info("Retrieve before leave "+timeToFind+" got "+actual);
 				}
 				callback.clearResultSet();
-				timeToFind++;			
+				timeToFind++;
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -247,28 +234,28 @@ public class TestInsertLeaveB extends TesterImpl{
 		try{
 			Thread.sleep(sleep);
 			String[] succ;
-			//storing my table			
-			String successor=null;			
+			//storing my table
+			String successor=null;
 			chordPrint=(ChordImpl)chord;
 			succ=chordPrint.printSuccessorList().split("\n");
 			for (int i = 0; i < succ.length; i++) {
-				if(i>0){							
+				if(i>0){
 					successor=succ[i].toString().trim();
-					log.info("Successor List before "+successor);				
+					log.info("Successor List before "+successor);
 				}
-			}		
+			}
 			String[] entr=chordPrint.printEntries().split("\n");
-			String entry=null;		
+			String entry=null;
 			for (int i = 0; i < entr.length; i++) {
-				if(i>0){							
+				if(i>0){
 					entry=entr[i].toString().trim();
-					log.info("Entries before "+entry);				
+					log.info("Entries before "+entry);
 				}
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}			
+		}
 	}
 
 
@@ -281,19 +268,19 @@ public class TestInsertLeaveB extends TesterImpl{
 				chord.leave();
 			}
 			String[] succ;
-			//storing my table			
+			//storing my table
 			String successor=null;
 			Thread.sleep(sleep);
 			chordPrint=(ChordImpl)chord;
 			succ=chordPrint.printSuccessorList().split("\n");
 			for (int i = 0; i < succ.length; i++) {
-				if(i>0){							
+				if(i>0){
 					successor=succ[i].toString().trim();
-					log.info("Successor List after "+successor);				
+					log.info("Successor List after "+successor);
 				}
 			}
 
-		} catch (RemoteException e) {			
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
@@ -301,23 +288,23 @@ public class TestInsertLeaveB extends TesterImpl{
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}			
+		}
 	}
 
 	@Test(place=-1,timeout=1000000, name = "action8", step = 0)
-	public void testFinalRetrieve(){		
+	public void testFinalRetrieve(){
 
-		try {			
+		try {
 			if(!chosenOne(test.getPeerName())){
 				Thread.sleep(sleep);
 				List<String> actuals=new ArrayList<String>();
-				int timeToFind=0;			
+				int timeToFind=0;
 				while(timeToFind < TesterUtil.getLoopToFail()){
 					for (int i = 0; i < OBJECTS; i++) {
 						data = ""+ i;
-						key=new StringKey(data);				
-						chord.retrieve(key,callback);			
-					}					
+						key=new StringKey(data);
+						chord.retrieve(key,callback);
+					}
 					callback.retr ++;
 					Thread.sleep(sleep);
 					for (String actual : callback.getResultSet()) {
@@ -329,35 +316,35 @@ public class TestInsertLeaveB extends TesterImpl{
 						}
 					}
 					callback.clearResultSet();
-					timeToFind++;			
+					timeToFind++;
 				}
-				
+
 				String[] entr=chordPrint.printEntries().split("\n");
-				String entry=null;		
+				String entry=null;
 				for (int i = 0; i < entr.length; i++) {
-					if(i>0){							
+					if(i>0){
 						entry=entr[i].toString().trim();
-						log.info("Entries after "+entry);				
+						log.info("Entries after "+entry);
 					}
 				}
-				
-				List<String> expecteds=(List<String>)test.get(0);		
+
+				List<String> expecteds=(List<String>)test.get(0);
 				log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
 				Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);
 			}
-		} catch (InterruptedException e) {				
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		}		
+		}
 	}
 
 
 	@AfterClass(timeout=100000,place=-1)
-	public void end() {		
+	public void end() {
 		log.info(" Peer bye bye");
 	}
-	private boolean chosenOne(int name){		
+	private boolean chosenOne(int name){
 		try {
 			if(objList.isEmpty()){
 				objList=test.getCollection();
@@ -372,8 +359,8 @@ public class TestInsertLeaveB extends TesterImpl{
 						return true;
 					}
 				}
-			}			
-		} catch (RemoteException e) {			
+			}
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		return false;

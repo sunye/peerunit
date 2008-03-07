@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.Parser;
 import fr.inria.peerunit.TestCase;
+import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.parser.ParserImpl;
@@ -36,7 +37,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
 
 	private static Logger PEER_LOG;
-	
+
 	private Coordinator coord;
 
 	private TestCase testcase;
@@ -63,7 +64,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 			Registry registry = LocateRegistry.getRegistry(TesterUtil.getServerAddr());
 			UnicastRemoteObject.exportObject(this);
 			coord = (Coordinator) registry.lookup("Coordinator");
-		
+
 			} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,10 +79,10 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	public void setId(int i) {
 		id = i;
 	}
-	
+
 	public void run(){
 		assert id >= 0;
-		
+
 		while(!stop){
 			if(newMethod){
 				try {
@@ -110,21 +111,22 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		System.exit(0);
 	}
 
-	public void export(Class<? extends TestCase> c) {
+	public void export(Class<? extends TestCaseImpl> c) {
 		testClass = c;
 		boolean exported=false;
 		try {
 			id = coord.getNewId(this);
 			testcase = testClass.newInstance();
 			testcase.setId(id);
-			
-			// Create the peer (sut) logger file 
+			testcase.setTester(this);
+
+			// Create the peer (sut) logger file
 			PEER_LOG = Logger.getLogger(testClass.getName());
 			FileHandler phandler = new FileHandler(TesterUtil.getLogfolder()+"/" + testClass.getName()+ ".log.peer"+id,true);
 			phandler.setFormatter(new LogFormat());
 			PEER_LOG.addHandler(phandler);
-			
-			// Create the tester logger file 
+
+			// Create the tester logger file
 			FileHandler handler = new FileHandler(TesterUtil.getLogfolder()
 					+ "tester" + id + ".log");
 			handler.setFormatter(new LogFormat());
@@ -180,7 +182,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	public int getPeerName() throws RemoteException {
 		return id;
 	}
-	
+
 	public int getId() {
 		return id;
 	}

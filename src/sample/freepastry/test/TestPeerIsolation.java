@@ -1,5 +1,6 @@
 package freepastry.test;
 
+import static fr.inria.peerunit.test.assertion.Assert.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -15,6 +16,7 @@ import rice.environment.Environment;
 import rice.pastry.Id;
 import rice.pastry.NodeHandle;
 import util.FreeLocalPort;
+import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
@@ -26,11 +28,11 @@ import freepastry.Peer;
 
 /**
  * Testing the recovery from peer isolation
- * 
+ *
  * @author almeida
  *
  */
-public class TestPeerIsolation extends TesterImpl{
+public class TestPeerIsolation extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestPeerIsolation.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
@@ -45,23 +47,6 @@ public class TestPeerIsolation extends TesterImpl{
 
 	List<Id> volatiles=new ArrayList<Id>();
 
-	public static void main(String[] str) {		
-		test = new TestPeerIsolation();
-		test.export(test.getClass());		
-		// Log creation
-		FileHandler handler;
-		try {
-			System.out.println("NAME "+test.getPeerName());
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/TestPeerIsolation.log.peer"+test.getPeerName(),true);
-			handler.setFormatter(new LogFormat());
-			log.addHandler(handler);
-		} catch (SecurityException e) {			
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
-		test.run();
-	}
 	@BeforeClass(place=-1,timeout=1000000)
 	public void bc(){
 		log.info("[PastryTest] Starting test peer  ");
@@ -69,7 +54,7 @@ public class TestPeerIsolation extends TesterImpl{
 
 	@Test(place=-1,timeout=1000000, name = "action1", step = 1)
 	public void startingNetwork(){
-		try {			
+		try {
 
 			log.info("Joining in first");
 			Network net= new Network();
@@ -81,8 +66,8 @@ public class TestPeerIsolation extends TesterImpl{
 			log.info("Getting cached boot "+net.getInetSocketAddress().toString());
 			log.info("Running on port "+peer.getPort());
 			log.info("Time to bootstrap");
-		} catch (RemoteException e) {			
-			e.printStackTrace();	
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -95,7 +80,7 @@ public class TestPeerIsolation extends TesterImpl{
 
 
 	@Test(name="action4",measure=true,step=0,timeout=10000000,place=0)
-	public void listingTheNeighbours() {	
+	public void listingTheNeighbours() {
 		try {
 
 			// Letting the system to stabilize
@@ -105,7 +90,7 @@ public class TestPeerIsolation extends TesterImpl{
 
 			test.put(1, peer.getRoutingTable());
 
-			log.info("My ID "+peer.getId().toString());	
+			log.info("My ID "+peer.getId().toString());
 			for(NodeHandle nd: peer.getRoutingTable()){
 				if(!peer.getId().toString().equalsIgnoreCase(nd.getNodeId().toString())){
 					volatiles.add(nd.getNodeId());
@@ -115,14 +100,14 @@ public class TestPeerIsolation extends TesterImpl{
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	@Test(name="action5",measure=true,step=0,timeout=10000000,place=-1)
-	public void testLeave() {		
+	public void testLeave() {
 		try {
 			// Waiting a while to get the global variable
-			Thread.sleep(2000);			
+			Thread.sleep(2000);
 
 			if(test.getPeerName()!=0){
 				List<NodeHandle> actuals=(List<NodeHandle>)test.get(1);
@@ -130,14 +115,14 @@ public class TestPeerIsolation extends TesterImpl{
 				for(NodeHandle nd: actuals){
 					if(nd.getNodeId().toString().trim().equalsIgnoreCase(peer.getId().toString().trim())){
 						log.info("Leaving early");
-						test.kill();				
-					}						
+						test.kill();
+					}
 				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
@@ -146,9 +131,9 @@ public class TestPeerIsolation extends TesterImpl{
 			if(test.getPeerName()==0){
 				List<NodeHandle> actuals;
 
-				//Iterations to find someone in the routing table		
-				int timeToClean=0;		
-				Id obj=null;		
+				//Iterations to find someone in the routing table
+				int timeToClean=0;
+				Id obj=null;
 				boolean tableUpdated=false;
 
 				while(!tableUpdated &&	(timeToClean < TesterUtil.getLoopToFail())){
@@ -156,10 +141,10 @@ public class TestPeerIsolation extends TesterImpl{
 					try {
 						Thread.sleep(1000);
 					} catch (Exception e) {
-						e.printStackTrace();		
-					}	
+						e.printStackTrace();
+					}
 
-					actuals= peer.getRoutingTable();		
+					actuals= peer.getRoutingTable();
 
 					for(NodeHandle nd: actuals){
 						obj=nd.getNodeId();
@@ -167,7 +152,7 @@ public class TestPeerIsolation extends TesterImpl{
 
 						if((obj != peer.getId()) && (!volatiles.contains(obj))){
 							log.info(" Table was updated, verdict may be PASS ");
-							tableUpdated=true;				
+							tableUpdated=true;
 							timeToClean=TesterUtil.getLoopToFail();
 						}
 					}
@@ -175,7 +160,7 @@ public class TestPeerIsolation extends TesterImpl{
 					log.info("Demanding the routing table update");
 					peer.pingNodes();
 					timeToClean++;
-				}	
+				}
 				if(!tableUpdated){
 					log.info(" Did not find a sucessor ");
 					fail("Routing Table wasn't updated. Still finding all volatiles. Increase qty of loops.");
@@ -194,7 +179,7 @@ public class TestPeerIsolation extends TesterImpl{
 	}
 
 	@AfterClass(timeout=100000,place=-1)
-	public void end() {		
+	public void end() {
 		log.info("[PastryTest] Peer bye bye");
 	}
 
