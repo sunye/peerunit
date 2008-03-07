@@ -136,7 +136,7 @@
 	</target>
 
 	<target name="compile">
-	  	<javac srcdir="${src.dir}/peerunit"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
+	  	<javac srcdir="${src.dir}"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
 	   </javac>
 	  	<javac srcdir="${tests.dir}"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
 	   </javac>

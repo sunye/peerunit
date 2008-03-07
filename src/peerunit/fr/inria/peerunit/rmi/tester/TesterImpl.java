@@ -68,10 +68,8 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		LOG.info("Starting TesterImpl::run()");
 		assert id >= 0;
 
-		while(!stop){
-			LOG.info("While");
-			if(newMethod){
-				LOG.info("TesterImpl::run() - New method found");
+		while(!stop){			
+			if(newMethod){				
 				try {
 					LOG.log(Level.FINEST,"Creating Invoke thread ");
 					Invoke i = new Invoke(methodDescription);
