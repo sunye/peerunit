@@ -43,8 +43,7 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 	private List<Tester> regPeers = Collections
 			.synchronizedList(new ArrayList<Tester>());
 
-	private AtomicInteger expectedPeers = new AtomicInteger(TesterUtil
-			.getExpectedPeers());
+	private AtomicInteger expectedPeers;
 
 	private int relaxIndex = TesterUtil.getRelaxIndex();
 
@@ -66,6 +65,14 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 	private Map<Integer, Object> cacheMap = new ConcurrentHashMap<Integer, Object>();
 
 	private ExecutorService executor = Executors.newFixedThreadPool(10);
+
+	public CoordinatorImpl() {
+		this(TesterUtil.getExpectedPeers());
+	}
+
+	public CoordinatorImpl(int i) {
+		expectedPeers = new AtomicInteger(i);
+	}
 
 	/**
 	 * @param args
@@ -270,5 +277,9 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 
 	public void clearCollection() throws RemoteException {
 		cacheMap.clear();
+	}
+
+	public Map<MethodDescription, TesterSet> getTesterMap() {
+		return this.testerMap;
 	}
 }

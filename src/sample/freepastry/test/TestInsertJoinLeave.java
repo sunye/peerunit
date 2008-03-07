@@ -20,6 +20,7 @@ import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastContent;
 import rice.tutorial.past.MyPastContent;
 import util.FreeLocalPort;
+import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.Test;
 import fr.inria.peerunit.parser.BeforeClass;
@@ -35,7 +36,7 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
  * @author almeida
  *
  */
-public class TestInsertJoinLeave  extends TesterImpl{
+public class TestInsertJoinLeave  extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestInsertJoinLeave.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();

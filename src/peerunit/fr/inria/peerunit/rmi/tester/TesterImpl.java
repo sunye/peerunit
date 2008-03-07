@@ -4,11 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -21,14 +17,13 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.parser.ParserImpl;
-import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
 
-public class TesterImpl extends Assert implements Tester, Serializable {
+public class TesterImpl extends Object implements Tester, Serializable, Runnable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,7 +33,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 
 	private static Logger PEER_LOG;
 
-	private Coordinator coord;
+	final private Coordinator coord;
 
 	private TestCase testcase;
 
@@ -59,20 +54,9 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	private Verdicts v= Verdicts.PASS;
 
 
-	public TesterImpl() {
-		try {
-			Registry registry = LocateRegistry.getRegistry(TesterUtil.getServerAddr());
-			UnicastRemoteObject.exportObject(this);
-			coord = (Coordinator) registry.lookup("Coordinator");
-
-			} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+	public TesterImpl(Coordinator c) throws RemoteException {
+		coord = c;
+		id = coord.getNewId(this);
 	}
 
 
@@ -81,10 +65,13 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	}
 
 	public void run(){
+		LOG.info("Starting TesterImpl::run()");
 		assert id >= 0;
 
 		while(!stop){
+			LOG.info("While");
 			if(newMethod){
+				LOG.info("TesterImpl::run() - New method found");
 				try {
 					LOG.log(Level.FINEST,"Creating Invoke thread ");
 					Invoke i = new Invoke(methodDescription);
@@ -112,44 +99,26 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 	}
 
 	public void export(Class<? extends TestCaseImpl> c) {
+
+
 		testClass = c;
 		boolean exported=false;
 		try {
-			id = coord.getNewId(this);
+
 			testcase = testClass.newInstance();
 			testcase.setId(id);
 			testcase.setTester(this);
 
-			// Create the peer (sut) logger file
-			PEER_LOG = Logger.getLogger(testClass.getName());
-			FileHandler phandler = new FileHandler(TesterUtil.getLogfolder()+"/" + testClass.getName()+ ".log.peer"+id,true);
-			phandler.setFormatter(new LogFormat());
-			PEER_LOG.addHandler(phandler);
-
-			// Create the tester logger file
-			FileHandler handler = new FileHandler(TesterUtil.getLogfolder()
-					+ "tester" + id + ".log");
-			handler.setFormatter(new LogFormat());
-			LOG.addHandler(handler);
-
-			LOG.setLevel(Level.parse(TesterUtil.getLogLevel()));
-
-			// Parsing creation
-			//String parserClass=TesterUtil.getParserClass();
-			//log.log(Level.FINEST,"Parsing class used is " + parserClass);
-			// parser = (Parser)Class.forName(parserClass).newInstance();
-			// parser.setPeerName(testerName);
-			// parser.setLogger(log);
-
+			createLogFiles();
 			parser  = new ParserImpl(id, LOG);
 
-			LOG.log(Level.INFO,"My name is tester" + id);
+			LOG.log(Level.INFO,"My id is tester" + id);
 
 
 			coord.register(this, parser.parse(testClass));
 
 			LOG.log(Level.FINEST,"Registration finished ");
-			LOG.log(Level.FINEST,"Thread-group created ");
+			//LOG.log(Level.FINEST,"Thread-group created ");
 			exported=true;
 		} catch (RemoteException e) {
 			LOG.log(Level.SEVERE,"RemoteException",e);
@@ -173,8 +142,28 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		}
 	}
 
+
+	private void createLogFiles() throws IOException {
+
+		String logFolder = TesterUtil.getLogfolder();
+		// Create the peer (sut) logger file
+		PEER_LOG = Logger.getLogger(testClass.getName());
+		FileHandler phandler = new FileHandler(logFolder+"/" + testClass.getName()+ ".peer"+id+".log",true);
+		phandler.setFormatter(new LogFormat());
+		PEER_LOG.addHandler(phandler);
+
+		// Create the tester logger file
+		FileHandler handler = new FileHandler(logFolder
+				+ "tester" + id + ".log");
+		handler.setFormatter(new LogFormat());
+		LOG.addHandler(handler);
+
+		LOG.setLevel(Level.parse(TesterUtil.getLogLevel()));
+	}
+
 	public synchronized void execute(MethodDescription m)
 	throws RemoteException {
+		LOG.info("Starting TesterImpl::execute(MethodDescription)");
 		LOG.log(Level.FINEST,"Permission to execute "+m.getName());
 		setMethodDescription(m);
 	}
@@ -214,7 +203,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		}
 	}
 
-	private void executionInterrupt(boolean error) {
+	public void executionInterrupt(boolean error) {
 		try {
 			if(v == null){
 				v= Verdicts.INCONCLUSIVE;
@@ -295,6 +284,7 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		return  coord.containsKey(key);
 	}
 
+
 	private class Invoke implements Runnable {
 
 		String testCase;
@@ -306,6 +296,8 @@ public class TesterImpl extends Assert implements Tester, Serializable {
 		}
 
 		public void run() {
+			LOG.info("Invoke::run()");
+
 			boolean error = true;
 			LOG.log(Level.INFO,"Peer " + id + " executing test case "
 					+ testCase + " in " + testClass.getSimpleName());

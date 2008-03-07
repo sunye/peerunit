@@ -3,7 +3,14 @@
  */
 package fr.inria.peerunit;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
 import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.util.TesterUtil;
 
 /**
  * @author sunye
@@ -25,11 +32,26 @@ public class TestRunner {
 	 */
 	private TesterImpl tester;
 
-	public TestRunner(Class <? extends TestCaseImpl> klass) {
-		testcase = klass;
-		tester = new TesterImpl();
-		tester.export(testcase);
-		tester.run();
+	public TestRunner(Class<? extends TestCaseImpl> klass) {
+		try {
+			Registry registry = LocateRegistry.getRegistry(TesterUtil
+					.getServerAddr());
+
+			Coordinator coord = (Coordinator) registry.lookup("Coordinator");
+			testcase = klass;
+			tester = new TesterImpl(coord);
+			UnicastRemoteObject.exportObject(tester);
+			tester.export(testcase);
+			tester.run();
+
+		} catch (RemoteException e) {
+			System.out.println("Error: Unable to communicate.");
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			System.out.println("Error: Unable to bind.");
+			e.printStackTrace();
+		}
+
 	}
 
 	/**

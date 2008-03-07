@@ -37,7 +37,7 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
  * @author almeida
  *
  */
-public class TestInsertLeaveC  extends TesterImpl{
+public class TestInsertLeaveC  extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestInsertLeaveC.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();

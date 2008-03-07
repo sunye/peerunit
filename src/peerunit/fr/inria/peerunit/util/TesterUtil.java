@@ -1,5 +1,6 @@
 package fr.inria.peerunit.util;
 
+import java.io.InputStream;
 import java.util.Properties;
 
 public class TesterUtil {
@@ -22,39 +23,44 @@ public class TesterUtil {
 	private static int  loopToFail;
 	private static int  churnPercentage;
 	private static String logLevel;
-	
+
 	private static String getProperty(String property) throws Exception {
 		if (props == null) {
-			props = new Properties();			
-			props.load(ClassLoader.getSystemResourceAsStream("config/tester.properties"));			
+			props = new Properties();
+			InputStream is = ClassLoader.getSystemResourceAsStream("config/tester.properties");
+			if (is == null) {
+				props = System.getProperties();
+			} else {
+				props.load(is);
+			}
 		}
 		return props.getProperty(property);
 	}
-	
+
 	private static int readProperty(){
 		try {
-			peerName=Integer.valueOf(TesterUtil.getProperty("tester.peers")).intValue();			
-			
+			peerName=Integer.valueOf(TesterUtil.getProperty("tester.peers")).intValue();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return peerName;
 	}
-	
+
 	public static int getExpectedPeers(){
 		return readProperty();
 	}
-	
+
 	public static int getPeerName(){
-		if(peerName == Integer.MIN_VALUE){ 
+		if(peerName == Integer.MIN_VALUE){
 			peerName=readProperty();
 		}else peerName--;
 		return peerName;
 	}
-	
+
 	public static String getServerAddr(){
 		try {
-			serverAddr=TesterUtil.getProperty("tester.server");			
+			serverAddr=TesterUtil.getProperty("tester.server");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -62,7 +68,7 @@ public class TesterUtil {
 	}
 	public static String getLogfile(){
 		try {
-			logfile=TesterUtil.getProperty("tester.logfile");			
+			logfile=TesterUtil.getProperty("tester.logfile");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,7 +76,7 @@ public class TesterUtil {
 	}
 	public static String getDateformat(){
 		try {
-			dateformat=TesterUtil.getProperty("tester.log.dateformat");			
+			dateformat=TesterUtil.getProperty("tester.log.dateformat");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -78,7 +84,7 @@ public class TesterUtil {
 	}
 	public static String getTimeformat(){
 		try {
-			timeformat=TesterUtil.getProperty("tester.log.timeformat");			
+			timeformat=TesterUtil.getProperty("tester.log.timeformat");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -86,7 +92,7 @@ public class TesterUtil {
 	}
 	public static String getDelimiter(){
 		try {
-			delimiter=TesterUtil.getProperty("tester.log.delimiter");			
+			delimiter=TesterUtil.getProperty("tester.log.delimiter");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -94,15 +100,16 @@ public class TesterUtil {
 	}
 	public static String getLogfolder(){
 		try {
-			logfolder=TesterUtil.getProperty("tester.logfolder");			
+			logfolder=TesterUtil.getProperty("tester.logfolder");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logfolder = ".";
+			//e.printStackTrace();
 		}
 		return logfolder;
 	}
 	public static String getParserClass(){
 		try {
-			parserClass=TesterUtil.getProperty("tester.parser");			
+			parserClass=TesterUtil.getProperty("tester.parser");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -110,62 +117,62 @@ public class TesterUtil {
 	}
 	public static int getRelaxIndex(){
 		try {
-			relaxIndex=Integer.valueOf(TesterUtil.getProperty("tester.relaxindex")).intValue();			
-			
+			relaxIndex=Integer.valueOf(TesterUtil.getProperty("tester.relaxindex")).intValue();
 		} catch (Exception e) {
-			e.printStackTrace();
+			relaxIndex = 1;
+			//e.printStackTrace();
 		}
 		return relaxIndex;
-	}	
+	}
 	public static int getPort(){
 		try {
-			port=Integer.valueOf(TesterUtil.getProperty("tester.port")).intValue();			
-			
+			port=Integer.valueOf(TesterUtil.getProperty("tester.port")).intValue();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return port;
-	}	
+	}
 	public static int getObjects(){
 		try {
-			objects=Integer.valueOf(TesterUtil.getProperty("test.objects")).intValue();			
-			
+			objects=Integer.valueOf(TesterUtil.getProperty("test.objects")).intValue();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return objects;
-	}	
+	}
 	public static int getSleep(){
 		try {
-			sleep=Integer.valueOf(TesterUtil.getProperty("test.sleep")).intValue();			
-			
+			sleep=Integer.valueOf(TesterUtil.getProperty("test.sleep")).intValue();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return sleep;
-	}	
+	}
 	public static String getBootstrap(){
 		try {
-			bootstrap=TesterUtil.getProperty("test.bootstrap");			
+			bootstrap=TesterUtil.getProperty("test.bootstrap");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return bootstrap;
-	}	
+	}
 	public static int getBootstrapPort(){
 		try {
-			bootstrapPort=Integer.valueOf(TesterUtil.getProperty("test.bootstrap.port")).intValue();			
-			
+			bootstrapPort=Integer.valueOf(TesterUtil.getProperty("test.bootstrap.port")).intValue();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return bootstrapPort;
 	}
-	
+
 	public static int getWaitForMethod(){
 		try {
-			waitForMethod=Integer.valueOf(TesterUtil.getProperty("tester.waitForMethod")).intValue();			
-			
+			waitForMethod=Integer.valueOf(TesterUtil.getProperty("tester.waitForMethod")).intValue();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -174,17 +181,17 @@ public class TesterUtil {
 
 	public static int getLoopToFail(){
 		try {
-			loopToFail=Integer.valueOf(TesterUtil.getProperty("test.loopToFail")).intValue();			
-			
+			loopToFail=Integer.valueOf(TesterUtil.getProperty("test.loopToFail")).intValue();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return loopToFail;
-	}	
+	}
 	public static int getChurnPercentage(){
 		try {
-			churnPercentage=Integer.valueOf(TesterUtil.getProperty("test.churnPercentage")).intValue();			
-			
+			churnPercentage=Integer.valueOf(TesterUtil.getProperty("test.churnPercentage")).intValue();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -192,7 +199,7 @@ public class TesterUtil {
 	}
 	public static String getLogLevel(){
 		try {
-			logLevel=TesterUtil.getProperty("tester.log.level");			
+			logLevel=TesterUtil.getProperty("tester.log.level");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
