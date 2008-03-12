@@ -6,23 +6,21 @@ import java.util.Set;
 
 public class Chronometer {
 	
-	private Map<String, Long> executionTable= new HashMap<String, Long>();
+	private Map<String, ExecutionTime> executionTable= new HashMap<String, ExecutionTime>();
 		
-	public void start(String method){		
-		executionTable.put(method, System.currentTimeMillis());				
+	public void start(String method){						
+		executionTable.put(method, new ExecutionTime(System.currentTimeMillis()));
 	}
 	
 	public void stop(String method){
-		Long temp= executionTable.get(method);
-		executionTable.remove(method);
-		executionTable.put(method, System.currentTimeMillis()-temp.longValue());
+		executionTable.get(method).update(System.currentTimeMillis());
 	}
 	
 	public long getTime(String method){
-		return executionTable.get(method);
+		return executionTable.get(method).getTime();
 	}	
 	
-	public Set<Map.Entry<String, Long>> getExecutionTime(){
+	public Set<Map.Entry<String, ExecutionTime>> getExecutionTime(){
 		return executionTable.entrySet();
 	}	
 }

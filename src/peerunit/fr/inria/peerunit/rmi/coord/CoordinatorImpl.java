@@ -192,9 +192,9 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 				log.log(Level.INFO, "Test Verdict with index " + relaxIndex
 						+ "% is " + verdict.toString());
 
-				for(Map.Entry<String,Long> entry : chrono.getExecutionTime()){
+				for(Map.Entry<String,ExecutionTime> entry : chrono.getExecutionTime()){
 					log.log(Level.INFO, "Method " + entry.getKey()
-							+ " executed in " + entry.getValue()+" msec.");
+							+ " executed in " + entry.getValue().getTime()+" msec.");
 				}
 
 				peers.set(0);
