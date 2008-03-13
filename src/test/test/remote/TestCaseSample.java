@@ -1,9 +1,6 @@
 package test.remote;
 
 import fr.inria.peerunit.TestCaseImpl;
-import static fr.inria.peerunit.test.assertion.Assert.*;
-import fr.inria.peerunit.parser.AfterClass;
-import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
 
 /**

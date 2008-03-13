@@ -50,7 +50,7 @@ public class MethodDescription implements Comparable<MethodDescription>, Seriali
 		this(m.getName(), "AfterClass", Integer.MAX_VALUE, t.annotationType().getSimpleName(), t.timeout());
 	}
 
-	private  MethodDescription(String name, String testCase, int step, String annotation, int timeout){
+	public  MethodDescription(String name, String testCase, int step, String annotation, int timeout){
 		this.name = name;
 		this.testCase = testCase;
 		this.step = step;

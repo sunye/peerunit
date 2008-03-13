@@ -13,7 +13,5 @@ import fr.inria.peerunit.rmi.tester.TesterImpl;
  */
 public interface TestCase {
 
-	public void setId(int i);
-
 	public void setTester(TesterImpl ti);
 }

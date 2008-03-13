@@ -22,7 +22,6 @@ import rice.pastry.commonapi.PastryIdFactory;
 import rice.pastry.routing.RouteSet;
 import rice.pastry.socket.SocketPastryNodeFactory;
 import rice.pastry.standard.RandomNodeIdFactory;
-import rice.pastry.testing.Ping;
 import rice.persistence.LRUCache;
 import rice.persistence.MemoryStorage;
 import rice.persistence.PersistentStorage;
@@ -268,9 +267,9 @@ public class Peer {
 		}
 	}
 
-	public void ping(PastryNode nd){
+/*	public void ping(PastryNode nd){
 		Ping pg = new Ping(nd);
-	}
+	}*/
 
 	public Id getId(){
 		return node.getNodeId();

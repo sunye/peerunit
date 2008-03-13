@@ -18,6 +18,7 @@ public interface Coordinator extends Remote {
 	public void register(Tester tester, List<MethodDescription> list) throws RemoteException;
 
 	public int getNewId(Tester t) throws RemoteException;
+
 	public void greenLight() throws RemoteException;
 
 	/**

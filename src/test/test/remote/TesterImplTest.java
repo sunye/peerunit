@@ -1,26 +1,27 @@
 package test.remote;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
+import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.junit.Test;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
-import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.parser.ParserImpl;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 
 public class TesterImplTest {
 
-	private Logger log = Logger.getLogger("test");
-	ParserImpl parser = new ParserImpl(-1, log);
+	private static ExecutorImpl executor;
 
 	private static CoordinatorImpl coord;
 	private static TesterImpl tester0, tester1, tester2;
@@ -38,6 +39,7 @@ public class TesterImplTest {
 			coord = new CoordinatorImpl(3);
 			new Thread(coord, "Coordinator").start();
 			tester0 = new TesterImpl(coord);
+			executor = new ExecutorImpl(tester0);
 			tester1 = new TesterImpl(coord);
 			tester2 = new TesterImpl(coord);
 			tester0.export(TestCaseSample.class);
@@ -54,10 +56,6 @@ public class TesterImplTest {
 		fail("Not yet implemented");
 	}
 
-	//@Test
-	public void testSetId() {
-		fail("Not yet implemented");
-	}
 
 	//@Test
 	public void testRun() {
@@ -65,20 +63,16 @@ public class TesterImplTest {
 	}
 
 	@Test
-	public void testExport() {
+	public void testRegister() {
+		MethodDescription md = new MethodDescription("first", "action1", 1,
+				"Test", 1000);
 
-		List<MethodDescription> methods =  parser.parse(TestCaseSample.class);
-
-
-		assertEquals(1, methods.size());
 		assertEquals(1, coord.getTesterMap().size());
 
-		for (MethodDescription md : methods) {
-			assertTrue(coord.getTesterMap().containsKey(md));
-			assertTrue(coord.getTesterMap().get(md).getTesters().contains(tester0));
-			assertTrue(coord.getTesterMap().get(md).getTesters().contains(tester1));
-			assertTrue(coord.getTesterMap().get(md).getTesters().contains(tester2));
-		}
+		assertTrue(coord.getTesterMap().containsKey(md));
+		assertTrue(coord.getTesterMap().get(md).getTesters().contains(tester0));
+		assertTrue(coord.getTesterMap().get(md).getTesters().contains(tester1));
+		assertTrue(coord.getTesterMap().get(md).getTesters().contains(tester2));
 
 	}
 
@@ -86,8 +80,8 @@ public class TesterImplTest {
 	public void testExecute() {
 		try {
 			System.setProperty("executed", "nok");
-			List<MethodDescription> methods = parser
-					.parse(TestCaseSample.class);
+			List<MethodDescription> methods = executor
+					.register(TestCaseSample.class);
 			Thread tt = new Thread(tester0, "Tester 0");
 			tt.start();
 			for (MethodDescription md : methods) {
@@ -95,6 +89,7 @@ public class TesterImplTest {
 			}
 			try {
 				Thread.sleep(600);
+				Thread.yield();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -106,9 +101,11 @@ public class TesterImplTest {
 		assertEquals("ok", System.getProperty("executed"));
 	}
 
-	//@Test
+	@Test
 	public void testGetPeerName() {
-		fail("Not yet implemented");
+		assertEquals(0, tester0.getId());
+		assertEquals(1, tester1.getId());
+		assertEquals(2, tester2.getId());
 	}
 
 	@Test
@@ -127,9 +124,14 @@ public class TesterImplTest {
 		fail("Not yet implemented");
 	}
 
-	//@Test
+	@Test
 	public void testPut() {
-		fail("Not yet implemented");
+		tester0.put(0, "zero");
+		tester1.put(1, "one");
+		tester2.put(2, "two");
+		assertEquals("zero", tester2.get(0));
+		assertEquals("one", tester0.get(1));
+		assertEquals("two", tester1.get(2));
 	}
 
 	//@Test
@@ -149,7 +151,18 @@ public class TesterImplTest {
 
 	//@Test
 	public void testContainsKey() {
+
 		fail("Not yet implemented");
+	}
+
+	@Test
+	public void mysets() {
+		Set<Tester> myset = new HashSet<Tester>();
+
+		assertTrue(myset.add(tester0));
+		assertTrue(!myset.add(tester0));
+		assertTrue(!myset.add(tester0));
+
 	}
 
 }

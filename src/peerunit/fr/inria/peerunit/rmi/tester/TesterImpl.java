@@ -3,20 +3,19 @@ package fr.inria.peerunit.rmi.tester;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.Coordinator;
-import fr.inria.peerunit.Parser;
-import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.parser.ParserImpl;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
@@ -27,31 +26,25 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	private static final long serialVersionUID = 1L;
 
-	private Class<? extends TestCase> testClass;
-
 	private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
 
 	private static Logger PEER_LOG;
 
 	final private Coordinator coord;
 
-	private TestCase testcase;
-
-	private  int id = -1;
+	final private int id;
 
 	private boolean stop=false;
 
-	private boolean newMethod=false;
-
-	private MethodDescription methodDescription;
-
 	private Thread timeoutThread;
 
-	private Thread invokationThread=null;
+	private Thread invokationThread;
 
-	private Parser parser;
+	private ExecutorImpl executor;
 
 	private Verdicts v= Verdicts.PASS;
+
+	private BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
 
 
 	public TesterImpl(Coordinator c) throws RemoteException {
@@ -60,35 +53,20 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	}
 
 
-	public void setId(int i) {
-		id = i;
-	}
-
-	public void run(){
-		LOG.info("Starting TesterImpl::run()");
-		assert id >= 0;
-
-		while(!stop){			
-			if(newMethod){				
-				try {
-					LOG.log(Level.FINEST,"Creating Invoke thread ");
-					Invoke i = new Invoke(methodDescription);
-					invokationThread = new Thread(i);
-					invokationThread.start();
-					LOG.log(Level.FINEST,"Verify the timeout of the Invoke thread ");
-				} catch (RuntimeException e) {
-					e.printStackTrace();
-				}
-				if (methodDescription.getTimeout() > 0) {
-					timeoutThread = new Thread(new Timeout(invokationThread, methodDescription.getTimeout()));
+	public void run() {
+		while (!stop) {
+			MethodDescription md;
+			try {
+				md = executionQueue.take();
+				invokationThread = new Thread(new Invoke(md));
+				invokationThread.start();
+				if (md.getTimeout() > 0) {
+					timeoutThread = new Thread(new Timeout(invokationThread,
+							md.getTimeout()));
 					timeoutThread.start();
 				}
-				newMethod=false;
-				LOG.log(Level.FINEST,"Is Invoke thread alive?");
-			}
-			try {
-				Thread.sleep(TesterUtil.getWaitForMethod());
 			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -98,72 +76,69 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	public void export(Class<? extends TestCaseImpl> c) {
 
-
-		testClass = c;
-		boolean exported=false;
+		boolean exported = false;
 		try {
-
-			testcase = testClass.newInstance();
-			testcase.setId(id);
-			testcase.setTester(this);
-
-			createLogFiles();
-			parser  = new ParserImpl(id, LOG);
-
-			LOG.log(Level.INFO,"My id is tester" + id);
-
-
-			coord.register(this, parser.parse(testClass));
-
-			LOG.log(Level.FINEST,"Registration finished ");
-			//LOG.log(Level.FINEST,"Thread-group created ");
-			exported=true;
+			createLogFiles(c);
+			executor = new ExecutorImpl(this);
+			coord.register(this, executor.register(c));
+			exported = true;
 		} catch (RemoteException e) {
-			LOG.log(Level.SEVERE,"RemoteException",e);
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			LOG.log(Level.SEVERE,"InstantiationException",e);
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			LOG.log(Level.SEVERE,"IllegalAccessException",e);
+			LOG.log(Level.SEVERE, "RemoteException", e);
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			LOG.log(Level.SEVERE,"SecurityException ",e);
+			LOG.log(Level.SEVERE, "SecurityException ", e);
 			e.printStackTrace();
-		} catch (IOException e) {
-			LOG.log(Level.SEVERE,"IOException ",e);
-			e.printStackTrace();
-		} finally{
-			if(!exported){
+		} finally {
+			if (!exported) {
 				executionInterrupt(true);
 			}
 		}
 	}
 
 
-	private void createLogFiles() throws IOException {
+	/**
+	 * @param c
+	 * @throws IOException
+	 *
+	 * Creates the peer and the tester log files.
+	 */
+	private void createLogFiles(Class<? extends TestCaseImpl> c) {
 
-		String logFolder = TesterUtil.getLogfolder();
-		// Create the peer (sut) logger file
-		PEER_LOG = Logger.getLogger(testClass.getName());
-		FileHandler phandler = new FileHandler(logFolder+"/" + testClass.getName()+ ".peer"+id+".log",true);
-		phandler.setFormatter(new LogFormat());
-		PEER_LOG.addHandler(phandler);
+		LogFormat format = new LogFormat();
+		Level level = Level.parse(TesterUtil.getLogLevel());
 
-		// Create the tester logger file
-		FileHandler handler = new FileHandler(logFolder
-				+ "tester" + id + ".log");
-		handler.setFormatter(new LogFormat());
-		LOG.addHandler(handler);
+		try {
+			String logFolder = TesterUtil.getLogfolder();
+			PEER_LOG = Logger.getLogger(c.getName());
+			FileHandler phandler;
+			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+id+".log",true);
+			phandler.setFormatter(format);
+			PEER_LOG.addHandler(phandler);
+			PEER_LOG.setLevel(level);
 
-		LOG.setLevel(Level.parse(TesterUtil.getLogLevel()));
+			FileHandler handler = new FileHandler(logFolder+ "tester" + id + ".log");
+			handler.setFormatter(format);
+			LOG.addHandler(handler);
+			LOG.setLevel(level);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
-	public synchronized void execute(MethodDescription m)
+	public synchronized void execute(MethodDescription md)
 	throws RemoteException {
-		LOG.info("Starting TesterImpl::execute(MethodDescription)");
-		LOG.log(Level.FINEST,"Permission to execute "+m.getName());
-		setMethodDescription(m);
+		LOG.finest("Starting TesterImpl::execute(MethodDescription) with: " + md);
+		try {
+			executionQueue.put(md);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public int getPeerName() throws RemoteException {
@@ -191,7 +166,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			coord.greenLight();
 			LOG.log(Level.FINEST,"Executed "+methodAnnotation);
-			if(parser.isLastMethod(methodAnnotation)){
+			if(executor.isLastMethod(methodAnnotation)){
 				LOG.log(Level.FINEST,"Test Case finished by annotation "+methodAnnotation);
 				executionInterrupt(false);
 			}
@@ -215,11 +190,6 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			e.printStackTrace();
 		}
 		stop=true;
-	}
-
-	private void setMethodDescription(MethodDescription m){
-		newMethod=true;
-		this.methodDescription=m;
 	}
 
 	/**
@@ -282,63 +252,56 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		return  coord.containsKey(key);
 	}
 
+	private synchronized void invoke(MethodDescription md) {
+		assert executor != null : "Null executor";
+
+		boolean error = true;
+		try {
+			executor.invoke(md);
+			error = false;
+		} catch (SecurityException e) {
+			LOG.log(Level.SEVERE,"SecurityException ",e);
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			LOG.log(Level.SEVERE,"IllegalArgumentException ",e);
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			LOG.log(Level.SEVERE,"IllegalAccessException ",e);
+			e.printStackTrace();
+		}catch (InvocationTargetException e) {
+			Oracle oracle=new Oracle(e.getCause());
+			if(v==Verdicts.FAIL){
+				LOG.log(Level.SEVERE,"FAIL Verdict ",e);
+				error = false;
+			}else{
+				v=oracle.getVerdict();
+				e.printStackTrace();
+			}
+		}catch (Exception e) {
+			LOG.log(Level.SEVERE,"Exception ",e);
+			e.printStackTrace();
+		} finally {
+			if (error) {
+				LOG.log(Level.WARNING," Executed in "+md.getName());
+				executionInterrupt(true);
+			} else{
+				LOG.log(Level.INFO," Executed "+md.getName());
+				executionOk(md.getAnnotation());
+			}
+		}
+	}
+
 
 	private class Invoke implements Runnable {
 
-		String testCase;
-		String annotation;
+		MethodDescription md;
 
 		public Invoke(MethodDescription md) {
-			this.testCase = md.getName();
-			this.annotation = md.getAnnotation();
+			this.md = md;
 		}
 
 		public void run() {
-			LOG.info("Invoke::run()");
-
-			boolean error = true;
-			LOG.log(Level.INFO,"Peer " + id + " executing test case "
-					+ testCase + " in " + testClass.getSimpleName());
-			Method m=null;
-			try {
-				m = testClass.getMethod(testCase, (Class[]) null);
-				if (testCase.equals(m.getName())) {
-					m.invoke(testcase, (Object[]) null);
-				}
-				error = false;
-			} catch (SecurityException e) {
-				LOG.log(Level.SEVERE,"SecurityException ",e);
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				LOG.log(Level.SEVERE,"NoSuchMethodException ",e);
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				LOG.log(Level.SEVERE,"IllegalArgumentException ",e);
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				LOG.log(Level.SEVERE,"IllegalAccessException ",e);
-				e.printStackTrace();
-			}catch (InvocationTargetException e) {
-				Oracle oracle=new Oracle(e.getCause());
-				if(v==Verdicts.FAIL){
-					LOG.log(Level.SEVERE,"FAIL Verdict ",e);
-					error = false;
-				}else{
-					v=oracle.getVerdict();
-					e.printStackTrace();
-				}
-			}catch (Exception e) {
-				LOG.log(Level.SEVERE,"Exception ",e);
-				e.printStackTrace();
-			} finally {
-				if (error) {
-					LOG.log(Level.WARNING," Executed in "+m.getName());
-					executionInterrupt(true);
-				} else{
-					LOG.log(Level.INFO," Executed "+testCase);
-					executionOk(annotation);
-				}
-			}
+			invoke(md);
 		}
 	}
 }

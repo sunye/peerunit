@@ -12,10 +12,7 @@ public abstract class TestCaseImpl implements TestCase {
 
 	public void setTester(TesterImpl ti) {
 		tester = ti;
-	}
-
-	public void setId(int i)  {
-		id = i;
+		id = ti.getId();
 	}
 
 	public int getPeerId() {

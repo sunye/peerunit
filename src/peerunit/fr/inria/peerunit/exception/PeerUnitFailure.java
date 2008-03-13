@@ -1,9 +1,9 @@
 package fr.inria.peerunit.exception;
 
-public class PasspartoutFailure extends AssertionError{
+public class PeerUnitFailure extends AssertionError{
 	private static final long serialVersionUID = 1L;
 
-	public PasspartoutFailure(String message) {
+	public PeerUnitFailure(String message) {
 		super (message);
 		
 	}

@@ -1,28 +1,57 @@
-package test.parser;
+package test.executor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.inria.peerunit.exception.AnnotationFailure;
+import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.parser.ParserImpl;
+import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
+import fr.inria.peerunit.rmi.tester.TesterImpl;
 
-public class ParserImplTest {
+public class ExecutorImplTest {
 
+	private static ExecutorImpl executor;
+
+	private static CoordinatorImpl coord;
+	private static TesterImpl tester;
 	private Logger log = Logger.getLogger("test");
-	ParserImpl parser = new ParserImpl(-1, log);
-	TestData data = new TestData();
+
+	@BeforeClass
+	public static void  inititalize() {
+		System.setProperty("tester.peers","3");
+		System.setProperty("tester.log.dateformat","yyyy-MM-dd");
+		System.setProperty("tester.log.timeformat","HH:mm:ss.SSS");
+		System.setProperty("tester.log.level","FINEST");
+		System.setProperty("tester.logfolder","/tmp/");
+		System.setProperty("tester.log.delimiter","|");
+		System.setProperty("tester.waitForMethod","500");
+		try {
+			coord = new CoordinatorImpl(3);
+			new Thread(coord, "Coordinator").start();
+			tester = new TesterImpl(coord);
+			executor = new ExecutorImpl(tester);
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 
-	public ParserImplTest() {
+
+	public ExecutorImplTest() {
 		log.setLevel(Level.FINEST);
 	}
 
@@ -34,41 +63,36 @@ public class ParserImplTest {
 	@Test
 	public void testBis() {
 
-		List<MethodDescription> l = parser.parseBis(data.getClass());
-		List<MethodDescription> m = parser.parse(data.getClass());
-
-		assertEquals(l.size(), m.size());
-
-		for(MethodDescription each : l) {
-			assertTrue(m.contains(each));
-		}
-
+		List<MethodDescription> m = executor.register(TestData.class);
+		assertEquals(8, m.size());
+		assertTrue(m.contains(new MethodDescription("here","action4", 0,"Test",1000000)));
+		assertFalse(m.contains(new MethodDescription("notHere","action4", 0,"Test",1000000)));
 	}
 
 	@Test
 	public void testHasFailure() {
 		try {
-			parser.hasFailure(0, -1);
+			executor.validatePeerRange(0, -1);
 			fail("Exception not catch");
 		} catch (AnnotationFailure af) {
 			assertEquals(af.getLocalizedMessage(),"Annotation FROM without TO");
 		}
 		try {
-			parser.hasFailure(-1, 0);
+			executor.validatePeerRange(-1, 0);
 			fail("Exception not catch");
 		} catch (AnnotationFailure af) {
 			assertEquals(af.getLocalizedMessage(),"Annotation TO without FROM");
 		}
 
 		try {
-			parser.hasFailure(-1, -4);
+			executor.validatePeerRange(-1, -4);
 			fail("Exception not catch");
 		} catch (AnnotationFailure af) {
 			assertEquals(af.getLocalizedMessage(),"Invalid value for FROM / TO");
 		}
 
 		try {
-			parser.hasFailure(4, 0);
+			executor.validatePeerRange(4, 0);
 			fail("Exception not catch");
 		} catch (AnnotationFailure af) {
 			assertEquals(af.getLocalizedMessage(), "The value of FROM must be smaller than TO");
