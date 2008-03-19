@@ -18,7 +18,7 @@ while [ $j -le $qtd ]
 do
         awk '{print $2}' ${full_pid_file} | head -n $j | tail -n 1 > teste
         ini=`cat teste`
-	if [ $ini -ne 35834 ] ; then
+	if [ $ini -ne 25544 ] ; then
                 kill $ini
         fi
         j=`expr $j + 1`
@@ -27,3 +27,4 @@ rm /tmp/almeida/teste*
 rm /tmp/almeida/Test*.log*
 rm /tmp/almeida/peerunit.log*
 rm -rf storage*/
+rm /tmp/almeida/freepastry.test.TestUpdateOnShrink.peer*

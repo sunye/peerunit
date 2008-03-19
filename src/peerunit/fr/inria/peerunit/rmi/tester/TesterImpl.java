@@ -65,8 +65,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 					timeoutThread.start();
 				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logStackTrace(e, Level.SEVERE);		    
 			}
 		}
 		LOG.log(Level.INFO,"Stopping Tester ");
@@ -82,11 +81,9 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			coord.register(this, executor.register(c));
 			exported = true;
 		} catch (RemoteException e) {
-			LOG.log(Level.SEVERE, "RemoteException", e);
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		} catch (SecurityException e) {
-			LOG.log(Level.SEVERE, "SecurityException ", e);
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		} finally {
 			if (!exported) {
 				executionInterrupt(true);
@@ -120,11 +117,9 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			LOG.addHandler(handler);
 			LOG.setLevel(level);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		}
 
 	}
@@ -135,8 +130,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			executionQueue.put(md);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		}
 	}
 
@@ -170,8 +164,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 				executionInterrupt(false);
 			}
 		} catch (RemoteException e) {
-			LOG.log(Level.SEVERE,"RemoteException ",e);
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		}
 	}
 
@@ -185,8 +178,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			LOG.log(Level.INFO,"Test Case local verdict to peer "+id+" is "+v.toString());
 			coord.quit(this,error,v);
 		} catch (RemoteException e) {
-			LOG.log(Level.SEVERE,"RemoteException ",e);
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		}
 		stop=true;
 	}
@@ -201,8 +193,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			coord.put(key, object);
 		} catch (RemoteException e) {
-			LOG.log(Level.SEVERE,"RemoteException ",e);
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		}
 	}
 
@@ -215,8 +206,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			coord.clearCollection();
 		} catch (RemoteException e) {
-			LOG.log(Level.SEVERE,"RemoteException ",e);
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		}
 	}
 
@@ -231,8 +221,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			object = coord.get(key);
 		} catch (RemoteException e) {
-			LOG.log(Level.SEVERE,"RemoteException ",e);
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);		    
 		}
 		return object;
 	}
@@ -258,23 +247,17 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			executor.invoke(md);
 			error = false;
-		/*} catch (SecurityException e) {
-			LOG.log(Level.SEVERE,"SecurityException ",e);
-			e.printStackTrace();*/
 		} catch (IllegalArgumentException e) {
-			LOG.log(Level.SEVERE,"Invokation IllegalArgumentException ",e);
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);	
 		} catch (IllegalAccessException e) {
-			LOG.log(Level.SEVERE,"Invokation IllegalAccessException ",e);
-			e.printStackTrace();
+			logStackTrace(e, Level.SEVERE);	
 		}catch (InvocationTargetException e) {	
 			Oracle oracle=new Oracle(e.getCause());
 			if(oracle.isPeerUnitFailure()){
 				error = false;
 			}
-			v=oracle.getVerdict();
-			LOG.log(Level.SEVERE,"Verdict "+v.toString()+" : ",e);
-			e.printStackTrace();
+			v=oracle.getVerdict();					
+			logStackTrace(e, Level.SEVERE);		    
 		} finally {
 			if (error) {
 				LOG.log(Level.WARNING," Executed in "+md.getName());
@@ -297,5 +280,17 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		public void run() {
 			invoke(md);
 		}
+	}
+	
+	private void logStackTrace(Exception e, Level l){
+		/**
+		 * Logging the stack trace  
+		 */
+		StackTraceElement elements[] = e.getStackTrace();
+		LOG.log(l,e.toString());
+	    for (int i=0, n=elements.length; i<n; i++) {
+	      LOG.log(l,"at "+elements[i].toString());
+	    }			
+		LOG.log(l,"Caused by: "+e.getCause().toString());
 	}
 }
