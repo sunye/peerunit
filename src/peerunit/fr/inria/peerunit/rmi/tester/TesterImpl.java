@@ -19,6 +19,7 @@ import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
 
@@ -26,9 +27,11 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	private static final long serialVersionUID = 1L;
 
-	private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
+	//private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
+	
+	private static PeerUnitLogger LOG = new PeerUnitLogger(TesterImpl.class.getName());
 
-	private static Logger PEER_LOG;
+	private static PeerUnitLogger PEER_LOG;
 
 	final private Coordinator coord;
 
@@ -100,33 +103,33 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 */
 	private void createLogFiles(Class<? extends TestCaseImpl> c) {
 
-		LogFormat format = new LogFormat();
-		Level level = Level.parse(TesterUtil.getLogLevel());
+/*		LogFormat format = new LogFormat();
+		Level level = Level.parse(TesterUtil.getLogLevel());*/
 
 		try {
 			String logFolder = TesterUtil.getLogfolder();
-			PEER_LOG = Logger.getLogger(c.getName());
+			
+			PEER_LOG = new PeerUnitLogger(c.getName());
+			PEER_LOG.createLogger(logFolder+"/" + c.getName()+ ".peer"+id+".log");
+			/*PEER_LOG = Logger.getLogger(c.getName());
 			FileHandler phandler;
 			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+id+".log",true);
 			phandler.setFormatter(format);
 			PEER_LOG.addHandler(phandler);
-			PEER_LOG.setLevel(level);
-
-			FileHandler handler = new FileHandler(logFolder+ "tester" + id + ".log");
-			handler.setFormatter(format);
-			LOG.addHandler(handler);
-			LOG.setLevel(level);
+			PEER_LOG.setLevel(level);*/
+			
+			LOG.createLogger(logFolder+ "tester" + id + ".log");
 		} catch (SecurityException e) {
 			logStackTrace(e, Level.SEVERE);		    
-		} catch (IOException e) {
+		} /*catch (IOException e) {
 			logStackTrace(e, Level.SEVERE);		    
-		}
+		}*/
 
 	}
 
 	public synchronized void execute(MethodDescription md)
 	throws RemoteException {
-		LOG.finest("Starting TesterImpl::execute(MethodDescription) with: " + md);
+		LOG.log(Level.FINEST,"Starting TesterImpl::execute(MethodDescription) with: " + md);
 		try {
 			executionQueue.put(md);
 		} catch (InterruptedException e) {
