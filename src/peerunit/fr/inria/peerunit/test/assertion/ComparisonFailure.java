@@ -1,5 +1,7 @@
 package fr.inria.peerunit.test.assertion;
 
+import fr.inria.peerunit.exception.PeerUnitFailure;
+
 
 
 
@@ -10,7 +12,7 @@ package fr.inria.peerunit.test.assertion;
  * 
  * Inspired by a patch from Alex Chaffee (alex@purpletech.com)
  */
-public class ComparisonFailure extends AssertionError {	
+public class ComparisonFailure extends PeerUnitFailure {	
 	/** 
 	 * The maximum length for fExpected and fActual. If it is exceeded, the strings should be shortened. 
 	 * @see ComparisonCompactor

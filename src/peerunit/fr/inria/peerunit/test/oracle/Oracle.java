@@ -1,5 +1,6 @@
 package fr.inria.peerunit.test.oracle;
 
+import fr.inria.peerunit.exception.PeerUnitFailure;
 import fr.inria.peerunit.test.assertion.ArrayComparisonFailure;
 import fr.inria.peerunit.test.assertion.AssertionFailedError;
 import fr.inria.peerunit.test.assertion.ComparisonFailure;
@@ -10,22 +11,37 @@ public class Oracle {
 	Verdicts verdict;
 
 	InconclusiveFailure incFailure=new InconclusiveFailure();
-
-	public Oracle(Throwable throwable){
-
+	
+	Throwable throwable;
+	
+	public Oracle(Throwable t){
+		throwable=t;
+		verdict = peerUnitException();
+	}
+	
+	public boolean isPeerUnitFailure(){
+		return throwable instanceof PeerUnitFailure;
+	}
+	
+	private Verdicts peerUnitException(){
+		/**
+		 * PeerUnit 
+		 */
 		if(throwable instanceof InconclusiveFailure) {
-			verdict = Verdicts.INCONCLUSIVE;
+			return Verdicts.INCONCLUSIVE;
 		}else if(throwable instanceof ArrayComparisonFailure) {
-			verdict = Verdicts.FAIL;
+			return Verdicts.FAIL;
 		}else if(throwable instanceof AssertionFailedError) {
-			verdict = Verdicts.FAIL;
+			return Verdicts.FAIL;
 		}else if(throwable instanceof ComparisonFailure) {
-			verdict = Verdicts.FAIL;
+			return Verdicts.FAIL;
 		}else if(throwable instanceof AssertionError) {
-			verdict = Verdicts.FAIL;
+			return Verdicts.FAIL;
+		}else{
+			return Verdicts.INCONCLUSIVE;
 		}
 	}
-
+	
 	public Verdicts getVerdict(){
 		return verdict;
 	}

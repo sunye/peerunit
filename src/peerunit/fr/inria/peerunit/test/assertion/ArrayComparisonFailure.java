@@ -4,6 +4,8 @@ package fr.inria.peerunit.test.assertion;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.peerunit.exception.PeerUnitFailure;
+
 
 
 
@@ -11,7 +13,7 @@ import java.util.List;
  * Thrown when two array elements differ
  * @see Assert#assertEquals(String, Object[], Object[])
  */
-public class ArrayComparisonFailure extends AssertionError {
+public class ArrayComparisonFailure extends PeerUnitFailure {
 
 	private static final long serialVersionUID= 1L;
 	

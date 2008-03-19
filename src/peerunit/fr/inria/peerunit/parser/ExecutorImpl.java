@@ -95,10 +95,7 @@ public class ExecutorImpl implements Executor {
 	}
 
 	public boolean isLastMethod(String methodAnnotation) {
-		if(methodAnnotation.equalsIgnoreCase("AfterClass"))
-			return true;
-		else
-			return false;
+		return methodAnnotation.equalsIgnoreCase("AfterClass");
 	}
 
 	private boolean isValid(Test a) {

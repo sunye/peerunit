@@ -46,7 +46,6 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	private BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
 
-
 	public TesterImpl(Coordinator c) throws RemoteException {
 		coord = c;
 		id = coord.getNewId(this);
@@ -259,26 +258,22 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			executor.invoke(md);
 			error = false;
-		} catch (SecurityException e) {
+		/*} catch (SecurityException e) {
 			LOG.log(Level.SEVERE,"SecurityException ",e);
-			e.printStackTrace();
+			e.printStackTrace();*/
 		} catch (IllegalArgumentException e) {
-			LOG.log(Level.SEVERE,"IllegalArgumentException ",e);
+			LOG.log(Level.SEVERE,"Invokation IllegalArgumentException ",e);
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			LOG.log(Level.SEVERE,"IllegalAccessException ",e);
+			LOG.log(Level.SEVERE,"Invokation IllegalAccessException ",e);
 			e.printStackTrace();
-		}catch (InvocationTargetException e) {
+		}catch (InvocationTargetException e) {	
 			Oracle oracle=new Oracle(e.getCause());
-			if(v==Verdicts.FAIL){
-				LOG.log(Level.SEVERE,"FAIL Verdict ",e);
+			if(oracle.isPeerUnitFailure()){
 				error = false;
-			}else{
-				v=oracle.getVerdict();
-				e.printStackTrace();
 			}
-		}catch (Exception e) {
-			LOG.log(Level.SEVERE,"Exception ",e);
+			v=oracle.getVerdict();
+			LOG.log(Level.SEVERE,"Verdict "+v.toString()+" : ",e);
 			e.printStackTrace();
 		} finally {
 			if (error) {
@@ -290,7 +285,6 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			}
 		}
 	}
-
 
 	private class Invoke implements Runnable {
 
