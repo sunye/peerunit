@@ -5,7 +5,7 @@
 # Author : Eduardo Almeida
 # Date : 8-mai-2007
 #############
-
+kill_pid=91228
 full_pid_file=pidfile.txt
 
 ps aux |grep java  > ${full_pid_file}
@@ -18,7 +18,7 @@ while [ $j -le $qtd ]
 do
         awk '{print $2}' ${full_pid_file} | head -n $j | tail -n 1 > teste
         ini=`cat teste`
-	if [ $ini -ne 25544 ] ; then
+	if [ $ini -ne $kill_pid ] ; then
                 kill $ini
         fi
         j=`expr $j + 1`

@@ -27,11 +27,9 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	private static final long serialVersionUID = 1L;
 
-	//private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
-	
 	private static PeerUnitLogger LOG = new PeerUnitLogger(TesterImpl.class.getName());
 
-	private static PeerUnitLogger PEER_LOG;
+	private static Logger PEER_LOG;
 
 	final private Coordinator coord;
 
@@ -68,7 +66,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 					timeoutThread.start();
 				}
 			} catch (InterruptedException e) {
-				logStackTrace(e, Level.SEVERE);		    
+				LOG.logStackTrace(e);			    
 			}
 		}
 		LOG.log(Level.INFO,"Stopping Tester ");
@@ -80,16 +78,16 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		boolean exported = false;
 		try {
 			createLogFiles(c);
-			executor = new ExecutorImpl(this);
+			executor = new ExecutorImpl(this,LOG);
 			coord.register(this, executor.register(c));
 			exported = true;
 		} catch (RemoteException e) {
-			logStackTrace(e, Level.SEVERE);		    
+			LOG.logStackTrace(e);			    
 		} catch (SecurityException e) {
-			logStackTrace(e, Level.SEVERE);		    
+			LOG.logStackTrace(e);			    
 		} finally {
 			if (!exported) {
-				executionInterrupt(true);
+				executionInterrupt();
 			}
 		}
 	}
@@ -103,27 +101,25 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 */
 	private void createLogFiles(Class<? extends TestCaseImpl> c) {
 
-/*		LogFormat format = new LogFormat();
-		Level level = Level.parse(TesterUtil.getLogLevel());*/
+		LogFormat format = new LogFormat();
+		Level level = Level.parse(TesterUtil.getLogLevel());
 
 		try {
 			String logFolder = TesterUtil.getLogfolder();
 			
-			PEER_LOG = new PeerUnitLogger(c.getName());
-			PEER_LOG.createLogger(logFolder+"/" + c.getName()+ ".peer"+id+".log");
-			/*PEER_LOG = Logger.getLogger(c.getName());
+			PEER_LOG = Logger.getLogger(c.getName());
 			FileHandler phandler;
 			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+id+".log",true);
 			phandler.setFormatter(format);
 			PEER_LOG.addHandler(phandler);
-			PEER_LOG.setLevel(level);*/
+			PEER_LOG.setLevel(level);
 			
 			LOG.createLogger(logFolder+ "tester" + id + ".log");
 		} catch (SecurityException e) {
-			logStackTrace(e, Level.SEVERE);		    
-		} /*catch (IOException e) {
-			logStackTrace(e, Level.SEVERE);		    
-		}*/
+			LOG.logStackTrace(e);			    
+		} catch (IOException e) {
+			LOG.logStackTrace(e);			    
+		}
 
 	}
 
@@ -133,7 +129,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			executionQueue.put(md);
 		} catch (InterruptedException e) {
-			logStackTrace(e, Level.SEVERE);		    
+			LOG.logStackTrace(e);	  
 		}
 	}
 
@@ -154,7 +150,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 * test.kill(); </code>
 	 */
 	public void kill() {
-		executionInterrupt(true);
+		executionInterrupt();
 		LOG.log(Level.INFO,"Test Case finished by kill ");
 	}
 
@@ -164,26 +160,29 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			LOG.log(Level.FINEST,"Executed "+methodAnnotation);
 			if(executor.isLastMethod(methodAnnotation)){
 				LOG.log(Level.FINEST,"Test Case finished by annotation "+methodAnnotation);
-				executionInterrupt(false);
+				executionInterrupt();
 			}
 		} catch (RemoteException e) {
-			logStackTrace(e, Level.SEVERE);		    
+			LOG.logStackTrace(e);			    
 		}
 	}
 
-	public void executionInterrupt(boolean error) {
+	//public void executionInterrupt(boolean error) {
+	public void executionInterrupt() {
 		try {
 			if(v == null){
 				v= Verdicts.INCONCLUSIVE;
-				error=true;
+				//error=true;
 			}
-
+			executionQueue.clear();
 			LOG.log(Level.INFO,"Test Case local verdict to peer "+id+" is "+v.toString());
-			coord.quit(this,error,v);
+			//coord.quit(this,error,v);
+			coord.quit(this,v);
 		} catch (RemoteException e) {
-			logStackTrace(e, Level.SEVERE);		    
-		}
-		stop=true;
+			LOG.logStackTrace(e);			    
+		} finally{
+			stop=true;	
+		}		
 	}
 
 	/**
@@ -196,7 +195,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			coord.put(key, object);
 		} catch (RemoteException e) {
-			logStackTrace(e, Level.SEVERE);		    
+			LOG.logStackTrace(e);			    
 		}
 	}
 
@@ -209,7 +208,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			coord.clearCollection();
 		} catch (RemoteException e) {
-			logStackTrace(e, Level.SEVERE);		    
+			LOG.logStackTrace(e);			    
 		}
 	}
 
@@ -224,7 +223,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		try {
 			object = coord.get(key);
 		} catch (RemoteException e) {
-			logStackTrace(e, Level.SEVERE);		    
+			LOG.logStackTrace(e);			    
 		}
 		return object;
 	}
@@ -251,20 +250,20 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			executor.invoke(md);
 			error = false;
 		} catch (IllegalArgumentException e) {
-			logStackTrace(e, Level.SEVERE);	
+			LOG.logStackTrace(e);		
 		} catch (IllegalAccessException e) {
-			logStackTrace(e, Level.SEVERE);	
+			LOG.logStackTrace(e);		
 		}catch (InvocationTargetException e) {	
 			Oracle oracle=new Oracle(e.getCause());
 			if(oracle.isPeerUnitFailure()){
 				error = false;
 			}
 			v=oracle.getVerdict();					
-			logStackTrace(e, Level.SEVERE);		    
+			LOG.logStackTrace(e);		    
 		} finally {
 			if (error) {
 				LOG.log(Level.WARNING," Executed in "+md.getName());
-				executionInterrupt(true);
+				executionInterrupt();
 			} else{
 				LOG.log(Level.INFO," Executed "+md.getName());
 				executionOk(md.getAnnotation());
@@ -285,15 +284,5 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		}
 	}
 	
-	private void logStackTrace(Exception e, Level l){
-		/**
-		 * Logging the stack trace  
-		 */
-		StackTraceElement elements[] = e.getStackTrace();
-		LOG.log(l,e.toString());
-	    for (int i=0, n=elements.length; i<n; i++) {
-	      LOG.log(l,"at "+elements[i].toString());
-	    }			
-		LOG.log(l,"Caused by: "+e.getCause().toString());
-	}
+
 }

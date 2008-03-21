@@ -28,7 +28,8 @@ public interface Coordinator extends Remote {
 	 * @param Verdict
 	 * @param Expected index of inconclusive verdicts
 	 */
-	public void quit(Tester t,boolean error,Verdicts v) throws RemoteException;
+	//public void quit(Tester t,boolean error,Verdicts v) throws RemoteException;
+	public void quit(Tester t,Verdicts v) throws RemoteException;
 
 	/**
 	 * Used to cache testing global variables

@@ -6,20 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 
 import fr.inria.peerunit.Executor;
 import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.util.PeerUnitLogger;
 
 public class ExecutorImpl implements Executor {
 
 	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
 	private TesterImpl tester;
 	private TestCase testcase;
-
-	public ExecutorImpl(TesterImpl t) {
+	private PeerUnitLogger LOG;
+	public ExecutorImpl(TesterImpl t, PeerUnitLogger l) {
 		this.tester = t;
+		this.LOG=l;
 	}
 
 
@@ -52,10 +55,8 @@ public class ExecutorImpl implements Executor {
 			testcase = c.newInstance();
 			testcase.setTester(tester);
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -63,24 +64,24 @@ public class ExecutorImpl implements Executor {
 		for(Method each : c.getMethods()) {
 			t = each.getAnnotation(Test.class);
 			if (this.isValid(t)) {
-				methods.put(new MethodDescription(each, t), each);
+				methods.put(new MethodDescription(each, t), each);				
 			}
 		}
 
 		for(Method each : c.getMethods()) {
 			bc = each.getAnnotation(BeforeClass.class);
 			if (this.isValid(bc)) {
-				methods.put(new MethodDescription(each, bc), each);
+				methods.put(new MethodDescription(each, bc), each);				
 			}
 		}
 
 		for(Method each : c.getMethods()) {
 			ac = each.getAnnotation(AfterClass.class);
 			if (this.isValid(ac)) {
-				methods.put(new MethodDescription(each, ac), each);
+				methods.put(new MethodDescription(each, ac), each);				
 			}
 		}
-
+		LOG.log(Level.FINEST,"I will execute the method: "+methods.keySet().toString());
 		return new ArrayList<MethodDescription>(methods.keySet());
 	}
 

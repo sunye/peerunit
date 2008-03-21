@@ -254,7 +254,8 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 		runningTesters.incrementAndGet();
 	}
 
-	public void quit(Tester t, boolean error, Verdicts localVerdict)
+	//public void quit(Tester t, boolean error, Verdicts localVerdict)
+	public void quit(Tester t,  Verdicts localVerdict)
 			throws RemoteException {
 		expectedTesters.decrementAndGet();
 		registeredTesters.remove(t);
@@ -262,12 +263,12 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 				+ localVerdict.toString());
 		verdict.setGlobalVerdict(localVerdict, relaxIndex);
 
-		if (error) {
+		//if (error) {
 			testersInError.add(t);
 			log.log(Level.FINEST, "Tester quits by error " + t.toString());
-		} else {
+		/*} else {
 			log.log(Level.INFO, "Tester finished " + t.toString());
-		}
+		}*/
 		log.log(Level.FINEST, "Expecting " + registeredTesters.size());
 		log.log(Level.FINEST, "Judged " + verdict.getJudged());
 	}

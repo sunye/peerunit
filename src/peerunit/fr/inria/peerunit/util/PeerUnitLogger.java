@@ -32,4 +32,15 @@ public class PeerUnitLogger {
 		LOG.log(level, msg);
 	}
 	
+	public void logStackTrace(Exception e){
+		/**
+		 * Logging the stack trace  
+		 */
+		StackTraceElement elements[] = e.getStackTrace();
+		LOG.log(Level.SEVERE,e.toString());
+	    for (int i=0, n=elements.length; i<n; i++) {
+	      LOG.log( Level.SEVERE,"at "+elements[i].toString());
+	    }			
+		LOG.log( Level.SEVERE,"Caused by: "+e.getCause().toString());
+	}
 }
