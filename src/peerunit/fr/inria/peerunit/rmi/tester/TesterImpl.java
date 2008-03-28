@@ -65,6 +65,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 							md.getTimeout()));
 					timeoutThread.start();
 				}
+				Thread.currentThread().wait();
 			} catch (InterruptedException e) {
 				LOG.logStackTrace(e);			    
 			}
@@ -128,6 +129,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		LOG.log(Level.FINEST,"Starting TesterImpl::execute(MethodDescription) with: " + md);
 		try {
 			executionQueue.put(md);
+			Thread.currentThread().notifyAll();
 		} catch (InterruptedException e) {
 			LOG.logStackTrace(e);	  
 		}
