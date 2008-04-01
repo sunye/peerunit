@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,17 +56,18 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	public void run() {
 		while (!stop) {
-			MethodDescription md;
+			MethodDescription md=null;
 			try {
-				md = executionQueue.take();
-				invokationThread = new Thread(new Invoke(md));
-				invokationThread.start();
-				if (md.getTimeout() > 0) {
-					timeoutThread = new Thread(new Timeout(invokationThread,
-							md.getTimeout()));
-					timeoutThread.start();
-				}
-				Thread.currentThread().wait();
+				md = executionQueue.poll(TesterUtil.getWaitForMethod(),TimeUnit.MILLISECONDS);
+				if(md != null){
+					invokationThread = new Thread(new Invoke(md));
+					invokationThread.start();
+					if (md.getTimeout() > 0) {
+						timeoutThread = new Thread(new Timeout(invokationThread,
+								md.getTimeout()));
+						timeoutThread.start();
+					}				
+				}			
 			} catch (InterruptedException e) {
 				LOG.logStackTrace(e);			    
 			}
@@ -128,8 +130,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	throws RemoteException {
 		LOG.log(Level.FINEST,"Starting TesterImpl::execute(MethodDescription) with: " + md);
 		try {
-			executionQueue.put(md);
-			Thread.currentThread().notifyAll();
+			executionQueue.put(md);			
 		} catch (InterruptedException e) {
 			LOG.logStackTrace(e);	  
 		}
