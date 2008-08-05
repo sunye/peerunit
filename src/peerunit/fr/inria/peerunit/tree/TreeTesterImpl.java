@@ -1,38 +1,38 @@
 package fr.inria.peerunit.tree;
 
+import java.io.Serializable;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 
-public class TreeTesterImpl  implements TreeTester{
+public class TreeTesterImpl  implements TreeTester,Serializable{
 	
-	public static void main(String args[]){
+	private static final long serialVersionUID = 1L;
+	
+	private int id;
+
+	public static void main(String args[]) throws Exception{
 		TreeTester tt= new TreeTesterImpl();
-		tt.startNet(tt);
-		tt.run();		
+		tt.startNet();		
 	}
 	
-	public void startNet(TreeTester t){		
-		Registry registry=null;
+	public  void startNet() throws RemoteException{		
+
 		try {
-			registry = LocateRegistry.getRegistry("172.16.9.101");
+						
+			Registry registry = LocateRegistry.getRegistry("172.16.9.101");
 			Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");	
-			boot.register(t);
-			UnicastRemoteObject.exportObject(t);
+			id=boot.register(this);
+			System.out.println("My ID is: "+id);
+			UnicastRemoteObject.exportObject(this);			
+			
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	
-	}
-	
-	public void run(){
-		
-	}
+		} 
+	}	
 }

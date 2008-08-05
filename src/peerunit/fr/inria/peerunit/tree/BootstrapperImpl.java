@@ -1,18 +1,23 @@
 package fr.inria.peerunit.tree;
 
-import java.rmi.AlreadyBoundException;
-import java.rmi.Remote;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import fr.inria.peerunit.Tester;
+public class BootstrapperImpl  implements  Bootstrapper,Serializable {
+	
+	protected BootstrapperImpl() throws RemoteException {
+		super();		
+	}
 
-public class BootstrapperImpl implements Runnable, Remote, Bootstrapper{
+	private static final long serialVersionUID = 1L;
+
 	//private static int expectedTesters=TesterUtil.getExpectedPeers();
 	private static int expectedTesters=4;
 
@@ -21,50 +26,41 @@ public class BootstrapperImpl implements Runnable, Remote, Bootstrapper{
 	private List<TreeTester> registeredTesters = Collections
 	.synchronizedList(new ArrayList<TreeTester>());
 
-	public static void main(String[] args) {	
+	public static void main(String[] args) throws Exception{	
 		BootstrapperImpl boot=new BootstrapperImpl();
-
-		try {
-			boot.startNet(boot);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			e.printStackTrace();
-		}
-
-		Thread updateThread = new Thread(boot, "StockInfoUpdate");
-		updateThread.start();
-	}
-
-	private void startNet(BootstrapperImpl boot) throws RemoteException, AlreadyBoundException  {
-		// Bind the remote object's stub in the registry
+		Bootstrapper stub = (Bootstrapper) UnicastRemoteObject.exportObject(
+				boot, 0);
 		Registry registry = LocateRegistry.createRegistry(1099);
-		registry.bind("Bootstrapper", boot);
-	}
+
+		registry.bind("Bootstrapper", stub);
+				
+		//boot.waitForTesterRegistration() ;
+		/*Thread updateThread = new Thread(boot, "Bootstrapper");
+		updateThread.start();*/
+	}	
 
 	public void run() {
 		waitForTesterRegistration() ;
 	}
 
-	private void waitForTesterRegistration() {
-		while (registered.get() < expectedTesters) {
+	private synchronized void waitForTesterRegistration() {		
+		while (registeredTesters.size() < expectedTesters) {
 			try {
-				synchronized (registeredTesters) {
-					registeredTesters.wait();
-				}
+				
+				//synchronized (registeredTesters) {
+					System.out.println("Waiting registrations "+registeredTesters.size() );
+				//}
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public synchronized void register(TreeTester t)	throws RemoteException {	
+	public synchronized int register(TreeTester t)	throws RemoteException {		
+		int id = registered.getAndIncrement();
 		registeredTesters.add(t);		
-		registeredTesters.notifyAll();		
-	}
-	
-	public  int getNewId(TreeTester t) throws RemoteException {
-		int id = runningTesters.getAndIncrement();
+		//registeredTesters.notifyAll();		
 		System.out.println("New Registered Tester: " + id);
 		return id;
 	}
