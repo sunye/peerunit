@@ -5,5 +5,5 @@ import java.rmi.RemoteException;
 
 public interface Bootstrapper extends Remote{
 	public int register(TreeTester t) throws RemoteException;	
-
+	
 }

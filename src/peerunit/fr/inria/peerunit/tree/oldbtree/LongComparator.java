@@ -1,4 +1,4 @@
-package fr.inria.peerunit.tree.btree;
+package fr.inria.peerunit.tree.oldbtree;
 
 public class LongComparator implements Comparator{
 	protected Long number;

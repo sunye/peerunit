@@ -7,19 +7,23 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import fr.inria.peerunit.tree.oldbtree.TreeElements;
+
 
 public class TreeTesterImpl  implements TreeTester,Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
 	private int id;
+	
+	private TreeElements tree;
 
 	public static void main(String args[]) throws Exception{
-		TreeTester tt= new TreeTesterImpl();
+		TreeTesterImpl tt= new TreeTesterImpl();
 		tt.startNet();		
 	}
 	
-	public  void startNet() throws RemoteException{		
+	private  void startNet(){		
 
 		try {
 						
@@ -35,4 +39,19 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 			e.printStackTrace();
 		} 
 	}	
+	
+	/**
+	 * Elements of the BTree
+	 */	
+	public void setTreeElements(TreeElements tree) throws RemoteException{
+		this.tree=tree;
+	}
+	
+	public void startExecution() throws RemoteException{
+		
+	}
+	
+	public int getId(){
+		return id;
+	}
 }

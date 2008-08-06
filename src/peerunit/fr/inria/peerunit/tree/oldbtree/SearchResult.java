@@ -1,4 +1,4 @@
-package fr.inria.peerunit.tree.btree;
+package fr.inria.peerunit.tree.oldbtree;
 
 public class SearchResult {
 	private BTNode btnode;
