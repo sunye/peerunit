@@ -1,11 +1,16 @@
 package fr.inria.peerunit.tree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 
-public class TreeElements {
+public class TreeElements implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private TreeTester parent;
 	private TreeTester root;	
 	private List<TreeTester> children = Collections.synchronizedList(new ArrayList<TreeTester>(2));
@@ -13,6 +18,11 @@ public class TreeElements {
 	public TreeElements(TreeTester parent, TreeTester root,  List<TreeTester> children){
 		this.parent=parent;
 		this.children=children;
+		this.root=root;
+	}	
+	
+	public TreeElements(TreeTester parent, TreeTester root){
+		this.parent=parent;		
 		this.root=root;
 	}	
 	
