@@ -1,10 +1,9 @@
-package fr.inria.peerunit.tree.oldbtree;
+package fr.inria.peerunit.tree;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.inria.peerunit.tree.TreeTester;
 
 public class TreeElements {
 	private TreeTester parent;

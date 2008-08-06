@@ -3,7 +3,6 @@ package fr.inria.peerunit.tree;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import fr.inria.peerunit.tree.oldbtree.TreeElements;
 
 
 
