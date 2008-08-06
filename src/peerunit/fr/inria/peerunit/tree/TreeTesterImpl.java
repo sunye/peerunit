@@ -15,7 +15,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 	
 	private int id;
 	
-	private TreeElements tree;
+	private TreeElements tree=null;
 
 	public static void main(String args[]) throws Exception{
 		TreeTesterImpl tt= new TreeTesterImpl();
@@ -27,10 +27,10 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 		try {
 						
 			Registry registry = LocateRegistry.getRegistry("172.16.9.101");
-			Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");	
+			Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
+			UnicastRemoteObject.exportObject(this);		
 			id=boot.register(this);
-			System.out.println("My ID is: "+id);
-			UnicastRemoteObject.exportObject(this);			
+			System.out.println("My ID is: "+id);				
 			
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -42,8 +42,8 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 	/**
 	 * Elements of the BTree
 	 */	
-	public void setTreeElements(TreeElements tree) throws RemoteException{
-		this.tree=tree;
+	public synchronized void setTreeElements(TreeElements tree) throws RemoteException{
+		this.tree=tree;		
 	}
 	
 	public void startExecution() throws RemoteException{
@@ -53,4 +53,6 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 	public int getId(){
 		return id;
 	}
+	
+	
 }

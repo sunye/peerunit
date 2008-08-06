@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BTree {
-	private List<String> path=new ArrayList<String>();
-	private List<String> childrenPath=new ArrayList<String>();
+	private List<String> path=new ArrayList<String>();	
 	private String parent;
 	private String theRoot;
 	private Comparable searchKey;
+	private boolean isLeaf;
 	private class BTreeNode {
 
 		private Comparable[] keys;
@@ -33,7 +33,12 @@ public class BTree {
 		}
 		
 		private boolean isLeaf() {
-			return (children[0] == null);
+			if(children[0] == null)
+				isLeaf=true;
+			else
+				isLeaf=false;
+			
+			return isLeaf;
 		}
 
 		private boolean find(Comparable key) {
@@ -133,8 +138,16 @@ public class BTree {
 			for (int i = 0; i < keys.length; i++) {
 				res = res + " " + keys[i] + " ";				
 				if((keys[i]!=null)&&(!keys[i].toString().equalsIgnoreCase(searchKey.toString()))){					
-					parent=keys[i].toString();					
-				}				
+					/* Look to the left */
+					if( (Integer.valueOf(searchKey.toString()) < Integer.valueOf(theRoot))
+							&&(Integer.valueOf(keys[i].toString())>  Integer.valueOf(searchKey.toString()))){
+						parent=keys[i].toString();
+					}else /* Look to the right */ 
+						if((Integer.valueOf(searchKey.toString()) > Integer.valueOf(theRoot))
+							&&(Integer.valueOf(keys[i].toString())<  Integer.valueOf(searchKey.toString()))){							
+						parent=keys[i].toString();
+					}
+				}		
 			}
 			res += "] ";
 			if(!path.contains(res))
@@ -147,8 +160,7 @@ public class BTree {
 			int i = 0;
 			for (i = 0; i < level; i++) res += " ";
 			res = res + this + "\n";
-			for (i = 0; i < children.length; i ++){
-				System.out.println("O i :"+i);
+			for (i = 0; i < children.length; i ++){				
 				if (children[i] != null){
 					res += children[i].toString(level+1);				
 				}
@@ -159,7 +171,7 @@ public class BTree {
 	
 	int order;
 	static BTreeNode root = null;
-	boolean noKids;
+	
 
 	public BTree(int o) {
 		order = o;
@@ -179,7 +191,8 @@ public class BTree {
 			newRoot.children[0] = root;
 			newRoot.children[1] = returnNode;
 			root = newRoot;
-			theRoot=newRootKey.toString();
+			if(theRoot==null)
+				theRoot=newRootKey.toString();
 		}
 	}
 
@@ -188,18 +201,12 @@ public class BTree {
 		return (res + root.toString(0));
 	}
 	
-/*	public BTreeElements getTreeElements(Integer i, int order){
-
-		
-		BTree btree = new BTree(order);
-		btree.find(i);		
-		if(noKids)
-			return new BTreeElements(Integer.valueOf(parent),Integer.valueOf(theRoot));
-		else
-			return new BTreeElements(Integer.valueOf(parent),Integer.valueOf(theRoot),null);
-	}*/
-	
-	
+	public BTreeElements getTreeElements(Integer i){		
+		this.find(i);		
+		System.out.println("Root is "+this.getTheRoot());
+		System.out.println("Parent is "+this.getParent());
+		return new BTreeElements(Integer.valueOf(parent),Integer.valueOf(theRoot));		
+	}	
 	
 	public List<String> getPath(){
 		return path;
@@ -213,14 +220,41 @@ public class BTree {
 		return theRoot;
 	}
 	
-	public List<String> getChildrenPath(){
-		return childrenPath;
+	public boolean isLeaf(){		
+		return isLeaf;
 	}
 	
-	public static void main(String[] args) {
-		BTree btree = new BTree(1);
+/*	public Integer getChildren(int possChildren,Integer actualKey){
+
+		if(!isLeaf){
+			int startKey=possChildren-actualKey.intValue();
+			int endKey=possChildren+actualKey.intValue();
+			
+			if(startKey<0){
+				startKey=0;
+			}	
+			
+			if(endKey>7){
+				endKey=7;
+			}
+			
+			for(int iKey=startKey;iKey<endKey;iKey++){				
+				this.find(Integer.valueOf(iKey));		
+				System.out.println(iKey+" with parent "+this.getParent());
+			}
+			for(String s:this.getPath()){
+				System.out.println("New printing");
+				System.out.println(s);
+			}
+			return 1;
+		}else
+			return null;
+	}*/
+	
+	/*public static void main(String[] args) {
+		BTree btree = new BTree(2);
 		//Integer[] inserts = {9,12,5,6,4,47,56,9,0,23,23,1,2,3,7,8,10,11,13,14};
-		Integer[] inserts = {0,1,2,3,4};
+		Integer[] inserts = {0,1,2,3,4,5,6,7};
 		for (Integer i : inserts) {
 			System.out.println("\nInsert: " + i);
 			btree.insert(i);
@@ -231,20 +265,18 @@ public class BTree {
 			System.out.println("\nSearching: " + i + " ---> " );
 			System.out.println(btree.find(i));
 		}
-		*/
 		
-		btree.noKids=btree.find(1);
 		
-		System.out.println(btree.noKids);
+		Integer actualKey=7;
+				
+		System.out.println(btree.find(actualKey));
+		System.out.println(btree);
 		for(String s:btree.getPath()){
 			System.out.println("Start printing");
 			System.out.println(s);
 		}
-		for(String s:btree.getChildrenPath()){
-			System.out.println("Start Child printing");
-			System.out.println(s);
-		}
+		
 		System.out.println("Root is "+btree.getTheRoot());
 		System.out.println("Parent is "+btree.getParent());
-	}
+	}*/
 }

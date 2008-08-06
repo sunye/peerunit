@@ -6,11 +6,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import fr.inria.peerunit.tree.btree.BTree;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class BootstrapperImpl  implements  Bootstrapper,Serializable {
@@ -20,7 +20,7 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 	
 	private static int expectedTesters=TesterUtil.getExpectedPeers();
 	
-	private List<TreeTester> testers = Collections.synchronizedList(new ArrayList<TreeTester>());
+	private Map<Integer,TreeTester> testers = new HashMap<Integer,TreeTester>();
 	
 	protected BootstrapperImpl() throws RemoteException {
 		super();		
@@ -37,7 +37,9 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("[Bootstrapper] I'm done !");
+		System.out.println("[Bootstrapper] Lets see the tree !");
+		boot.buildTree();
+		System.out.println("[Bootstrapper] Finished !");
 	}	
 
 	private void startNet(BootstrapperImpl boot) {
@@ -57,12 +59,35 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 	
 	public synchronized int register(TreeTester t)	throws RemoteException {		
 		int id = registered.getAndIncrement();					
-		testers.add(t);
+		testers.put(id, t);
 		System.out.println("New Registered ID: " + id);
 		return id;
 	}
 	
 	public int getRegistered(){
 		return registered.get();
+	}
+	
+	private void buildTree(){
+		BTree btree=new BTree(2);
+		TreeTester t,parent,root;
+		for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {		
+			btree.insert(i);			
+		}		
+		for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {
+			System.out.println(btree.find(i));			
+			btree.getTreeElements(i);			
+			
+			t=testers.get(i);
+			parent=testers.get(btree.getTreeElements(i).getParent());
+			root=testers.get(btree.getTreeElements(i).getRoot());
+			
+			try {
+				t.setTreeElements(new TreeElements(parent,root));
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }
