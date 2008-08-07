@@ -9,7 +9,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 
 
-public class TreeTesterImpl  implements TreeTester,Serializable{
+public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -18,11 +18,62 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 	private TreeElements tree=new TreeElements();
 	
 	private boolean amIRoot=false;
+	
+	private boolean amILeaf=true;
+	
+	private Long time;
 
 	public static void main(String args[]) throws Exception{
 		TreeTesterImpl tt= new TreeTesterImpl();
-		tt.startNet();		
-		tt.talkToParent();
+		tt.run();
+	}
+	
+	public void run(){
+		startNet();
+		setupTree();
+		int actions=0;		
+		if(amIRoot){	
+			try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e1) {			
+				e1.printStackTrace();
+			}
+			this.time=System.currentTimeMillis();			
+		}
+		
+		while( actions < 8 ){
+			try {
+				if(amIRoot){
+					System.out.println("Start action "+actions);
+					talkToChildren();
+					execute();
+					synchronized (this) {
+						this.wait();
+					}					
+				}else{
+					synchronized (this) {
+						this.wait();
+					}
+					if(!amILeaf){
+						talkToChildren();
+						execute();
+						synchronized (this) {
+							this.wait();
+						}
+					}else{
+						execute();
+					}
+					talkToParent();
+				}				
+			} catch (InterruptedException e) {				
+				e.printStackTrace();
+			}
+			actions++;
+		}
+		if(amIRoot)
+			System.out.println("Execution time "+(System.currentTimeMillis()-this.time));
+		
+		System.exit(0);
 	}
 	
 	private  void startNet(){		
@@ -50,7 +101,15 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 	}
 	
 	public void startExecution() throws RemoteException{
-		
+		synchronized (this) {
+			this.notifyAll();
+		}		
+	}
+
+	public void endExecution() throws RemoteException{
+		synchronized (this) {
+			this.notifyAll();
+		}
 	}
 	
 	public int getId()throws RemoteException {
@@ -59,9 +118,10 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 
 	public void setChildren(TreeTester tester) throws RemoteException {
 		tree.add(tester,id);		
+		this.amILeaf=false;
 	}	
 	
-	private void talkToParent(){
+	private void setupTree(){
 		try {
 			while(tree.getParent()==null){
 				Thread.sleep(1000);
@@ -74,5 +134,27 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void talkToChildren(){
+		for(TreeTester t:tree.getChildren()){
+			try {
+				t.startExecution();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void talkToParent(){	
+		try {
+			tree.getParent().endExecution();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	private void execute(){
+		System.out.println("Executing action");					
 	}
 }
