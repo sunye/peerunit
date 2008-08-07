@@ -13,24 +13,26 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	private int id;
+	public int id;
 	
-	private TreeElements tree=null;
+	private TreeElements tree=new TreeElements();
+	
+	private boolean amIRoot=false;
 
 	public static void main(String args[]) throws Exception{
 		TreeTesterImpl tt= new TreeTesterImpl();
 		tt.startNet();		
+		tt.talkToParent();
 	}
 	
 	private  void startNet(){		
-
 		try {
 						
 			Registry registry = LocateRegistry.getRegistry("172.16.9.101");
 			Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
 			UnicastRemoteObject.exportObject(this);		
 			id=boot.register(this);
-			System.out.println("My ID is: "+id);				
+			System.out.println("My ID is: "+id);		
 			
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -42,7 +44,8 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 	/**
 	 * Elements of the BTree
 	 */	
-	public synchronized void setTreeElements(TreeElements tree) throws RemoteException{
+	public synchronized void setTreeElements(TreeElements tree,boolean isRoot) throws RemoteException{
+		this.amIRoot=isRoot;
 		this.tree=tree;		
 	}
 	
@@ -50,9 +53,26 @@ public class TreeTesterImpl  implements TreeTester,Serializable{
 		
 	}
 	
-	public int getId(){
+	public int getId()throws RemoteException {
 		return id;
 	}
+
+	public void setChildren(TreeTester tester) throws RemoteException {
+		tree.add(tester,id);		
+	}	
 	
-	
+	private void talkToParent(){
+		try {
+			while(tree.getParent()==null){
+				Thread.sleep(1000);
+			}	
+			if(!amIRoot)
+				tree.getParent().setChildren(this);
+			
+		} catch (RemoteException e) {				
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }

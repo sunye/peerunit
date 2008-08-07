@@ -58,9 +58,9 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 	}
 	
 	public synchronized int register(TreeTester t)	throws RemoteException {		
-		int id = registered.getAndIncrement();					
+		int id = registered.getAndIncrement();		
 		testers.put(id, t);
-		System.out.println("New Registered ID: " + id);
+		System.out.println("New Registered ID: " + id+" for "+t);
 		return id;
 	}
 	
@@ -71,6 +71,7 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 	private void buildTree(){
 		BTree btree=new BTree(2);
 		TreeTester t,parent,root;
+		boolean isRoot;
 		for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {		
 			btree.insert(i);			
 		}		
@@ -82,10 +83,14 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 			parent=testers.get(btree.getTreeElements(i).getParent());
 			root=testers.get(btree.getTreeElements(i).getRoot());
 			
+			if(i.intValue()==btree.getTreeElements(i).getRoot().intValue())
+				isRoot=true;
+			else
+				isRoot=false;
+			
 			try {
-				t.setTreeElements(new TreeElements(parent,root));
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
+				t.setTreeElements(new TreeElements(parent,root),isRoot);
+			} catch (RemoteException e) {				
 				e.printStackTrace();
 			}
 		}

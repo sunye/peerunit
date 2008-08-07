@@ -26,6 +26,10 @@ public class TreeElements implements Serializable{
 		this.root=root;
 	}	
 	
+	public TreeElements(){
+		
+	}	
+	
 	public TreeTester getParent(){
 		return parent;
 	}
@@ -35,4 +39,14 @@ public class TreeElements implements Serializable{
 	public List<TreeTester> getChildren(){
 		return children;
 	}
+	public void add(TreeTester t,int id){
+		children.add(t);		
+		System.out.println(id+" added child: "+t);		
+	}
+	public  List<TreeTester>  get(){
+		return children;
+	}
+	public boolean isEmpty(){
+		return children.isEmpty();
+	}	
 }
