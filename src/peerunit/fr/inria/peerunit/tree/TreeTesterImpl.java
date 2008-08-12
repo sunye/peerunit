@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import fr.inria.peerunit.util.PeerUnitLogger;
@@ -30,7 +31,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	private static PeerUnitLogger log = new PeerUnitLogger(TreeTesterImpl.class
 			.getName());
 	
-	private int informedByChildren=0;
+	private AtomicInteger informedByChildren = new AtomicInteger(0);
 	
 	public static void main(String args[]) throws Exception{		
 		TreeTesterImpl tt= new TreeTesterImpl();
@@ -47,17 +48,16 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 				Thread.sleep(4000);
 			} catch (InterruptedException e1) {			
 				e1.printStackTrace();
-			}
-			this.time=System.currentTimeMillis();			
+			}						
 		}
-		
+		this.time=System.currentTimeMillis();
 		while( actions < 8 ){
 			try {
 				if(amIRoot){
 					log.log(Level.INFO, "Start action "+actions);
 					dispatch(actions);
-				}else{
-					synchronized (this) {
+				}else{		
+					synchronized(this){
 						this.wait();
 					}
 					if(!amILeaf){
@@ -77,7 +77,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 		else
 			log.log(Level.INFO, id+" execution time "+(System.currentTimeMillis()-this.time));
 		
-		//System.exit(0);
+		System.exit(0);		
 	}
 	
 	private  void startNet(){		
@@ -105,23 +105,25 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 		log.log(Level.INFO, id+"  my parent is "+tree.getParent());
 	}
 	
-	public void startExecution() throws RemoteException{
-		synchronized (this) {
-			this.notify();
-		}		
+	/**
+	 * Going way down the tree
+	 */
+	public synchronized void startExecution() throws RemoteException{
+		log.log(Level.INFO, id+" I'm about to execute.");		
+		this.notify();				
 	}
 	
 	/**
-	 * Waits all children to inform my parent 
+	 * Going way up the tree
 	 */
-	public void endExecution() throws RemoteException{
-		log.log(Level.INFO, id+" Completes");
-		informedByChildren++;
-		if(informedByChildren==tree.getChildren().size()){			
-			synchronized (this) {
-				this.notify();
-			}
-			informedByChildren=0;
+	public synchronized void endExecution() throws RemoteException{		
+		int value= informedByChildren.incrementAndGet();
+		log.log(Level.INFO, id+" tester completes. Left "+(tree.getChildren().size()-value)+" children");
+		if(value==tree.getChildren().size()){			
+			log.log(Level.INFO, id+" will notify thread.");			
+			this.notify();			
+			log.log(Level.INFO, id+" has notified thread.");
+			informedByChildren.set(0);
 		}		
 	}
 	
@@ -151,6 +153,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	
 	private void talkToChildren(){
 		for(TreeTester t:tree.getChildren()){
+			log.log(Level.INFO, id+" talk to kids "+ t);		
 			try {
 				t.startExecution();
 			} catch (RemoteException e) {
@@ -160,7 +163,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	}
 	
 	private void talkToParent(){	
-		log.log(Level.INFO, id+" Talk do daddy");	
+		log.log(Level.INFO, id+" talk do daddy");	
 		try {
 			tree.getParent().endExecution();
 		} catch (RemoteException e) {
@@ -172,12 +175,10 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 		log.log(Level.INFO, id+" Executing action"+ action);					
 	}
 	
-	private void dispatch(int action) throws InterruptedException {
+	private synchronized void dispatch(int action) throws InterruptedException {
 		log.log(Level.INFO, id+" Dispatching action "+action);		
 		talkToChildren();
-		execute(action);
-		synchronized (this) {
-			this.wait();
-		}
+		execute(action);		
+		this.wait();		
 	}
 }
