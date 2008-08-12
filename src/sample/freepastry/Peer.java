@@ -10,7 +10,11 @@ import java.util.logging.Logger;
 
 import rice.Continuation;
 import rice.environment.Environment;
+import rice.p2p.commonapi.Application;
+import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
+import rice.p2p.commonapi.Message;
+import rice.p2p.commonapi.RouteMessage;
 import rice.p2p.past.Past;
 import rice.p2p.past.PastContent;
 import rice.p2p.past.PastImpl;
@@ -27,8 +31,9 @@ import rice.persistence.MemoryStorage;
 import rice.persistence.PersistentStorage;
 import rice.persistence.Storage;
 import rice.persistence.StorageManagerImpl;
+import rice.tutorial.forwarding.MyMsg;
 import fr.inria.peerunit.util.TesterUtil;
-public class Peer {
+public class Peer implements Application{
 
 	private NodeIdFactory nidFactory;
 
@@ -58,6 +63,8 @@ public class Peer {
 	private List<PastContent> failedContent=new ArrayList<PastContent>();
 
 	private boolean bootstrapper=false;
+	
+	private Endpoint endpoint;
 
 	public boolean join(int bindport, InetSocketAddress bootaddress, Environment environ,Logger log , boolean bootstrapper) throws InterruptedException,IOException {
 		this.bootstrapper=bootstrapper;
@@ -114,6 +121,11 @@ public class Peer {
 					tryes++;
 				}
 			}
+		    // We are only going to use one instance of this application on each PastryNode
+		    endpoint = node.buildEndpoint(this, "myinstance");
+		        
+		    // now we can receive messages
+		    endpoint.register();
 		}
 
 		// used for generating PastContent object Ids.
@@ -287,4 +299,33 @@ public class Peer {
 	public List<Id> getNullResulKeys(){
 		return nullResult;
 	}
+		
+	public void deliver(Id id, Message message) {
+	    System.out.println(this+" received "+message);		
+	}
+
+	public boolean forward(RouteMessage message) {
+	    try {
+	        MyMsg msg = (MyMsg)message.getMessage(endpoint.getDeserializer());
+	        msg.addHop(endpoint.getLocalNodeHandle());    
+	      } catch (IOException ioe) {
+	        ioe.printStackTrace(); 
+	      }
+	      return true;
+	}
+
+	public void update(rice.p2p.commonapi.NodeHandle arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	 public void routeMyMsg(Id id) {
+	    System.out.println(this+" sending to "+id);    
+	    Message msg = new MyMsg(endpoint.getId(), id);
+	    endpoint.route(id, msg, null);
+	}
+	 
+	 public Past getPast(){
+		 return app;
+	 }
 }

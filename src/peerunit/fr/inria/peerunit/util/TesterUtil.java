@@ -23,11 +23,15 @@ public class TesterUtil {
 	private static int  loopToFail;
 	private static int  churnPercentage;
 	private static String logLevel;
+	private static int  treeOrder;
 
 	private static String getProperty(String property) throws Exception {
 		if (props == null) {
 			props = new Properties();
-			InputStream is = ClassLoader.getSystemResourceAsStream("config/tester.properties");
+			//String propFile=System.getProperty("user.dir")+"tester.properties";
+			String propFile="tester.properties";
+			System.out.println("Prop file is: "+propFile);
+			InputStream is = ClassLoader.getSystemResourceAsStream(propFile);
 			if (is == null) {
 				props = System.getProperties();
 			} else {
@@ -204,5 +208,14 @@ public class TesterUtil {
 			e.printStackTrace();
 		}
 		return logLevel;
+	}
+	public static int getTreeOrder(){
+		try {
+			treeOrder=Integer.valueOf(TesterUtil.getProperty("test.treeOrder")).intValue();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return treeOrder;
 	}
 }

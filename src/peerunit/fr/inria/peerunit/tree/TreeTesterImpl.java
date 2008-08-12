@@ -6,6 +6,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Level;
+
+import fr.inria.peerunit.util.PeerUnitLogger;
+import fr.inria.peerunit.util.TesterUtil;
 
 
 
@@ -22,8 +26,13 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	private boolean amILeaf=true;
 	
 	private Long time;
-
-	public static void main(String args[]) throws Exception{
+	
+	private static PeerUnitLogger log = new PeerUnitLogger(TreeTesterImpl.class
+			.getName());
+	
+	private int informedByChildren=0;
+	
+	public static void main(String args[]) throws Exception{		
 		TreeTesterImpl tt= new TreeTesterImpl();
 		tt.run();
 	}
@@ -31,6 +40,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	public void run(){
 		startNet();
 		setupTree();
+		log.createLogger("tester" + id + ".log");
 		int actions=0;		
 		if(amIRoot){	
 			try {
@@ -44,24 +54,16 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 		while( actions < 8 ){
 			try {
 				if(amIRoot){
-					System.out.println("Start action "+actions);
-					talkToChildren();
-					execute();
-					synchronized (this) {
-						this.wait();
-					}					
+					log.log(Level.INFO, "Start action "+actions);
+					dispatch(actions);
 				}else{
 					synchronized (this) {
 						this.wait();
 					}
 					if(!amILeaf){
-						talkToChildren();
-						execute();
-						synchronized (this) {
-							this.wait();
-						}
+						dispatch(actions);
 					}else{
-						execute();
+						execute(actions);
 					}
 					talkToParent();
 				}				
@@ -71,19 +73,21 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 			actions++;
 		}
 		if(amIRoot)
-			System.out.println("Execution time "+(System.currentTimeMillis()-this.time));
+			log.log(Level.INFO, "Whole execution time "+(System.currentTimeMillis()-this.time));
+		else
+			log.log(Level.INFO, id+" execution time "+(System.currentTimeMillis()-this.time));
 		
-		System.exit(0);
+		//System.exit(0);
 	}
 	
 	private  void startNet(){		
 		try {
 						
-			Registry registry = LocateRegistry.getRegistry("172.16.9.101");
+			Registry registry = LocateRegistry.getRegistry(TesterUtil.getServerAddr());
 			Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
 			UnicastRemoteObject.exportObject(this);		
 			id=boot.register(this);
-			System.out.println("My ID is: "+id);		
+			log.log(Level.INFO, "My ID is: "+id);		
 			
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -98,18 +102,27 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	public synchronized void setTreeElements(TreeElements tree,boolean isRoot) throws RemoteException{
 		this.amIRoot=isRoot;
 		this.tree=tree;		
+		log.log(Level.INFO, id+"  my parent is "+tree.getParent());
 	}
 	
 	public void startExecution() throws RemoteException{
 		synchronized (this) {
-			this.notifyAll();
+			this.notify();
 		}		
 	}
-
+	
+	/**
+	 * Waits all children to inform my parent 
+	 */
 	public void endExecution() throws RemoteException{
-		synchronized (this) {
-			this.notifyAll();
-		}
+		log.log(Level.INFO, id+" Completes");
+		informedByChildren++;
+		if(informedByChildren==tree.getChildren().size()){			
+			synchronized (this) {
+				this.notify();
+			}
+			informedByChildren=0;
+		}		
 	}
 	
 	public int getId()throws RemoteException {
@@ -147,6 +160,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	}
 	
 	private void talkToParent(){	
+		log.log(Level.INFO, id+" Talk do daddy");	
 		try {
 			tree.getParent().endExecution();
 		} catch (RemoteException e) {
@@ -154,7 +168,16 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 		}		
 	}
 	
-	private void execute(){
-		System.out.println("Executing action");					
+	private void execute(int action){
+		log.log(Level.INFO, id+" Executing action"+ action);					
+	}
+	
+	private void dispatch(int action) throws InterruptedException {
+		log.log(Level.INFO, id+" Dispatching action "+action);		
+		talkToChildren();
+		execute(action);
+		synchronized (this) {
+			this.wait();
+		}
 	}
 }

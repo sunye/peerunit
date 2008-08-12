@@ -203,8 +203,6 @@ public class BTree {
 	
 	public BTreeElements getTreeElements(Integer i){		
 		this.find(i);		
-		System.out.println("Root is "+this.getTheRoot());
-		System.out.println("Parent is "+this.getParent());
 		return new BTreeElements(Integer.valueOf(parent),Integer.valueOf(theRoot));		
 	}	
 	
@@ -254,20 +252,29 @@ public class BTree {
 	/*public static void main(String[] args) {
 		BTree btree = new BTree(2);
 		//Integer[] inserts = {9,12,5,6,4,47,56,9,0,23,23,1,2,3,7,8,10,11,13,14};
-		Integer[] inserts = {0,1,2,3,4,5,6,7};
+		//Integer[] inserts = {0,1,2,3,4,5,6,7};
+		
+		List<Integer> inserts=new ArrayList<Integer>();
+		
+		for(int i=0;i<2048;i++){
+			inserts.add(i);
+		}
+		
+		Long time=System.currentTimeMillis();			
+		
 		for (Integer i : inserts) {
 			System.out.println("\nInsert: " + i);
 			btree.insert(i);
 			//System.out.println(btree);
 		}
-		/*Integer[] searches = {23,10,48};
+		Integer[] searches = {23,10,48};
 		for (Integer i : searches) {
 			System.out.println("\nSearching: " + i + " ---> " );
 			System.out.println(btree.find(i));
 		}
 		
-		
-		Integer actualKey=7;
+		System.out.println("Execution time "+(System.currentTimeMillis()-time));
+		/*Integer actualKey=7;
 				
 		System.out.println(btree.find(actualKey));
 		System.out.println(btree);

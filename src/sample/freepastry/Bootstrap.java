@@ -9,7 +9,7 @@ import fr.inria.peerunit.util.TesterUtil;
 import freepastry.test.TestInsertJoin;
 
 public class Bootstrap {
-	private static Logger log = Logger.getLogger(TestInsertJoin.class.getName());
+	private static Logger log = Logger.getLogger("bootstrap");
 
 
 	

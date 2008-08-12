@@ -22,6 +22,8 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 	
 	private Map<Integer,TreeTester> testers = new HashMap<Integer,TreeTester>();
 	
+	private Long time;
+	
 	protected BootstrapperImpl() throws RemoteException {
 		super();		
 	}
@@ -59,6 +61,7 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 	
 	public synchronized int register(TreeTester t)	throws RemoteException {		
 		int id = registered.getAndIncrement();		
+		
 		testers.put(id, t);
 		System.out.println("New Registered ID: " + id+" for "+t);
 		return id;
@@ -69,7 +72,8 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 	}
 	
 	private void buildTree(){
-		BTree btree=new BTree(2);
+		this.time=System.currentTimeMillis();			
+		BTree btree=new BTree(TesterUtil.getTreeOrder());
 		TreeTester t,parent,root;
 		boolean isRoot;
 		for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {		
@@ -83,10 +87,22 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 			parent=testers.get(btree.getTreeElements(i).getParent());
 			root=testers.get(btree.getTreeElements(i).getRoot());
 			
-			if(i.intValue()==btree.getTreeElements(i).getRoot().intValue())
+			if(i.intValue()==btree.getTreeElements(i).getRoot().intValue()){
+				System.out.println(i+" Me root "+t);
 				isRoot=true;
-			else
+			}	else{
 				isRoot=false;
+				/**
+				 * Fix neighbor parent.
+				 * Sometimes neighbors don't have parent, however, root is the one.
+				 * */
+				System.out.println(i+" Me "+t);
+				System.out.println("Parent "+parent);
+				if(parent==null){
+					System.out.println("Parent fixed.");
+					parent=root;
+				}
+			}
 			
 			try {
 				t.setTreeElements(new TreeElements(parent,root),isRoot);
@@ -94,5 +110,6 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Construction time "+(System.currentTimeMillis()-this.time));
 	}
 }

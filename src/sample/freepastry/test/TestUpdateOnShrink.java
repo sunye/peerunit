@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import rice.p2p.past.PastContent;
+import rice.p2p.past.PastContentHandle;
 import rice.pastry.Id;
 import rice.pastry.NodeHandle;
 import fr.inria.peerunit.TestCase;
@@ -171,6 +173,16 @@ public class TestUpdateOnShrink  extends TestCaseImpl {
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
+	public void getHandle(){
+		List<PastContent> cont=peer.getInsertedContent();
+		PastContentHandle pch;
+		for(PastContent pc: cont){
+			pch=pc.getHandle(peer.getPast());
+			System.out.println("NodeHandle "+pch.getNodeHandle());
 		}
 	}
 
