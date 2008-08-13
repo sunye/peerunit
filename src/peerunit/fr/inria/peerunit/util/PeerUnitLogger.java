@@ -13,12 +13,11 @@ public class PeerUnitLogger {
 	}
 	
 	public void createLogger(String pattern){
-		String logFolder = TesterUtil.getLogfolder();
 		LogFormat format = new LogFormat();
 		Level level = Level.parse(TesterUtil.getLogLevel());
 		FileHandler handler=null;
 		try {
-			handler = new FileHandler(logFolder+"/" + pattern,true);
+			handler = new FileHandler(pattern,true);
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
