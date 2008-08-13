@@ -10,6 +10,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.tree.Bootstrapper;
+import fr.inria.peerunit.tree.TreeTesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -26,24 +28,26 @@ public class TestRunner {
 	 */
 	private Class <? extends TestCaseImpl> testcase;
 
-	/**
-	 * The tester, which should communicate with the Coordinator and
-	 * control the test case execution.
-	 */
-	private TesterImpl tester;
-
 	public TestRunner(Class<? extends TestCaseImpl> klass) {
 		try {
 			Registry registry = LocateRegistry.getRegistry(TesterUtil
 					.getServerAddr());
-
-			Coordinator coord = (Coordinator) registry.lookup("Coordinator");
 			testcase = klass;
-			tester = new TesterImpl(coord);
-			UnicastRemoteObject.exportObject(tester);
-			tester.export(testcase);
-			tester.run();
+			
+			switch (TesterUtil.getCoordinationType()) {
+			case 0:				
+				System.out.println("Using the centralized coordination.");
+				bootCentralized(registry);
+				break;
+			case 1:	
+				System.out.println("Using the distributed coordination.");
+				bootBTree(registry);
+				break;
 
+			default:
+				System.out.println("Error: Cannot know where to boot.");
+				break;
+			}
 		} catch (RemoteException e) {
 			System.out.println("Error: Unable to communicate.");
 			e.printStackTrace();
@@ -51,7 +55,6 @@ public class TestRunner {
 			System.out.println("Error: Unable to bind.");
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -75,4 +78,21 @@ public class TestRunner {
 		}
 	}
 
+	/**
+	 * The tester, which should communicate with the Coordinator and
+	 * control the test case execution.
+	 */	
+	private void bootCentralized(Registry registry)throws RemoteException, NotBoundException{
+		Coordinator coord = (Coordinator) registry.lookup("Coordinator");		
+		TesterImpl tester = new TesterImpl(coord);
+		UnicastRemoteObject.exportObject(tester);
+		tester.export(testcase);
+		tester.run();	
+	}
+	
+	private void bootBTree(Registry registry)throws RemoteException, NotBoundException{		
+		Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
+		TreeTesterImpl tester= new TreeTesterImpl(boot);
+		tester.run();
+	}	
 }

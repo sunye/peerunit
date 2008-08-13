@@ -5,7 +5,7 @@
 # Author : Eduardo Almeida
 # Date : 8-mai-2007
 #############
-kill_pid=91228
+kill_pid=${1}
 full_pid_file=pidfile.txt
 
 ps aux |grep java  > ${full_pid_file}

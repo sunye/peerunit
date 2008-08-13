@@ -24,6 +24,7 @@ public class TesterUtil {
 	private static int  churnPercentage;
 	private static String logLevel;
 	private static int  treeOrder;
+	private static int  coordType;
 
 	private static String getProperty(String property) throws Exception {
 		if (props == null) {
@@ -218,4 +219,15 @@ public class TesterUtil {
 		}
 		return treeOrder;
 	}
+	
+	public static int getCoordinationType(){
+		try {
+			coordType=Integer.valueOf(TesterUtil.getProperty("test.coordination")).intValue();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return coordType;
+	}
+	
 }

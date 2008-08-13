@@ -1,16 +1,12 @@
 package fr.inria.peerunit.tree;
 
 import java.io.Serializable;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import fr.inria.peerunit.util.PeerUnitLogger;
-import fr.inria.peerunit.util.TesterUtil;
 
 
 
@@ -33,13 +29,16 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	
 	private AtomicInteger informedByChildren = new AtomicInteger(0);
 	
-	public static void main(String args[]) throws Exception{		
-		TreeTesterImpl tt= new TreeTesterImpl();
-		tt.run();
+	final private Bootstrapper boot;
+	
+	public TreeTesterImpl(Bootstrapper b) throws RemoteException {
+		boot = b;
+		UnicastRemoteObject.exportObject(this);	
+		id=boot.register(this);
+		log.log(Level.INFO, "My ID is: "+id);		
 	}
 	
 	public void run(){
-		startNet();
 		setupTree();
 		log.createLogger("tester" + id + ".log");
 		int actions=0;		
@@ -80,21 +79,6 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 		System.exit(0);		
 	}
 	
-	private  void startNet(){		
-		try {
-						
-			Registry registry = LocateRegistry.getRegistry(TesterUtil.getServerAddr());
-			Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
-			UnicastRemoteObject.exportObject(this);		
-			id=boot.register(this);
-			log.log(Level.INFO, "My ID is: "+id);		
-			
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			e.printStackTrace();
-		} 
-	}	
 	
 	/**
 	 * Elements of the BTree
