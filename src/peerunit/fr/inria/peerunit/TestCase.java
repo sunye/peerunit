@@ -4,6 +4,7 @@
 package fr.inria.peerunit;
 
 import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.tree.TreeTester;
 
 /**
  * @author sunye
@@ -13,5 +14,6 @@ import fr.inria.peerunit.rmi.tester.TesterImpl;
  */
 public interface TestCase {
 
-	public void setTester(TesterImpl ti);
+	public void setTester(TesterImpl ti);	
+	public void setTester(TreeTester tt);
 }

@@ -93,6 +93,7 @@ public class TestRunner {
 	private void bootBTree(Registry registry)throws RemoteException, NotBoundException{		
 		Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
 		TreeTesterImpl tester= new TreeTesterImpl(boot);
+		tester.export(testcase);
 		tester.run();
 	}	
 }

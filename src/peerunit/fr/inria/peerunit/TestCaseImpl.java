@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.tree.TreeTester;
 
 public abstract class TestCaseImpl implements TestCase {
 
@@ -13,6 +14,10 @@ public abstract class TestCaseImpl implements TestCase {
 	public void setTester(TesterImpl ti) {
 		tester = ti;
 		id = ti.getId();
+	}
+	
+	public void setTester(TreeTester tt) {	
+		// does nothing
 	}
 
 	public int getPeerId() {

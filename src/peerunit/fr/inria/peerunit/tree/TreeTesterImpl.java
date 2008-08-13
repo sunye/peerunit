@@ -1,18 +1,33 @@
 package fr.inria.peerunit.tree;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import fr.inria.peerunit.TestCaseImpl;
+import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.test.oracle.Oracle;
+import fr.inria.peerunit.test.oracle.Verdicts;
+import fr.inria.peerunit.tree.parser.ExecutorImpl;
+import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.PeerUnitLogger;
+import fr.inria.peerunit.util.TesterUtil;
 
 
 
 public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	private ExecutorImpl executor;
+	
+	private static Logger PEER_LOG;
 	
 	public int id;
 	
@@ -23,6 +38,8 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	private boolean amILeaf=true;
 	
 	private Long time;
+	
+	private Verdicts v= Verdicts.PASS;
 	
 	private static PeerUnitLogger log = new PeerUnitLogger(TreeTesterImpl.class
 			.getName());
@@ -39,8 +56,8 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	}
 	
 	public void run(){
-		setupTree();
-		log.createLogger("tester" + id + ".log");
+		setupTree();		
+		log.createLogger("/tester" + id + ".log");
 		int actions=0;		
 		if(amIRoot){	
 			try {
@@ -110,7 +127,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 			informedByChildren.set(0);
 		}		
 	}
-	
+
 	public int getId()throws RemoteException {
 		return id;
 	}
@@ -164,5 +181,91 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 		talkToChildren();
 		execute(action);		
 		this.wait();		
+	}
+
+	public void execute(MethodDescription m) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void export(Class<? extends TestCaseImpl> c) {
+		
+		try {			
+			createLogFiles(c);
+			executor = new ExecutorImpl(this,log);
+			log.log(Level.INFO, "Registering actions");	
+			executor.register(c);			
+		} catch (SecurityException e) {
+			log.logStackTrace(e);			    
+		} 
+	}
+	/**
+	 * @param c
+	 * @throws IOException
+	 *
+	 * Creates the peer and the tester log files.
+	 */
+	private void createLogFiles(Class<? extends TestCaseImpl> c) {
+
+		LogFormat format = new LogFormat();
+		Level level = Level.parse(TesterUtil.getLogLevel());
+
+		try {
+			String logFolder = TesterUtil.getLogfolder();
+			
+			PEER_LOG = Logger.getLogger(c.getName());
+			FileHandler phandler;
+			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+id+".log",true);
+			phandler.setFormatter(format);
+			PEER_LOG.addHandler(phandler);
+			PEER_LOG.setLevel(level);
+				
+		} catch (SecurityException e) {
+			log.logStackTrace(e);			    
+		} catch (IOException e) {
+			log.logStackTrace(e);			    
+		}
+	}
+	
+	private synchronized void invoke(MethodDescription md) {
+		assert executor != null : "Null executor";
+
+		boolean error = true;
+		try {
+			executor.invoke(md);
+			error = false;
+		} catch (IllegalArgumentException e) {
+			log.logStackTrace(e);		
+		} catch (IllegalAccessException e) {
+			log.logStackTrace(e);		
+		}catch (InvocationTargetException e) {	
+			Oracle oracle=new Oracle(e.getCause());
+			if(oracle.isPeerUnitFailure()){
+				error = false;
+			}
+			v=oracle.getVerdict();					
+			log.logStackTrace(e);		    
+		} finally {
+			if (error) {
+				log.log(Level.WARNING," Executed in "+md.getName());
+				v= Verdicts.INCONCLUSIVE;
+				//stop=true;	
+			} else{
+				log.log(Level.INFO," Executed "+md.getName());				
+			}
+		}
+	}
+	
+	private class Invoke implements Runnable {
+
+		MethodDescription md;
+
+		public Invoke(MethodDescription md) {
+			this.md = md;
+		}
+
+		public void run() {
+			invoke(md);
+		}
 	}
 }

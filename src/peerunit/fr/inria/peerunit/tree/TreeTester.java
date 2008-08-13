@@ -8,4 +8,5 @@ public interface TreeTester extends Remote{
 	public void setChildren(TreeTester tester) throws RemoteException; 
 	public void startExecution() throws RemoteException;
 	public void endExecution() throws RemoteException;
+	public int getId() throws RemoteException;
 }

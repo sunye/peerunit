@@ -17,7 +17,7 @@ public class PeerUnitLogger {
 		Level level = Level.parse(TesterUtil.getLogLevel());
 		FileHandler handler=null;
 		try {
-			handler = new FileHandler(pattern,true);
+			handler = new FileHandler(TesterUtil.getLogfolder()+pattern,true);
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
