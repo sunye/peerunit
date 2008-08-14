@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.TestCaseImpl;
+import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.test.oracle.Oracle;
@@ -24,7 +25,7 @@ import fr.inria.peerunit.util.TesterUtil;
 
 
 
-public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
+public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester{
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -50,6 +51,8 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	
 	private GlobalVerdict verdict = new GlobalVerdict();
 	
+	private List<Verdicts> localVerdicts=new ArrayList<Verdicts>();
+	
 	private static PeerUnitLogger log = new PeerUnitLogger(TreeTesterImpl.class
 			.getName());
 	
@@ -58,6 +61,8 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	private AtomicInteger informedByChildren = new AtomicInteger(0);
 	
 	final private Bootstrapper boot;
+	
+	private  boolean killed=false;
 	
 	public TreeTesterImpl(Bootstrapper b) throws RemoteException {
 		boot = b;
@@ -101,6 +106,10 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 			}			
 		}
 		if(amIRoot){
+			log.log(Level.INFO, "# Verdicts "+localVerdicts.size());
+			for(Verdicts v:localVerdicts){
+				verdict.setGlobalVerdict(v, relaxIndex);
+			}
 			log.log(Level.INFO, "Whole execution time "+(System.currentTimeMillis()-this.time));
 			log.log(Level.INFO, "Test Verdict with index " + relaxIndex
 					+ "% is " + verdict.toString());
@@ -131,14 +140,15 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	/**
 	 * Going way up the tree
 	 */
-	public synchronized void endExecution(Verdicts v) throws RemoteException{		
+	public synchronized void endExecution(List<Verdicts> localVerdicts) throws RemoteException{		
 		int value= informedByChildren.incrementAndGet();
 		log.log(Level.INFO, id+" tester completes. Left "+(tree.getChildren().size()-value)+" children");
-		verdict.setGlobalVerdict(v, relaxIndex);
+		for(Verdicts v:localVerdicts){
+			this.localVerdicts.add(v);
+		}		
 		if(value==tree.getChildren().size()){			
-			log.log(Level.INFO, id+" will notify thread.");			
+			log.log(Level.INFO, id+" will forward # verdicts "+this.localVerdicts.size());			
 			this.notify();			
-			log.log(Level.INFO, id+" has notified thread.");
 			informedByChildren.set(0);
 		}		
 	}
@@ -180,8 +190,8 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 	
 	private void talkToParent(){	
 		log.log(Level.INFO, id+" talk do daddy");	
-		try {
-			tree.getParent().endExecution(v);
+		try {								
+			tree.getParent().endExecution(localVerdicts);
 		} catch (RemoteException e) {
 			log.logStackTrace(e);		
 		}		
@@ -197,11 +207,18 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 		execute(md);		
 		this.wait();		
 	}
+	
+	public void kill() {
+		 killed=true;
+		log.log(Level.INFO,"Test Case finished by kill ");
+	}
 
 	public void execute(MethodDescription md) throws RemoteException {
-		log.log(Level.INFO, id+" Executing action");
-		invokationThread = new Thread(new Invoke(md));
-		invokationThread.start();		
+		if(!killed){
+			log.log(Level.INFO, id+" Executing action");
+			invokationThread = new Thread(new Invoke(md));
+			invokationThread.start();
+		}
 	}
 	
 	public void export(Class<? extends TestCaseImpl> c) {
@@ -252,8 +269,10 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 			error = false;
 		} catch (IllegalArgumentException e) {
 			log.logStackTrace(e);		
+			v= Verdicts.INCONCLUSIVE;
 		} catch (IllegalAccessException e) {
 			log.logStackTrace(e);		
+			v= Verdicts.INCONCLUSIVE;
 		}catch (InvocationTargetException e) {	
 			Oracle oracle=new Oracle(e.getCause());
 			if(oracle.isPeerUnitFailure()){
@@ -263,12 +282,13 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 			log.logStackTrace(e);		    
 		} finally {
 			if (error) {
-				log.log(Level.WARNING," Executed in "+md.getName());
-				v= Verdicts.INCONCLUSIVE;					
+				log.log(Level.WARNING," Executed in "+md.getName());									
 			} else{
 				log.log(Level.INFO," Executed "+md.getName());			
 				if(executor.isLastMethod(md.getAnnotation())){
-					log.log(Level.FINEST,"Test Case finished by annotation "+md.getAnnotation());					
+					log.log(Level.FINEST,"Test Case finished by annotation "+md.getAnnotation());			
+					log.log(Level.FINEST,"Local verdict "+v);
+					localVerdicts.add(v);	
 				}
 			}
 		}
@@ -285,5 +305,9 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable{
 		public void run() {
 			invoke(md);
 		}
+	}
+
+	public int getPeerName() throws RemoteException {
+		return id;
 	}
 }

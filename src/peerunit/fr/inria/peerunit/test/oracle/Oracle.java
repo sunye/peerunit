@@ -14,13 +14,15 @@ public class Oracle {
 	
 	Throwable throwable;
 	
+	boolean isFailure=false;
+	
 	public Oracle(Throwable t){
 		throwable=t;
 		verdict = peerUnitException();
 	}
 	
 	public boolean isPeerUnitFailure(){
-		return throwable instanceof PeerUnitFailure;
+		return isFailure;	
 	}
 	
 	private Verdicts peerUnitException(){
@@ -28,14 +30,19 @@ public class Oracle {
 		 * PeerUnit 
 		 */
 		if(throwable instanceof InconclusiveFailure) {
+			isFailure=true;
 			return Verdicts.INCONCLUSIVE;
 		}else if(throwable instanceof ArrayComparisonFailure) {
+			isFailure=true;
 			return Verdicts.FAIL;
 		}else if(throwable instanceof AssertionFailedError) {
+			isFailure=true;
 			return Verdicts.FAIL;
 		}else if(throwable instanceof ComparisonFailure) {
+			isFailure=true;
 			return Verdicts.FAIL;
 		}else if(throwable instanceof AssertionError) {
+			isFailure=true;
 			return Verdicts.FAIL;
 		}else{
 			return Verdicts.INCONCLUSIVE;
