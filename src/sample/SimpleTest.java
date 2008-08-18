@@ -7,6 +7,7 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.test.assertion.Assert;
 
 public class SimpleTest extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(SimpleTest.class.getName());
@@ -46,6 +47,7 @@ public class SimpleTest extends TestCaseImpl{
 	@Test(place=-1,timeout=1000000, name = "action7", step = 1)
 	public void action7(){
 		log.log(Level.INFO," action7 ");
+		//Assert.fail("test fail");
 	}
 	
 	@AfterClass(timeout=100,place=-1)

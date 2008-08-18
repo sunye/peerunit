@@ -117,12 +117,13 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			PEER_LOG.addHandler(phandler);
 			PEER_LOG.setLevel(level);
 			
-			LOG.createLogger("/tester" + id + ".log");
+			LOG.createLogger(logFolder+ "/tester" + id + ".log");
 		} catch (SecurityException e) {
 			LOG.logStackTrace(e);			    
 		} catch (IOException e) {
 			LOG.logStackTrace(e);			    
 		}
+
 	}
 
 	public synchronized void execute(MethodDescription md)

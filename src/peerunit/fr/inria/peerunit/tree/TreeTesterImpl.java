@@ -73,7 +73,8 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 	
 	public void run(){
 		setupTree();		
-		log.createLogger("/tester" + id + ".log");		
+		String logFolder = TesterUtil.getLogfolder();
+		log.createLogger(logFolder+ "/tester" + id + ".log");		
 		if(amIRoot){	
 			try {
 				Thread.sleep(4000);
