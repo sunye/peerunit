@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import fr.inria.peerunit.tree.btree.BTree;
 import fr.inria.peerunit.util.TesterUtil;
 
-public class BootstrapperImpl  implements  Bootstrapper,Serializable {
+public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	private static final long serialVersionUID = 1L;
 
 	private AtomicInteger registered = new AtomicInteger(0);
@@ -51,10 +51,12 @@ public class BootstrapperImpl  implements  Bootstrapper,Serializable {
 					boot, 0);
 			Registry registry = LocateRegistry.createRegistry(1099);
 
-			registry.bind("Bootstrapper", stub);			
+			registry.bind("Bootstrapper", stub);
+			//Naming.rebind("//"+TesterUtil.getServerAddr()+"/Bootstrapper", boot);
 		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
+			e.printStackTrace();		
+		}  catch (AlreadyBoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -143,8 +143,9 @@
 	</target>
 
 	<target name="build" description="Creates the peerunit jar file" depends="compile">
-		<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.tester.TesterImpl" base="${build.dir}"></rmic>
+		<!--<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.tester.TesterImpl" base="${build.dir}"></rmic>
 		<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.coord.CoordinatorImpl" base="${build.dir}"></rmic>
+		-->
 		<jar basedir="${build.dir}" jarfile="${peerunit.jar}" update="no">
 		    <fileset
 		    	dir="${build.dir}"

@@ -13,7 +13,7 @@ public class PeerUnitLogger {
 	}
 	
 	public void createLogger(String pattern){
-		LogFormat format = new LogFormat();
+		LogFormat format = new LogFormat();		
 		Level level = Level.parse(TesterUtil.getLogLevel());
 		FileHandler handler=null;
 		try {
@@ -26,6 +26,7 @@ public class PeerUnitLogger {
 		handler.setFormatter(format);
 		LOG.addHandler(handler);
 		LOG.setLevel(level);
+		LOG.log(level,"Logfile location: "+pattern);
 	}
 
 	public void log(Level level, String msg){

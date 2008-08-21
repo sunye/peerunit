@@ -64,20 +64,23 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 	
 	private  boolean killed=false;
 	
+	String logFolder = TesterUtil.getLogfolder();
+	
 	public TreeTesterImpl(Bootstrapper b) throws RemoteException {
 		boot = b;
 		UnicastRemoteObject.exportObject(this);	
 		id=boot.register(this);
+		System.out.println("Log file to use : "+logFolder+ "/tester" + id + ".log");
+		log.createLogger(logFolder+ "/tester" + id + ".log");	
+		log.log(Level.INFO, "Log file to use : "+logFolder+ "/tester" + id + ".log");
 		log.log(Level.INFO, "My ID is: "+id);		
 	}
 	
 	public void run(){
-		setupTree();		
-		String logFolder = TesterUtil.getLogfolder();
-		log.createLogger(logFolder+ "/tester" + id + ".log");		
+		setupTree();			
 		if(amIRoot){	
 			try {
-				Thread.sleep(4000);
+				Thread.sleep(TesterUtil.getWaitForMethod());
 			} catch (InterruptedException e) {			
 				log.logStackTrace(e);		
 			}						
@@ -226,7 +229,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		
 		try {			
 			createLogFiles(c);
-			executor = new ExecutorImpl(this,log);
+			executor = new ExecutorImpl(this,log);			
 			log.log(Level.INFO, "Registering actions");	
 			testList=executor.register(c);			
 		} catch (SecurityException e) {
