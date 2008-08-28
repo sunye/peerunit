@@ -1,4 +1,4 @@
-package fr.inria.peerunit.tree;
+package fr.inria.peerunit.btree;
 
 import java.io.Serializable;
 import java.rmi.AlreadyBoundException;
@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import fr.inria.peerunit.tree.btree.BTree;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
@@ -21,7 +20,7 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	
 	private static int expectedTesters=TesterUtil.getExpectedPeers();
 	
-	private Map<Integer,TreeTester> testers = new HashMap<Integer,TreeTester>();
+	private Map<Integer,Node> nodes = new HashMap<Integer,Node>();
 	
 	private Long time;
 	
@@ -56,22 +55,18 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 			stub = (Bootstrapper) UnicastRemoteObject.exportObject(
 					boot, 0);
 			Registry registry = LocateRegistry.createRegistry(1099);
-
 			registry.bind("Bootstrapper", stub);
-			//Naming.rebind("//"+TesterUtil.getServerAddr()+"/Bootstrapper", boot);
 		} catch (RemoteException e) {
 			e.printStackTrace();		
 		}  catch (AlreadyBoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public synchronized int register(TreeTester t)	throws RemoteException {		
-		int id = registered.getAndIncrement();		
-		
-		testers.put(id, t);
-		System.out.println("New Registered ID: " + id+" for "+t);
+	public synchronized int register(Node node)	throws RemoteException {		
+		int id = registered.getAndIncrement();				
+		nodes.put(id, node);
+		System.out.println("New Registered ID: " + id+" for "+node);
 		return id;
 	}
 	
@@ -82,38 +77,23 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	private void buildTree(){
 		this.time=System.currentTimeMillis();			
 		BTree btree=new BTree(TesterUtil.getTreeOrder());
-		TreeTester t,parent,root;
-		boolean isRoot;
-		for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {		
-			btree.insert(i);			
-		}		
+		btree.buildTree();
+		Node node;
+
 		this.time=System.currentTimeMillis()-this.time;		
-		for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {
-			System.out.println(btree.find(i));			
-			btree.getTreeElements(i);			
+		for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {	
 			
-			t=testers.get(i);
-			parent=testers.get(btree.getTreeElements(i).getParent());
-			root=testers.get(btree.getTreeElements(i).getRoot());
+			TreeElements te=new TreeElements();
+			for(BTreeNode child:btree.getNode(i).children){
+				te.setChildren(nodes.get(child.id));	
+			}
 			
-			if(i.intValue()==btree.getTreeElements(i).getRoot().intValue()){
-				System.out.println(i+" Me root "+t);
-				isRoot=true;
-			}	else{
-				isRoot=false;
-				/**
-				 * Fix neighbor parent.
-				 * Sometimes neighbors don't have parent, however, root is the one.
-				 * */
-				System.out.println(i+" Me "+t);
-				System.out.println("Parent "+parent);
-				if(parent==null){
-					System.out.println("Parent fixed.");
-					parent=root;
-				}
-			}			
+			/**
+			 * Now we inform Node its tree elements. 
+			 */
+			node=nodes.get(i);
 			try {
-				t.setTreeElements(new TreeElements(parent,root),isRoot);
+				node.setElements(btree.getNode(i),te);
 			} catch (RemoteException e) {				
 				e.printStackTrace();
 			}

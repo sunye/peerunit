@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.Coordinator;
+import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.ExecutorImpl;
@@ -24,7 +25,7 @@ import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
 
-public class TesterImpl extends Object implements Tester, Serializable, Runnable {
+public class TesterImpl extends Object implements Tester, Serializable, Runnable , StorageTester{
 
 	private static final long serialVersionUID = 1L;
 

@@ -7,11 +7,13 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
@@ -25,7 +27,7 @@ import fr.inria.peerunit.util.TesterUtil;
 
 
 
-public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester{
+public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester, StorageTester{
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -45,7 +47,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		
 	private Thread invokationThread;
 	
-	private Long time;
+	private Long time, buildTime;
 	
 	private Verdicts v= Verdicts.PASS;
 	
@@ -61,10 +63,10 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 	private AtomicInteger informedByChildren = new AtomicInteger(0);
 	
 	final private Bootstrapper boot;
-	
-	private  boolean killed=false;
-	
+			
 	String logFolder = TesterUtil.getLogfolder();
+	
+	private boolean killed=false;
 	
 	public TreeTesterImpl(Bootstrapper b) throws RemoteException {
 		boot = b;
@@ -77,7 +79,9 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 	}
 	
 	public void run(){
+		this.buildTime=System.currentTimeMillis();
 		setupTree();			
+		this.buildTime=System.currentTimeMillis()-this.buildTime;
 		if(amIRoot){	
 			try {
 				Thread.sleep(TesterUtil.getWaitForMethod());
@@ -89,6 +93,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		
 		for(MethodDescription md:testList){		
 			try {
+				verifyTree();
 				if(amIRoot){
 					log.log(Level.INFO, "Start action ");
 					dispatch(md);
@@ -99,9 +104,9 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 					if(!amILeaf){
 						dispatch(md);
 					}else{
-						execute(md);
-					}
-					talkToParent();
+						execute(md);						
+					}					
+					talkToParent();					
 				}				
 			} catch (InterruptedException e) {				
 				log.logStackTrace(e);		
@@ -117,8 +122,10 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 			log.log(Level.INFO, "Whole execution time "+(System.currentTimeMillis()-this.time));
 			log.log(Level.INFO, "Test Verdict with index " + relaxIndex
 					+ "% is " + verdict.toString());
-		}else
+		}else{
+			log.log(Level.INFO, id+" build time "+(this.buildTime));
 			log.log(Level.INFO, id+" execution time "+(System.currentTimeMillis()-this.time));
+		}
 		
 		System.exit(0);		
 	}
@@ -161,18 +168,25 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		return id;
 	}
 
-	public void setChildren(TreeTester tester) throws RemoteException {
-		tree.add(tester,id);		
+	public void setChildren(TreeTester child,TreeTester tester) throws RemoteException {
+		if(tester!=null){
+			tree.cleanTrace(tester);
+		}
+		tree.add(child,id);		
 		this.amILeaf=false;
 	}	
+	
+	public void setParent(TreeTester parent)throws RemoteException {
+		tree.setParent(parent);
+	}
 	
 	private void setupTree(){
 		try {
 			while(tree.getParent()==null){
-				Thread.sleep(1000);
+				Thread.sleep(150);
 			}	
 			if(!amIRoot)
-				tree.getParent().setChildren(this);
+				tree.getParent().setChildren(this,null);
 			
 		} catch (RemoteException e) {				
 			log.logStackTrace(e);		
@@ -213,16 +227,29 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 	}
 	
 	public void kill() {
-		 killed=true;
-		log.log(Level.INFO,"Test Case finished by kill ");
+		killed=true;			
+	}
+	
+	private void verifyTree(){
+		if(killed){
+			log.log(Level.INFO, id+" Reorganizing tree ");
+			for(TreeTester t:tree.getChildren()){								
+				try {				
+					tree.getParent().setChildren(t,this);
+					t.setParent(tree.getParent());
+				} catch (RemoteException e) {
+					log.logStackTrace(e);		
+				}
+			}
+			log.log(Level.INFO,"Test Case finished by kill ");
+			System.exit(0);
+		}
 	}
 
 	public void execute(MethodDescription md) throws RemoteException {
-		if(!killed){
-			log.log(Level.INFO, id+" Executing action");
-			invokationThread = new Thread(new Invoke(md));
-			invokationThread.start();
-		}
+		log.log(Level.INFO, id+" Executing action");
+		invokationThread = new Thread(new Invoke(md));
+		invokationThread.start();		
 	}
 	
 	public void export(Class<? extends TestCaseImpl> c) {
@@ -313,5 +340,62 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 
 	public int getPeerName() throws RemoteException {
 		return id;
+	}
+
+	/**
+	 * Used to clear the Collection of testing global variables
+	 *
+	 * @throws RemoteException
+	 */
+	public void clear() {
+		try {
+			boot.clearCollection();
+		} catch (RemoteException e) {
+			log.logStackTrace(e);			    
+		}
+	}
+
+	/**
+	 *  Used to retrieve testing global variables
+	 * @param key
+	 * @return Object
+	 * @throws RemoteException
+	 */
+	public Object get(Integer key)  {
+		Object object=null;
+		try {
+			object = boot.get(key);
+		} catch (RemoteException e) {
+			log.logStackTrace(e);			    
+		}
+		return object;
+	}
+
+	/**
+	 *  Used to retrieve all the keys of the testing global variables
+	 * @return Collection<Object>
+	 * @throws RemoteException
+	 * @throws RemoteException
+	 */
+	public  Map<Integer,Object> getCollection() throws RemoteException {
+		return  boot.getCollection();
+	}
+
+	public boolean containsKey(Object key)throws RemoteException{
+		return  boot.containsKey(key);
+	}
+
+	/**
+	 * Used to cache testing global variables
+	 * @param key
+	 * @param object
+	 * @throws RemoteException
+	 */
+	public void put(Integer key,Object object) {
+		try {
+			boot.put(key, object);
+		} catch (RemoteException e) {
+			log.logStackTrace(e);			    
+		}
 	}
 }

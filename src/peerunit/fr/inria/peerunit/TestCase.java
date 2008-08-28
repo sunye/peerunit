@@ -15,5 +15,5 @@ import fr.inria.peerunit.tree.TreeTester;
 public interface TestCase {
 
 	public void setTester(TesterImpl ti);	
-	public void setTester(TreeTester tt);
+	
 }

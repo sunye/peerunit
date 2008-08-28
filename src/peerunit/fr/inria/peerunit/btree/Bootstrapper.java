@@ -1,11 +1,11 @@
-package fr.inria.peerunit.tree;
+package fr.inria.peerunit.btree;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Map;
 
 public interface Bootstrapper extends Remote{
-	public int register(TreeTester t) throws RemoteException;	
+	public int register(Node t) throws RemoteException;	
 	/**
 	 * Used to cache testing global variables
 	 * @param key

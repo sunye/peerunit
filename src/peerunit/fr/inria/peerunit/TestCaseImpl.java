@@ -4,20 +4,31 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.tree.TreeTester;
+import fr.inria.peerunit.tree.TreeTesterImpl;
 
 public abstract class TestCaseImpl implements TestCase {
 
 	private int id;
-	private TesterImpl tester;
+	private StorageTester tester;
 
 	public void setTester(TesterImpl ti) {
 		tester = ti;
-		id = ti.getId();
+		try {
+			id = ti.getPeerName();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public void setTester(TreeTester tt) {	
-		// does nothing
+	
+	public void setTester(TreeTesterImpl tt) {	
+		tester = tt;
+		try {
+			id = tt.getId();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public int getPeerId() {

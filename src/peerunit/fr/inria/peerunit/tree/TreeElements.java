@@ -40,7 +40,9 @@ public class TreeElements implements Serializable{
 		return children;
 	}
 	public void add(TreeTester t,int id){
-		children.add(t);		
+		if(!children.contains(t)){
+			children.add(t);		
+		}
 		System.out.println(id+" added child: "+t);		
 	}
 	public  List<TreeTester>  get(){
@@ -49,4 +51,12 @@ public class TreeElements implements Serializable{
 	public boolean isEmpty(){
 		return children.isEmpty();
 	}	
+	public void setParent(TreeTester parent){
+		this.parent=parent;
+	}
+	public void cleanTrace(TreeTester t){
+		if(children.contains(t)){
+			children.remove(t);		
+		}
+	}
 }

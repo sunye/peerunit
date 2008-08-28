@@ -11,21 +11,22 @@ import java.util.logging.Level;
 
 import fr.inria.peerunit.Executor;
 import fr.inria.peerunit.TestCase;
+import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.tree.TreeTester;
+import fr.inria.peerunit.tree.TreeTesterImpl;
 import fr.inria.peerunit.util.PeerUnitLogger;
 
 public class ExecutorImpl implements Executor {
 
 	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
-	private TreeTester tester;
-	private TestCase testcase;
+	private TreeTesterImpl tester;
+	private TestCaseImpl testcase;
 	private PeerUnitLogger LOG;
-	public ExecutorImpl(TreeTester t, PeerUnitLogger l) {
+	public ExecutorImpl(TreeTesterImpl t, PeerUnitLogger l) {
 		this.tester = t;
 		this.LOG=l;
 	}
@@ -63,7 +64,7 @@ public class ExecutorImpl implements Executor {
 		AfterClass ac;
 
 		try {
-			testcase = c.newInstance();
+			testcase = (TestCaseImpl) c.newInstance();
 			testcase.setTester(tester);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
