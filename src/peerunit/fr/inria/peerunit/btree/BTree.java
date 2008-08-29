@@ -37,19 +37,23 @@ public class BTree {
 			System.out.println("\nInserting: " + i);
 			insert(i);			
 		}
-		nodes.put(0, root);		
+		nodes.put(0, root);	
+		root.setRoot(true);
 		returnNode(root);
 	}
 	
-	public void returnNode(BTreeNode b){
-		b.id=nodeKey;
-		for(BTreeNode bt:b.children){
+	public void returnNode(BTreeNode parent){
+		parent.id=nodeKey;		
+		System.out.println("BTreeNode: " + parent);
+		for(BTreeNode bt:parent.children){			
 			if(bt != null){				
 				nodeKey++;
+				bt.setParent(parent);
 				nodes.put(nodeKey, bt);								
-				returnNode(bt);
+				returnNode(bt);								
 			}else
-				break;
+				break;			
+			
 		}		
 	}
 	

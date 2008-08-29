@@ -8,7 +8,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,9 +20,9 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	
 	private static int expectedTesters=TesterUtil.getExpectedPeers();
 	
-	private Map<Integer,Node> nodes = new HashMap<Integer,Node>();
+	private Map<Integer,Node> nodes = new HashMap<Integer,Node>();	
 	
-	private Long time;
+	static BTree btree=new BTree(TesterUtil.getTreeOrder());
 	
 	/**
 	 * Caching global variables
@@ -37,7 +36,9 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	public static void main(String[] args) throws RemoteException {	
 		BootstrapperImpl boot=new BootstrapperImpl();
 		boot.startNet(boot);	
-		
+		System.out.println("[Bootstrapper] Lets see the tree !");		
+		btree.buildTree();
+		System.out.println("[Bootstrapper] Nodes expected :"+btree.nodes.size());
 		while (boot.getRegistered() < expectedTesters) {
 			try {								
 				Thread.sleep(2000);
@@ -45,8 +46,8 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("[Bootstrapper] Lets see the tree !");
-		boot.buildTree();
+		
+		boot.setCommunication();
 		System.out.println("[Bootstrapper] Finished !");
 	}	
 
@@ -65,50 +66,48 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	}
 	
 	public synchronized int register(Node node)	throws RemoteException {		
-		int id = registered.getAndIncrement();				
-		nodes.put(id, node);
-		System.out.println("New Registered ID: " + id+" for "+node);
-		return id;
+		int id = registered.getAndIncrement();
+		
+		if(id<btree.nodes.size()){
+			nodes.put(id, node);
+			System.out.println("[Bootstrapper] New Registered ID: " + id+" for "+node);
+			return id;
+		}else{
+			System.out.println("[Bootstrapper] Not registerd " + id+" for "+node);
+			return Integer.MAX_VALUE;
+		}		
 	}
 	
 	public int getRegistered(){
 		return registered.get();
 	}
 	
-	private void buildTree(){
-		this.time=System.currentTimeMillis();			
-		BTree btree=new BTree(TesterUtil.getTreeOrder());
-		btree.buildTree();
-		Node node;
-
-		this.time=System.currentTimeMillis()-this.time;		
-		//for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {
-		System.out.println("Nodes size :"+nodes.size());
-		//for (Integer i =0;i<nodes.size();i++) {
-				
+	private void setCommunication(){		
+		Node node;			
 		for(Integer key:nodes.keySet()){
-			System.out.println("Node key "+key);
-			TreeElements te=new TreeElements();
-			System.out.println("set children ");
-			if(btree.getNode(key).children.length>0){
+			TreeElements te=new TreeElements();			
+			if(!btree.getNode(key).isLeaf()){
 				for(BTreeNode child:btree.getNode(key).children){
 					te.setChildren(nodes.get(child.id));	
 				}
-			}
+			}else
+				te.setChildren(null);
 			
+			if(!btree.getNode(key).isRoot()){
+				int parentId=btree.getNode(key).parent.id;
+				te.setParent(nodes.get(parentId));
+			}
 			/**
 			 * Now we inform Node its tree elements. 
-			 */
-			System.out.println("Informing all Nodes ");
+			 */			
 			node=nodes.get(key);
+			System.out.println("[Bootstrapper] Contacting Node "+node);
 			try {
 				node.setElements(btree.getNode(key),te);
 			} catch (RemoteException e) {				
 				e.printStackTrace();
 			}
-			System.out.println("next node ");
-		}	
-		System.out.println("Construction time "+this.time+" msec");
+		}
 	}
 
 	public void put(Integer key, Object object) throws RemoteException {		

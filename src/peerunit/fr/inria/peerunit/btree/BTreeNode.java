@@ -12,9 +12,11 @@ public class BTreeNode implements Serializable{
 	private static final long serialVersionUID = 1L;
 	public int id;
 	public Comparable[] keys;
-	public BTreeNode[] children;		
+	public BTreeNode[] children;
+	public BTreeNode parent;		
 	private int order=TesterUtil.getTreeOrder();
 	private boolean isLeaf;
+	private boolean isRoot=false;
 	public BTreeNode() {		
 		keys =  new Comparable[2*order];
 		children = new BTreeNode[2*order+1];
@@ -32,14 +34,26 @@ public class BTreeNode implements Serializable{
 	private void setChildren(BTreeNode[] c) {
 		children = c;
 	}
+	
+	public void setParent(BTreeNode parent){
+		this.parent=parent;
+	}
 
-	private boolean isLeaf() {
+	public boolean isLeaf() {
 		if(children[0] == null)
 			isLeaf=true;
 		else
 			isLeaf=false;
 
 		return isLeaf;
+	}
+	
+	public boolean isRoot() {
+		return isRoot;
+	}
+	
+	public void setRoot(boolean isRoot){
+		this.isRoot=isRoot;
 	}
 
 	Comparable insert(Comparable newKey,BTreeNode returnNode) {

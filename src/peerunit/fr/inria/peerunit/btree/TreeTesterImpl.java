@@ -4,19 +4,22 @@ import java.util.logging.Level;
 
 import fr.inria.peerunit.util.PeerUnitLogger;
 
-public class TreeTesterImpl implements Runnable, TreeTester {
+public class TreeTesterImpl extends Thread implements TreeTester {
 	public int id;
 	MessageType message;
 	boolean executing=true;
 	private Inbox inbox=new Inbox();
 	private static PeerUnitLogger log = new PeerUnitLogger(TreeTesterImpl.class
 			.getName());
+	
 	public TreeTesterImpl(int id){
 		this.id=id;
+		log.log(Level.INFO, "instance ");	
 	}
 	
 	public void run() {			
-		while(executing){
+		log.log(Level.INFO, "start ");
+		/*while(executing){
 			synchronized (this) {			
 				try {
 					this.wait();
@@ -25,7 +28,7 @@ public class TreeTesterImpl implements Runnable, TreeTester {
 				}			
 			}
 			inbox.execute(message);
-		}
+		}*/
 	}
 
 	public void inbox(MessageType message) {		

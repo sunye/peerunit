@@ -45,12 +45,20 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	
 	String logFolder = TesterUtil.getLogfolder();
 	
+	BTreeNode bt;
+	
 	public NodeImpl( Bootstrapper b) throws RemoteException {
 		boot=b;
 		UnicastRemoteObject.exportObject(this);	
 		id=boot.register(this);
 		if(id==0)
 			amIRoot=true;
+		else if (id==Integer.MAX_VALUE) {
+			/**
+			 * All Nodes are taken
+			 */
+			System.exit(0);			
+		}
 		
 		System.out.println("Log file to use : "+logFolder+ "/tester" + id + ".log");
 		log.createLogger(logFolder+ "/tester" + id + ".log");	
@@ -99,15 +107,13 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	}
 			
 	public void run() {
+		/**
+		 * Now starting the Testers
+		 */
+		startTesters();			
+		
 		while(true){
-			synchronized (this) {
-				try {
-					this.wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}	
-			}			
+			
 		}		
 	}
 
@@ -139,38 +145,46 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	}
 
 	public void setElements(BTreeNode bt,TreeElements tree) throws RemoteException {		
-				
-		log.log(Level.INFO, "id "+id+" bt "+bt+" tree "+tree);
-		
-		/**
-		 * Using bt Node acknowledge the testers it must control, then start them
-		 */
-		for(Comparable key:bt.keys){
-			if(key != null){				
-				TreeTester t=new TreeTesterImpl(new Integer(key.toString()));
-				t.run();
-				testers.add(t);	
-			}
-		}
-				
-		/**
-		 * Children are set. Now Node can talk to them to set parents.
-		 */
+		log.log(Level.INFO, "id "+id+" bt "+bt+" tree "+tree);		
 		this.tree=tree;
-		for(Node node:tree.getChildren()){
-			node.setParent(this);			
-		}
-		this.notify();
-	}
-	public void setParent(Node parent)throws RemoteException {
-		tree.setParent(parent);
+		this.bt=bt;	
+		synchronized (this) {
+			this.notify();	
+		}		
 	}
 	
 	public int getId(){
 		return id;
-	}
+	}	
 	
 	public String toString(){
 		return "Node id: "+id;
+	}
+	
+	private void startTesters(){
+		/**
+		 * Initially we wait for the tree construction
+		 */
+		synchronized (this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				log.logStackTrace(e);			    
+			}	
+		}		
+		
+		log.log(Level.INFO, "Starting "+bt.keys+" Testers ");
+		/**
+		 * Using bt Node acknowledge the testers it must control, then start them
+		 */		
+		for(Comparable key:bt.keys){
+			if(key != null){
+				log.log(Level.INFO, "Tester "+key.toString());				
+				TreeTesterImpl t=new TreeTesterImpl(new Integer(key.toString()));
+				t.start();				
+				testers.add(t);				
+			}
+		}		
+		log.log(Level.INFO, "Testers added: "+testers.size());
 	}
 }

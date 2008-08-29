@@ -8,11 +8,6 @@ public enum MessageType {
 	FAIL, 
 	
 	/**
-	 * REGISTER is used to get the tester ID
-	 */
-	REGISTER,
-	
-	/**
 	 * EXECUTE is used to get way down the tree
 	 */
 	EXECUTE,
