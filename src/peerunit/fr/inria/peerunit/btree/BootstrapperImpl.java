@@ -8,6 +8,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -81,22 +82,31 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 		Node node;
 
 		this.time=System.currentTimeMillis()-this.time;		
-		for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {	
-			
+		//for (Integer i =0;i<Integer.valueOf(expectedTesters);i++) {
+		System.out.println("Nodes size :"+nodes.size());
+		//for (Integer i =0;i<nodes.size();i++) {
+				
+		for(Integer key:nodes.keySet()){
+			System.out.println("Node key "+key);
 			TreeElements te=new TreeElements();
-			for(BTreeNode child:btree.getNode(i).children){
-				te.setChildren(nodes.get(child.id));	
+			System.out.println("set children ");
+			if(btree.getNode(key).children.length>0){
+				for(BTreeNode child:btree.getNode(key).children){
+					te.setChildren(nodes.get(child.id));	
+				}
 			}
 			
 			/**
 			 * Now we inform Node its tree elements. 
 			 */
-			node=nodes.get(i);
+			System.out.println("Informing all Nodes ");
+			node=nodes.get(key);
 			try {
-				node.setElements(btree.getNode(i),te);
+				node.setElements(btree.getNode(key),te);
 			} catch (RemoteException e) {				
 				e.printStackTrace();
 			}
+			System.out.println("next node ");
 		}	
 		System.out.println("Construction time "+this.time+" msec");
 	}

@@ -4,16 +4,15 @@
 package fr.inria.peerunit;
 
 import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import fr.inria.peerunit.btree.NodeImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.tree.Bootstrapper;
-import fr.inria.peerunit.tree.TreeTesterImpl;
+import fr.inria.peerunit.btree.Bootstrapper;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -98,8 +97,8 @@ public class TestRunner {
 	private void bootBTree(Registry registry)throws RemoteException, NotBoundException, MalformedURLException{		
 		Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
 		//Bootstrapper boot = (Bootstrapper)Naming.lookup("//"+TesterUtil.getServerAddr()+"/Bootstrapper");            
-		TreeTesterImpl tester= new TreeTesterImpl(boot);
-		tester.export(testcase);
-		tester.run();
+		NodeImpl node= new NodeImpl(boot);
+		node.export(testcase);
+		node.run();
 	}	
 }

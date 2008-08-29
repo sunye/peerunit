@@ -1,9 +1,15 @@
 package fr.inria.peerunit.btree;
 
+import java.io.Serializable;
+
 import fr.inria.peerunit.util.TesterUtil;
 
 
-public class BTreeNode {
+public class BTreeNode implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public int id;
 	public Comparable[] keys;
 	public BTreeNode[] children;		

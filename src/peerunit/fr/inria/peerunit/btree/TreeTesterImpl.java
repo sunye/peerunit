@@ -17,11 +17,13 @@ public class TreeTesterImpl implements Runnable, TreeTester {
 	
 	public void run() {			
 		while(executing){
-			try {
-				this.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}			
+			synchronized (this) {			
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}			
+			}
 			inbox.execute(message);
 		}
 	}
