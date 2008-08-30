@@ -12,23 +12,26 @@ import java.util.logging.Level;
 import fr.inria.peerunit.Executor;
 import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.TestCaseImpl;
-import fr.inria.peerunit.btree.NodeImpl;
 import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.btree.TreeTesterImpl;
 import fr.inria.peerunit.util.PeerUnitLogger;
 
 public class ExecutorImpl implements Executor {
 
 	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
-	private NodeImpl node;
+	private TreeTesterImpl tester;
 	private TestCaseImpl testcase;
 	private PeerUnitLogger LOG;
-	public ExecutorImpl(NodeImpl n, PeerUnitLogger l) {
-		this.node = n;
+	public ExecutorImpl(PeerUnitLogger l) {		
 		this.LOG=l;
+	}
+	
+	public void setTester(TreeTesterImpl tester){
+		this.tester=tester;
 	}
 
 
@@ -45,13 +48,8 @@ public class ExecutorImpl implements Executor {
 	}
 
 	/*private boolean shouldIExecute(int place, int from, int to) {
-		int testerId=0;
-		try {
-			testerId = node.getId();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		int testerId=0;		
+		testerId = tester.getID();		
 		return (place == testerId) ||
 			(place == -1 && from == -1 && to == -1) ||
 			((from <= testerId) && (to >= testerId));
@@ -63,41 +61,41 @@ public class ExecutorImpl implements Executor {
 		BeforeClass bc;
 		AfterClass ac;
 
-		try {
+	/*	try {
 			testcase = (TestCaseImpl) c.newInstance();
-			//testcase.setTester(node);
+			testcase.setTester(tester);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
-
+*/
 		methods.clear();
 		for(Method each : c.getMethods()) {
 			t = each.getAnnotation(Test.class);
-			/*if (this.isValid(t)) {
+			if (this.isValid(t)) {
 				methods.put(new MethodDescription(each, t), each);				
-			}*/
+			}
 		}
 
 		for(Method each : c.getMethods()) {
 			bc = each.getAnnotation(BeforeClass.class);
-			/*if (this.isValid(bc)) {
+			if (this.isValid(bc)) {
 				methods.put(new MethodDescription(each, bc), each);				
-			}*/
+			}
 		}
 
 		for(Method each : c.getMethods()) {
 			ac = each.getAnnotation(AfterClass.class);
-		/*	if (this.isValid(ac)) {
+			if (this.isValid(ac)) {
 				methods.put(new MethodDescription(each, ac), each);				
-			}*/
+			}
 		}
 		LOG.log(Level.FINEST,"I will execute the method: "+methods.keySet().toString());
 		return new ArrayList<MethodDescription>(methods.keySet());
 	}
 
-/*
+
 	public void invoke(MethodDescription md) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
 		assert methods.containsKey(md) : "Method should be registered";
@@ -105,13 +103,13 @@ public class ExecutorImpl implements Executor {
 
 		Method m = methods.get(md);
 		m.invoke(testcase, (Object[]) null);
-	}*/
+	}
 
 	public boolean isLastMethod(String methodAnnotation) {
 		return methodAnnotation.equalsIgnoreCase("AfterClass");
 	}
 
-	/*private boolean isValid(Test a) {
+/*	private boolean isValid(Test a) {
 		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
 	}
 
@@ -121,7 +119,17 @@ public class ExecutorImpl implements Executor {
 
 	private boolean isValid(AfterClass a) {
 		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
+	}*/
+	private boolean isValid(Test a) {
+		return (a != null) ;
 	}
-*/
+
+	private boolean isValid(BeforeClass a) {
+		return (a != null);
+	}
+
+	private boolean isValid(AfterClass a) {
+		return (a != null) ;
+	}
 }
 

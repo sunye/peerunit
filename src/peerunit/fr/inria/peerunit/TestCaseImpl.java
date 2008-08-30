@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.tree.TreeTesterImpl;
+import fr.inria.peerunit.btree.TreeTesterImpl;
 
 public abstract class TestCaseImpl implements TestCase {
 
@@ -23,12 +23,8 @@ public abstract class TestCaseImpl implements TestCase {
 	
 	
 	public void setTester(TreeTesterImpl tt) {	
-		tester = tt;
-		try {
-			id = tt.getId();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		tester = tt;		
+		id = tt.getID();		
 	}
 
 	public int getPeerId() {
