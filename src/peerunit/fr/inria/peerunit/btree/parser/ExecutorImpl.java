@@ -2,7 +2,6 @@ package fr.inria.peerunit.btree.parser;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +11,12 @@ import java.util.logging.Level;
 import fr.inria.peerunit.Executor;
 import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.TestCaseImpl;
+import fr.inria.peerunit.btree.TreeTesterImpl;
 import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.btree.TreeTesterImpl;
 import fr.inria.peerunit.util.PeerUnitLogger;
 
 public class ExecutorImpl implements Executor {
@@ -26,15 +25,11 @@ public class ExecutorImpl implements Executor {
 	private TreeTesterImpl tester;
 	private TestCaseImpl testcase;
 	private PeerUnitLogger LOG;
+	private Class<? extends TestCase> c;
 	public ExecutorImpl(PeerUnitLogger l) {		
 		this.LOG=l;
 	}
 	
-	public void setTester(TreeTesterImpl tester){
-		this.tester=tester;
-	}
-
-
 	public boolean validatePeerRange(int from, int to) {
 		if ((from > -1) && (to == -1)) {
 			throw new AnnotationFailure("Annotation FROM without TO");
@@ -47,29 +42,31 @@ public class ExecutorImpl implements Executor {
 		} else return false;
 	}
 
-	/*private boolean shouldIExecute(int place, int from, int to) {
+	private boolean shouldIExecute(int place, int from, int to) {
 		int testerId=0;		
 		testerId = tester.getID();		
 		return (place == testerId) ||
 			(place == -1 && from == -1 && to == -1) ||
 			((from <= testerId) && (to >= testerId));
-	}*/
+	}
 
-
-	public List<MethodDescription> register(Class<? extends TestCase> c) {
-		Test t;
-		BeforeClass bc;
-		AfterClass ac;
-
-	/*	try {
+	public void newInstance(TreeTesterImpl tester){
+		this.tester=tester;
+		try {
 			testcase = (TestCaseImpl) c.newInstance();
-			testcase.setTester(tester);
+			testcase.setTester(this.tester);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-		}
-*/
+		}		
+	}
+
+	public List<MethodDescription> register(Class<? extends TestCase> c) {
+		Test t;
+		BeforeClass bc;
+		AfterClass ac;		
+		this.c=c;
 		methods.clear();
 		for(Method each : c.getMethods()) {
 			t = each.getAnnotation(Test.class);
@@ -109,27 +106,25 @@ public class ExecutorImpl implements Executor {
 		return methodAnnotation.equalsIgnoreCase("AfterClass");
 	}
 
-/*	private boolean isValid(Test a) {
-		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
-	}
-
-	private boolean isValid(BeforeClass a) {
-		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
-	}
-
-	private boolean isValid(AfterClass a) {
-		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
-	}*/
 	private boolean isValid(Test a) {
-		return (a != null) ;
+		if(tester!=null)
+			return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
+		else 
+			return (a != null) ;
 	}
 
 	private boolean isValid(BeforeClass a) {
-		return (a != null);
+		if(tester!=null)
+			return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
+		else 
+			return (a != null) ;
 	}
 
 	private boolean isValid(AfterClass a) {
-		return (a != null) ;
+		if(tester!=null)
+			return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
+		else 
+			return (a != null) ;
 	}
 }
 

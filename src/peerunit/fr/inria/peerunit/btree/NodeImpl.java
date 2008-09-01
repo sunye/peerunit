@@ -47,7 +47,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	private TreeElements tree= new TreeElements();
 	
 	String logFolder = TesterUtil.getLogfolder();
-	
+		
 	BTreeNode bt;
 	
 	int childrenTalk=0;
@@ -65,17 +65,18 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			System.exit(0);			
 		}
 		
-		System.out.println("Log file to use : "+logFolder+ "/tester" + id + ".log");
-		log.createLogger(logFolder+ "/tester" + id + ".log");	
-		log.log(Level.INFO, "[NodeImpl] Log file to use : "+logFolder+ "/tester" + id + ".log");
-		log.log(Level.INFO, "[NodeImpl] My ID is: "+id);		
+		System.out.println("Log file to use : "+logFolder+ "/Node" + id + ".log");
+		log.createLogger(logFolder+ "/Node" + id + ".log");	
+		log.log(Level.INFO, "[NodeImpl] Log file to use : "+logFolder+
+				"/Node" + id + ".log");
+		log.log(Level.INFO, "[NodeImpl] My Node ID is: "+id);		
 	}
 	
 	public void export(Class<? extends TestCaseImpl> c) {
 		
 		try {			
 			createLogFiles(c);
-			log.log(Level.INFO, "[NodeImpl] Registering actions");					
+			log.log(Level.INFO, "[NodeImpl] Registering actions");			
 			executor = new ExecutorImpl(log);				
 			testList=executor.register(c);			
 		} catch (SecurityException e) {
@@ -164,12 +165,10 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	}
 	
 	private void execute(MethodDescription md){
-		log.log(Level.INFO, id+"[NodeImpl]  Executing action");
-		/*for(TreeTester t:testers){
-			t.inbox(message);		
-		}
-		invokationThread = new Thread(new Invoke(md));
-		invokationThread.start();*/			
+		log.log(Level.INFO, id+"[NodeImpl]  Executing action "+md);
+		for(TreeTesterImpl t:testers){
+			t.inbox(md);		
+		}					
 	}
 	
 	private void talkToChildren(){		
@@ -214,7 +213,8 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		 * Way up 
 		 */
 		if (message.equals(MessageType.OK)) {	
-			log.log(Level.INFO, id+"[NodeImpl]  I finished the execution. Waiting my children ..."+bt.children.length);
+			log.log(Level.INFO, id+"[NodeImpl]  I finished the execution. Waiting "+
+					(bt.children.length-childrenTalk)+" of my "+bt.children.length+" children ");
 			childrenTalk++;
 			if(childrenTalk==bt.children.length){
 				synchronized (this) {
@@ -278,6 +278,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			if(key != null){
 				log.log(Level.INFO, "[NodeImpl] Tester "+key.toString());				
 				TreeTesterImpl t=new TreeTesterImpl(new Integer(key.toString()));
+				t.setExecutor(executor);
 				t.start();				
 				testers.add(t);				
 			}
