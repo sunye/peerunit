@@ -16,6 +16,7 @@ import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.VolatileTester;
 import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
@@ -25,7 +26,7 @@ import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
 
-public class TesterImpl extends Object implements Tester, Serializable, Runnable , StorageTester{
+public class TesterImpl extends Object implements Tester, Serializable, Runnable , StorageTester,VolatileTester{
 
 	private static final long serialVersionUID = 1L;
 

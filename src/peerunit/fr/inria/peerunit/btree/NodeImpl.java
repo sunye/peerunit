@@ -24,7 +24,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	
 	private List<MethodDescription> testList = new ArrayList<MethodDescription>();
 	
-	final private Bootstrapper boot;
+	private Bootstrapper boot;
 	
 	private ExecutorImpl executor;
 
@@ -253,7 +253,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		for(Comparable key:bt.keys){
 			if(key != null){
 				log.log(Level.INFO, "[NodeImpl] Tester "+key.toString());				
-				TreeTesterImpl t=new TreeTesterImpl(new Integer(key.toString()));
+				TreeTesterImpl t=new TreeTesterImpl(new Integer(key.toString()),boot);
 				t.setExecutor(executor);
 				t.start();				
 				testers.add(t);				

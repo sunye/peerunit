@@ -4,22 +4,24 @@ import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import fr.inria.peerunit.StorageTester;
+import fr.inria.peerunit.VolatileTester;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.util.TesterUtil;
 
-public class TreeTesterImpl extends Thread implements TreeTester,StorageTester {
+public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester {
 	public int id;	
 	MethodDescription md;
 	boolean executing=true;
 	private ExecutorImpl executor;	
 	Thread invokationThread;
+	private Bootstrapper boot;
 	//private static PeerUnitLogger log = new PeerUnitLogger(TreeTesterImpl.class.getName());
 	String logFolder = TesterUtil.getLogfolder();
-	public TreeTesterImpl(int id){
+	public TreeTesterImpl(int id,Bootstrapper boot){
 		this.id=id;
+		this.boot=boot;
 		/*log.createLogger(logFolder+ "/tester" + id + ".log");	
 		log.log(Level.INFO, "[TreeTesterImpl] Log file to use : "+logFolder+
 				"/tester" + id + ".log");
@@ -103,34 +105,64 @@ public class TreeTesterImpl extends Thread implements TreeTester,StorageTester {
 		return this.id;
 	}
 	
-	public void clear() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean containsKey(Object key) throws RemoteException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public Object get(Integer key) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Map<Integer, Object> getCollection() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public void kill() {
-		// TODO Auto-generated method stub
-		
+		executing=false;		
+	}	
+	/**
+	 * Used to cache testing global variables
+	 * @param key
+	 * @param object
+	 * @throws RemoteException
+	 */
+	public void put(Integer key,Object object) {
+		try {
+			boot.put(key, object);
+		} catch (RemoteException e) {
+			//LOG.logStackTrace(e);			    
+		}
 	}
 
-	public void put(Integer key, Object object) {
-		// TODO Auto-generated method stub
-		
+	/**
+	 * Used to clear the Collection of testing global variables
+	 *
+	 * @throws RemoteException
+	 */
+	public void clear() {
+		try {
+			boot.clearCollection();
+		} catch (RemoteException e) {
+			//LOG.logStackTrace(e);			    
+		}
 	}
 
+	/**
+	 *  Used to retrieve testing global variables
+	 * @param key
+	 * @return Object
+	 * @throws RemoteException
+	 */
+	public Object get(Integer key)  {
+		Object object=null;
+		try {
+			object = boot.get(key);
+		} catch (RemoteException e) {
+			//LOG.logStackTrace(e);			    
+		}
+		return object;
+	}
+
+	/**
+	 *  Used to retrieve all the keys of the testing global variables
+	 * @return Collection<Object>
+	 * @throws RemoteException
+	 * @throws RemoteException
+	 */
+	public  Map<Integer,Object> getCollection() throws RemoteException {
+		return  boot.getCollection();
+	}
+
+	public boolean containsKey(Object key)throws RemoteException{
+		return  boot.containsKey(key);
+	}
+	
 }

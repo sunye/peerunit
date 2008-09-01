@@ -3,12 +3,10 @@ package fr.inria.peerunit;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-public interface StorageTester {
+public interface StorageTester extends VolatileTester{
 	public void put(Integer key,Object object) ;
 
 	public  Map<Integer,Object> getCollection() throws RemoteException;
-
-	public void kill() ;
 
 	public Object get(Integer key) ;
 

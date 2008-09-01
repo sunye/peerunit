@@ -3,13 +3,14 @@ package fr.inria.peerunit;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.btree.TreeTesterImpl;
+import fr.inria.peerunit.rmi.tester.TesterImpl;
 
 public abstract class TestCaseImpl implements TestCase {
 
 	private int id;
-	private StorageTester tester;
+	private VolatileTester vt;
+	private StorageTester tester;	
 
 	public void setTester(TesterImpl ti) {
 		tester = ti;
@@ -23,7 +24,7 @@ public abstract class TestCaseImpl implements TestCase {
 	
 	
 	public void setTester(TreeTesterImpl tt) {	
-		tester = tt;		
+		vt = tt;		
 		id = tt.getID();		
 	}
 
@@ -44,7 +45,10 @@ public abstract class TestCaseImpl implements TestCase {
 	}
 
 	public void kill() {
-		tester.kill();
+		if(tester!=null)
+			vt=tester;
+			
+		vt.kill();
 	}
 
 	public Object get(Integer key)  {
