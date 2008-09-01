@@ -1,20 +1,15 @@
 package fr.inria.peerunit.btree;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.tree.TreeTester;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
@@ -24,8 +19,6 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private static Logger PEER_LOG;
 	
 	private List<TreeTesterImpl> testers=new ArrayList<TreeTesterImpl>();	
 	
@@ -43,6 +36,8 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	private boolean amIRoot=false;
 	
 	private boolean amILeaf=false;
+	
+	int numberOfChildren=0;
 	
 	private TreeElements tree= new TreeElements();
 	
@@ -75,41 +70,12 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	public void export(Class<? extends TestCaseImpl> c) {
 		
 		try {			
-			createLogFiles(c);
 			log.log(Level.INFO, "[NodeImpl] Registering actions");			
-			executor = new ExecutorImpl(log);				
+			executor = new ExecutorImpl();				
 			testList=executor.register(c);			
 		} catch (SecurityException e) {
 			log.logStackTrace(e);			    
 		} 
-	}
-	
-	/**
-	 * @param c
-	 * @throws IOException
-	 *
-	 * Creates the peer and the tester log files.
-	 */
-	private void createLogFiles(Class<? extends TestCaseImpl> c) {
-
-		LogFormat format = new LogFormat();
-		Level level = Level.parse(TesterUtil.getLogLevel());
-
-		try {
-			String logFolder = TesterUtil.getLogfolder();
-			
-			PEER_LOG = Logger.getLogger(c.getName());
-			FileHandler phandler;
-			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+id+".log",true);
-			phandler.setFormatter(format);
-			PEER_LOG.addHandler(phandler);
-			PEER_LOG.setLevel(level);
-				
-		} catch (SecurityException e) {
-			log.logStackTrace(e);			    
-		} catch (IOException e) {
-			log.logStackTrace(e);			    
-		}
 	}
 			
 	public void run() {
@@ -214,9 +180,13 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		 */
 		if (message.equals(MessageType.OK)) {	
 			log.log(Level.INFO, id+"[NodeImpl]  I finished the execution. Waiting "+
-					(bt.children.length-childrenTalk)+" of my "+bt.children.length+" children ");
+					(numberOfChildren-childrenTalk)+" of my "+numberOfChildren+" children ");
 			childrenTalk++;
-			if(childrenTalk==bt.children.length){
+			
+			/**
+			 * I have to wait for my children 
+			 */			
+			if(childrenTalk==numberOfChildren){
 				synchronized (this) {
 					this.notify();
 				}
@@ -243,7 +213,13 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	public void setElements(BTreeNode bt,TreeElements tree) throws RemoteException {		
 		log.log(Level.INFO, "[NodeImpl] id "+id+" bt "+bt+" tree "+tree);		
 		this.tree=tree;
-		this.bt=bt;	
+		this.bt=bt;		
+		for(BTreeNode child:this.bt.children){
+			if(child!=null)
+				numberOfChildren++;
+		}
+		log.log(Level.INFO, "[NodeImpl] I have these number of children: "+numberOfChildren);
+		
 		amILeaf=bt.isLeaf();
 		synchronized (this) {
 			this.notify();	

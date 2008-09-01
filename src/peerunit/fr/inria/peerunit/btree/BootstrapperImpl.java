@@ -88,7 +88,10 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 			TreeElements te=new TreeElements();			
 			if(!btree.getNode(key).isLeaf()){
 				for(BTreeNode child:btree.getNode(key).children){
-					te.setChildren(nodes.get(child.id));	
+					if(child!=null){
+						System.out.println("Child id "+child.id);
+						te.setChildren(nodes.get(child.id));
+					}
 				}
 			}else
 				te.setChildren(null);

@@ -1,12 +1,15 @@
 package fr.inria.peerunit.btree.parser;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.inria.peerunit.Executor;
 import fr.inria.peerunit.TestCase;
@@ -17,19 +20,17 @@ import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.util.PeerUnitLogger;
+import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.util.TesterUtil;
 
 public class ExecutorImpl implements Executor {
 
 	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
 	private TreeTesterImpl tester;
-	private TestCaseImpl testcase;
-	private PeerUnitLogger LOG;
+	private TestCaseImpl testcase;	
 	private Class<? extends TestCase> c;
-	public ExecutorImpl(PeerUnitLogger l) {		
-		this.LOG=l;
-	}
-	
+	private static Logger PEER_LOG;
+		
 	public boolean validatePeerRange(int from, int to) {
 		if ((from > -1) && (to == -1)) {
 			throw new AnnotationFailure("Annotation FROM without TO");
@@ -49,17 +50,38 @@ public class ExecutorImpl implements Executor {
 			(place == -1 && from == -1 && to == -1) ||
 			((from <= testerId) && (to >= testerId));
 	}
-
+	
+	/**
+	 * @param c
+	 * @throws IOException
+	 *
+	 * Creates the instances of peers and testers. Furthermore, creates the logfiles to them.
+	 */
 	public void newInstance(TreeTesterImpl tester){
 		this.tester=tester;
-		try {
+		LogFormat format = new LogFormat();
+		Level level = Level.parse(TesterUtil.getLogLevel());		
+		try {			
+			String logFolder = TesterUtil.getLogfolder();
+			
+			PEER_LOG = Logger.getLogger(c.getName());
+			FileHandler phandler;
+			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+this.tester.id+".log",true);
+			phandler.setFormatter(format);
+			PEER_LOG.addHandler(phandler);
+			PEER_LOG.setLevel(level);
+			
 			testcase = (TestCaseImpl) c.newInstance();
 			testcase.setTester(this.tester);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-		}		
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}			
 	}
 
 	public List<MethodDescription> register(Class<? extends TestCase> c) {
@@ -88,7 +110,6 @@ public class ExecutorImpl implements Executor {
 				methods.put(new MethodDescription(each, ac), each);				
 			}
 		}
-		LOG.log(Level.FINEST,"I will execute the method: "+methods.keySet().toString());
 		return new ArrayList<MethodDescription>(methods.keySet());
 	}
 
