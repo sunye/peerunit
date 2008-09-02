@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import fr.inria.peerunit.TestCaseImpl;
@@ -44,8 +45,14 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	String logFolder = TesterUtil.getLogfolder();
 		
 	BTreeNode bt;
+		
+	private AtomicInteger childrenTalk = new AtomicInteger(0);
 	
-	int childrenTalk=0;
+	private Long time;
+		
+	MethodDescription mdToExecute;
+	
+	int treeWaitForMethod=TesterUtil.getTreeWaitForMethod();
 	
 	public NodeImpl( Bootstrapper b) throws RemoteException {
 		boot=b;
@@ -88,15 +95,17 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 				Thread.sleep(TesterUtil.getWaitForMethod());
 			} catch (InterruptedException e) {			
 				log.logStackTrace(e);		
-			}						
+			}
 		}
+		this.time=System.currentTimeMillis();
 		log.log(Level.INFO, "[NodeImpl] START EXECUTION ");
 		for(MethodDescription md:testList){		
-			log.log(Level.INFO, "[NodeImpl] METHOD "+md);
-			try {				
+			mdToExecute=md;
+			log.log(Level.INFO, "[NodeImpl] METHOD "+mdToExecute);			
+			try {					
 				if(amIRoot){
 					log.log(Level.INFO, "[NodeImpl] Start action ");
-					dispatch(md);
+					dispatch();
 				}else{		
 					/**
 					 * Wait for parent
@@ -104,10 +113,11 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 					synchronized(this){
 						this.wait();
 					}
+					log.log(Level.INFO, "[NodeImpl] I'm about to execute "+md);			
 					if(!amILeaf){
-						dispatch(md);
+						dispatch();
 					}else{
-						execute(md);						
+						execute();						
 					}					
 					talkToParent();					
 				}				
@@ -115,13 +125,15 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 				log.logStackTrace(e);		
 			} 		
 		}
+		log.log(Level.INFO, "Whole execution time "+(System.currentTimeMillis()-this.time));
+		
 		System.exit(0);	
 	}
 	
-	private void dispatch(MethodDescription md) throws InterruptedException {
-		log.log(Level.INFO, id+"[NodeImpl] Dispatching action ");		
+	private void dispatch() throws InterruptedException {
+		log.log(Level.INFO, id+"[NodeImpl] Dispatching action "+mdToExecute);		
 		talkToChildren();		
-		execute(md);		
+		execute();		
 		/**
 		 * Wait for children
 		 */
@@ -130,21 +142,22 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}	
 	}
 	
-	private void execute(MethodDescription md){
-		log.log(Level.INFO, id+"[NodeImpl]  Executing action "+md);
+	private void execute(){
+		log.log(Level.INFO, id+"[NodeImpl]  Executing action "+mdToExecute);
 		for(TreeTesterImpl t:testers){
-			t.inbox(md);		
+			t.inbox(mdToExecute);		
 		}					
 	}
 	
 	private void talkToChildren(){		
 		for(Node child:tree.getChildren()){
-			log.log(Level.INFO, id+"[NodeImpl] talk to kids "+ child);		
+			log.log(Level.INFO, id+"[NodeImpl] talk to kids "+ child);
+			log.log(Level.INFO, id+"[NodeImpl] Sending them "+ mdToExecute);		
 			try {
 				/**
 				 * Talk to children
 				 */
-				child.send(MessageType.EXECUTE);
+				child.send(MessageType.EXECUTE,mdToExecute);
 			} catch (RemoteException e) {
 				log.logStackTrace(e);		
 			}
@@ -157,8 +170,11 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			/**
 			 * Talk to parent
 			 */
-			tree.getParent().send(MessageType.OK);
+			Thread.sleep(treeWaitForMethod);
+			tree.getParent().send(MessageType.OK,mdToExecute);
 		} catch (RemoteException e) {
+			log.logStackTrace(e);		
+		} catch (InterruptedException e) {
 			log.logStackTrace(e);		
 		}		
 	}
@@ -174,23 +190,26 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	 * @param message
 	 * @throws RemoteException
 	 */
-	public void send(MessageType message) throws RemoteException {
+	public void send(MessageType message,MethodDescription mdToExecute) throws RemoteException {
+		log.log(Level.INFO, id+"[NodeImpl] Daddy asked me to execute "+ mdToExecute);		
+		this.mdToExecute=mdToExecute;
 		/**
 		 * Way up 
 		 */
-		if (message.equals(MessageType.OK)) {	
+		int talked;
+		if (message.equals(MessageType.OK)) {
+			talked=childrenTalk.incrementAndGet();
 			log.log(Level.INFO, id+"[NodeImpl]  I finished the execution. Waiting "+
-					(numberOfChildren-childrenTalk)+" of my "+numberOfChildren+" children ");
-			childrenTalk++;
+					((numberOfChildren-talked)+1)+" of my "+numberOfChildren+" children ");			
 			
 			/**
 			 * I have to wait for my children 
 			 */			
-			if(childrenTalk==numberOfChildren){
+			if(talked==numberOfChildren){
 				synchronized (this) {
 					this.notify();
 				}
-				childrenTalk=0;
+				childrenTalk.set(0);
 			}
 			
 			

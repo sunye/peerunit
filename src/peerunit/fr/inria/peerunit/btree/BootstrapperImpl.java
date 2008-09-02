@@ -24,6 +24,8 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	
 	static BTree btree=new BTree(TesterUtil.getTreeOrder());
 	
+	private static Long time;	
+	
 	/**
 	 * Caching global variables
 	 */
@@ -37,7 +39,10 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 		BootstrapperImpl boot=new BootstrapperImpl();
 		boot.startNet(boot);	
 		System.out.println("[Bootstrapper] Lets see the tree !");		
+		time=System.currentTimeMillis();			
 		btree.buildTree();
+		time=System.currentTimeMillis()-time;		
+		System.out.println("[Bootstrapper] Built tree in: "+time+" msec");		
 		System.out.println("[Bootstrapper] Nodes expected :"+btree.nodes.size());
 		while (boot.getRegistered() < expectedTesters) {
 			try {								

@@ -28,27 +28,24 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 		log.log(Level.INFO, "[TreeTesterImpl] My Tester ID is: "+id);	
 		log.log(Level.INFO, "[TreeTesterImpl] instance ");*/
 		//inbox=new Inbox(log);
+		invokationThread=Thread.currentThread();
 	}
 	
 	public void run() {			
 		//log.log(Level.INFO, "[TreeTesterImpl] start ");		
 		while(executing){
-			synchronized (this) {			
+			synchronized (invokationThread) {			
 				try {
-					this.wait();
+					invokationThread.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}			
-			}
-			invokationThread = new Thread(new Invoke(md));
-			invokationThread.start();	
+			}			
 		}
 	}
 
-	public synchronized void inbox(MethodDescription md) {		
-		this.md=md;
-		//log.log(Level.INFO, "[TreeTesterImpl] Executing "+md);
-		this.notify();
+	public void inbox(MethodDescription md) {
+		invoke(md);
 	}
 	
 	public void setExecutor(ExecutorImpl executor){
@@ -56,7 +53,7 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 		this.executor.newInstance(this);		
 	}
 
-	private synchronized void invoke(MethodDescription md) {
+	private  void invoke(MethodDescription md) {
 		assert executor != null : "Null executor";
 
 		boolean error = true;
@@ -90,23 +87,15 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 		}
 	}
 	
-	private class Invoke implements Runnable {
-		MethodDescription md;
-		public Invoke(MethodDescription md) {
-			this.md = md;
-		}
-
-		public void run() {
-			invoke(md);
-		}
-	}	
-	
 	public int getID(){
 		return this.id;
 	}
 	
 	public void kill() {
 		executing=false;		
+		synchronized (invokationThread) {			
+			invokationThread.notify();
+		}
 	}	
 	/**
 	 * Used to cache testing global variables

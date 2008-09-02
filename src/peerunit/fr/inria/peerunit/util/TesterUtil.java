@@ -25,6 +25,7 @@ public class TesterUtil {
 	private static String logLevel;
 	private static int  treeOrder;
 	private static int  coordType;
+	private static int  treeWaitForMethod;
 
 	private static String getProperty(String property) throws Exception {
 		if (props == null) {
@@ -228,6 +229,15 @@ public class TesterUtil {
 			e.printStackTrace();
 		}
 		return coordType;
+	}
+	public static int getTreeWaitForMethod(){
+		try {
+			treeWaitForMethod=Integer.valueOf(TesterUtil.getProperty("test.treeWaitForMethod")).intValue();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return treeWaitForMethod;
 	}
 	
 }
