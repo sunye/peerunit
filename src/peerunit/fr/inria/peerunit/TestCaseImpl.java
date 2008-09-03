@@ -46,9 +46,9 @@ public abstract class TestCaseImpl implements TestCase {
 
 	public void kill() {
 		if(tester!=null)
-			vt=tester;
-			
-		vt.kill();
+			tester.kill();
+		else	
+			vt.kill();
 	}
 
 	public Object get(Integer key)  {

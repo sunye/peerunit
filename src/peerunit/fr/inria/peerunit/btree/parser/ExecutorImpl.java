@@ -27,9 +27,10 @@ public class ExecutorImpl implements Executor {
 
 	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
 	private TreeTesterImpl tester;
-	private TestCaseImpl testcase;	
+	//private TestCaseImpl testcase;	
 	private Class<? extends TestCase> c;
-	private static Logger PEER_LOG;
+	//private static Logger PEER_LOG;
+	int testerId;
 		
 	public boolean validatePeerRange(int from, int to) {
 		if ((from > -1) && (to == -1)) {
@@ -44,46 +45,16 @@ public class ExecutorImpl implements Executor {
 	}
 
 	private boolean shouldIExecute(int place, int from, int to) {
-		int testerId=0;		
-		testerId = tester.getID();		
+		int testerId = tester.getID();		
 		return (place == testerId) ||
 			(place == -1 && from == -1 && to == -1) ||
 			((from <= testerId) && (to >= testerId));
+	}	
+	
+	public Method getMethod(MethodDescription md){
+		return methods.get(md);
 	}
 	
-	/**
-	 * @param c
-	 * @throws IOException
-	 *
-	 * Creates the instances of peers and testers. Furthermore, creates the logfiles to them.
-	 */
-	public void newInstance(TreeTesterImpl tester){
-		this.tester=tester;
-		LogFormat format = new LogFormat();
-		Level level = Level.parse(TesterUtil.getLogLevel());		
-		try {			
-			String logFolder = TesterUtil.getLogfolder();
-			
-			PEER_LOG = Logger.getLogger(c.getName());
-			FileHandler phandler;
-			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+this.tester.id+".log",true);
-			phandler.setFormatter(format);
-			PEER_LOG.addHandler(phandler);
-			PEER_LOG.setLevel(level);
-			
-			testcase = (TestCaseImpl) c.newInstance();
-			testcase.setTester(this.tester);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}			
-	}
-
 	public List<MethodDescription> register(Class<? extends TestCase> c) {
 		Test t;
 		BeforeClass bc;
@@ -114,14 +85,7 @@ public class ExecutorImpl implements Executor {
 	}
 
 
-	public void invoke(MethodDescription md) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
-		assert methods.containsKey(md) : "Method should be registered";
-		assert testcase != null : "Test Case instance should not be null";
-
-		Method m = methods.get(md);
-		m.invoke(testcase, (Object[]) null);
-	}
 
 	public boolean isLastMethod(String methodAnnotation) {
 		return methodAnnotation.equalsIgnoreCase("AfterClass");

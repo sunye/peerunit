@@ -54,6 +54,8 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	
 	int treeWaitForMethod=TesterUtil.getTreeWaitForMethod();
 	
+	Class<? extends TestCaseImpl> klass;
+	
 	public NodeImpl( Bootstrapper b) throws RemoteException {
 		boot=b;
 		UnicastRemoteObject.exportObject(this);	
@@ -79,7 +81,8 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		try {			
 			log.log(Level.INFO, "[NodeImpl] Registering actions");			
 			executor = new ExecutorImpl();				
-			testList=executor.register(c);			
+			testList=executor.register(c);		
+			klass=c;
 		} catch (SecurityException e) {
 			log.logStackTrace(e);			    
 		} 
@@ -142,9 +145,9 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}	
 	}
 	
-	private void execute(){
-		log.log(Level.INFO, id+"[NodeImpl]  Executing action "+mdToExecute);
+	private void execute(){		
 		for(TreeTesterImpl t:testers){
+			log.log(Level.INFO, id+"[NodeImpl] Tester "+t.getID()+" Executing action "+mdToExecute);
 			t.inbox(mdToExecute);		
 		}					
 	}
@@ -273,7 +276,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			if(key != null){
 				log.log(Level.INFO, "[NodeImpl] Tester "+key.toString());				
 				TreeTesterImpl t=new TreeTesterImpl(new Integer(key.toString()),boot);
-				t.setExecutor(executor);
+				t.setClass(klass);
 				t.start();				
 				testers.add(t);				
 			}
