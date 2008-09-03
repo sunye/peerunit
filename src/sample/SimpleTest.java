@@ -1,17 +1,12 @@
 
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.test.assertion.Assert;
 
-public class SimpleTest extends TestCaseImpl{
+public class SimpleTest extends TestCaseImpl{	
 	
-
 	/**
 	 * This method starts the test
 	 */
@@ -23,7 +18,7 @@ public class SimpleTest extends TestCaseImpl{
 
 	@Test(place=-1,timeout=1000, name = "action2", step = 1)
 	public void action2(){
-	
+		
 	}
 
 

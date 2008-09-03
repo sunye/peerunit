@@ -1,25 +1,19 @@
 package freepastry.test;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.test.assertion.Assert.fail;
+import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import rice.environment.Environment;
 import rice.pastry.Id;
 import rice.pastry.NodeHandle;
-import util.FreeLocalPort;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
@@ -33,8 +27,6 @@ public class TestNewJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
-
-	static TestNewJoin test;
 
 	Peer peer=new Peer();
 
@@ -54,10 +46,10 @@ public class TestNewJoin extends TestCaseImpl{
 
 		try {
 
-			if(test.getPeerName()%2!=0){
+			if(this.getPeerName()%2!=0){
 				log.info("Joining in first");
 				Network net= new Network();
-				Thread.sleep(test.getPeerName()*1000);
+				Thread.sleep(this.getPeerName()*1000);
 
 				if(!net.joinNetwork(peer, null,false, log)){
 					inconclusive("I couldn't join, sorry");
@@ -82,7 +74,7 @@ public class TestNewJoin extends TestCaseImpl{
 	public void testFind(){
 		try {
 			Thread.sleep(sleep);
-			if(test.getPeerName()%2!=0){
+			if(this.getPeerName()%2!=0){
 				log.info("My ID "+peer.getId());
 				for(NodeHandle nd: peer.getRoutingTable()){
 					log.info("Successor NodeId "+nd.getId());
@@ -99,10 +91,10 @@ public class TestNewJoin extends TestCaseImpl{
 
 		try {
 
-			if(test.getPeerName()%2==0){
+			if(this.getPeerName()%2==0){
 				log.info("Joining in first");
 				Network net= new Network();
-				Thread.sleep(test.getPeerName()*1000);
+				Thread.sleep(this.getPeerName()*1000);
 
 				if(!net.joinNetwork(peer, null,false, log)){
 					inconclusive("I couldn't join, sorry");
@@ -126,7 +118,7 @@ public class TestNewJoin extends TestCaseImpl{
 	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testFindAgain(){
 		try {
-			if((test.getPeerName()%2!=0)){
+			if((this.getPeerName()%2!=0)){
 				List<NodeHandle> actuals;
 
 				//Iterations to clean the volatiles from the routing table

@@ -1,6 +1,5 @@
 package openchord.test;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import openchord.DbCallback;
@@ -27,11 +25,8 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 /**
  * Test E4 on experiments list
  * @author almeida
@@ -41,7 +36,7 @@ public class TestInsertJoinB extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestInsertJoinB.class.getName());
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	static TestInsertJoinB test;
+	//static TestInsertJoinB test;
 
 	int sleep=TesterUtil.getSleep();
 
@@ -81,10 +76,10 @@ public class TestInsertJoinB extends TestCaseImpl{
 	@Test(name="action1",measure=true,step=1,timeout=10000000, place=-1)
 	public void init() {
 		try{
-			if(test.getPeerName()==0){
+			if(this.getPeerName()==0){
 
 				Thread.sleep(sleep);
-				log.info("Peer name "+test.getPeerName());
+				log.info("Peer name "+this.getPeerName());
 
 
 				de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();

@@ -1,17 +1,21 @@
 package fr.inria.peerunit.btree;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.util.PeerUnitLogger;
+import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class NodeImpl  implements Node,Serializable,Runnable{
@@ -21,7 +25,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private List<TreeTesterImpl> testers=new ArrayList<TreeTesterImpl>();	
+	private List<TreeTesterImpl> testers=new Vector<TreeTesterImpl>();	
 	
 	private List<MethodDescription> testList = new ArrayList<MethodDescription>();
 	
@@ -29,8 +33,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	
 	private ExecutorImpl executor;
 
-	private static PeerUnitLogger log = new PeerUnitLogger(NodeImpl.class
-			.getName());
+	private static Logger log;
 	
 	public int id;
 	
@@ -69,11 +72,29 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			System.exit(0);			
 		}
 		
-		System.out.println("Log file to use : "+logFolder+ "/Node" + id + ".log");
-		log.createLogger(logFolder+ "/Node" + id + ".log");	
-		log.log(Level.INFO, "[NodeImpl] Log file to use : "+logFolder+
-				"/Node" + id + ".log");
-		log.log(Level.INFO, "[NodeImpl] My Node ID is: "+id);		
+		System.out.println("Log file to use : "+logFolder+ "/Node" + id + ".log");		
+		
+		/**
+		 * Creating logfile
+		 */
+		LogFormat format = new LogFormat();
+		Level level = Level.parse(TesterUtil.getLogLevel());		
+					
+		String logFolder = TesterUtil.getLogfolder();
+		log = Logger.getLogger(NodeImpl.class.getName());
+		FileHandler phandler;
+		try {
+			phandler = new FileHandler(logFolder+ "/Node" + id + ".log",true);
+			phandler.setFormatter(format);
+			log.addHandler(phandler);
+			log.setLevel(level);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void export(Class<? extends TestCaseImpl> c) {
@@ -84,7 +105,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			testList=executor.register(c);		
 			klass=c;
 		} catch (SecurityException e) {
-			log.logStackTrace(e);			    
+			log.log(Level.SEVERE,e.toString());
 		} 
 	}
 			
@@ -97,7 +118,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			try {
 				Thread.sleep(TesterUtil.getWaitForMethod());
 			} catch (InterruptedException e) {			
-				log.logStackTrace(e);		
+				log.log(Level.SEVERE,e.toString());
 			}
 		}
 		this.time=System.currentTimeMillis();
@@ -125,7 +146,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 					talkToParent();					
 				}				
 			} catch (InterruptedException e) {				
-				log.logStackTrace(e);		
+				log.log(Level.SEVERE,e.toString());
 			} 		
 		}
 		log.log(Level.INFO, "Whole execution time "+(System.currentTimeMillis()-this.time));
@@ -162,7 +183,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 				 */
 				child.send(MessageType.EXECUTE,mdToExecute);
 			} catch (RemoteException e) {
-				log.logStackTrace(e);		
+				log.log(Level.SEVERE,e.toString());
 			}
 		}
 	}
@@ -176,9 +197,9 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			Thread.sleep(treeWaitForMethod);
 			tree.getParent().send(MessageType.OK,mdToExecute);
 		} catch (RemoteException e) {
-			log.logStackTrace(e);		
+			log.log(Level.SEVERE,e.toString());
 		} catch (InterruptedException e) {
-			log.logStackTrace(e);		
+			log.log(Level.SEVERE,e.toString());
 		}		
 	}
 	
@@ -256,29 +277,28 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		return "Node id: "+id;
 	}
 	
-	private void startTesters(){
+	private synchronized void startTesters(){
 		/**
 		 * Initially we wait for the tree construction
 		 */
-		synchronized (this) {
-			try {
-				this.wait();
-			} catch (InterruptedException e) {
-				log.logStackTrace(e);			    
-			}	
-		}		
+		try {
+			this.wait();
+		} catch (InterruptedException e) {
+			log.log(Level.SEVERE,e.toString());
+		}				
 		
 		log.log(Level.INFO, "[NodeImpl] Starting "+bt.keys+" Testers ");
 		/**
 		 * Using bt Node acknowledge the testers it must control, then start them
 		 */		
-		for(Comparable key:bt.keys){
+		for(Comparable key:bt.keys){			
 			if(key != null){
+				int peerID=new Integer(key.toString());				
 				log.log(Level.INFO, "[NodeImpl] Tester "+key.toString());				
-				TreeTesterImpl t=new TreeTesterImpl(new Integer(key.toString()),boot);
+				TreeTesterImpl t=new TreeTesterImpl(peerID,boot);
 				t.setClass(klass);
-				t.start();				
-				testers.add(t);				
+				t.start();
+				testers.add(t);
 			}
 		}		
 		log.log(Level.INFO, "[NodeImpl] Testers added: "+testers.size());

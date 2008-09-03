@@ -1,28 +1,20 @@
 package freepastry.test;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import rice.environment.Environment;
-import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastContent;
 import rice.tutorial.past.MyPastContent;
-import util.FreeLocalPort;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
@@ -36,7 +28,7 @@ import freepastry.Peer;
 public class TestInsertStableNew  extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestInsertStableNew.class.getName());
 
-	static TestInsertStableNew test;
+	//static TestInsertStableNew test;
 
 	Peer peer=new Peer();
 
@@ -52,13 +44,13 @@ public class TestInsertStableNew  extends TestCaseImpl {
 	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {
-			if(test.getPeerName()==0){
+			if(this.getPeerName()==0){
 				Network net= new Network();
 				if(!net.joinNetwork(peer, null, true, log)){
 					inconclusive("I couldn't become a boostrapper, sorry");
 				}
 
-				test.put(-1,net.getInetSocketAddress());
+				this.put(-1,net.getInetSocketAddress());
 				log.info("Net created");
 
 				while(!peer.isReady())
@@ -78,12 +70,12 @@ public class TestInsertStableNew  extends TestCaseImpl {
 		try {
 			// Wait a while due to the bootstrapper performance
 			Thread.sleep(16000);
-			if(test.getPeerName()!=0){
+			if(this.getPeerName()!=0){
 				log.info("Joining in first");
 				Network net= new Network();
-				Thread.sleep(test.getPeerName()*1000);
+				Thread.sleep(this.getPeerName()*1000);
 
-				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-1);
+				InetSocketAddress bootaddress= (InetSocketAddress)this.get(-1);
 				log.info("Getting cached boot "+bootaddress.toString());
 
 				if(!net.joinNetwork(peer, bootaddress, false, log)){
@@ -124,7 +116,7 @@ public class TestInsertStableNew  extends TestCaseImpl {
 	@Test(place=-1,timeout=10000000, name = "action4", step = 0)
 	public void testInsert(){
 		try {
-			if(test.getPeerName()==0){
+			if(this.getPeerName()==0){
 				log.info("I will insert");
 				List<PastContent> resultSet=new ArrayList<PastContent>();
 				// these variables are final so that the continuation can access them
@@ -137,7 +129,7 @@ public class TestInsertStableNew  extends TestCaseImpl {
 					resultSet.add(myContent);
 					Thread.sleep(150);
 				}
-				test.put(0, resultSet);
+				this.put(0, resultSet);
 
 				log.info("Inserted "+resultSet.size());
 			}
@@ -152,7 +144,7 @@ public class TestInsertStableNew  extends TestCaseImpl {
 	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testRetrieve(){
 		// Get inserted data
-		List<PastContent> cached=(List<PastContent>)test.get(0);
+		List<PastContent> cached=(List<PastContent>)this.get(0);
 
 		// build the expecteds
 		for(PastContent cachedObj:cached){

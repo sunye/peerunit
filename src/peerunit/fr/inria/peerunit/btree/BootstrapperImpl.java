@@ -118,7 +118,8 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 		}
 	}
 
-	public void put(Integer key, Object object) throws RemoteException {		
+	public void put(Integer key, Object object) throws RemoteException {	
+		System.out.println("[Bootstrapper] Caching object "+object);
 		cacheMap.put(key, object);
 	}
 
@@ -126,7 +127,7 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 		return cacheMap.get(key);
 	}
 
-	public Map<Integer, Object> getCollection() throws RemoteException {
+	public Map<Integer, Object> getCollection() throws RemoteException {		
 		return cacheMap;
 	}
 

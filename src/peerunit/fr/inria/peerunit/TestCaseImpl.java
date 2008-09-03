@@ -8,8 +8,7 @@ import fr.inria.peerunit.rmi.tester.TesterImpl;
 
 public abstract class TestCaseImpl implements TestCase {
 
-	private int id;
-	private VolatileTester vt;
+	private int id;	
 	private StorageTester tester;	
 
 	public void setTester(TesterImpl ti) {
@@ -24,7 +23,7 @@ public abstract class TestCaseImpl implements TestCase {
 	
 	
 	public void setTester(TreeTesterImpl tt) {	
-		vt = tt;		
+		tester = tt;		
 		id = tt.getID();		
 	}
 
@@ -45,10 +44,7 @@ public abstract class TestCaseImpl implements TestCase {
 	}
 
 	public void kill() {
-		if(tester!=null)
-			tester.kill();
-		else	
-			vt.kill();
+		tester.kill();
 	}
 
 	public Object get(Integer key)  {

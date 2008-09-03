@@ -12,7 +12,7 @@ public class PeerUnitLogger {
 		LOG = Logger.getLogger(name);
 	}
 	
-	public void createLogger(String pattern){
+	public synchronized void createLogger(String pattern){
 		LogFormat format = new LogFormat();		
 		Level level = Level.parse(TesterUtil.getLogLevel());
 		FileHandler handler=null;
@@ -29,11 +29,11 @@ public class PeerUnitLogger {
 		LOG.log(level,"Logfile location: "+pattern);
 	}
 
-	public void log(Level level, String msg){
+	public synchronized void log(Level level, String msg){
 		LOG.log(level, msg);
 	}
 	
-	public void logStackTrace(Exception e){
+	public synchronized void logStackTrace(Exception e){
 		/**
 		 * Logging the stack trace  
 		 */

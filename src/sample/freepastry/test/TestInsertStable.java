@@ -1,5 +1,6 @@
 package freepastry.test;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -7,11 +8,9 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import rice.environment.Environment;
-import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastContent;
 import rice.tutorial.past.MyPastContent;
 import util.FreeLocalPort;
@@ -19,9 +18,7 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Peer;
 
@@ -33,8 +30,6 @@ import freepastry.Peer;
  */
 public class TestInsertStable  extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestInsertStable.class.getName());
-
-	static TestInsertStable test;
 
 	Peer peer=new Peer();
 
@@ -49,7 +44,7 @@ public class TestInsertStable  extends TestCaseImpl {
 	public void startingNetwork(){
 		try {
 
-			log.info("I am "+test.getPeerName());
+			log.info("I am "+this.getPeerName());
 			//	Loads pastry settings
 			Environment env = new Environment();
 
@@ -68,7 +63,7 @@ public class TestInsertStable  extends TestCaseImpl {
 				inconclusive("I couldn't become a boostrapper, sorry");
 			}
 
-			test.put(-1,peer.getInetSocketAddress(bootaddr));
+			this.put(-1,peer.getInetSocketAddress(bootaddr));
 			//log.info("Cached boot address: "+bootaddress.toString());
 			//test.put(-1,bootaddress);
 			log.info("Net created");
@@ -91,7 +86,7 @@ public class TestInsertStable  extends TestCaseImpl {
 		try {
 			// Wait a while due to the bootstrapper performance
 			Thread.sleep(sleep);
-			if(test.getPeerName()!=0){
+			if(this.getPeerName()!=0){
 				log.info("Joining in first");
 				//	Loads pastry settings
 				Environment env = new Environment();
@@ -101,12 +96,12 @@ public class TestInsertStable  extends TestCaseImpl {
 				int bindport = port.getPort();
 				log.info("LocalPort:"+bindport);
 
-				Thread.sleep(test.getPeerName()*1000);
-				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-1);
+				Thread.sleep(this.getPeerName()*1000);
+				InetSocketAddress bootaddress= (InetSocketAddress)this.get(-1);
 				log.info("Getting cached boot "+bootaddress.toString());
 				if(!peer.join(bindport, bootaddress, env, log)){
 					inconclusive("Couldn't boostrap, sorry");
-					test.put(test.getPeerName(),"INCONCLUSIVE");
+					this.put(this.getPeerName(),"INCONCLUSIVE");
 				}
 				log.info("Running on port "+peer.getPort());
 				log.info("Time to bootstrap");
@@ -165,7 +160,7 @@ public class TestInsertStable  extends TestCaseImpl {
 	public void testInsert(){
 		try {
 			Thread.sleep(sleep);
-			if(test.getPeerName()==0){
+			if(this.getPeerName()==0){
 				List<PastContent> resultSet=new ArrayList<PastContent>();
 
 				// these variables are final so that the continuation can access them
@@ -179,7 +174,7 @@ public class TestInsertStable  extends TestCaseImpl {
 					resultSet.add(myContent);
 
 				}
-				test.put(-1, resultSet);
+				this.put(-1, resultSet);
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -248,7 +243,7 @@ public class TestInsertStable  extends TestCaseImpl {
 	private boolean bootstrapped(int i){
 
 		try {
-			for(Integer peer: test.getCollection().keySet()){
+			for(Integer peer: this.getCollection().keySet()){
 				if(peer.intValue()==i)
 					return false;
 

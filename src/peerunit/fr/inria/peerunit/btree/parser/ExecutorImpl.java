@@ -1,27 +1,19 @@
 package fr.inria.peerunit.btree.parser;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.inria.peerunit.Executor;
 import fr.inria.peerunit.TestCase;
-import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.TreeTesterImpl;
 import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.util.LogFormat;
-import fr.inria.peerunit.util.TesterUtil;
 
 public class ExecutorImpl implements Executor {
 

@@ -1,6 +1,5 @@
 package openchord.test;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import openchord.DbCallback;
@@ -27,11 +25,8 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 
 /**
  * Test Insert/Retrieve in an Expanding System
@@ -41,9 +36,7 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
 public class TestInsertJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestInsertJoin.class.getName());
 	private static final int OBJECTS=TesterUtil.getObjects();
-
-	static TestInsertJoin test;
-
+	
 	int sleep=TesterUtil.getSleep();
 
 	boolean iAmBootsrapper=false;
@@ -83,10 +76,10 @@ public class TestInsertJoin extends TestCaseImpl{
 	@Test(name="action1",measure=true,step=1,timeout=10000000, place=-1)
 	public void init() {
 		try{
-			if(test.getPeerName()==0){
+			if(this.getPeerName()==0){
 
 				Thread.sleep(sleep);
-				log.info("Peer name "+test.getPeerName());
+				log.info("Peer name "+this.getPeerName());
 
 
 				de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
@@ -112,7 +105,7 @@ public class TestInsertJoin extends TestCaseImpl{
 
 				chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
 				try {
-					Thread.sleep(100*test.getPeerName());
+					Thread.sleep(100*this.getPeerName());
 					log.info("LocalURL: "+localURL.toString());
 					chord.join(localURL,bootstrapURL);
 
@@ -159,17 +152,17 @@ public class TestInsertJoin extends TestCaseImpl{
 			netSize--;
 		}
 		for(Integer intObj: generated){
-			test.put(intObj.intValue()*10, intObj);
+			this.put(intObj.intValue()*10, intObj);
 		}
 	}
 
 	@Test(name="action3",measure=true,step=1,timeout=10000000, place=-1)
 	public void initInitHalf() {
 		try{
-			if(!chosenOne(test.getPeerName())&&(test.getPeerName()!=0)){
+			if(!chosenOne(this.getPeerName())&&(this.getPeerName()!=0)){
 				log.info("Joining in first");
 				Thread.sleep(sleep);
-				log.info("Peer name "+test.getPeerName());
+				log.info("Peer name "+this.getPeerName());
 
 
 				de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
@@ -195,7 +188,7 @@ public class TestInsertJoin extends TestCaseImpl{
 
 				chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
 				try {
-					Thread.sleep(100*test.getPeerName());
+					Thread.sleep(100*this.getPeerName());
 					log.info("LocalURL: "+localURL.toString());
 					chord.join(localURL,bootstrapURL);
 
@@ -240,7 +233,7 @@ public class TestInsertJoin extends TestCaseImpl{
 		List<String> resultSet=new ArrayList<String>();
 		try {
 			Thread.sleep(sleep);
-			if(!chosenOne(test.getPeerName())){
+			if(!chosenOne(this.getPeerName())){
 				for (int i = 0; i < OBJECTS; i++) {
 					data = ""+ i;
 					key=new StringKey(data);
@@ -252,8 +245,8 @@ public class TestInsertJoin extends TestCaseImpl{
 					log.info("[Local verdict] Expected "+actual);
 					resultSet.add(actual);
 				}
-				if(test.getPeerName()==0){
-					test.put(0, resultSet);
+				if(this.getPeerName()==0){
+					this.put(0, resultSet);
 				}
 			}
 		} catch (InterruptedException e) {
@@ -266,9 +259,9 @@ public class TestInsertJoin extends TestCaseImpl{
 	@Test(name="action6",measure=true,step=1,timeout=10000000, place=-1)
 	public void initOtherHalf() {
 		try{
-			if(chosenOne(test.getPeerName())){
+			if(chosenOne(this.getPeerName())){
 				log.info("Joining in second");
-				log.info("Peer name "+test.getPeerName());
+				log.info("Peer name "+this.getPeerName());
 
 
 				de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
@@ -294,7 +287,7 @@ public class TestInsertJoin extends TestCaseImpl{
 
 				chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
 				try {
-					Thread.sleep(100*test.getPeerName());
+					Thread.sleep(100*this.getPeerName());
 					log.info("LocalURL: "+localURL.toString());
 					chord.join(localURL,bootstrapURL);
 
@@ -323,7 +316,7 @@ public class TestInsertJoin extends TestCaseImpl{
 	public void testRetrieveByOthers(){
 
 		try {
-			if(chosenOne(test.getPeerName())){
+			if(chosenOne(this.getPeerName())){
 				List<String> actuals=new ArrayList<String>();
 
 
@@ -342,7 +335,7 @@ public class TestInsertJoin extends TestCaseImpl{
 					}
 					Thread.sleep(1000);
 				}
-				List<String> expecteds=(List<String>)test.get(0);
+				List<String> expecteds=(List<String>)this.get(0);
 				log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
 				Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);
 			}
@@ -361,7 +354,7 @@ public class TestInsertJoin extends TestCaseImpl{
 	private boolean chosenOne(int name){
 		try {
 			if(objList.isEmpty()){
-				objList=test.getCollection();
+				objList=this.getCollection();
 			}
 			Set<Integer> keySet=objList.keySet();
 			Object nameChose;

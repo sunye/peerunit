@@ -1,7 +1,8 @@
 
 package openchord.test;
 
-import java.io.IOException;
+import static fr.inria.peerunit.test.assertion.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -9,7 +10,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import openchord.DbCallback;
@@ -24,8 +24,6 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import static fr.inria.peerunit.test.assertion.Assert.*;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class TestUpdateOnShrink extends TestCaseImpl{
@@ -45,8 +43,6 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 	private static final int OBJECTS=TesterUtil.getObjects();
 
 	private static DbCallback callback= new DbCallback();
-
-	static TestUpdateOnShrink test;
 
 	int sleep=TesterUtil.getSleep();
 
@@ -74,7 +70,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		log.info("Peer name "+test.getName());
+		log.info("Peer name "+this.getName());
 
 		de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
 		String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
@@ -99,7 +95,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 
 		chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
 		try {
-			Thread.sleep(100*test.getName());
+			Thread.sleep(100*this.getName());
 			log.info("LocalURL: "+localURL.toString());
 			chord.join(localURL,bootstrapURL);
 
@@ -138,11 +134,11 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 	public void testLeave() {
 		try {
 
-			if(test.getName()%2==0){
+			if(this.getName()%2==0){
 				log.info("Leaving early");
 				chord.leave();
 				String insertValue=chord.getID().toString().substring(0,2)+" "+localURL.toString();
-				test.put(test.getName(), insertValue);
+				this.put(this.getName(), insertValue);
 				log.info("Cached "+ insertValue);
 			}
 
@@ -160,7 +156,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 	@Test(name="action5",measure=true,step=1,timeout=10000000,place=-1)
 	public void testRetrieve() {
 
-		if(test.getName()%2!=0){
+		if(this.getName()%2!=0){
 			String[] immediateSuccessor=chordPrint.printSuccessorList().split("\n");
 			String successor=null;
 			for (int i = 0; i < immediateSuccessor.length; i++) {
@@ -174,8 +170,8 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 			String quitPeer;
 			for(int i=0;i< TesterUtil.getExpectedPeers();i++){
 				if(i%2==0){
-					if(test.get(i)!=null){
-						quitPeer=test.get(i).toString().trim();
+					if(this.get(i)!=null){
+						quitPeer=this.get(i).toString().trim();
 						listQuitPeers.add(quitPeer);
 						log.info("Quit peer "+quitPeer);
 					}
@@ -208,7 +204,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 
 	@AfterClass(timeout=100000,place=-1)
 	public void end() {
-		if(test.getName()%2!=0){
+		if(this.getName()%2!=0){
 			try {
 				Thread.sleep(sleep);
 				chord.leave();

@@ -10,64 +10,58 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
-import fr.inria.peerunit.VolatileTester;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
-public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester {
+public class TreeTesterImpl extends Thread implements TreeTester,StorageTester {
 	public int id;	
 	MethodDescription md;
 	boolean executing=true;
 	private ExecutorImpl executor;	
-	private static Logger PEER_LOG;
-	private TestCaseImpl testcase;	
-	Thread invokationThread;
+	private TestCaseImpl testcase;
 	private Bootstrapper boot;
 	List<MethodDescription> testList;
-	//private static PeerUnitLogger log = new PeerUnitLogger(TreeTesterImpl.class.getName());
+	private static final PeerUnitLogger TESTER_LOG = new PeerUnitLogger(TreeTesterImpl.class.getName());
 	String logFolder = TesterUtil.getLogfolder();
 	public TreeTesterImpl(int id,Bootstrapper boot){
 		this.id=id;
 		this.boot=boot;
 		System.out.println("[TreeTesterImpl]  BOOT ID "+boot);
 		System.out.println("[TreeTesterImpl]  My Tester ID "+id);
-		/*log.createLogger(logFolder+ "/tester" + id + ".log");	
-		log.log(Level.INFO, "[TreeTesterImpl] Log file to use : "+logFolder+
+				
+		
+		TESTER_LOG.createLogger(logFolder+ "/tester" + id + ".log");	
+		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] Log file to use : "+logFolder+
 				"/tester" + id + ".log");
-		log.log(Level.INFO, "[TreeTesterImpl] My Tester ID is: "+id);	
-		log.log(Level.INFO, "[TreeTesterImpl] instance ");*/
-		//inbox=new Inbox(log);
-		invokationThread=Thread.currentThread();
+		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] My Tester ID is: "+id);	
+		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] instance ");		
 	}
 	
-	public void run() {			
-		//log.log(Level.INFO, "[TreeTesterImpl] start ");		
+	public  void run() {			
+		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] start ");		
 		while(executing){
-			synchronized (invokationThread) {			
+			synchronized (this) {			
 				try {
-					invokationThread.wait();
+					this.wait();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					TESTER_LOG.log(Level.SEVERE,e.toString());
 				}			
 			}			
 		}
 	}
 
-	public void inbox(MethodDescription md) {
-		System.out.println("[TreeTesterImpl]  Tester "+id+" invoking");
+	public  void inbox(MethodDescription md) {
+		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl]  Tester "+id+" invoking");
 		invoke(md);
 	}
 	
-	/*public void setExecutor(ExecutorImpl executor){
-		this.executor=executor;		
-		this.executor.newInstance(this);		
-	}*/
-	
-	public void setClass(Class<? extends TestCaseImpl> klass){
+	public  void setClass(Class<? extends TestCaseImpl> klass){
 		executor = new ExecutorImpl();				
 		testList=executor.register(klass);		
 		newInstance(klass);		
@@ -79,13 +73,14 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 	 *
 	 * Creates the instances of peers and testers. Furthermore, creates the logfiles to them.
 	 */
-	public void newInstance(Class<? extends TestCaseImpl> c){		
+	public  void newInstance(Class<? extends TestCaseImpl> c){
+		final Logger PEER_LOG = Logger.getLogger(c.getName());
 		LogFormat format = new LogFormat();
 		Level level = Level.parse(TesterUtil.getLogLevel());		
 		try {			
 			String logFolder = TesterUtil.getLogfolder();
 			
-			PEER_LOG = Logger.getLogger(c.getName());
+			
 			FileHandler phandler;
 			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+id+".log",true);
 			phandler.setFormatter(format);
@@ -95,24 +90,15 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 			testcase = (TestCaseImpl) c.newInstance();
 			testcase.setTester(this);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			TESTER_LOG.logStackTrace(e);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			TESTER_LOG.logStackTrace(e);
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			TESTER_LOG.logStackTrace(e);
 		} catch (IOException e) {
-			e.printStackTrace();
-		}			
+			TESTER_LOG.logStackTrace(e);
+		} 
 	}
-	
-/*	public void invoke(MethodDescription md) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-
-		assert methods.containsKey(md) : "Method should be registered";
-		assert testcase != null : "Test Case instance should not be null";
-
-		Method m = methods.get(md);
-		m.invoke(testcase, (Object[]) null);
-	}*/
 	
 	private  void invoke(MethodDescription md) {
 		assert executor != null : "Null executor";
@@ -124,10 +110,10 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 				m.invoke(testcase, (Object[]) null);
 				error = false;
 			} catch (IllegalArgumentException e) {
-				//log.logStackTrace(e);		
+				TESTER_LOG.logStackTrace(e);		
 				//v= Verdicts.INCONCLUSIVE;
 			} catch (IllegalAccessException e) {
-				//log.logStackTrace(e);		
+				TESTER_LOG.logStackTrace(e);
 				//v= Verdicts.INCONCLUSIVE;
 			}catch (InvocationTargetException e) {	
 				Oracle oracle=new Oracle(e.getCause());
@@ -135,14 +121,14 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 					error = false;
 				}
 				//v=oracle.getVerdict();					
-				//log.logStackTrace(e);		    
+				TESTER_LOG.logStackTrace(e);
 			} finally {
 				if (error) {
-					//log.log(Level.WARNING,"[TreeTesterImpl]  Executed in "+md.getName());									
+					TESTER_LOG.log(Level.WARNING,"[TreeTesterImpl]  Executed in "+md.getName());									
 				} else{
-					//log.log(Level.INFO,"[TreeTesterImpl]  Executed "+md.getName());			
+					TESTER_LOG.log(Level.INFO,"[TreeTesterImpl]  Executed "+md.getName());			
 					if(executor.isLastMethod(md.getAnnotation())){
-						//log.log(Level.FINEST,"[TreeTesterImpl] Test Case finished by annotation "+md.getAnnotation());			
+						TESTER_LOG.log(Level.FINEST,"[TreeTesterImpl] Test Case finished by annotation "+md.getAnnotation());			
 						//log.log(Level.FINEST,"Local verdict "+v);
 						//localVerdicts.add(v);	
 					}
@@ -158,8 +144,8 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 	
 	public void kill() {
 		executing=false;		
-		synchronized (invokationThread) {			
-			invokationThread.notify();
+		synchronized (this) {			
+			this.notify();
 		}
 	}	
 	/**
@@ -172,7 +158,7 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 		try {
 			boot.put(key, object);
 		} catch (RemoteException e) {
-			//LOG.logStackTrace(e);			    
+			TESTER_LOG.logStackTrace(e);			    
 		}
 	}
 
@@ -185,7 +171,7 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 		try {
 			boot.clearCollection();
 		} catch (RemoteException e) {
-			//LOG.logStackTrace(e);			    
+			TESTER_LOG.logStackTrace(e);
 		}
 	}
 
@@ -200,7 +186,7 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 		try {
 			object = boot.get(key);
 		} catch (RemoteException e) {
-			//LOG.logStackTrace(e);			    
+			TESTER_LOG.logStackTrace(e);    
 		}
 		return object;
 	}
@@ -217,6 +203,5 @@ public class TreeTesterImpl extends Thread implements TreeTester,VolatileTester 
 
 	public boolean containsKey(Object key)throws RemoteException{
 		return  boot.containsKey(key);
-	}
-	
+	}	
 }

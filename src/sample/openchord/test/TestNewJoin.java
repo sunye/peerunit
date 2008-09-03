@@ -1,6 +1,7 @@
 package openchord.test;
 
-import java.io.IOException;
+import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -8,7 +9,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import openchord.DbCallback;
@@ -23,8 +23,6 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import static fr.inria.peerunit.test.assertion.Assert.*;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -35,8 +33,6 @@ import fr.inria.peerunit.util.TesterUtil;
 public class TestNewJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
 	private static final int OBJECTS=TesterUtil.getObjects();
-
-	static TestNewJoin test;
 
 	int sleep=TesterUtil.getSleep();
 
@@ -73,10 +69,10 @@ public class TestNewJoin extends TestCaseImpl{
 	@Test(name="action1",measure=true,step=1,timeout=10000000, place=-1)
 	public void init() {
 		try{
-			if(test.getPeerName()%2!=0){
+			if(this.getPeerName()%2!=0){
 
 				Thread.sleep(sleep);
-				log.info("Peer name "+test.getPeerName());
+				log.info("Peer name "+this.getPeerName());
 
 
 				de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
@@ -102,7 +98,7 @@ public class TestNewJoin extends TestCaseImpl{
 
 				chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
 				try {
-					Thread.sleep(100*test.getPeerName());
+					Thread.sleep(100*this.getPeerName());
 					log.info("LocalURL: "+localURL.toString());
 					chord.join(localURL,bootstrapURL);
 
@@ -129,7 +125,7 @@ public class TestNewJoin extends TestCaseImpl{
 	public void routingTable() {
 
 		try{
-			if(test.getPeerName()%2!=0){
+			if(this.getPeerName()%2!=0){
 				chordPrint=(ChordImpl)chord;
 				Thread.sleep(sleep);
 				log.info("My ID is "+chord.getID());
@@ -155,10 +151,10 @@ public class TestNewJoin extends TestCaseImpl{
 	@Test(name="action3",measure=true,step=1,timeout=10000000, place=-1)
 	public void initOtherHalf() {
 		try{
-			if(test.getPeerName()%2==0){
+			if(this.getPeerName()%2==0){
 
 				Thread.sleep(sleep);
-				log.info("Peer name "+test.getPeerName());
+				log.info("Peer name "+this.getPeerName());
 
 
 				de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
@@ -184,7 +180,7 @@ public class TestNewJoin extends TestCaseImpl{
 
 				chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
 				try {
-					Thread.sleep(100*test.getPeerName());
+					Thread.sleep(100*this.getPeerName());
 					log.info("LocalURL: "+localURL.toString());
 					chord.join(localURL,bootstrapURL);
 
@@ -206,37 +202,11 @@ public class TestNewJoin extends TestCaseImpl{
 			e.printStackTrace();
 		}
 	}
-	/*@Test(name="action4",measure=true,step=1,timeout=10000000, place=-1)
-	public void routingTable2() {
-
-		try{
-			if(test.getPeerName()%2==0){
-				chordPrint=(ChordImpl)chord;
-				Thread.sleep(sleep);
-				log.info("My ID is "+chord.getID());
-				String[] succ=chordPrint.printSuccessorList().split("\n");
-				String successor=null;
-				for (int i = 0; i < succ.length; i++) {
-					if(i>0){
-						successor=succ[i].toString().trim();
-						log.info("Successor List "+successor);
-						routingTable.add(successor);
-					}
-				}
-			}
-		}catch (RuntimeException e) {
-			log.severe("Could not find !"+e);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-	}*/
-
+	
 	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testFindAgain(){
 		try {
-			if(test.getPeerName()%2!=0){
+			if(this.getPeerName()%2!=0){
 
 				String[] succ=chordPrint.printSuccessorList().split("\n");
 

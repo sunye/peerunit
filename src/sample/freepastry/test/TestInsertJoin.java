@@ -21,7 +21,6 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
@@ -35,8 +34,6 @@ public class TestInsertJoin  extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestInsertJoin.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
-
-	static TestInsertJoin test;
 
 	Peer peer=new Peer();
 
@@ -78,7 +75,7 @@ public class TestInsertJoin  extends TestCaseImpl {
 			netSize--;
 		}
 		for(Integer intObj: generated){
-			test.put(intObj.intValue()*10, intObj);
+			this.put(intObj.intValue()*10, intObj);
 		}
 	}
 
@@ -86,10 +83,10 @@ public class TestInsertJoin  extends TestCaseImpl {
 	public void startingInitNet(){
 
 		try {
-			if(!chosenOne(test.getPeerName())){
+			if(!chosenOne(this.getPeerName())){
 				log.info("Joining in first");
 				Network net= new Network();
-				Thread.sleep(test.getPeerName()*1000);
+				Thread.sleep(this.getPeerName()*1000);
 
 				if(!net.joinNetwork(peer, null,false, log)){
 					inconclusive("I couldn't join, sorry");
@@ -118,7 +115,7 @@ public class TestInsertJoin  extends TestCaseImpl {
 	public void testInsert(){
 		try {
 			Thread.sleep(sleep);
-			if(test.getPeerName()==0){
+			if(this.getPeerName()==0){
 				List<PastContent> resultSet=new ArrayList<PastContent>();
 
 				// these variables are final so that the continuation can access them
@@ -132,7 +129,7 @@ public class TestInsertJoin  extends TestCaseImpl {
 					resultSet.add(myContent);
 
 				}
-				test.put(-1, resultSet);
+				this.put(-1, resultSet);
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -146,9 +143,9 @@ public class TestInsertJoin  extends TestCaseImpl {
 		try {
 			Thread.sleep(sleep);
 
-			if(!chosenOne(test.getPeerName())){
+			if(!chosenOne(this.getPeerName())){
 				// Lookup first time
-				List<PastContent> keySet=(List<PastContent>)test.get(-1);
+				List<PastContent> keySet=(List<PastContent>)this.get(-1);
 				Id contentKey;
 				for (PastContent key : keySet) {
 					contentKey=key.getId();
@@ -173,7 +170,7 @@ public class TestInsertJoin  extends TestCaseImpl {
 						expecteds.add(expected.toString());
 					}
 				}
-				test.put(2, expecteds);
+				this.put(2, expecteds);
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -188,12 +185,12 @@ public class TestInsertJoin  extends TestCaseImpl {
 		try {
 			Thread.sleep(sleep);
 
-			if(chosenOne(test.getPeerName())&&(test.getPeerName()!=0)){
+			if(chosenOne(this.getPeerName())&&(this.getPeerName()!=0)){
 				log.info("Joining in second");
 				Network net= new Network();
-				Thread.sleep(test.getPeerName()*1000);
+				Thread.sleep(this.getPeerName()*1000);
 
-				InetSocketAddress bootaddress= (InetSocketAddress)test.get(-10);
+				InetSocketAddress bootaddress= (InetSocketAddress)this.get(-10);
 				log.info("Getting cached boot "+bootaddress.toString());
 
 				if(!net.joinNetwork(peer, bootaddress, false, log)){
@@ -218,10 +215,10 @@ public class TestInsertJoin  extends TestCaseImpl {
 	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testRetrieveByOthers(){
 		try {
-			if(chosenOne(test.getPeerName())&&(test.getPeerName()!=0)){
+			if(chosenOne(this.getPeerName())&&(this.getPeerName()!=0)){
 
 				// Lookup first time
-				List<PastContent> keySet=(List<PastContent>)test.get(-1);
+				List<PastContent> keySet=(List<PastContent>)this.get(-1);
 				Id contentKey;
 				for (PastContent key : keySet) {
 					contentKey=key.getId();
@@ -251,7 +248,7 @@ public class TestInsertJoin  extends TestCaseImpl {
 					Thread.sleep(1000);
 					timeToFind++;
 				}
-				List<String> expecteds=(List<String>)test.get(2);
+				List<String> expecteds=(List<String>)this.get(2);
 				log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
 				//Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);
 			}
@@ -280,7 +277,7 @@ public class TestInsertJoin  extends TestCaseImpl {
 	private boolean chosenOne(int name){
 		try {
 			if(objList.isEmpty()){
-				objList=test.getCollection();
+				objList=this.getCollection();
 			}
 			Set<Integer> keySet=objList.keySet();
 			Object nameChose;

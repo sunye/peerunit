@@ -1,29 +1,24 @@
 package freepastry.test;
 
-import java.io.IOException;
+import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import rice.p2p.past.PastContent;
 import rice.p2p.past.PastContentHandle;
 import rice.pastry.Id;
 import rice.pastry.NodeHandle;
-import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
-
-import static fr.inria.peerunit.test.assertion.Assert.*;
 
 /**
  * Test routing table update in a shrinking system
@@ -88,10 +83,10 @@ public class TestUpdateOnShrink  extends TestCaseImpl {
 	public void testLeave() {
 		try {
 			Thread.sleep(sleep);
-			if(super.getPeerName()%2!=0){
-				super.put(super.getPeerName(), peer.getId());
+			if(this.getPeerName()%2!=0){
+				this.put(this.getPeerName(), peer.getId());
 				log.info("Leaving early");
-				super.kill();
+				this.kill();
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -106,13 +101,13 @@ public class TestUpdateOnShrink  extends TestCaseImpl {
 			if(super.getPeerName()%2==0){
 				List<Id> volatiles=new ArrayList<Id>();
 
-				Set<Integer> keySet=super.getCollection().keySet();
+				Set<Integer> keySet=this.getCollection().keySet();
 				Object gotValue;
 				for(Integer i: keySet){
-					gotValue=super.get(i);
+					gotValue=this.get(i);
 					if(gotValue instanceof Id) {
 						volatiles.add((Id)gotValue);
-						log.info("Volatiles NodeId "+super.get(i));
+						log.info("Volatiles NodeId "+this.get(i));
 					}
 				}
 

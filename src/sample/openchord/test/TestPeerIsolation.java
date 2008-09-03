@@ -1,6 +1,7 @@
 package openchord.test;
 
-import java.io.IOException;
+import static fr.inria.peerunit.test.assertion.Assert.fail;
+
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import openchord.DbCallback;
@@ -25,8 +25,6 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import static fr.inria.peerunit.test.assertion.Assert.*;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -38,8 +36,6 @@ public class TestPeerIsolation extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestPeerIsolation.class.getName());
 
 	private static final int OBJECTS=TesterUtil.getObjects();
-
-	static TestPeerIsolation test;
 
 	int sleep=TesterUtil.getSleep();
 
@@ -81,7 +77,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 	public void init() {
 		try{
 			Thread.sleep(sleep);
-			log.info("Peer name "+test.getPeerName());
+			log.info("Peer name "+this.getPeerName());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (RemoteException e) {
@@ -111,12 +107,12 @@ public class TestPeerIsolation extends TestCaseImpl{
 
 		chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
 		try {
-			Thread.sleep(1000*test.getPeerName());
+			Thread.sleep(1000*this.getPeerName());
 			log.info("LocalURL: "+localURL.toString());
 			chord.join(localURL,bootstrapURL);
 
 			log.info("Joining Chord DHT: "+chord.toString());
-			test.put(test.getPeerName(), chord.getID());
+			this.put(this.getPeerName(), chord.getID());
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			log.severe("Peer init exception");
@@ -134,13 +130,13 @@ public class TestPeerIsolation extends TestCaseImpl{
 		int chosePeer;
 		try {
 			Thread.sleep(sleep);
-			if(test.getPeerName()==0){
-				chosePeer = rand.nextInt(test.getCollection().size());
-				ID id=(ID)test.get(chosePeer);
+			if(this.getPeerName()==0){
+				chosePeer = rand.nextInt(this.getCollection().size());
+				ID id=(ID)this.get(chosePeer);
 				log.info("Chose peer "+chosePeer+" ID "+chord.getID());
-				test.clear();
+				this.clear();
 				Thread.sleep(sleep);
-				test.put(-1,chord.getID());
+				this.put(-1,chord.getID());
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -157,7 +153,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 			e.printStackTrace();
 		}
 
-		Object obj=test.get(-1);
+		Object obj=this.get(-1);
 		chordPrint=(ChordImpl)chord;
 		if(obj instanceof ID) {
 			ID id=(ID)obj;
@@ -171,7 +167,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 
 					String[] succ=chordPrint.printSuccessorList().split("\n");
 					//storing my table
-					test.put(-2, succ);
+					this.put(-2, succ);
 
 					String successor=null;
 					for (int i = 0; i < succ.length; i++) {
@@ -199,7 +195,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 			Thread.sleep(sleep);
 
 			String idToSearch=chord.getID().toString().substring(0,2)+" "+localURL.toString().trim();
-			String[] succ=(String[] )test.get(-2);
+			String[] succ=(String[] )this.get(-2);
 
 			String successor=null;
 			for (int i = 0; i < succ.length; i++) {
@@ -207,7 +203,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 				if(successor.equalsIgnoreCase(idToSearch)){
 					//test.put(test.getPeerName(),idToSearch);
 					log.info("Leaving early "+idToSearch);
-					test.kill();
+					this.kill();
 
 					Thread.sleep(sleep);
 				}
@@ -220,7 +216,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
 	public void searchingNeighbours(){
 
-		Object obj=test.get(-1);
+		Object obj=this.get(-1);
 		chordPrint=(ChordImpl)chord;
 		if(obj instanceof ID) {
 			ID id=(ID)obj;

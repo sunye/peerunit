@@ -1,6 +1,5 @@
 package openchord.test;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import openchord.DbCallback;
@@ -27,9 +25,7 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 /**
  * Test Insert/Retrieve in an Expanding System
@@ -39,8 +35,6 @@ import fr.inria.peerunit.util.TesterUtil;
 public class TestInsertLeave extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestInsertLeave.class.getName());
 	private static final int OBJECTS=TesterUtil.getObjects();
-
-	static TestInsertLeave test;
 
 	int sleep=TesterUtil.getSleep();
 
@@ -86,7 +80,7 @@ public class TestInsertLeave extends TestCaseImpl{
 
 
 			Thread.sleep(sleep);
-			log.info("Peer name "+test.getPeerName());
+			log.info("Peer name "+this.getPeerName());
 
 
 			de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
@@ -112,7 +106,7 @@ public class TestInsertLeave extends TestCaseImpl{
 
 			chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
 			try {
-				Thread.sleep(100*test.getPeerName());
+				Thread.sleep(100*this.getPeerName());
 				log.info("LocalURL: "+localURL.toString());
 				chord.join(localURL,bootstrapURL);
 
@@ -159,7 +153,7 @@ public class TestInsertLeave extends TestCaseImpl{
 			netSize--;
 		}
 		for(Integer intObj: generated){
-			test.put(intObj.intValue()*100, intObj);
+			this.put(intObj.intValue()*100, intObj);
 		}
 	}
 
@@ -186,7 +180,7 @@ public class TestInsertLeave extends TestCaseImpl{
 
 		try {
 			Thread.sleep(sleep);
-			if(!chosenOne(test.getPeerName())){
+			if(!chosenOne(this.getPeerName())){
 				for (int i = 0; i < OBJECTS; i++) {
 					data = ""+ i;
 					key=new StringKey(data);
@@ -208,9 +202,9 @@ public class TestInsertLeave extends TestCaseImpl{
 	@Test(name="action5",measure=true,step=1,timeout=10000000, place=-1)
 	public void leaving() {
 		try{
-			if(chosenOne(test.getPeerName())){
+			if(chosenOne(this.getPeerName())){
 				log.info("Leaving early ");
-				test.kill();
+				this.kill();
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -221,7 +215,7 @@ public class TestInsertLeave extends TestCaseImpl{
 	public void testInitialRetrieve(){
 
 		try {
-			if(!chosenOne(test.getPeerName())){
+			if(!chosenOne(this.getPeerName())){
 				List<String> actuals=new ArrayList<String>();
 				Thread.sleep(sleep);
 
@@ -235,7 +229,7 @@ public class TestInsertLeave extends TestCaseImpl{
 				for (String actual : callback.getResultSet()) {
 					log.info("Retrieve after depart "+actual);
 					actuals.add(actual);
-					test.put(test.getPeerName(), actuals);
+					this.put(this.getPeerName(), actuals);
 				}
 			}
 		} catch (InterruptedException e) {
@@ -248,11 +242,11 @@ public class TestInsertLeave extends TestCaseImpl{
 	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void buildExpecteds(){
 		try {
-			Set<Integer> keySet=test.getCollection().keySet();
+			Set<Integer> keySet=this.getCollection().keySet();
 			List<String> cached=new ArrayList<String>();
 			Object obj;
 			for(Integer key: keySet){
-				obj=test.get(key);
+				obj=this.get(key);
 				if (!(obj instanceof Integer)) {
 					cached=(List<String>) obj;
 				}
@@ -279,7 +273,7 @@ public class TestInsertLeave extends TestCaseImpl{
 	public void testFinalRetrieve(){
 
 		try {
-			if(!chosenOne(test.getPeerName())){
+			if(!chosenOne(this.getPeerName())){
 				Thread.sleep(sleep);
 				List<String> actuals=new ArrayList<String>();
 				int timeToFind=0;
@@ -320,7 +314,7 @@ public class TestInsertLeave extends TestCaseImpl{
 	private boolean chosenOne(int name){
 		try {
 			if(objList.isEmpty()){
-				objList=test.getCollection();
+				objList=this.getCollection();
 			}
 			Set<Integer> keySet=objList.keySet();
 			Object nameChose;
