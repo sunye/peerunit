@@ -15,36 +15,37 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
+import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
-public class TreeTesterImpl extends Thread implements TreeTester,StorageTester {
+public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	public int id;	
 	MethodDescription md;
 	boolean executing=true;
+	boolean isLastMethod=false;
 	private ExecutorImpl executor;	
 	private TestCaseImpl testcase;
 	private Bootstrapper boot;
+	private Verdicts v= Verdicts.PASS;
 	List<MethodDescription> testList;
 	private static final PeerUnitLogger TESTER_LOG = new PeerUnitLogger(TreeTesterImpl.class.getName());
 	String logFolder = TesterUtil.getLogfolder();
 	public TreeTesterImpl(int id,Bootstrapper boot){
 		this.id=id;
-		this.boot=boot;
-		System.out.println("[TreeTesterImpl]  BOOT ID "+boot);
-		System.out.println("[TreeTesterImpl]  My Tester ID "+id);
-				
+		this.boot=boot;				
 		
 		TESTER_LOG.createLogger(logFolder+ "/tester" + id + ".log");	
 		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] Log file to use : "+logFolder+
 				"/tester" + id + ".log");
 		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] My Tester ID is: "+id);	
-		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] instance ");		
+		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl] instance ");
+		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl]  BOOT ID "+boot);
 	}
 	
 	public  void run() {			
-		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] start ");		
+		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl] start ");		
 		while(executing){
 			synchronized (this) {			
 				try {
@@ -57,12 +58,12 @@ public class TreeTesterImpl extends Thread implements TreeTester,StorageTester {
 	}
 
 	public  void inbox(MethodDescription md) {
-		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl]  Tester "+id+" invoking");
+		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl]  Tester "+id+" invoking");
 		invoke(md);
 	}
 	
 	public  void setClass(Class<? extends TestCaseImpl> klass){
-		executor = new ExecutorImpl();				
+		executor = new ExecutorImpl(this);				
 		testList=executor.register(klass);		
 		newInstance(klass);		
 	}
@@ -104,23 +105,22 @@ public class TreeTesterImpl extends Thread implements TreeTester,StorageTester {
 		assert executor != null : "Null executor";
 		if(testList.contains(md)){
 			boolean error = true;
-			try {
-				//invoke(md);
+			try {				
 				Method m = executor.getMethod(md);
 				m.invoke(testcase, (Object[]) null);
 				error = false;
 			} catch (IllegalArgumentException e) {
 				TESTER_LOG.logStackTrace(e);		
-				//v= Verdicts.INCONCLUSIVE;
+				v= Verdicts.INCONCLUSIVE;
 			} catch (IllegalAccessException e) {
 				TESTER_LOG.logStackTrace(e);
-				//v= Verdicts.INCONCLUSIVE;
+				v= Verdicts.INCONCLUSIVE;
 			}catch (InvocationTargetException e) {	
 				Oracle oracle=new Oracle(e.getCause());
 				if(oracle.isPeerUnitFailure()){
 					error = false;
 				}
-				//v=oracle.getVerdict();					
+				v=oracle.getVerdict();					
 				TESTER_LOG.logStackTrace(e);
 			} finally {
 				if (error) {
@@ -129,16 +129,24 @@ public class TreeTesterImpl extends Thread implements TreeTester,StorageTester {
 					TESTER_LOG.log(Level.INFO,"[TreeTesterImpl]  Executed "+md.getName());			
 					if(executor.isLastMethod(md.getAnnotation())){
 						TESTER_LOG.log(Level.FINEST,"[TreeTesterImpl] Test Case finished by annotation "+md.getAnnotation());			
-						//log.log(Level.FINEST,"Local verdict "+v);
-						//localVerdicts.add(v);	
+						TESTER_LOG.log(Level.FINEST,"Local verdict "+v);				
+						isLastMethod=true;
 					}
 				}
 			}
 		}
 	}
 	
+	public Verdicts getVerdict(){
+		return v;
+	}
+	
+	public boolean isLastMethod(){
+		return isLastMethod;
+	}
+	
 	public int getID(){
-		System.out.println("[TreeTesterImpl]  Tester ID "+id);
+		TESTER_LOG.log(Level.FINEST,"[TreeTesterImpl]  Tester ID "+id);
 		return this.id;
 	}
 	

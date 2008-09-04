@@ -19,10 +19,15 @@ public class ExecutorImpl implements Executor {
 
 	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
 	private TreeTesterImpl tester;
-	//private TestCaseImpl testcase;	
 	private Class<? extends TestCase> c;
-	//private static Logger PEER_LOG;
 	int testerId;
+	public ExecutorImpl(TreeTesterImpl tester){
+		this.tester = tester;
+		testerId=tester.getID();
+	}
+	public ExecutorImpl(){
+		
+	}
 		
 	public boolean validatePeerRange(int from, int to) {
 		if ((from > -1) && (to == -1)) {
@@ -36,8 +41,7 @@ public class ExecutorImpl implements Executor {
 		} else return false;
 	}
 
-	private boolean shouldIExecute(int place, int from, int to) {
-		int testerId = tester.getID();		
+	private boolean shouldIExecute(int place, int from, int to) {			
 		return (place == testerId) ||
 			(place == -1 && from == -1 && to == -1) ||
 			((from <= testerId) && (to >= testerId));

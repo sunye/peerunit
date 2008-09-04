@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.test.oracle.GlobalVerdict;
+import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
@@ -25,7 +27,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private List<TreeTesterImpl> testers=new Vector<TreeTesterImpl>();	
+	private Vector<TreeTesterImpl> testers=new Vector<TreeTesterImpl>();	
 	
 	private List<MethodDescription> testList = new ArrayList<MethodDescription>();
 	
@@ -40,6 +42,8 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	private boolean amIRoot=false;
 	
 	private boolean amILeaf=false;
+	
+	private boolean isLastMethod=false;
 	
 	int numberOfChildren=0;
 	
@@ -58,6 +62,8 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	int treeWaitForMethod=TesterUtil.getTreeWaitForMethod();
 	
 	Class<? extends TestCaseImpl> klass;
+	
+	private List<Verdicts> localVerdicts=new Vector<Verdicts>();
 	
 	public NodeImpl( Bootstrapper b) throws RemoteException {
 		boot=b;
@@ -122,13 +128,13 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			}
 		}
 		this.time=System.currentTimeMillis();
-		log.log(Level.INFO, "[NodeImpl] START EXECUTION ");
+		log.log(Level.FINEST, "[NodeImpl] START EXECUTION ");
 		for(MethodDescription md:testList){		
 			mdToExecute=md;
-			log.log(Level.INFO, "[NodeImpl] METHOD "+mdToExecute);			
+			log.log(Level.FINEST, "[NodeImpl] METHOD "+mdToExecute);			
 			try {					
 				if(amIRoot){
-					log.log(Level.INFO, "[NodeImpl] Start action ");
+					log.log(Level.FINEST, "[NodeImpl] Start action ");
 					dispatch();
 				}else{		
 					/**
@@ -137,7 +143,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 					synchronized(this){
 						this.wait();
 					}
-					log.log(Level.INFO, "[NodeImpl] I'm about to execute "+md);			
+					log.log(Level.FINEST, "[NodeImpl] I'm about to execute "+md);			
 					if(!amILeaf){
 						dispatch();
 					}else{
@@ -150,7 +156,13 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			} 		
 		}
 		log.log(Level.INFO, "Whole execution time "+(System.currentTimeMillis()-this.time));
-		
+		if(amIRoot){
+			GlobalVerdict verdict = new GlobalVerdict();
+			for(Verdicts v:localVerdicts){
+				verdict.setGlobalVerdict(v, TesterUtil.getRelaxIndex());
+			}
+			log.log(Level.INFO, "Final verdict "+verdict);
+		}
 		System.exit(0);	
 	}
 	
@@ -169,14 +181,20 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	private void execute(){		
 		for(TreeTesterImpl t:testers){
 			log.log(Level.INFO, id+"[NodeImpl] Tester "+t.getID()+" Executing action "+mdToExecute);
-			t.inbox(mdToExecute);		
+			synchronized(t){
+				t.inbox(mdToExecute);
+			}
+			if(t.isLastMethod()){
+				isLastMethod=t.isLastMethod();
+				localVerdicts.add(t.getVerdict());
+			}
 		}					
 	}
 	
 	private void talkToChildren(){		
 		for(Node child:tree.getChildren()){
-			log.log(Level.INFO, id+"[NodeImpl] talk to kids "+ child);
-			log.log(Level.INFO, id+"[NodeImpl] Sending them "+ mdToExecute);		
+			log.log(Level.FINEST, id+"[NodeImpl] talk to kids "+ child);
+			log.log(Level.FINEST, id+"[NodeImpl] Sending them "+ mdToExecute);		
 			try {
 				/**
 				 * Talk to children
@@ -189,20 +207,22 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	}
 	
 	private void talkToParent(){	
-		log.log(Level.INFO, id+"[NodeImpl] talk do daddy");	
+		log.log(Level.FINEST, id+"[NodeImpl] talk do daddy");	
 		try {					
 			/**
 			 * Talk to parent
 			 */
 			Thread.sleep(treeWaitForMethod);
-			tree.getParent().send(MessageType.OK,mdToExecute);
+			if(isLastMethod){
+				tree.getParent().sendVerdict(localVerdicts);
+			}
+			tree.getParent().send(MessageType.OK,mdToExecute);	
 		} catch (RemoteException e) {
 			log.log(Level.SEVERE,e.toString());
 		} catch (InterruptedException e) {
 			log.log(Level.SEVERE,e.toString());
 		}		
-	}
-	
+	}	
 
 	/**
 	 * Receive a message from another Node.
@@ -215,7 +235,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	 * @throws RemoteException
 	 */
 	public void send(MessageType message,MethodDescription mdToExecute) throws RemoteException {
-		log.log(Level.INFO, id+"[NodeImpl] Daddy asked me to execute "+ mdToExecute);		
+		log.log(Level.FINEST, id+"[NodeImpl] Daddy asked me to execute "+ mdToExecute);		
 		this.mdToExecute=mdToExecute;
 		/**
 		 * Way up 
@@ -223,7 +243,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		int talked;
 		if (message.equals(MessageType.OK)) {
 			talked=childrenTalk.incrementAndGet();
-			log.log(Level.INFO, id+"[NodeImpl]  I finished the execution. Waiting "+
+			log.log(Level.FINEST, id+"[NodeImpl]  I finished the execution. Waiting "+
 					((numberOfChildren-talked)+1)+" of my "+numberOfChildren+" children ");			
 			
 			/**
@@ -238,30 +258,36 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			
 			
 			/**
-			 * now EXECUTE, ERROR and FAIL messages
+			 * now EXECUTE messages
 			 */
 		}else {
 			/**
 			 * Way down
 			 */
 			if (message.equals(MessageType.EXECUTE)) {				
-				log.log(Level.INFO, id+"[NodeImpl]  I'm about to execute.");		
+				log.log(Level.FINEST, id+"[NodeImpl]  I'm about to execute.");		
 				synchronized (this) {
 					this.notify();	
 				}						
 			}
 		}			
 	}
+	
+	public void sendVerdict(List<Verdicts> localVerdicts) throws RemoteException {
+		for(Verdicts l:localVerdicts){
+			this.localVerdicts.add(l);
+		}
+	}
 
 	public void setElements(BTreeNode bt,TreeElements tree) throws RemoteException {		
-		log.log(Level.INFO, "[NodeImpl] id "+id+" bt "+bt+" tree "+tree);		
+		log.log(Level.FINEST, "[NodeImpl] id "+id+" bt "+bt+" tree "+tree);		
 		this.tree=tree;
 		this.bt=bt;		
 		for(BTreeNode child:this.bt.children){
 			if(child!=null)
 				numberOfChildren++;
 		}
-		log.log(Level.INFO, "[NodeImpl] I have these number of children: "+numberOfChildren);
+		log.log(Level.FINEST, "[NodeImpl] I have these number of children: "+numberOfChildren);
 		
 		amILeaf=bt.isLeaf();
 		synchronized (this) {
@@ -291,16 +317,24 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		/**
 		 * Using bt Node acknowledge the testers it must control, then start them
 		 */		
+		
 		for(Comparable key:bt.keys){			
 			if(key != null){
 				int peerID=new Integer(key.toString());				
-				log.log(Level.INFO, "[NodeImpl] Tester "+key.toString());				
-				TreeTesterImpl t=new TreeTesterImpl(peerID,boot);
-				t.setClass(klass);
-				t.start();
-				testers.add(t);
+				log.log(Level.FINEST, "[NodeImpl] Tester "+key.toString());				
+				testers.add(new TreeTesterImpl(peerID,boot));
 			}
-		}		
-		log.log(Level.INFO, "[NodeImpl] Testers added: "+testers.size());
+		}	
+		
+		/**
+		 * Let's start testers
+		 */		
+		for(TreeTesterImpl t:testers){
+			log.log(Level.FINEST, "[NodeImpl] Starting Tester "+t);
+			t.setClass(klass);
+			new Thread(t).start();
+		}
+		
+		log.log(Level.FINEST, "[NodeImpl] Testers added: "+testers.size());
 	}
 }

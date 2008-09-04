@@ -22,12 +22,12 @@ public class SimpleTest extends TestCaseImpl{
 	}
 
 
-	@Test(place=-1,timeout=1000000, name = "action3", step = 1)
+	@Test(from=1,to=3,timeout=1000000, name = "action3", step = 1)
 	public void action3(){
 	
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action4", step = 1)
+	@Test(place=2,timeout=1000000, name = "action4", step = 1)
 	public void action4(){
 	
 	}
