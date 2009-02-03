@@ -14,6 +14,7 @@ public interface Coordinator extends Remote {
 	 * @param tester
 	 * @param list
 	 * @throws RemoteException
+	 * @author Eduardo
 	 */
 	public void register(Tester tester, List<MethodDescription> list) throws RemoteException;
 
