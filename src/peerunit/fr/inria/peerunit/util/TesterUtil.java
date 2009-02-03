@@ -1,5 +1,7 @@
 package fr.inria.peerunit.util;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -30,14 +32,14 @@ public class TesterUtil {
 	private static String getProperty(String property) throws Exception {
 		if (props == null) {
 			props = new Properties();
-			//String propFile=System.getProperty("user.dir")+"tester.properties";
-			String propFile="tester.properties";
-			System.out.println("Prop file is: "+propFile);
-			InputStream is = ClassLoader.getSystemResourceAsStream(propFile);
-			if (is == null) {
+			
+			FileInputStream fs =new FileInputStream(System.getProperty("user.dir")+"/config/tester.properties");
+			
+			if (fs == null) {
+				System.out.println("Do not find properties' file.");
 				props = System.getProperties();
 			} else {
-				props.load(is);
+				props.load(fs);
 			}
 		}
 		return props.getProperty(property);
