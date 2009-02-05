@@ -20,12 +20,23 @@ public class ExecutorImpl implements Executor {
 	private TesterImpl tester;
 	private TestCase testcase;
 	private PeerUnitLogger LOG;
+	
+	/*
+	 * 
+	 * @param t
+	 * @param l
+	 */
 	public ExecutorImpl(TesterImpl t, PeerUnitLogger l) {
 		this.tester = t;
 		this.LOG=l;
 	}
 
-
+	/*
+	 * 
+	 * @param from
+	 * @param to
+	 * @return boolean
+	 */
 	public boolean validatePeerRange(int from, int to) {
 		if ((from > -1) && (to == -1)) {
 			throw new AnnotationFailure("Annotation FROM without TO");
@@ -45,7 +56,11 @@ public class ExecutorImpl implements Executor {
 			((from <= testerId) && (to >= testerId));
 	}
 
-
+	/*
+	 * 
+	 * @param c
+	 * @return List<MethodDescription>
+	 */
 	public List<MethodDescription> register(Class<? extends TestCase> c) {
 		Test t;
 		BeforeClass bc;
@@ -85,7 +100,13 @@ public class ExecutorImpl implements Executor {
 		return new ArrayList<MethodDescription>(methods.keySet());
 	}
 
-
+	/*
+	 * 
+	 * @param md
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
 	public void invoke(MethodDescription md) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
 		assert methods.containsKey(md) : "Method should be registered";
@@ -95,6 +116,11 @@ public class ExecutorImpl implements Executor {
 		m.invoke(testcase, (Object[]) null);
 	}
 
+	/*
+	 * 
+	 * @param methodAnnotation
+	 * @return boolean
+	 */
 	public boolean isLastMethod(String methodAnnotation) {
 		return methodAnnotation.equalsIgnoreCase("AfterClass");
 	}
