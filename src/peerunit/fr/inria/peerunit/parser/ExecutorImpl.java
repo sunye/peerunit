@@ -22,9 +22,9 @@ public class ExecutorImpl implements Executor {
 	private PeerUnitLogger LOG;
 	
 	/*
-	 * 
-	 * @param t
-	 * @param l
+	 * Creates an ExecutorImpl
+	 * @param t : TesterImpl
+	 * @param l : PeerUnitLogger
 	 */
 	public ExecutorImpl(TesterImpl t, PeerUnitLogger l) {
 		this.tester = t;
@@ -32,10 +32,11 @@ public class ExecutorImpl implements Executor {
 	}
 
 	/*
+	 * Verify a peer range
 	 * 
-	 * @param from
-	 * @param to
-	 * @return boolean
+	 * @param from : number of the first peer
+	 * @param to : number of the last peer
+	 * @return boolean : 
 	 */
 	public boolean validatePeerRange(int from, int to) {
 		if ((from > -1) && (to == -1)) {
@@ -101,8 +102,9 @@ public class ExecutorImpl implements Executor {
 	}
 
 	/*
+	 * Execute the given method description
 	 * 
-	 * @param md
+	 * @param md : method description to execute
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 * @throws InvocationTargetException
@@ -125,14 +127,17 @@ public class ExecutorImpl implements Executor {
 		return methodAnnotation.equalsIgnoreCase("AfterClass");
 	}
 
+	// Test if a Test is valid ie. that it's not null and the ExecutorImpl could execute it.
 	private boolean isValid(Test a) {
 		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
 	}
 
+	// Test if a BeforeClass is valid ie. that it's not null and the ExecutorImpl could execute it.	
 	private boolean isValid(BeforeClass a) {
 		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
 	}
 
+	// Test if a AfterClass is valid ie. that it's not null and the ExecutorImpl could execute it.
 	private boolean isValid(AfterClass a) {
 		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
 	}
