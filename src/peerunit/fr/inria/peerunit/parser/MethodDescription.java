@@ -34,12 +34,13 @@ public class MethodDescription implements Comparable<MethodDescription>,
 	private int timeout;
 
 	/*
-	 * 
+	 * Create a method description
 	 */
 	public MethodDescription() {
 	}
 
 	/*
+	 * Create a method description
 	 * 
 	 * @param m
 	 * @param t
@@ -50,6 +51,7 @@ public class MethodDescription implements Comparable<MethodDescription>,
 	}
 
 	/*
+	 * Create a method description
 	 * 
 	 * @param m
 	 * @param t
@@ -60,6 +62,7 @@ public class MethodDescription implements Comparable<MethodDescription>,
 	}
 
 	/*
+	 * Create a method description
 	 * 
 	 * @param m
 	 * @param t
@@ -70,6 +73,7 @@ public class MethodDescription implements Comparable<MethodDescription>,
 	}
 
 	/*
+	 * Create a method description
 	 * 
 	 * @param name - the name associated to method
 	 * @param testCase - the test case of the method
@@ -87,6 +91,7 @@ public class MethodDescription implements Comparable<MethodDescription>,
 	}
 
 	/*
+	 * Change the description of the method
 	 * 
 	 * @param name - the name associated to method
 	 * @param testCase - the test case of the method
@@ -151,7 +156,7 @@ public class MethodDescription implements Comparable<MethodDescription>,
 
 	/*
 	 * Indicates whether some other object is "equal to" this one.
-	 * 
+	 *  
 	 * @param o - the reference object with which to compare. 
 	 * @return boolean - true if this object is the same as the object argument; false otherwise.
 	 */
@@ -170,7 +175,6 @@ public class MethodDescription implements Comparable<MethodDescription>,
 
 	/*
 	 * Returns the name associated to method
-	 * 
 	 * @return String
 	 */
 	public String getName() {
@@ -179,7 +183,6 @@ public class MethodDescription implements Comparable<MethodDescription>,
 
 	/*
 	 * Returns the method execution timeout (in milliseconds)
-	 * 
 	 * @return int
 	 */
 	public int getTimeout() {
