@@ -2,15 +2,15 @@ package fr.inria.peerunit.test.assertion;
 
 import fr.inria.peerunit.exception.PeerUnitFailure;
 
-
-
-
 /**
- * Thrown when an {@link org.junit.Assert#assertEquals(Object, Object) assertEquals(String, String)} fails. Create and throw
+ * Thrown when an {@link Assert#assertEquals(Object, Object) assertEquals(String, String)} fails. Create and throw
  * a <code>ComparisonFailure</code> manually if you want to show users the difference between two complex 
  * strings.
  * 
  * Inspired by a patch from Alex Chaffee (alex@purpletech.com)
+ * @author Alex Chaffee, Eduardo Almeida
+ * @version 1.0
+ * @since 1.0
  */
 public class ComparisonFailure extends PeerUnitFailure {	
 	/** 
@@ -19,7 +19,6 @@ public class ComparisonFailure extends PeerUnitFailure {
 	 */
 	private static final int MAX_CONTEXT_LENGTH= 20;
 	private static final long serialVersionUID= 1L;
-	
 	private String fExpected;
 	private String fActual;
 
@@ -29,7 +28,7 @@ public class ComparisonFailure extends PeerUnitFailure {
 	 * @param expected the expected string value
 	 * @param actual the actual string value
 	 */
-	public ComparisonFailure (String message, String expected, String actual) {
+	public ComparisonFailure(String message, String expected, String actual) {
 		super (message);
 		fExpected= expected;
 		fActual= actual;
