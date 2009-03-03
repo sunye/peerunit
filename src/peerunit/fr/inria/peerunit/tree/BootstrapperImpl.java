@@ -14,6 +14,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import fr.inria.peerunit.tree.btree.BTree;
 import fr.inria.peerunit.util.TesterUtil;
 
+/** BooStrapper allow to regiter the tester. It provide a Id for each tester
+ * @author Eduardo
+ *
+ */
 public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	private static final long serialVersionUID = 1L;
 
@@ -30,6 +34,10 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	 */
 	private Map<Integer, Object> cacheMap = new ConcurrentHashMap<Integer, Object>();
 	
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	protected BootstrapperImpl() throws RemoteException {
 		super();		
 	}
@@ -50,6 +58,10 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 		System.out.println("[Bootstrapper] Finished !");
 	}	
 
+	/**
+	 * Export the BootStrapper remote object. Accepts calls on specific port 1099. 
+	 * @param boot BootStrapperImpl
+	 */
 	private void startNet(BootstrapperImpl boot) {
 		Bootstrapper stub=null;
 		try {
@@ -67,6 +79,9 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.Bootstrapper#register(fr.inria.peerunit.tree.TreeTester)
+	 */
 	public synchronized int register(TreeTester t)	throws RemoteException {		
 		int id = registered.getAndIncrement();		
 		
@@ -75,10 +90,17 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 		return id;
 	}
 	
+	/**
+	 * Return the register
+	 * @return
+	 */
 	public int getRegistered(){
 		return registered.get();
 	}
 	
+	/**
+	 * Build the tester tree
+	 */
 	private void buildTree(){
 		this.time=System.currentTimeMillis();			
 		BTree btree=new BTree(TesterUtil.getTreeOrder());
@@ -121,22 +143,37 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 		System.out.println("Construction time "+this.time+" msec");
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.Bootstrapper#put(java.lang.Integer, java.lang.Object)
+	 */
 	public void put(Integer key, Object object) throws RemoteException {		
 		cacheMap.put(key, object);
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.Bootstrapper#get(java.lang.Integer)
+	 */
 	public Object get(Integer key) throws RemoteException {
 		return cacheMap.get(key);
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.Bootstrapper#getCollection()
+	 */
 	public Map<Integer, Object> getCollection() throws RemoteException {
 		return cacheMap;
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.Bootstrapper#containsKey(java.lang.Object)
+	 */
 	public boolean containsKey(Object key) throws RemoteException {
 		return cacheMap.containsKey(key);
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.Bootstrapper#clearCollection()
+	 */
 	public void clearCollection() throws RemoteException {
 		cacheMap.clear();
 	}	

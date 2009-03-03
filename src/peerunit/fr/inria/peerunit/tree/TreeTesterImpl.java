@@ -27,6 +27,12 @@ import fr.inria.peerunit.util.TesterUtil;
 
 
 
+/**
+ * This tester class used to build the tree tester, execute the actions and get the verdict
+ * of the actions executed
+ * @author Eduardo
+ *
+ */
 public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester, StorageTester{
 	
 	private static final long serialVersionUID = 1L;
@@ -40,6 +46,7 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 	public int id;
 	
 	private TreeElements tree=new TreeElements();
+	
 	
 	private boolean amIRoot=false;
 	
@@ -68,6 +75,10 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 	
 	private boolean killed=false;
 	
+	/** Constructor using bootstrapper to register the tester
+	 * @param b BootStrapper
+	 * @throws RemoteException
+	 */
 	public TreeTesterImpl(Bootstrapper b) throws RemoteException {
 		boot = b;
 		UnicastRemoteObject.exportObject(this);	
@@ -78,6 +89,9 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		log.log(Level.INFO, "My ID is: "+id);		
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	public void run(){
 		this.buildTime=System.currentTimeMillis();
 		setupTree();			
@@ -130,26 +144,25 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		System.exit(0);		
 	}
 	
-	
-	/**
-	 * Elements of the BTree
-	 */	
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.TreeTester#setTreeElements(fr.inria.peerunit.tree.TreeElements, boolean)
+	 */
 	public synchronized void setTreeElements(TreeElements tree,boolean isRoot) throws RemoteException{
 		this.amIRoot=isRoot;
 		this.tree=tree;		
 		log.log(Level.INFO, id+"  my parent is "+tree.getParent());
 	}
 	
-	/**
-	 * Going way down the tree
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.TreeTester#startExecution()
 	 */
 	public synchronized void startExecution() throws RemoteException{
 		log.log(Level.INFO, id+" I'm about to execute.");		
 		this.notify();				
 	}
 	
-	/**
-	 * Going way up the tree
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.TreeTester#endExecution(java.util.List)
 	 */
 	public synchronized void endExecution(List<Verdicts> localVerdicts) throws RemoteException{		
 		int value= informedByChildren.incrementAndGet();
@@ -164,10 +177,16 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		}		
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.TreeTester#getId()
+	 */
 	public int getId()throws RemoteException {
 		return id;
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.TreeTester#setChildren(fr.inria.peerunit.tree.TreeTester, fr.inria.peerunit.tree.TreeTester)
+	 */
 	public void setChildren(TreeTester child,TreeTester tester) throws RemoteException {
 		if(tester!=null){
 			tree.cleanTrace(tester);
@@ -176,10 +195,16 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		this.amILeaf=false;
 	}	
 	
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.tree.TreeTester#setParent(fr.inria.peerunit.tree.TreeTester)
+	 */
 	public void setParent(TreeTester parent)throws RemoteException {
 		tree.setParent(parent);
 	}
 	
+	/**
+	 * Build the tester tree
+	 */
 	private void setupTree(){
 		try {
 			while(tree.getParent()==null){
@@ -195,6 +220,10 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		}
 	}
 	
+	
+	/**
+	 * Start the tests (action) of all children tester
+	 */
 	private void talkToChildren(){
 		for(TreeTester t:tree.getChildren()){
 			log.log(Level.INFO, id+" talk to kids "+ t);		
@@ -206,6 +235,9 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		}
 	}
 	
+	/**
+	 * going up the verdict from child to parent tester.
+	 */
 	private void talkToParent(){	
 		log.log(Level.INFO, id+" talk do daddy");	
 		try {								
@@ -215,10 +247,11 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		}		
 	}
 	
-	/*private void execute(MethodDescription md){
-
-	}*/
-	
+	/** Dispatch the actions to execute to children
+	 * @param md
+	 * @throws InterruptedException
+	 * @throws RemoteException
+	 */
 	private synchronized void dispatch(MethodDescription md) throws InterruptedException, RemoteException {
 		log.log(Level.INFO, id+" Dispatching action ");		
 		talkToChildren();
@@ -226,10 +259,16 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		this.wait();		
 	}
 	
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.VolatileTester#kill()
+	 */
 	public void kill() {
 		killed=true;			
 	}
 	
+	/**
+	 * Verify the tester tree. Reorganize the tree if some testers killed
+	 */
 	private void verifyTree(){
 		if(killed){
 			log.log(Level.INFO, id+" Reorganizing tree ");
@@ -246,12 +285,18 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.Tester#execute(fr.inria.peerunit.parser.MethodDescription)
+	 */
 	public void execute(MethodDescription md) throws RemoteException {
 		log.log(Level.INFO, id+" Executing action");
 		invokationThread = new Thread(new Invoke(md));
 		invokationThread.start();		
 	}
 	
+	/** Create the action executor and log files
+	 * @param c TestCaseImpl
+	 */
 	public void export(Class<? extends TestCaseImpl> c) {
 		
 		try {			
@@ -263,11 +308,12 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 			log.logStackTrace(e);			    
 		} 
 	}
+	
 	/**
+	 * Creates the peer and the tester log files.
 	 * @param c
 	 * @throws IOException
 	 *
-	 * Creates the peer and the tester log files.
 	 */
 	private void createLogFiles(Class<? extends TestCaseImpl> c) {
 
@@ -291,6 +337,9 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		}
 	}
 	
+	/** execute the method by executorImpl
+	 * @param md method description
+	 */
 	private synchronized void invoke(MethodDescription md) {
 		assert executor != null : "Null executor";
 
@@ -338,6 +387,9 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.Tester#getPeerName()
+	 */
 	public int getPeerName() throws RemoteException {
 		return id;
 	}
@@ -381,6 +433,9 @@ public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester
 		return  boot.getCollection();
 	}
 
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.StorageTester#containsKey(java.lang.Object)
+	 */
 	public boolean containsKey(Object key)throws RemoteException{
 		return  boot.containsKey(key);
 	}

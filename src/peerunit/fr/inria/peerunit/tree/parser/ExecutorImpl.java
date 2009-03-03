@@ -20,18 +20,36 @@ import fr.inria.peerunit.parser.Test;
 import fr.inria.peerunit.tree.TreeTesterImpl;
 import fr.inria.peerunit.util.PeerUnitLogger;
 
+/**
+ * This class executes methods of the test case.
+ * @author Eduardo
+ *
+ */
 public class ExecutorImpl implements Executor {
 
 	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
 	private TreeTesterImpl tester;
 	private TestCaseImpl testcase;
 	private PeerUnitLogger LOG;
+	
+	/**
+	 * Creates an ExecutorImpl
+	 * @param t : TesterImpl
+	 * @param l : PeerUnitLogger
+	 */
 	public ExecutorImpl(TreeTesterImpl t, PeerUnitLogger l) {
 		this.tester = t;
 		this.LOG=l;
 	}
 
 
+	/**
+	 * Verify a peer range (annotation)
+	 * 
+	 * @param from : number of the first tester
+	 * @param to : number of the last tester
+	 * @return boolean : 
+	 */
 	public boolean validatePeerRange(int from, int to) {
 		if ((from > -1) && (to == -1)) {
 			throw new AnnotationFailure("Annotation FROM without TO");
@@ -44,12 +62,17 @@ public class ExecutorImpl implements Executor {
 		} else return false;
 	}
 
+	/** Verify if the tester must execute the method
+	 * @param place
+	 * @param from : number of the first tester
+	 * @param to : number of the last tester
+	 * @return
+	 */
 	private boolean shouldIExecute(int place, int from, int to) {
 		int testerId=0;
 		try {
 			testerId = tester.getId();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return (place == testerId) ||
@@ -57,7 +80,11 @@ public class ExecutorImpl implements Executor {
 			((from <= testerId) && (to >= testerId));
 	}
 
-
+	/**
+	 * Parse the test case to extract the methods to be executed
+	 * @param class
+	 * @return List of methods to be executed
+	 */
 	public List<MethodDescription> register(Class<? extends TestCase> c) {
 		Test t;
 		BeforeClass bc;
@@ -98,6 +125,12 @@ public class ExecutorImpl implements Executor {
 	}
 
 
+	/** Execute the given method description
+	 * @param md : method description to execute
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
 	public void invoke(MethodDescription md) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
 		assert methods.containsKey(md) : "Method should be registered";
@@ -107,18 +140,38 @@ public class ExecutorImpl implements Executor {
 		m.invoke(testcase, (Object[]) null);
 	}
 
+	/**
+	 * Verifies if the method is the last one to be executed by its annotation
+	 * @param method
+	 * @return true if the method is the last one to be executed
+	 */
 	public boolean isLastMethod(String methodAnnotation) {
 		return methodAnnotation.equalsIgnoreCase("AfterClass");
 	}
 
+	
+	/** 
+	 * Test if a Test is valid and the ExecutorImpl must execute it.
+	 * @param a
+	 * @return
+	 */
 	private boolean isValid(Test a) {
 		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
 	}
 
+	/** 
+	 * Test if a BeforeClass is valid and the ExecutorImpl must execute it.	
+	 * @param a
+	 * @return
+	 */
 	private boolean isValid(BeforeClass a) {
 		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
 	}
 
+	/** Test if a AfterClass is valid and the ExecutorImpl must execute it.
+	 * @param a
+	 * @return
+	 */
 	private boolean isValid(AfterClass a) {
 		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
 	}
