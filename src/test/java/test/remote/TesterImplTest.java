@@ -38,7 +38,7 @@ public class TesterImplTest {
 			coord = new CoordinatorImpl(3);
 			new Thread(coord, "Coordinator").start();
 			tester0 = new TesterImpl(coord);
-			executor = new ExecutorImpl(tester0);
+			executor = new ExecutorImpl(tester0, null);
 			tester1 = new TesterImpl(coord);
 			tester2 = new TesterImpl(coord);
 			tester0.export(TestCaseSample.class);
@@ -96,7 +96,7 @@ public class TesterImplTest {
 		} catch (RemoteException e) {
 			fail("Error");
 		}
-		tester0.executionInterrupt(true);
+		tester0.executionInterrupt();
 		assertEquals("ok", System.getProperty("executed"));
 	}
 

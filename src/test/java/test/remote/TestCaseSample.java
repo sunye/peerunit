@@ -1,6 +1,7 @@
 package test.remote;
 
 import fr.inria.peerunit.TestCaseImpl;
+import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.Test;
 
 /**
@@ -15,6 +16,11 @@ public class TestCaseSample extends TestCaseImpl {
 	@Test(place = -1, timeout = 1000, name = "action1", step = 1)
 	public void first() {
 		System.setProperty("executed", "ok");
+	}
+
+	public void setTester(Tester ti) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -41,7 +41,7 @@ public class ExecutorImplTest {
 			coord = new CoordinatorImpl(3);
 			new Thread(coord, "Coordinator").start();
 			tester = new TesterImpl(coord);
-			executor = new ExecutorImpl(tester);
+			executor = new ExecutorImpl(tester, null);
 
 		} catch (RemoteException e) {
 			e.printStackTrace();

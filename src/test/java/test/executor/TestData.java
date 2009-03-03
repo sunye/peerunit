@@ -1,6 +1,7 @@
 package test.executor;
 
 import fr.inria.peerunit.TestCaseImpl;
+import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.Test;
@@ -52,5 +53,10 @@ public class TestData extends TestCaseImpl {
 
 	@AfterClass(timeout = 100, place = -1)
 	public void end() {
+	}
+
+	public void setTester(Tester ti) {
+		// TODO Auto-generated method stub
+		
 	}
 }
