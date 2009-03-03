@@ -4,11 +4,13 @@ import java.io.Serializable;
 
 import fr.inria.peerunit.util.TesterUtil;
 
-
+/**
+ * 
+ * @author Eduardo Almeida
+ * @version 1.0
+ * @since 1.0
+ */
 public class BTreeNode implements Serializable{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	public int id;
 	public Comparable[] keys;
@@ -17,11 +19,18 @@ public class BTreeNode implements Serializable{
 	private int order=TesterUtil.getTreeOrder();
 	private boolean isLeaf;
 	private boolean isRoot=false;
+	/**
+	 * Constructs a new BTreeNode
+	 */
 	public BTreeNode() {		
 		keys =  new Comparable[2*order];
 		children = new BTreeNode[2*order+1];
 	}
 
+	/**
+	 * Constructs a copy of the specified BTreeNode
+	 * @param copy the BTreeNode to be copied
+	 */
 	public BTreeNode(BTreeNode copy) {
 		keys = copy.keys.clone();
 		children = copy.children.clone();
@@ -35,10 +44,18 @@ public class BTreeNode implements Serializable{
 		children = c;
 	}
 	
+	/**
+	 * Specifies which node is this node's parent
+	 * @param parent the parent BTreeNode for this node
+	 */
 	public void setParent(BTreeNode parent){
 		this.parent=parent;
 	}
 
+	/**
+	 * Determines if this node is a leaf
+	 * @return true if this node is a leaf (ie. doesn't have any child)
+	 */
 	public boolean isLeaf() {
 		if(children[0] == null)
 			isLeaf=true;
@@ -48,14 +65,28 @@ public class BTreeNode implements Serializable{
 		return isLeaf;
 	}
 	
+	/**
+	 * Determines if this node is the tree's root
+	 * @return true if this node is the BTree' root
+	 */
 	public boolean isRoot() {
 		return isRoot;
 	}
 	
+	/**
+	 * Indicates that this node is the tree's root
+	 * @param isRoot
+	 */
 	public void setRoot(boolean isRoot){
 		this.isRoot=isRoot;
 	}
 
+	/**
+	 * inserts a new Node with the associated key
+	 * @param newKey the key to be added
+	 * @param returnNode the node associated to the added key
+	 * @return the new root's key
+	 */
 	Comparable insert(Comparable newKey,BTreeNode returnNode) {
 		// Einfügeknoten suchen (rekursiv)
 		if (!isLeaf()) {

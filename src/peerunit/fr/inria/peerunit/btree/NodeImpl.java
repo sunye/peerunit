@@ -20,6 +20,12 @@ import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
+/**
+ * 
+ * @author Eduardo Almeida
+ * @version 1.0
+ * @since 1.0
+ */
 public class NodeImpl  implements Node,Serializable,Runnable{
 
 	/**
@@ -65,6 +71,13 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	
 	private List<Verdicts> localVerdicts=new Vector<Verdicts>();
 	
+	/**
+	 * Constructs a new Node, and registers it to the specified Bootstrapper
+	 * If the Bootstrapper already has reached it's max number of nodes,
+	 * the system exits
+	 * @param b
+	 * @throws java.rmi.RemoteException
+	 */
 	public NodeImpl( Bootstrapper b) throws RemoteException {
 		boot=b;
 		UnicastRemoteObject.exportObject(this);	
@@ -103,6 +116,10 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}
 	}
 	
+	/**
+	 * Retrieves all the test methods to be executed by this node
+	 * @param c The test class
+	 */
 	public void export(Class<? extends TestCaseImpl> c) {
 		
 		try {			
@@ -115,6 +132,11 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		} 
 	}
 			
+	/**
+	 * Runs the Node. The node will wait for the tree construction to be complete, 
+	 * then executes the test methods, and generates and logs a verdict for these tests.
+	 * When it's finished, it exits the System
+	 */
 	public void run() {
 		/**
 		 * Now starting the Testers
@@ -129,14 +151,14 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}
 		this.time=System.currentTimeMillis();
 		log.log(Level.FINEST, "[NodeImpl] START EXECUTION ");
-		for(MethodDescription md:testList){		
+		for(MethodDescription md:testList){
 			mdToExecute=md;
 			log.log(Level.FINEST, "[NodeImpl] METHOD "+mdToExecute);			
-			try {					
+			try {
 				if(amIRoot){
 					log.log(Level.FINEST, "[NodeImpl] Start action ");
 					dispatch();
-				}else{		
+				}else{
 					/**
 					 * Wait for parent
 					 */
@@ -148,7 +170,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 						dispatch();
 					}else{
 						execute();						
-					}					
+					}
 					talkToParent();					
 				}				
 			} catch (InterruptedException e) {				
@@ -178,7 +200,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}	
 	}
 	
-	private void execute(){		
+	private void execute(){
 		for(TreeTesterImpl t:testers){
 			log.log(Level.INFO, id+"[NodeImpl] Tester "+t.getID()+" Executing action "+mdToExecute);
 			synchronized(t){
@@ -191,7 +213,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}					
 	}
 	
-	private void talkToChildren(){		
+	private void talkToChildren(){
 		for(Node child:tree.getChildren()){
 			log.log(Level.FINEST, id+"[NodeImpl] talk to kids "+ child);
 			log.log(Level.FINEST, id+"[NodeImpl] Sending them "+ mdToExecute);		
@@ -206,7 +228,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}
 	}
 	
-	private void talkToParent(){	
+	private void talkToParent(){
 		log.log(Level.FINEST, id+"[NodeImpl] talk do daddy");	
 		try {					
 			/**
@@ -224,16 +246,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}		
 	}	
 
-	/**
-	 * Receive a message from another Node.
-	 * OK are sent only to Nodes (way up the tree)
-	 * EXECUTE are sent to both Testers and Nodes (way down the tree)
- 	 * FAIL and ERROR are sent only to Testers
- 	 * REGISTER used by Testers to get their ID and by Nodes to store their Testers
-	 * @param t
-	 * @param message
-	 * @throws RemoteException
-	 */
+
 	public void send(MessageType message,MethodDescription mdToExecute) throws RemoteException {
 		log.log(Level.FINEST, id+"[NodeImpl] Daddy asked me to execute "+ mdToExecute);		
 		this.mdToExecute=mdToExecute;
@@ -273,13 +286,14 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}			
 	}
 	
+
 	public void sendVerdict(List<Verdicts> localVerdicts) throws RemoteException {
 		for(Verdicts l:localVerdicts){
 			this.localVerdicts.add(l);
 		}
 	}
 
-	public void setElements(BTreeNode bt,TreeElements tree) throws RemoteException {		
+	public void setElements(BTreeNode bt,TreeElements tree) throws RemoteException {	
 		log.log(Level.FINEST, "[NodeImpl] id "+id+" bt "+bt+" tree "+tree);		
 		this.tree=tree;
 		this.bt=bt;		
@@ -295,10 +309,15 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}		
 	}
 	
+	/**
+	 * Returns this node's id
+	 * @return the node's id
+	 */
 	public int getId(){
 		return id;
 	}	
 	
+	@Override
 	public String toString(){
 		return "Node id: "+id;
 	}

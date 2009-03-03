@@ -12,7 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.inria.peerunit.util.TesterUtil;
-
+/**
+ * 
+ * @author Eduardo Almeida
+ * @version 1.0
+ * @since 1.0
+ */
 public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 	private static final long serialVersionUID = 1L;
 
@@ -83,11 +88,15 @@ public class BootstrapperImpl   implements  Bootstrapper,Serializable  {
 		}		
 	}
 	
+	/**
+	 * Returns the current number of registered nodes
+	 * @return the current number of registered nodes
+	 */
 	public int getRegistered(){
 		return registered.get();
 	}
 	
-	private void setCommunication(){		
+	private void setCommunication(){	
 		Node node;			
 		for(Integer key:nodes.keySet()){
 			TreeElements te=new TreeElements();			

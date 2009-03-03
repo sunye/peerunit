@@ -32,6 +32,13 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	List<MethodDescription> testList;
 	private static final PeerUnitLogger TESTER_LOG = new PeerUnitLogger(TreeTesterImpl.class.getName());
 	String logFolder = TesterUtil.getLogfolder();
+	
+	/**
+	 * Creates a new TreeTester with the specified id, and attached
+	 * to the specified Bootstrapper
+	 * @param id The tester's id
+	 * @param boot The tester's Bootstrapper
+	 */
 	public TreeTesterImpl(int id,Bootstrapper boot){
 		this.id=id;
 		this.boot=boot;				
@@ -44,6 +51,11 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl]  BOOT ID "+boot);
 	}
 	
+	
+	/**
+	 * Starts this tester
+	 * If the tester has been killed, it can't be started again
+	 */
 	public  void run() {			
 		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl] start ");		
 		while(executing){
@@ -62,6 +74,10 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 		invoke(md);
 	}
 	
+	/**
+	 * sets the test class for this tester
+	 * @param klass the test class to be processed by the tester
+	 */
 	public  void setClass(Class<? extends TestCaseImpl> klass){
 		executor = new ExecutorImpl(this);				
 		testList=executor.register(klass);		
@@ -69,7 +85,7 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	}
 
 	/**
-	 * @param c
+	 * @param c Test class
 	 * @throws IOException
 	 *
 	 * Creates the instances of peers and testers. Furthermore, creates the logfiles to them.
@@ -137,19 +153,34 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 		}
 	}
 	
+	/**
+	 * Returns this tester's verdict
+	 * @return the tester's verdict
+	 */
 	public Verdicts getVerdict(){
 		return v;
 	}
 	
+	/**
+	 * Determines if the last method has been invoked
+	 * @return true if the last method has been invoked
+	 */
 	public boolean isLastMethod(){
 		return isLastMethod;
 	}
 	
+	/**
+	 * Returns this tester's id
+	 * @return the tester's id
+	 */
 	public int getID(){
 		TESTER_LOG.log(Level.FINEST,"[TreeTesterImpl]  Tester ID "+id);
 		return this.id;
 	}
 	
+	/**
+	 * Kills the tester, preventing it from processing any other treatment
+	 */
 	public void kill() {
 		executing=false;		
 		synchronized (this) {			
@@ -158,8 +189,8 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	}	
 	/**
 	 * Used to cache testing global variables
-	 * @param key
-	 * @param object
+	 * @param key the global variable's key to be set
+	 * @param object the global variable's value to be set
 	 * @throws RemoteException
 	 */
 	public void put(Integer key,Object object) {
@@ -184,7 +215,8 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	}
 
 	/**
-	 *  Used to retrieve testing global variables
+	 * Used to retrieve the testing global variables associated 
+	 * to the specified key
 	 * @param key
 	 * @return Object
 	 * @throws RemoteException
@@ -200,15 +232,21 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	}
 
 	/**
-	 *  Used to retrieve all the keys of the testing global variables
-	 * @return Collection<Object>
-	 * @throws RemoteException
-	 * @throws RemoteException
+	 * Returns the testing global variables
+	 * @return the testing global variables
+	 * @throws java.rmi.RemoteException
 	 */
-	public  Map<Integer,Object> getCollection() throws RemoteException {
+	public Map<Integer,Object> getCollection() throws RemoteException {
 		return  boot.getCollection();
 	}
 
+	
+	/**
+	 * Determines if the specified key is mapped to a testing global variable
+	 * @param key
+	 * @return true if a testing global variable is associated to the key
+	 * @throws java.rmi.RemoteException
+	 */
 	public boolean containsKey(Object key)throws RemoteException{
 		return  boot.containsKey(key);
 	}	
