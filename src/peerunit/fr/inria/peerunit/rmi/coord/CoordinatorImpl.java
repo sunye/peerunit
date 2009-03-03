@@ -30,13 +30,24 @@ import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
+/**
+* @author Eduardo Almeida.
+* @version 1.0
+* @since 1.0
+* @see java.lang.Runnable 
+* @see fr.inria.peerunit.Coordinator
+* @see java.io.Serializable
+* @see java.util.concurrent.atomic.AtomicInteger
+* @see java.util.logging.Logger
+* @see fr.inria.peerunit.util.TesterUtil
+*/
 public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 
 	/**
-	 *
+	 * The number of Class's version
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
 	private Map<MethodDescription, TesterSet> testerMap = Collections
 			.synchronizedMap(new TreeMap<MethodDescription, TesterSet>());
 
@@ -67,7 +78,7 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 	public CoordinatorImpl() {
 		this(TesterUtil.getExpectedPeers());
 	}
-
+	
 	public CoordinatorImpl(int i) {
 		expectedTesters = new AtomicInteger(i);
 	}
@@ -122,8 +133,11 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 	}
 
 	/**
-	 * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester,
-	 *      java.util.List)
+	 * register the tester in the tester list of each MethodDescription of the MethodDescription list
+	 * 
+	 * @param t the tester which will be registered 
+	 * @param list the MethodDescription list
+	 * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester,fr.inria.peerunit.parser.MethodDescription)
 	 */
 	public synchronized void register(Tester t, List<MethodDescription> list)
 			throws RemoteException {
@@ -139,6 +153,11 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 		}
 	}
 
+	/**
+	 * starts the coordinator
+	 * 
+	 * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester,fr.inria.peerunit.parser.MethodDescription)
+	 */
 	public void run() {
 		waitForTesterRegistration();
 		for (MethodDescription key : testerMap.keySet()) {
@@ -157,6 +176,13 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 		}
 	}
 
+	/**
+	 * cleans the list of actions, closes all the connections and stops the coordinator.
+	 * 
+	 * @param chrono measure the execution of the entire test case.
+	 * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester,fr.inria.peerunit.parser.MethodDescription)
+	 * @throws InterruptedException
+	 */
 	private void finishExecution(Chronometer chrono) throws InterruptedException {
 		log.log(Level.FINEST, "Reseting semaphore ");
 		testerMap.clear();
@@ -181,6 +207,14 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 		System.exit(0);
 	}
 
+	/**
+	 * submit the actions to testers
+	 * 
+	 * @param chrono measure the execution of each action
+	 * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester,fr.inria.peerunit.parser.MethodDescription)
+	 * @throws RemoteException
+	 * @throws InterruptedException
+	 */
 	private void testcaseExecution(Chronometer chrono) throws RemoteException, InterruptedException {
 		TesterSet testerSet;
 		for (MethodDescription key : testerMap.keySet()) {
@@ -212,6 +246,11 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 		}
 	}
 
+	/**
+	 * wait the register of all testers
+	 * 
+	 * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester,fr.inria.peerunit.parser.MethodDescription
+	 */
 	private void waitForTesterRegistration() {
 		while (registeredTesters.size() < expectedTesters.intValue()) {
 			try {
@@ -254,6 +293,13 @@ public class CoordinatorImpl implements Coordinator, Runnable, Serializable {
 		runningTesters.incrementAndGet();
 	}
 
+	/**
+	 * inform the local verdict when a peer quit the system or finish a test caseexecuion
+	 * 
+	 * @param t the tester which inform the local verdict
+	 * @param localVerdict informed by a peer
+	 * @throws RemoteException
+	 */
 	//public void quit(Tester t, boolean error, Verdicts localVerdict)
 	public void quit(Tester t,  Verdicts localVerdict)
 			throws RemoteException {

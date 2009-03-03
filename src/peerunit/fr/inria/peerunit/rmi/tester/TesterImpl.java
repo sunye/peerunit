@@ -19,13 +19,23 @@ import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.VolatileTester;
 import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.rmi.coord.ExecutionTime;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
-
+/**
+* @author Eduardo Almeida.
+* @version 1.0
+* @since 1.0
+* @see fr.inria.peerUnit.Tester
+* @see fr.inria.peerunit.VolatileTester
+* @see fr.inria.peerunit.StorageTester
+* @see fr.inria.peerunit.Coordinator
+* @see java.util.concurrent.BlockingQueue<Object>
+*/
 public class TesterImpl extends Object implements Tester, Serializable, Runnable , StorageTester,VolatileTester{
 
 	private static final long serialVersionUID = 1L;
@@ -50,12 +60,22 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	private BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
 
+	/**
+	 * Used to give the identifier of the tester.
+	 * 
+	 * @param c the coordinator which give the tester's identifier.
+	 * @throws RemoteException
+	 */
 	public TesterImpl(Coordinator c) throws RemoteException {
 		coord = c;
 		id = coord.getNewId(this);
 	}
 
-
+	/**
+	 * starts the tester
+	 * 
+	 * @throws InterruptedException
+	 */
 	public void run() {
 		while (!stop) {
 			MethodDescription md=null;
@@ -78,6 +98,13 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		System.exit(0);
 	}
 
+	/**
+	 * Creates the peer and the test executor. Sends the actions to be executed to the executor. 
+	 * 
+	 * @param c the peer to be created. 
+	 * @throws RemoteException
+	 * @throws SecurityException
+	 */
 	public void export(Class<? extends TestCaseImpl> c) {
 
 		boolean exported = false;
@@ -99,7 +126,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 
 	/**
-	 * @param c
+	 * @param c the peer to be created. 
 	 * @throws IOException
 	 *
 	 * Creates the peer and the tester log files.
@@ -128,6 +155,12 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	}
 
+	/**
+	 * Used to add an action to be executed
+	 * 
+	 * @throws RemoteException
+	 * @throws InterruptedException
+	 */
 	public synchronized void execute(MethodDescription md)
 	throws RemoteException {
 		LOG.log(Level.FINEST,"Starting TesterImpl::execute(MethodDescription) with: " + md);
@@ -137,11 +170,18 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			LOG.logStackTrace(e);	  
 		}
 	}
-
+	
+	/**
+	 * @return the tester's identifier
+	 * @throws RemoteException
+	 */
 	public int getPeerName() throws RemoteException {
 		return id;
 	}
 
+	/**
+	 * @return the tester's identifier
+	 */
 	public int getId() {
 		return id;
 	}
@@ -159,6 +199,10 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		LOG.log(Level.INFO,"Test Case finished by kill ");
 	}
 
+	/**
+	 *  Used to signal the finish of an method execution. If the method is the last action of the test case, the execution of this test case is interrupted.
+	 *  @param methodAnnotation the method which was executed
+	 */
 	private void executionOk(String methodAnnotation) {
 		try {
 			coord.greenLight();
@@ -172,6 +216,9 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		}
 	}
 
+	/**
+	 *  Used to interrupt actions's execution. Cleans the action'list and give a local verdict
+	 */
 	//public void executionInterrupt(boolean error) {
 	public void executionInterrupt() {
 		try {
@@ -237,16 +284,24 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 *  Used to retrieve all the keys of the testing global variables
 	 * @return Collection<Object>
 	 * @throws RemoteException
-	 * @throws RemoteException
 	 */
 	public  Map<Integer,Object> getCollection() throws RemoteException {
 		return  coord.getCollection();
 	}
-
+	
+	/**
+	 *  Used to retrieve all the keys of the testing global variables
+	 * @return Collection<Object>
+	 * @throws RemoteException
+	 */
 	public boolean containsKey(Object key)throws RemoteException{
 		return  coord.containsKey(key);
 	}
-
+	
+	/**
+	 *  Used to invoke an action
+	 * @param md the action will be invoked
+	 */
 	private synchronized void invoke(MethodDescription md) {
 		assert executor != null : "Null executor";
 
@@ -276,6 +331,12 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		}
 	}
 
+	/**
+	* @author Eduardo Almeida.
+	* @version 1.0
+	* @since 1.0
+	* @see java.lang.Runnable
+	*/
 	private class Invoke implements Runnable {
 
 		MethodDescription md;
