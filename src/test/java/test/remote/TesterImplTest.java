@@ -17,6 +17,7 @@ import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.util.PeerUnitLogger;
 
 public class TesterImplTest {
 
@@ -24,6 +25,8 @@ public class TesterImplTest {
 
 	private static CoordinatorImpl coord;
 	private static TesterImpl tester0, tester1, tester2;
+	
+	private static PeerUnitLogger LOG = new PeerUnitLogger("test");
 
 	@BeforeClass
 	public static void  inititalize() {
@@ -38,7 +41,7 @@ public class TesterImplTest {
 			coord = new CoordinatorImpl(3);
 			new Thread(coord, "Coordinator").start();
 			tester0 = new TesterImpl(coord);
-			executor = new ExecutorImpl(tester0, null);
+			executor = new ExecutorImpl(tester0, LOG);
 			tester1 = new TesterImpl(coord);
 			tester2 = new TesterImpl(coord);
 			tester0.export(TestCaseSample.class);

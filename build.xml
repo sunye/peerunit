@@ -7,8 +7,8 @@
 
 	<!-- directories -->
 	<property name="lib.dir" value="${basedir}/lib" />
-	<property name="src.dir" value="${basedir}/src/peerunit/" />
-	<property name="build.dir" value="${basedir}/bin" />
+	<property name="src.dir" value="${basedir}/src/main/java/" />
+	<property name="build.dir" value="${basedir}/target/classes/" />
 	<property name="temp.dir" value="${basedir}/temp" />
 	<property name="config.dir" value="${basedir}/config" />
 	<property name="openchord.dir" value="${temp.dir}/chord" />

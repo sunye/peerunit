@@ -77,6 +77,7 @@ public class PeerUnitLogger {
 	    for (int i=0, n=elements.length; i<n; i++) {
 	      LOG.log( Level.SEVERE,"at "+elements[i].toString());
 	    }			
-		LOG.log( Level.SEVERE,"Caused by: "+e.getCause().toString());
+	    
+		LOG.log( Level.SEVERE,"Caused by: "+e.getCause());
 	}
 }

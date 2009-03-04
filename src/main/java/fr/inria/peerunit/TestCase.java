@@ -4,7 +4,6 @@
 package fr.inria.peerunit;
 
 import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.tree.TreeTester;
 
 /**
  * @author sunye

@@ -19,7 +19,6 @@ import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.VolatileTester;
 import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.rmi.coord.ExecutionTime;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;

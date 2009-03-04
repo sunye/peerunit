@@ -19,6 +19,7 @@ import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.util.PeerUnitLogger;
 
 public class ExecutorImplTest {
 
@@ -26,7 +27,9 @@ public class ExecutorImplTest {
 
 	private static CoordinatorImpl coord;
 	private static TesterImpl tester;
-	private Logger log = Logger.getLogger("test");
+//	private static Logger log = Logger.getLogger();
+	
+	private static PeerUnitLogger LOG = new PeerUnitLogger("test");
 
 	@BeforeClass
 	public static void  inititalize() {
@@ -41,7 +44,7 @@ public class ExecutorImplTest {
 			coord = new CoordinatorImpl(3);
 			new Thread(coord, "Coordinator").start();
 			tester = new TesterImpl(coord);
-			executor = new ExecutorImpl(tester, null);
+			executor = new ExecutorImpl(tester, LOG);
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -52,7 +55,7 @@ public class ExecutorImplTest {
 
 
 	public ExecutorImplTest() {
-		log.setLevel(Level.FINEST);
+		//LOG.setLevel(Level.FINEST);
 	}
 
 	@Before
@@ -63,6 +66,8 @@ public class ExecutorImplTest {
 	@Test
 	public void testBis() {
 
+		assert executor != null;
+		
 		List<MethodDescription> m = executor.register(TestData.class);
 		assertEquals(8, m.size());
 		assertTrue(m.contains(new MethodDescription("here","action4", 0,"Test",1000000)));
