@@ -24,5 +24,5 @@ public enum Verdicts {
 	/**
 	 * The test has not been executed correctly : it's not possible to determine if the test is <code>PASS</code>, <code>FAIL</code> or <code>INCONCLUSIVE</code>. 
 	 */
-	ERROR; // FIXME : what does it mean exactly ? the test hasn't been executed ? 
+	ERROR;
 }

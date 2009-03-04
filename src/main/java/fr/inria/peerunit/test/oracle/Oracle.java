@@ -68,30 +68,4 @@ public class Oracle {
 			return Verdicts.INCONCLUSIVE;
 		}
 	}
-	
-//	private Verdicts peerUnitException(InconclusiveFailure t){
-//		isFailure = true;
-//		return Verdicts.INCONCLUSIVE;
-//	}
-//	
-//	private Verdicts peerUnitException(ArrayComparisonFailure t){
-//		isFailure = true;
-//		return Verdicts.FAIL;
-//	}
-//	
-//	private Verdicts peerUnitException(AssertionFailedError t){
-//		isFailure = true;
-//		return Verdicts.FAIL;
-//	}
-//	
-//	private Verdicts peerUnitException(ComparisonFailure t){
-//		isFailure = true;
-//		return Verdicts.FAIL;
-//	}
-//	
-//	private Verdicts peerUnitException(AssertionError t){
-//		isFailure = true;
-//		return Verdicts.FAIL;
-//	}
-
 }
