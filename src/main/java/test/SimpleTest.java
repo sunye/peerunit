@@ -52,10 +52,10 @@ public class SimpleTest extends TestCaseImpl{
 	}
 
 
-	@Override
 	public void setTester(Tester t) {
 		// TODO Auto-generated method stub
 		
 	}
+
 }
 

@@ -13,7 +13,7 @@ import fr.inria.peerunit.parser.Test;
  *
  * This class is only used to test the class ParserImpl
  */
-public class TestData extends TestCaseImpl {
+public class Data extends TestCaseImpl {
 
 	@BeforeClass(place = -1, timeout = 100)
 	public void begin() {

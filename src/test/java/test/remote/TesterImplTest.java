@@ -44,9 +44,9 @@ public class TesterImplTest {
 			executor = new ExecutorImpl(tester0, LOG);
 			tester1 = new TesterImpl(coord);
 			tester2 = new TesterImpl(coord);
-			tester0.export(TestCaseSample.class);
-			tester1.export(TestCaseSample.class);
-			tester2.export(TestCaseSample.class);
+			tester0.export(Sample.class);
+			tester1.export(Sample.class);
+			tester2.export(Sample.class);
 			//new Thread(tester0, "Tester 0").start();
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -83,7 +83,7 @@ public class TesterImplTest {
 		try {
 			System.setProperty("executed", "nok");
 			List<MethodDescription> methods = executor
-					.register(TestCaseSample.class);
+					.register(Sample.class);
 			Thread tt = new Thread(tester0, "Tester 0");
 			tt.start();
 			for (MethodDescription md : methods) {

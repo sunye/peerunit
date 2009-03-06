@@ -68,7 +68,7 @@ public class ExecutorImplTest {
 
 		assert executor != null;
 		
-		List<MethodDescription> m = executor.register(TestData.class);
+		List<MethodDescription> m = executor.register(Data.class);
 		assertEquals(8, m.size());
 		assertTrue(m.contains(new MethodDescription("here","action4", 0,"Test",1000000)));
 		assertFalse(m.contains(new MethodDescription("notHere","action4", 0,"Test",1000000)));

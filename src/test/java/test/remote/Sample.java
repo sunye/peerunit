@@ -11,7 +11,7 @@ import fr.inria.peerunit.parser.Test;
  *
  * This class is only used to test TesterImpl and CoordinatorImpl
  */
-public class TestCaseSample extends TestCaseImpl {
+public class Sample extends TestCaseImpl {
 
 	@Test(place = -1, timeout = 1000, name = "action1", step = 1)
 	public void first() {
