@@ -13,7 +13,7 @@ import fr.inria.peerunit.rmi.tester.TesterImpl;
  */
 public interface TestCase {
 
-	public void setTester(TesterImpl ti);
+//	public void setTester(TesterImpl ti);
 
 	public void setTester(Tester t);
 	

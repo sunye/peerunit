@@ -36,7 +36,7 @@ public class TestInsertJoinB extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestInsertJoinB.class.getName());
 	private static final int OBJECTS=TesterUtil.getObjects();
 
-	//static TestInsertJoinB test;
+	static TestInsertJoinB test;
 
 	int sleep=TesterUtil.getSleep();
 
@@ -83,7 +83,7 @@ public class TestInsertJoinB extends TestCaseImpl{
 
 
 				de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
-				String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
+				String protocol = URL.KNOWN_PROTOCOLS.get(URL.SOCKET_PROTOCOL);
 
 				try {
 					String address = InetAddress.getLocalHost().toString();
@@ -166,7 +166,7 @@ public class TestInsertJoinB extends TestCaseImpl{
 
 
 				de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
-				String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
+				String protocol = URL.KNOWN_PROTOCOLS.get(URL.SOCKET_PROTOCOL);
 
 				try {
 					String address = InetAddress.getLocalHost().toString();
@@ -266,7 +266,7 @@ public class TestInsertJoinB extends TestCaseImpl{
 
 
 				de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
-				String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
+				String protocol = URL.KNOWN_PROTOCOLS.get(URL.SOCKET_PROTOCOL);
 
 				try {
 					String address = InetAddress.getLocalHost().toString();

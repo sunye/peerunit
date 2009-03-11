@@ -78,7 +78,7 @@ public class TestQueryTheoremD extends TestCaseImpl{
 		log.info("[TestDbpartout] Peer name "+test.getName());
 
 		de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
-		String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
+		String protocol = URL.KNOWN_PROTOCOLS.get(URL.SOCKET_PROTOCOL);
 
 		try {
 			String address = InetAddress.getLocalHost().toString();

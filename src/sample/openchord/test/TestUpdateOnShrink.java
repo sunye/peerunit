@@ -73,7 +73,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 		log.info("Peer name "+this.getName());
 
 		de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
-		String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
+		String protocol = URL.KNOWN_PROTOCOLS.get(URL.SOCKET_PROTOCOL);
 
 		try {
 			String address = InetAddress.getLocalHost().toString();

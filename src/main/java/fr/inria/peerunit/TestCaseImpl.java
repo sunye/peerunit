@@ -26,6 +26,11 @@ public abstract class TestCaseImpl implements TestCase {
 		tester = tt;		
 		id = tt.getID();		
 	}
+	
+	public void setTester(Tester t) {
+		throw new RuntimeException("Not implemented yet!");
+	}
+	
 
 	public int getPeerId() {
 		return id;
