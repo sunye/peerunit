@@ -20,15 +20,14 @@
 	<plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>rmic-maven-plugin</artifactId>
-        <version>1.0</version>
         <executions>
           <execution>
             <id>rmi compilation</id>
             <goals>
               <goal>rmic</goal>
             </goals>
-			<configuration>
-				<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+	    <configuration>
+	      <outputDirectory>${project.build.outputDirectory}</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -41,6 +40,20 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+	<configuration>
+	  <targetJdk>1.5</targetJdk>	
+	  <rulesets>
+	    <ruleset>/rulesets/codesize.xml</ruleset>
+	  </rulesets>
+	</configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </reporting>
