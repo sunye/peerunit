@@ -1,6 +1,7 @@
 package fr.inria.peerunit.util;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -124,7 +125,11 @@ public class TesterUtil {
 		if (props == null) {
 			props = new Properties();
 			
-			FileInputStream fs =new FileInputStream(System.getProperty("user.dir")+"/config/tester.properties");
+			// FIXME : System.getProperty("user.dir") : Portable ? 
+			String propFilePath = System.getProperty("user.dir");
+			String propFile = "config/tester.properties";
+				
+			FileInputStream fs = new FileInputStream(propFilePath+"/"+propFile);
 			
 			if (fs == null) {
 				System.out.println("Do not find properties' file.");
