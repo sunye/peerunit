@@ -3,6 +3,8 @@ package fr.inria.peerunit.onstree.stationTree;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.peerunit.util.TesterUtil;
+
 /**
  * @author Jeremy
  * 
@@ -86,9 +88,12 @@ public class Station
 	
 	public void print()
 	{
-		System.out.println("____________________");
-		System.out.println("|   "+this.ip+"   | -- Station "+this.name+" saut :"+nbSaut);
-		System.out.println("____________________");
+		if(TesterUtil.getStationTreeTrace() == 1)
+		{
+			System.out.println("____________________");
+			System.out.println("|   "+this.ip+"   | -- Station "+this.name+" saut :"+nbSaut);
+			System.out.println("____________________");
+		}
 	}
 
 	public String graphicPrintRouter()

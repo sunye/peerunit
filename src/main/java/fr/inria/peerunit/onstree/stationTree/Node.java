@@ -6,6 +6,7 @@ package fr.inria.peerunit.onstree.stationTree;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.util.Util;
 
 /** Use for station tree, it contains one station and stations children
@@ -86,11 +87,14 @@ public class Node implements StationContainer
 	
 	public void print()
 	{
-		System.out.println("|");
-		System.out.println("|-Station: "+num+" name: "+stParent.getName());
-		for(Node n:listChildStation)
+		if(TesterUtil.getStationTreeTrace() == 1)
 		{
-			n.print();
+			System.out.println("|");
+			System.out.println("|-Station: "+num+" name: "+stParent.getName());
+			for(Node n:listChildStation)
+			{
+				n.print();
+			}
 		}
 	}
 	

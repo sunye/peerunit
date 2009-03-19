@@ -2,6 +2,8 @@ package fr.inria.peerunit.onstree.stationTree;
 
 import java.util.List;
 
+import fr.inria.peerunit.util.TesterUtil;
+
 public class StationTreeBuilder 
 {
 
@@ -11,9 +13,13 @@ public class StationTreeBuilder
 		Router currentRouter = new Router("localhost");
 		Router newRouter = new Router("localhost");
 		int numNode = 0;
-		System.out.println("____________________");
-		System.out.println("|   "+stRoot.getName()+"   |");
-		System.out.println("____________________");
+		
+		if(TesterUtil.getStationTreeTrace() == 1)
+		{
+			System.out.println("____________________");
+			System.out.println("|   "+stRoot.getName()+"   |");
+			System.out.println("____________________");
+		}
 		
 		for(Station st:listStation)
 		{
@@ -77,7 +83,7 @@ public class StationTreeBuilder
 		{			
 			firstNodeChild = stTree.addStation(st1);
 		}
-		System.out.println("nb router:"+stRoot.getListRouter().size());
+		
 		for(Router router:stRoot.getListRouter())
 		{
 			firstNodeChild = nodeChild;
@@ -103,8 +109,7 @@ public class StationTreeBuilder
 				nodeChild.addStation(st);				
 			}
 		}
-
-		System.out.println("Routeurs fils: "+router.getListRooter());		
+	
 		for(Router routerChild:router.getListRooter())
 		{
 			StationContainer ct=nodeChild;

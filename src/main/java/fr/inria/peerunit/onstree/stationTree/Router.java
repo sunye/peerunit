@@ -3,6 +3,8 @@ package fr.inria.peerunit.onstree.stationTree;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.peerunit.util.TesterUtil;
+
 public class Router
 {
 	private String ip;
@@ -108,9 +110,12 @@ public class Router
 
 	public void print()
 	{
-		System.out.println("|");
-		System.out.println("| -- Router : "+this.ip);
-		System.out.println("|");
+		if(TesterUtil.getStationTreeTrace() == 1)
+		{
+			System.out.println("|");
+			System.out.println("| -- Router : "+this.ip);
+			System.out.println("|");
+		}
 	}
 
 	public String graphicPrintRouter()

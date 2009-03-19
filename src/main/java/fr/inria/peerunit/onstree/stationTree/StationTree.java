@@ -3,6 +3,7 @@ package fr.inria.peerunit.onstree.stationTree;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.util.Util;
 
 public class StationTree  implements StationContainer  //XXX
@@ -66,11 +67,14 @@ public class StationTree  implements StationContainer  //XXX
 	
 	public void print()
 	{
-		System.out.println("|");
-		System.out.println("|-StationRoot: "+num+" name: "+stRoot.getName());
-		for(Node n:listChildStation)
+		if(TesterUtil.getStationTreeTrace() == 1)
 		{
-			n.print();
+			System.out.println("|");
+			System.out.println("|-StationRoot: "+num+" name: "+stRoot.getName());
+			for(Node n:listChildStation)
+			{
+				n.print();
+			}
 		}
 	}
 	

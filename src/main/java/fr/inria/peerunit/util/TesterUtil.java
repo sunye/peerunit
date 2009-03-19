@@ -12,8 +12,9 @@ import java.util.Properties;
  *  
  * @author Eduardo Almeida
  * @author Aboubakar Koïta
- * @author Veronique Pelleau 
- * @version 1.0
+ * @author Veronique Pelleau
+ * @author Jérémy Masson
+ * @version 1.3
  * @since 1.0
  */
 public class TesterUtil {
@@ -108,6 +109,10 @@ public class TesterUtil {
 	 * The BTree strategy, if we are in distributed architecture
 	 */									
 	private static int  treeStrategy;
+	/**
+	 * Show all traces during station tree building
+	 */
+	private static int  stationTreeTrace;
 	/**
 	 * The testing architecture type, centralized or distributed 
 	 */										
@@ -498,5 +503,20 @@ public class TesterUtil {
 			e.printStackTrace();
 		}
 		return treeWaitForMethod;
+	}
+
+	/** 1 to show traces during the station tree building, 0 by default.
+	 * @return the stationTreeTrace
+	 */
+	public static int getStationTreeTrace()
+	{
+		stationTreeTrace = 0;
+		try {
+			stationTreeTrace=Integer.valueOf(TesterUtil.getProperty("tester.stationTreeTrace")).intValue();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return stationTreeTrace;
 	}	
 }
