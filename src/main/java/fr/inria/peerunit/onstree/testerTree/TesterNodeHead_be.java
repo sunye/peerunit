@@ -3,9 +3,7 @@ package fr.inria.peerunit.onstree.testerTree;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.peerunit.btree.AbstractBTreeNode;
-
-
+import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 
 public class TesterNodeHead_be extends AbstractBTreeNode
 {
@@ -201,9 +199,18 @@ public class TesterNodeHead_be extends AbstractBTreeNode
 	 */
 	public int getNodesSize()
 	{
-		int childrenNumber = 0;
+		int childrenNumber = 1;
 		
-		childrenNumber = childL.getNodesSize() + childR.getNodesSize();
+		if(childL != null)
+		{
+			childrenNumber += childL.getNodesSize();
+		}
+		
+		if(childR != null)
+		{
+			childrenNumber += childR.getNodesSize();
+		}
+		
 		for(TesterNodeHead_be nodeHead:listTesterNodeHead)
 		{
 			childrenNumber += nodeHead.getNodesSize();

@@ -1,8 +1,6 @@
 package fr.inria.peerunit.onstree.testerTree;
 
-import fr.inria.peerunit.btree.AbstractBTreeNode;
-
-
+import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 
 public class TesterNode_be extends AbstractBTreeNode implements TesterContainer
 {
@@ -182,13 +180,14 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer
 	 */
 	public int getNodesSize()
 	{
-		int childrenNumber = 0;
+		int childrenNumber = 1;
 		
-		if(childL!=null) {
+		if(childL != null)
+		{
 			childrenNumber += childL.getNodesSize();
 		}
-		
-		if(childR!=null) {
+		if(childR != null)
+		{
 			childrenNumber += childR.getNodesSize();
 		}
 		
