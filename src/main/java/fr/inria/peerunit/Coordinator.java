@@ -1,20 +1,17 @@
 package fr.inria.peerunit;
 
-
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Map;
 
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Verdicts;
 
-public interface Coordinator extends Remote {
+public interface Coordinator extends Architecture {
 	/**
 	 * @param tester
 	 * @param list
 	 * @throws RemoteException
-	 * @author Eduardo
+	 * @author Eduardo Almeida, Veronique Pelleau
 	 */
 	public void register(Tester tester, List<MethodDescription> list) throws RemoteException;
 
@@ -31,31 +28,4 @@ public interface Coordinator extends Remote {
 	 */
 	//public void quit(Tester t,boolean error,Verdicts v) throws RemoteException;
 	public void quit(Tester t,Verdicts v) throws RemoteException;
-
-	/**
-	 * Used to cache testing global variables
-	 * @param key
-	 * @param object
-	 * @throws RemoteException
-	 */
-	public void put(Integer key,Object object)  throws RemoteException;
-
-	/**
-	 *  Used to retrieve testing global variables
-	 * @param key
-	 * @return Object
-	 * @throws RemoteException
-	 */
-	public Object get(Integer key)  throws RemoteException ;
-	/**
-	 * Used to retrieve all the keys of the testing global variables
-	 * @param key
-	 * @return Object
-	 * @throws RemoteException
-	 */
-	public  Map<Integer,Object> getCollection()  throws RemoteException ;
-
-	public boolean containsKey(Object key) throws RemoteException ;
-
-	public void clearCollection()throws RemoteException ;
 }

@@ -10,12 +10,12 @@ import fr.inria.peerunit.util.TesterUtil;
  * @version 1.0
  * @since 1.0
  */
-public class BTreeNode implements Serializable{
+public class BTreeNode extends AbstractBTreeNode implements Serializable{
 	private static final long serialVersionUID = 1L;
-	public int id;
-	public Comparable[] keys;
-	public BTreeNode[] children;
-	public BTreeNode parent;		
+	private int id;
+	private Comparable[] keys;
+	private BTreeNode[] children;
+	private BTreeNode parent;		
 	private int order=TesterUtil.getTreeOrder();
 	private boolean isLeaf;
 	private boolean isRoot=false;
@@ -108,12 +108,16 @@ public class BTreeNode implements Serializable{
 			int i=0;
 			while (i < keys.length 
 					&& keys[i] != null
-					&& keys[i].compareTo(newKey) < 0) 
+					&& keys[i].compareTo(newKey) < 0) {
 				i++;
+			}
+			
 			if (i < keys.length 
 					&& keys[i] != null 
-					&& keys[i].compareTo(newKey) == 0) 
+					&& keys[i].compareTo(newKey) == 0) {
 				return null;
+			}
+			
 			Comparable tmpKey = null;
 			BTreeNode tmpNode = null;
 			BTreeNode newNode = new BTreeNode(returnNode);
@@ -123,12 +127,12 @@ public class BTreeNode implements Serializable{
 				tmpNode = children[i+1];
 				keys[i] = newKey;
 				children[i+1] = (newNode == null || isLeaf()) ?
-						null :
-							newNode;
+						null : newNode;
 				newKey = tmpKey;
 				newNode = tmpNode;
 				i++;
 			}
+			
 			// Überlaufbehandlung
 			if (newKey != null) {
 				// Neuen Knoten erzeugen, Schluessel
@@ -148,16 +152,46 @@ public class BTreeNode implements Serializable{
 				tmpNode.children[order] = (newNode == null || isLeaf()) ?
 						null :
 							newNode;
+				
 				// mittlerer Schluessel als Rueckgabewert
+				//middle key as a return value
 				newKey = keys[order];
 				keys[order] = null;
 				children[order+1] = null;
+				
 				// Werte des Rueckgabeknoten setzen
+				// Values of the return knot place
 				returnNode.setKeys(tmpNode.keys.clone());
 				returnNode.setChildren(tmpNode.children.clone());
+				
 			}
 		}
 		return newKey;
 	}
+
+	@Override
+	public AbstractBTreeNode[] getChildren() {
+		return children;
+	}
+
+	@Override
+	public int getId() {
+		return id;
+	}
+
+	@Override
+	public Comparable[] getKeys() {
+		return keys;
+	}
+
+	@Override
+	public AbstractBTreeNode getParent() {
+		return parent;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 }
 

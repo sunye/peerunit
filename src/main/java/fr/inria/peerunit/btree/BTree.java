@@ -3,6 +3,7 @@ package fr.inria.peerunit.btree;
 import java.util.HashMap;
 import java.util.Map;
 
+import fr.inria.peerunit.btreeStrategy.TreeStrategy;
 import fr.inria.peerunit.util.TesterUtil;
 /**
  * 
@@ -29,14 +30,14 @@ public class BTree {
 	 * Creates a new Node into this BTree, associated to the specified key
 	 * @param newKey the key to be inserted
 	 */
-	public void insert(Comparable newKey) {
+	private void insert(Comparable newKey) {
 		BTreeNode returnNode = new BTreeNode();
 		Comparable newRootKey = root.insert(newKey, returnNode);
 		if (newRootKey != null) {
 			BTreeNode newRoot = new BTreeNode();
-			newRoot.keys[0] = newRootKey;
-			newRoot.children[0] = root;
-			newRoot.children[1] = returnNode;
+			newRoot.getKeys()[0] = newRootKey;
+			newRoot.getChildren()[0] = root;
+			newRoot.getChildren()[1] = returnNode;
 			root = newRoot;
 		}
 	}
@@ -45,7 +46,7 @@ public class BTree {
 	 * Retrieves all the nodes contained in this BTree
 	 * @return all the nodes contained in this BTree
 	 */
-	public  Map<Integer,BTreeNode> getNodes(){
+	private  Map<Integer,BTreeNode> getNodes(){
 		return nodes;
 	}
 	
@@ -66,15 +67,17 @@ public class BTree {
 	 * Defines the BTree hierarchy : indicates recursively to each node who its parent is
 	 * @param parent
 	 */
-	public void returnNode(BTreeNode parent){
-		parent.id=nodeKey;
+	private void returnNode(BTreeNode parent){
+		BTreeNode btParent = (BTreeNode)parent;
+		btParent.setId(nodeKey);
 		System.out.println("BTreeNode: " + parent);
-		for (BTreeNode bt:parent.children){
+		for (AbstractBTreeNode bt:btParent.getChildren()){
 			if (bt != null){
 				nodeKey++;
-				bt.setParent(parent);
-				nodes.put(nodeKey, bt);
-				returnNode(bt);
+				BTreeNode btChildren = (BTreeNode)bt;
+				btChildren.setParent((BTreeNode)parent);
+				nodes.put(nodeKey, btChildren);
+				returnNode(btChildren);
 			} else
 				break;
 			
@@ -86,7 +89,7 @@ public class BTree {
 	 * @param i the key whose associated value is to be returned 
 	 * @return the node to which the specified key is associated
 	 */
-	public BTreeNode getNode(Integer i){
+	public AbstractBTreeNode getNode(Integer i){
 		return nodes.get(i);
 	}
 	
@@ -100,11 +103,15 @@ public class BTree {
 
 		for(int i=0;i<btree.getNodes().size();i++){
 			System.out.println("Node "+i+" : "+btree.getNodes().get(i));							
-			for(Comparable x:btree.getNodes().get(i).keys){
+			for(Comparable x:btree.getNodes().get(i).getKeys()){
 				if(x != null){
 					System.out.println("Key "+new Integer(x.toString()));
 				}
 			}			
 		}		
+	}
+
+	public int getNodesSize() {
+		return nodes.size();
 	}
 }

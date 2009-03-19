@@ -124,7 +124,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		
 		try {			
 			log.log(Level.INFO, "[NodeImpl] Registering actions");			
-			executor = new ExecutorImpl();				
+			executor = new ExecutorImpl();
 			testList=executor.register(c);		
 			klass=c;
 		} catch (SecurityException e) {
@@ -293,11 +293,11 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}
 	}
 
-	public void setElements(BTreeNode bt,TreeElements tree) throws RemoteException {	
+	public void setElements(AbstractBTreeNode bt,TreeElements tree) throws RemoteException {	
 		log.log(Level.FINEST, "[NodeImpl] id "+id+" bt "+bt+" tree "+tree);		
 		this.tree=tree;
-		this.bt=bt;		
-		for(BTreeNode child:this.bt.children){
+		this.bt=(BTreeNode) bt;		
+		for(AbstractBTreeNode child:this.bt.getChildren()){
 			if(child!=null)
 				numberOfChildren++;
 		}
@@ -332,12 +332,12 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			log.log(Level.SEVERE,e.toString());
 		}				
 		
-		log.log(Level.INFO, "[NodeImpl] Starting "+bt.keys+" Testers ");
+		log.log(Level.INFO, "[NodeImpl] Starting "+bt.getKeys()+" Testers ");
 		/**
 		 * Using bt Node acknowledge the testers it must control, then start them
 		 */		
 		
-		for(Comparable key:bt.keys){			
+		for(Comparable key:bt.getKeys()){			
 			if(key != null){
 				int peerID=new Integer(key.toString());				
 				log.log(Level.FINEST, "[NodeImpl] Tester "+key.toString());				

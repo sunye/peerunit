@@ -30,11 +30,11 @@ public interface Node extends Remote{
 	
 	/**
 	 * Associates a BTreeNode and a TreeElement to this Node
-	 * @param bt The BTreeNode to be associated to this Node
+	 * @param abstractBTreeNode The BTreeNode to be associated to this Node
 	 * @param te The TreeElement to be associated to this Node
 	 * @throws java.rmi.RemoteException
 	 */
-	public void setElements(BTreeNode bt,TreeElements te) throws RemoteException;	
+	public void setElements(AbstractBTreeNode abstractBTreeNode,TreeElements te) throws RemoteException;	
 	
 	
 	/**

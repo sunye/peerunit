@@ -11,7 +11,8 @@ import java.util.Properties;
  * (centralized or distributed), the number of <i>testers</i> expected, etc.
  *  
  * @author Eduardo Almeida
- * @author Aboubakar Koïta 
+ * @author Aboubakar Koïta
+ * @author Veronique Pelleau 
  * @version 1.0
  * @since 1.0
  */
@@ -103,6 +104,10 @@ public class TesterUtil {
 	 * The BTree order, if we are in distributed architecture
 	 */									
 	private static int  treeOrder;
+	/**
+	 * The BTree strategy, if we are in distributed architecture
+	 */									
+	private static int  treeStrategy;
 	/**
 	 * The testing architecture type, centralized or distributed 
 	 */										
@@ -446,6 +451,21 @@ public class TesterUtil {
 			e.printStackTrace();
 		}
 		return treeOrder;
+	}
+	
+	/**
+	 * Return the BTree strategy, if we are in distributed architecture.
+	 *  	
+	 * @return the BTree strategy, if we are in distributed architecture
+	 */	
+	public static int getTreeStrategy(){
+		try {
+			treeStrategy=Integer.valueOf(TesterUtil.getProperty("test.treeStrategy")).intValue();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return treeStrategy;
 	}
 	
 	/**
