@@ -1,13 +1,11 @@
 package fr.inria.peerunit.btreeStrategy;
 
-
-import fr.inria.peerunit.btree.AbstractBTreeNode;
+import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 
 /**
  * 
  * @author Veronique Pelleau
- * @version 1.0
- * @since 1.0
+ *
  */
 public class Context {
 

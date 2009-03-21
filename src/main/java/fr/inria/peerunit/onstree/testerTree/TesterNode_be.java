@@ -1,10 +1,17 @@
 package fr.inria.peerunit.onstree.testerTree;
 
+import java.io.Serializable;
+
 import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 
-public class TesterNode_be extends AbstractBTreeNode implements TesterContainer
+/** This tree node follows to a tester. It can be a child of the head node of a station
+ * tree type: balance binary tree
+ * @author Jeremy Masson
+ *
+ */
+public class TesterNode_be extends AbstractBTreeNode implements TesterContainer, Serializable
 {
-	
+	private static final long	serialVersionUID	= 1L;
 	public int id;
 	private TesterNodeHead_be parentNodeHead;
 	private TesterNode_be parent;
@@ -46,11 +53,6 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer
 		}
 		
 		return tree;
-	}
-
-	public void add(long id)
-	{
-
 	}
 	
 	public int getId()
@@ -192,5 +194,30 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer
 		}
 		
 		return childrenNumber;
+	}
+
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.onstree.testerTree.TesterContainer#setParent(fr.inria.peerunit.btreeStrategy.AbstractBTreeNode)
+	 */
+	public void updateParent(AbstractBTreeNode parent)
+	{
+		// update parent himself
+		if(parent instanceof TesterNodeHead_be)
+		{
+			this.parentNodeHead = (TesterNodeHead_be) parent;
+		}
+		if(parent instanceof TesterNode_be)
+		{
+			this.parent = (TesterNode_be) parent;
+		}	
+		// update parent of his children
+		if(childL != null)
+		{
+			childL.updateParent(this);
+		}
+		if(childR != null)
+		{
+			childR.updateParent(this);
+		}
 	}
 }

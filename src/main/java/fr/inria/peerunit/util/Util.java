@@ -1,11 +1,10 @@
 package fr.inria.peerunit.util;
 
 /**
-* @author Jeremy Masson
-* @author Aboubakar Koïta 
-* @version 1.0
-* @since 1.0
-*/
+ * 
+ * @author Jeremy Masson
+ *
+ */
 public class Util
 {
 	private static int iColor;

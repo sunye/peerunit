@@ -2,6 +2,7 @@ package fr.inria.peerunit.btree;
 
 import java.io.Serializable;
 
+import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -19,6 +20,7 @@ public class BTreeNode extends AbstractBTreeNode implements Serializable{
 	private int order=TesterUtil.getTreeOrder();
 	private boolean isLeaf;
 	private boolean isRoot=false;
+	
 	/**
 	 * Constructs a new BTreeNode
 	 */

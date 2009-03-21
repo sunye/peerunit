@@ -3,15 +3,17 @@ package fr.inria.peerunit.btree;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.inria.peerunit.btreeStrategy.TreeStrategy;
+import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 import fr.inria.peerunit.util.TesterUtil;
+
 /**
  * 
  * @author Eduardo Almeida
  * @version 1.0
  * @since 1.0
  */
-public class BTree {
+public class BTree { //implements TreeStrategy {
+	
 	int order;
 	static BTreeNode root = null;
 	public Map<Integer,BTreeNode> nodes = new HashMap<Integer,BTreeNode>();

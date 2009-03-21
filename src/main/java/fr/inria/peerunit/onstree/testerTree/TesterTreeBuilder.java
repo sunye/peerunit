@@ -57,7 +57,17 @@ public class TesterTreeBuilder
 				}
 			}
 		}
+		
+		updateNodeParent(testerNH_root);
 		return testerNH_root;
+	}
+
+	/**
+	 * update parent every nodes
+	 */
+	private void updateNodeParent(TesterNodeHead_be testerNH_root)
+	{
+		testerNH_root.updateParent(null);
 	}
 
 	private TesterNodeHead_be createTree(StationContainer station)

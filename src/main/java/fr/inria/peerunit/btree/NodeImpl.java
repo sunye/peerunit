@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
+import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
+import fr.inria.peerunit.parser.ExecutorAbstract;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.test.oracle.Verdicts;
@@ -39,7 +41,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	
 	private Bootstrapper boot;
 	
-	private ExecutorImpl executor;
+	private ExecutorAbstract executor;
 
 	private static Logger log;
 	
@@ -57,7 +59,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	
 	String logFolder = TesterUtil.getLogfolder();
 		
-	BTreeNode bt;
+	AbstractBTreeNode bt;
 		
 	private AtomicInteger childrenTalk = new AtomicInteger(0);
 	
@@ -296,7 +298,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	public void setElements(AbstractBTreeNode bt,TreeElements tree) throws RemoteException {	
 		log.log(Level.FINEST, "[NodeImpl] id "+id+" bt "+bt+" tree "+tree);		
 		this.tree=tree;
-		this.bt=(BTreeNode) bt;		
+		this.bt = bt;		
 		for(AbstractBTreeNode child:this.bt.getChildren()){
 			if(child!=null)
 				numberOfChildren++;

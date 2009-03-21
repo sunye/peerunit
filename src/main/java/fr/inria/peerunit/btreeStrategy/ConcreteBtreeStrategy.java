@@ -1,13 +1,7 @@
 package fr.inria.peerunit.btreeStrategy;
 
-/**
- * 
- * @author Veronique Pelleau
- * @version 1.0
- * @since 1.0
- */
-import fr.inria.peerunit.btree.AbstractBTreeNode;
 import fr.inria.peerunit.btree.BTree;
+import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class ConcreteBtreeStrategy implements TreeStrategy {

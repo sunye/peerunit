@@ -9,20 +9,20 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.Architecture;
-import fr.inria.peerunit.ArchitectureImpl;
+import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 import fr.inria.peerunit.btreeStrategy.ConcreteBtreeStrategy;
-import fr.inria.peerunit.btreeStrategy.ConcreteONSTreeStrategy;
 import fr.inria.peerunit.btreeStrategy.Context;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.ArchitectureImpl;
+import fr.inria.peerunit.btreeStrategy.ConcreteONSTreeStrategy;
 import fr.inria.peerunit.util.TesterUtil;
+
 /**
  * 
  * @author Eduardo Almeida, Veronique PELLEAU
@@ -30,6 +30,7 @@ import fr.inria.peerunit.util.TesterUtil;
  * @since 1.0
  */
 public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper, Serializable  {
+
 	private static final long serialVersionUID = 1L;
 
 	private AtomicInteger registered = new AtomicInteger(0);
@@ -73,15 +74,18 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 		BootstrapperImpl boot=new BootstrapperImpl();
 		boot.startNet(boot);	
 		System.out.println("[Bootstrapper] Lets see the tree !");		
+
 		time=System.currentTimeMillis();
 		
 		switch (TesterUtil.getTreeStrategy()) {
 		case 1:
 			context = new Context(new ConcreteBtreeStrategy());
+			System.out.println("[Bootstrapper] Strategy BTree !");
 			break;
 
 		case 2:
 			context = new Context(new ConcreteONSTreeStrategy());
+			System.out.println("[Bootstrapper] Strategy optimized station tree !");
 			break;
 			
 		case 3:
@@ -147,17 +151,19 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 	
 	private void setCommunication(){	
 		Node node;			
+		
 		for(Integer key:nodes.keySet()){
-			TreeElements te=new TreeElements();			
+			TreeElements te=new TreeElements();	
 			if(!context.getNode(key).isLeaf()){
 				for(AbstractBTreeNode child:context.getNode(key).getChildren()){
 					if(child!=null){
-						System.out.println("Child id "+child.getId());
 						te.setChildren(nodes.get(child.getId()));
 					}
 				}
 			}else
+			{
 				te.setChildren(null);
+			}
 			
 			if(!context.getNode(key).isRoot()){
 				int parentId=context.getNode(key).getParent().getId();
@@ -181,7 +187,7 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 		cacheMap.put(key, object);
 	}
 
-	/*
+	/**
 	 * Check that the test.coordination property is correctly record in the configuration file tester.properties
 	 * i.e is equals at 1 for the distributed coordination
 	 */
@@ -191,4 +197,5 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 					"Set property test.coordination=1 to use distributed coordination.");
 		}
 	}
+	
 }

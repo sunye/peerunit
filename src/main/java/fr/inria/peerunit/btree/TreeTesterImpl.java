@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
+import fr.inria.peerunit.parser.ExecutorAbstract;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
@@ -25,7 +26,7 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	MethodDescription md;
 	boolean executing=true;
 	boolean isLastMethod=false;
-	private ExecutorImpl executor;	
+	private ExecutorAbstract executor;	
 	private TestCaseImpl testcase;
 	private Bootstrapper boot;
 	private Verdicts v= Verdicts.PASS;

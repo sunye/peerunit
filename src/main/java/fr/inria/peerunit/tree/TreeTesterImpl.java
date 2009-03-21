@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.parser.ExecutorAbstract;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.test.oracle.Oracle;
@@ -31,13 +32,13 @@ import fr.inria.peerunit.util.TesterUtil;
  * This tester class used to build the tree tester, execute the actions and get the verdict
  * of the actions executed
  * @author Eduardo
- *
+ * @author Jeremy Masson
  */
 public class TreeTesterImpl  implements TreeTester,Serializable,Runnable, Tester, StorageTester{
 	
 	private static final long serialVersionUID = 1L;
 	
-	private ExecutorImpl executor;
+	private ExecutorAbstract executor;
 	
 	private static Logger PEER_LOG;
 	

@@ -17,6 +17,8 @@ import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.VolatileTester;
+//import fr.inria.peerunit.parser.ExecutorImpl;
+import fr.inria.peerunit.parser.ExecutorAbstract;
 import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
@@ -26,7 +28,8 @@ import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
-* @author Eduardo Almeida.
+* @author Eduardo Almeida
+* @author Jeremy Masson
 * @version 1.0
 * @since 1.0
 * @see fr.inria.peerUnit.Tester
@@ -53,7 +56,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	private Thread invokationThread;
 
-	private ExecutorImpl executor;
+	private ExecutorAbstract executor;
 
 	private Verdicts v= Verdicts.PASS;
 

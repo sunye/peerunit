@@ -3,12 +3,13 @@
  */
 package fr.inria.peerunit.btreeStrategy;
 
+import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
+
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.inria.peerunit.btree.AbstractBTreeNode;
 import fr.inria.peerunit.onstree.stationTree.Station;
 import fr.inria.peerunit.onstree.stationTree.StationRoot;
 import fr.inria.peerunit.onstree.stationTree.StationTree;
@@ -17,18 +18,16 @@ import fr.inria.peerunit.onstree.testerTree.TesterNodeHead_be;
 import fr.inria.peerunit.onstree.testerTree.TesterTreeBuilder;
 import fr.inria.peerunit.util.TesterUtil;
 
-/**
- * 
- * @author Jeremy Masson
- * @version 1.0
- * @since 1.0
+/** This strategy allow to use the Optimized Network Station Tree
+ * @author jeremy
+ *
  */
 public class ConcreteONSTreeStrategy implements TreeStrategy
 {
 	private TesterNodeHead_be testerNH;
 
 	/**
-	 * 
+	 * Constructor by default
 	 */
 	public ConcreteONSTreeStrategy()
 	{
@@ -84,44 +83,49 @@ public class ConcreteONSTreeStrategy implements TreeStrategy
 		// Station tree
 		StationTree stTree = builder.buildStationTree(stRoot);
 
-		stTree.print();
+		if(TesterUtil.getStationTreeTrace() == 1)
+		{
+			stTree.print();
+		}
 		
 		// tester tree
 		TesterTreeBuilder testTreeBuilder = new TesterTreeBuilder();
 		// parameter tester number = 165 for 11 stations (15 tester max by station)
 		testerNH = testTreeBuilder.buildTesterTree(stTree, TesterUtil.getExpectedPeers());
 		
-		try
-		{			
-			PrintWriter out=new PrintWriter(new FileWriter("routersTree.txt"));
-			out.println("digraph myTree {");
-			out.println(stRoot.graphicPrintRouters());
-			out.println("}");		
-			out.close();
-			
-			out=new PrintWriter(new FileWriter("stationTree.txt"));
-			out.println("digraph myTree {");
-			out.println(stTree.graphicPrint());
-			out.println("}");			
-			out.close();		
-			
-			out=new PrintWriter(new FileWriter("TesterTree.txt"));
-			out.println("digraph myTree {");
-			out.println(testerNH.graphicPrintTester());
-			out.println("}");			
-			out.close();	
-            // génération des images
-			//Runtime.getRuntime().exec("dot -Tpng routersTree.txt -o RoutersGraph.png");	
-			System.out.println(stTree.graphicPrint());
-			//Runtime.getRuntime().exec("dot -Tpng stationTree.txt -o stationsGraph.png");
-//			Runtime.getRuntime().exec("eog stationsGraph.png");			
-			System.out.println(stTree.graphicPrint());
-
-		} 
-		catch (Exception e)
+		if(TesterUtil.getStationTreeTrace() == 1)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try
+			{			
+				PrintWriter out=new PrintWriter(new FileWriter("routersTree.txt"));
+				out.println("digraph myTree {");
+				out.println(stRoot.graphicPrintRouters());
+				out.println("}");		
+				out.close();
+				
+				out=new PrintWriter(new FileWriter("stationTree.txt"));
+				out.println("digraph myTree {");
+				out.println(stTree.graphicPrint());
+				out.println("}");			
+				out.close();		
+				
+				out=new PrintWriter(new FileWriter("TesterTree.txt"));
+				out.println("digraph myTree {");
+				out.println(testerNH.graphicPrintTester());
+				out.println("}");			
+				out.close();	
+				
+	            // génération des images
+				Runtime.getRuntime().exec("dot -Tpng routersTree.txt -o RoutersGraph.png");		
+				Runtime.getRuntime().exec("eog stationsGraph.png");	
+				Runtime.getRuntime().exec("dot -Tpng TesterTree.txt -o TesterTree.png");				//System.out.println(stTree.graphicPrint());
+	
+			} 
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 	}
@@ -139,7 +143,6 @@ public class ConcreteONSTreeStrategy implements TreeStrategy
 	 */
 	public int getNodesSize()
 	{
-		// TODO Auto-generated method stub
 		return testerNH.getNodesSize();
 	}
 

@@ -1,12 +1,16 @@
 package fr.inria.peerunit.onstree.testerTree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.core.IsInstanceOf;
+
 import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 
-public class TesterNodeHead_be extends AbstractBTreeNode
+public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContainer, Serializable
 {
+	private static final long	serialVersionUID	= 1L;
 	private int id;
 	private String sColor;
 	private TesterNodeHead_be parent;
@@ -18,6 +22,7 @@ public class TesterNodeHead_be extends AbstractBTreeNode
 	public TesterNodeHead_be()
 	{
 		listTesterNodeHead = new ArrayList<TesterNodeHead_be>();
+		parent = null;
 	}
 	
 	public TesterNodeHead_be(int id, String color, TesterNode_be childL,
@@ -151,7 +156,7 @@ public class TesterNodeHead_be extends AbstractBTreeNode
 	@Override
 	public boolean isRoot()
 	{
-		if(parent != null)
+		if(parent == null)
 		{
 			return true;
 		}
@@ -186,8 +191,7 @@ public class TesterNodeHead_be extends AbstractBTreeNode
 				if(aBTNode != null)
 				{
 					return aBTNode;
-				}
-					
+				}					
 			}
 		}
 		
@@ -217,5 +221,57 @@ public class TesterNodeHead_be extends AbstractBTreeNode
 		}
 		
 		return childrenNumber;
+	}
+
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.onstree.testerTree.TesterContainer#add(long)
+	 */
+	public void add(long id)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.onstree.testerTree.TesterContainer#getChildL()
+	 */
+	public TesterNode_be getChildL()
+	{
+		return childL;
+	}
+
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.onstree.testerTree.TesterContainer#getChildR()
+	 */
+	public TesterNode_be getChildR()
+	{
+		return childR;
+	}
+
+	/* (non-Javadoc)
+	 * @see fr.inria.peerunit.onstree.testerTree.TesterContainer#setParent(fr.inria.peerunit.btreeStrategy.AbstractBTreeNode)
+	 */
+	public void updateParent(AbstractBTreeNode parent)
+	{
+		// update parent himself
+		if(parent != null && parent instanceof TesterNodeHead_be)
+		{
+			this.parent = (TesterNodeHead_be) parent;
+		}
+		
+		// update parent of his children
+		if(childL != null)
+		{
+			childL.updateParent(this);
+		}
+		if(childR != null)
+		{
+			childR.updateParent(this);
+		}
+		
+		for(TesterNodeHead_be nodeHead:listTesterNodeHead)
+		{
+			nodeHead.updateParent(this);
+		}
 	}
 }
