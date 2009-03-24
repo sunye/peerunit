@@ -18,7 +18,7 @@ import fr.inria.peerunit.util.PeerUnitLogger;
 
 public abstract class ExecutorAbstract implements Executor {
 
-	protected Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
+	protected Map<MethodDescription, Method> methods;
 	protected TesterImpl tester;
 	protected TestCase testcase;
 	protected PeerUnitLogger LOG;
@@ -30,6 +30,7 @@ public abstract class ExecutorAbstract implements Executor {
 	 * @param l : PeerUnitLogger
 	 */
 	public ExecutorAbstract(TesterImpl t, PeerUnitLogger l) {
+		methods = new TreeMap<MethodDescription, Method>();
 		this.tester = t;
 		this.LOG=l;
 	}
@@ -38,6 +39,7 @@ public abstract class ExecutorAbstract implements Executor {
 	 * Constructor by default
 	 */
 	public ExecutorAbstract(){
+		methods = new TreeMap<MethodDescription, Method>();
 		
 	}
 

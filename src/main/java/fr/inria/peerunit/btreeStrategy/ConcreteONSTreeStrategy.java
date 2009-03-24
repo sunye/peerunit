@@ -117,8 +117,8 @@ public class ConcreteONSTreeStrategy implements TreeStrategy
 				
 	            // génération des images
 				Runtime.getRuntime().exec("dot -Tpng routersTree.txt -o RoutersGraph.png");		
-				Runtime.getRuntime().exec("eog stationsGraph.png");	
-				Runtime.getRuntime().exec("dot -Tpng TesterTree.txt -o TesterTree.png");				//System.out.println(stTree.graphicPrint());
+				Runtime.getRuntime().exec("dot -Tpng stationTree.txt -o stationTree.png");	
+				Runtime.getRuntime().exec("dot -Tpng TesterTree.txt -o TesterTree.png");
 	
 			} 
 			catch (Exception e)

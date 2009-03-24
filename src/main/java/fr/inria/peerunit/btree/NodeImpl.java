@@ -41,7 +41,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	
 	private Bootstrapper boot;
 	
-	private ExecutorAbstract executor;
+	private ExecutorImpl executor;
 
 	private static Logger log;
 	
@@ -84,14 +84,8 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		boot=b;
 		UnicastRemoteObject.exportObject(this);	
 		id=boot.register(this);
-		if(id==0)
-			amIRoot=true;
-		else if (id==Integer.MAX_VALUE) {
-			/**
-			 * All Nodes are taken
-			 */
-			System.exit(0);			
-		}
+		
+		amIRoot = boot.isRoot(id);
 		
 		System.out.println("Log file to use : "+logFolder+ "/Node" + id + ".log");		
 		
@@ -159,20 +153,26 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			try {
 				if(amIRoot){
 					log.log(Level.FINEST, "[NodeImpl] Start action ");
+					log.log(Level.FINEST,"[NodeImpl] dispatch(); IamRoot, id:"+id);
 					dispatch();
 				}else{
 					/**
 					 * Wait for parent
 					 */
+					log.log(Level.FINEST,"[NodeImpl] Wait for parent");
 					synchronized(this){
 						this.wait();
 					}
+					log.log(Level.FINEST,"[NodeImpl] Stop Wait for parent");
 					log.log(Level.FINEST, "[NodeImpl] I'm about to execute "+md);			
 					if(!amILeaf){
+						log.log(Level.FINEST,"[NodeImpl] dispatch() !amILeaf, id:"+id);
 						dispatch();
 					}else{
+						log.log(Level.FINEST,"[NodeImpl] execute(); IamLeaf, id:"+id);
 						execute();						
 					}
+					log.log(Level.FINEST,"[NodeImpl] talkToParent");
 					talkToParent();					
 				}				
 			} catch (InterruptedException e) {				
@@ -191,15 +191,19 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	}
 	
 	private void dispatch() throws InterruptedException {
-		log.log(Level.INFO, id+"[NodeImpl] Dispatching action "+mdToExecute);		
-		talkToChildren();		
+		log.log(Level.INFO, id+"[NodeImpl] Dispatching action "+mdToExecute);
+		log.log(Level.FINEST,"[NodeImpl] talkToChildren()");
+		talkToChildren();	
+		log.log(Level.FINEST,"[NodeImpl] execute()");
 		execute();		
 		/**
 		 * Wait for children
 		 */
+		log.log(Level.FINEST,"[NodeImpl] Wait for children");
 		synchronized(this){
 			this.wait();
 		}	
+		log.log(Level.FINEST,"[NodeImpl] Stop wait");
 	}
 	
 	private void execute(){

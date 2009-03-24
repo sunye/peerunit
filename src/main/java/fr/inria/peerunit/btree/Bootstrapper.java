@@ -18,4 +18,13 @@ public interface Bootstrapper extends Architecture{
 	 * @throws java.rmi.RemoteException
 	 */
 	public int register(Node t) throws RemoteException;	
+	
+	
+	/**
+	 * Return true if id follow to Bootstrapper
+	 * @param id
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean isRoot(int id) throws RemoteException;	
 }

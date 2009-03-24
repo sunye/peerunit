@@ -26,7 +26,7 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	MethodDescription md;
 	boolean executing=true;
 	boolean isLastMethod=false;
-	private ExecutorAbstract executor;	
+	private ExecutorImpl executor;	
 	private TestCaseImpl testcase;
 	private Bootstrapper boot;
 	private Verdicts v= Verdicts.PASS;
@@ -97,8 +97,7 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 		Level level = Level.parse(TesterUtil.getLogLevel());		
 		try {			
 			String logFolder = TesterUtil.getLogfolder();
-			
-			
+				
 			FileHandler phandler;
 			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+id+".log",true);
 			phandler.setFormatter(format);
@@ -122,7 +121,7 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 		assert executor != null : "Null executor";
 		if(testList.contains(md)){
 			boolean error = true;
-			try {				
+			try {	
 				Method m = executor.getMethod(md);
 				m.invoke(testcase, (Object[]) null);
 				error = false;
