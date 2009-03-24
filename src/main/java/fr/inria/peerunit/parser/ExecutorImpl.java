@@ -2,51 +2,54 @@ package fr.inria.peerunit.parser;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 import fr.inria.peerunit.Executor;
 import fr.inria.peerunit.TestCase;
+import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.PeerUnitLogger;
 
-/**
- * This class executes methods of the test case.
- * @author Eduardo Almeida
- * @author Jeremy Masson
- *
- */
-public class ExecutorImpl extends ExecutorAbstract implements Executor {
+public class ExecutorImpl implements Executor {
 
-	
-	/**
-	 * Creates an ExecutorImpl
-	 * @param t : TesterImpl
-	 * @param l : PeerUnitLogger
-	 */
+	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
+	private TesterImpl tester;
+	private TestCase testcase;
+	private PeerUnitLogger LOG;
 	public ExecutorImpl(TesterImpl t, PeerUnitLogger l) {
-		super(t, l);
+		this.tester = t;
+		this.LOG=l;
 	}
-	
-	/** Verify if the tester must execute the method
-	 * @param place
-	 * @param from : number of the first tester
-	 * @param to : number of the last tester
-	 * @return
-	 */
-	protected boolean shouldIExecute(int place, int from, int to) {
-		setTesterId(tester.getId());
-		
-		return super.shouldIExecute(place, from, to);
+
+
+	public boolean validatePeerRange(int from, int to) {
+		if ((from > -1) && (to == -1)) {
+			throw new AnnotationFailure("Annotation FROM without TO");
+		} else if ((from == -1) && (to > -1)) {
+			throw new AnnotationFailure("Annotation TO without FROM");
+		} else if ((from < -1) || (to < -1)) {
+			throw new AnnotationFailure("Invalid value for FROM / TO");
+		} else if ((from >= to) && (from != -1)) {
+			throw new AnnotationFailure("The value of FROM must be smaller than TO");
+		} else return false;
 	}
-	
-	/**
-	 * Parse the test case to extract the methods to be executed
-	 * @param class
-	 * @return List of methods to be executed
-	 */
+
+	public boolean shouldIExecute(int place, int from, int to) {
+		int testerId = tester.getId();
+		return (place == testerId) ||
+			(place == -1 && from == -1 && to == -1) ||
+			((from <= testerId) && (to >= testerId));
+	}
+
+
 	public List<MethodDescription> register(Class<? extends TestCase> c) {
+		Test t;
+		BeforeClass bc;
+		AfterClass ac;
 
 		try {
 			testcase = c.newInstance();
@@ -57,10 +60,72 @@ public class ExecutorImpl extends ExecutorAbstract implements Executor {
 			e.printStackTrace();
 		}
 
-		List<MethodDescription> listMethod = super.register(c);
-	
+		methods.clear();
+		for(Method each : c.getMethods()) {
+			t = each.getAnnotation(Test.class);
+			if (this.isValid(t)) {
+				methods.put(new MethodDescription(each, t), each);				
+			}
+		}
+
+		for(Method each : c.getMethods()) {
+			bc = each.getAnnotation(BeforeClass.class);
+
+			if (this.isValid(bc)) {
+				methods.put(new MethodDescription(each, bc), each);				
+			}
+		}
+
+		for(Method each : c.getMethods()) {
+			ac = each.getAnnotation(AfterClass.class);
+
+			if (this.isValid(ac)) {
+				methods.put(new MethodDescription(each, ac), each);				
+			}
+		}
 		LOG.log(Level.FINEST,"I will execute the method: "+methods.keySet().toString());
-		return listMethod;
+		return new ArrayList<MethodDescription>(methods.keySet());
+	}
+
+
+	public TesterImpl getTester() {
+		return tester;
+	}
+
+
+	public TestCase getTestcase() {
+		return testcase;
+	}
+
+
+	public Map<MethodDescription, Method> getMethods() {
+		return methods;
+	}
+
+
+	public void invoke(MethodDescription md) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+
+		assert methods.containsKey(md) : "Method should be registered";
+		assert testcase != null : "Test Case instance should not be null";
+
+		Method m = methods.get(md);
+		m.invoke(testcase, (Object[]) null);
+	}
+
+	public boolean isLastMethod(String methodAnnotation) {
+		return methodAnnotation.equalsIgnoreCase("AfterClass");
+	}
+
+	public boolean isValid(Test a) {
+		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
+	}
+
+	public boolean isValid(BeforeClass a) {
+		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
+	}
+
+	public boolean isValid(AfterClass a) {
+		return (a != null) && this.shouldIExecute(a.place(), a.from(), a.to());
 	}
 
 }
