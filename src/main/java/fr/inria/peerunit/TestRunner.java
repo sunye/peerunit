@@ -16,10 +16,15 @@ import fr.inria.peerunit.btree.Bootstrapper;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
+ * A <i>test</i> on a peer is launched by a instance of the <tt>TestRunner</tt> class. Its role consists
+ * to launch the right implementation of <i>Tester</i> interface, i.e centralized or distributed (the type
+ * is set in the framework property file ), passing it as argument the <tt>Class</tt> instance corresponding
+ * to the <i>test case</i> to perform.
+ * 
  * @author sunye
- *
- * Main class. Should be used to execute all test cases.
- *
+ * @author Aboubakar Koïta
+ * @version 1.0
+ * @since 1.0
  */
 public class TestRunner {
 
@@ -29,6 +34,12 @@ public class TestRunner {
 	 */
 	private Class <? extends TestCaseImpl> testcase;
 
+	/**
+	 * Launch the right implementation of <i>tester</i> passing it as argument the <tt>Class</tt>
+	 * instance corresponding to the <i>test case</i> to execute. 
+	 * 
+	 * @param klass the<tt>Class</tt> instance corresponding to the <i>test case</i> to execute
+	 */	
 	public TestRunner(Class<? extends TestCaseImpl> klass) {
 		try {
 			Registry registry = LocateRegistry.getRegistry(TesterUtil
@@ -62,9 +73,12 @@ public class TestRunner {
 	}
 
 	/**
-	 * @param args The only argument should be a class name.
+	 * In the main method, we get the only argument corresponding to class name of 
+	 * <i>test case</i> to perform. We load the <tt>Class</tt> corresponding and we 
+	 * create a <code>TestRunner</tt> instance.
+	 *   
+	 * @param args The only argument should be a class name of <i>test case</i> to execute
 	 */
-
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.out.println("Usage: java TestRunner <Test Case Class>");
@@ -83,8 +97,12 @@ public class TestRunner {
 	}
 
 	/**
-	 * The tester, which should communicate with the Coordinator and
-	 * control the test case execution.
+	 * To create a <i>tester</i> in the centralized architecture.
+	 * 
+	 * @param registry a instance of RMI Registry used to retrieve the </i>coordinator</i> of the centralized 
+	 *        architecture.
+	 * @throws RemoteException because the method is distant
+	 * @throws NotBoundException if the <i>coordinator</i> is not bound in the RMI Registry
 	 */	
 	private void bootCentralized(Registry registry)throws RemoteException, NotBoundException{
 		Coordinator coord = (Coordinator) registry.lookup("Coordinator");		
@@ -94,6 +112,15 @@ public class TestRunner {
 		tester.run();	
 	}
 	
+	/**
+	 * To create a <i>tester</i> in  the distributed architecture.
+	 * 
+	 * @param registry a instance of RMI Registry used to retrieve the </i>bootstrapper</i> of the distributed 
+	 *        architecture.
+	 * @throws RemoteException because the method is distant
+	 * @throws NotBoundException if the <i>boostrapper</i> is not bound in the RMI Registry
+	 * @throws MalformedURLException if the <i>boostrapper</i> is not bound in the RMI Registry 
+	 */			
 	private void bootBTree(Registry registry)throws RemoteException, NotBoundException, MalformedURLException{		
 		Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
 		//Bootstrapper boot = (Bootstrapper)Naming.lookup("//"+TesterUtil.getServerAddr()+"/Bootstrapper");            
