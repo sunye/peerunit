@@ -83,5 +83,10 @@
 		<version>1.0.5</version>
 		<scope>compile</scope>
 	</dependency>
+	<dependency>
+          <groupId>MTR</groupId>
+          <artifactId>mtrLib</artifactId>
+          <version>1.0</version>
+	</dependency>
 	</dependencies>
 </project>

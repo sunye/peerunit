@@ -1,5 +1,7 @@
 package fr.inria.peerunit.util;
 
+import java.util.StringTokenizer;
+
 /**
  * 
  * @author Jeremy Masson
@@ -8,6 +10,8 @@ package fr.inria.peerunit.util;
 public class Util
 {
 	private static int iColor;
+	
+	
 	
 	public static boolean areInSameNet(String ip1, String ip2)
 	{
@@ -18,6 +22,40 @@ public class Util
 		String ip1Net=ip1.substring(0,index1-1);		
 		String ip2Net=ip2.substring(0,index2-1);
 		return ip1Net.equals(ip2Net);
+	}
+	
+	/**
+	 * This method verify if ip addresses is valid.
+	 * 
+	 * @param ip the ip addresses
+	 * @return a <code>true</code> if the addresses si valid, <code>false</code> else. 
+	 */
+	public static boolean isAValidIP(String ip) 
+	{
+		StringTokenizer tokenizer=new StringTokenizer(ip,".");
+		if(tokenizer.countTokens()!=4)
+		{
+			return false;
+		}
+		boolean nullIP=true;
+		while(tokenizer.hasMoreTokens())
+		{
+			String part=tokenizer.nextToken();
+			try
+			{
+				int value=Integer.parseInt(part);
+				if(value!=0)
+				{
+					nullIP=false;
+				}
+			}
+			catch (NumberFormatException e)
+			{
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return (!nullIP);
 	}
 	
 	/**

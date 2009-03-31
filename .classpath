@@ -1,0 +1,11 @@
+<classpath>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/rice/FreePastry/2.0.4/FreePastry-2.0.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.5/junit-4.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.12/log4j-1.2.12.jar"/>
+  <classpathentry kind="var" path="M2_REPO/MTR/mtrLib/1.0/mtrLib-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/de/uniba/wiai/lspi/OpenChord/1.0.5/OpenChord-1.0.5.jar"/>
+</classpath>
