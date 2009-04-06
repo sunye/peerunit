@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.053" errors="0" skipped="0" tests="2" name="test.executor.ExecutorImplTest">
+<testsuite failures="0" time="0.049" errors="0" skipped="0" tests="2" name="test.executor.ExecutorImplTest">
   <properties>
     <property name="tester.logfolder" value="/tmp/"/>
     <property name="tester.log.level" value="FINEST"/>
@@ -23,7 +23,7 @@
     <property name="basedir" value="/home/booba/workspace/PeerUnit"/>
     <property name="java.endorsed.dirs" value="/home/booba/jdk1.6.0_12/jre/lib/endorsed"/>
     <property name="os.arch" value="i386"/>
-    <property name="surefire.real.class.path" value="/tmp/surefirebooter2726060838273649861.jar"/>
+    <property name="surefire.real.class.path" value="/tmp/surefirebooter1991067993298105504.jar"/>
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="line.separator" value="
 "/>
@@ -33,7 +33,7 @@
     <property name="sun.jnu.encoding" value="UTF-8"/>
     <property name="tester.log.timeformat" value="HH:mm:ss.SSS"/>
     <property name="java.library.path" value="/home/booba/jdk1.6.0_12/jre/lib/i386/client:/home/booba/jdk1.6.0_12/jre/lib/i386:/home/booba/jdk1.6.0_12/jre/../lib/i386:/usr/java/packages/lib/i386:/lib:/usr/lib"/>
-    <property name="surefire.test.class.path" value="/home/booba/workspace/PeerUnit/target/test-classes:/home/booba/workspace/PeerUnit/target/classes:/home/booba/.m2/repository/junit/junit/4.5/junit-4.5.jar:/home/booba/.m2/repository/log4j/log4j/1.2.12/log4j-1.2.12.jar:/home/booba/.m2/repository/rice/FreePastry/2.0.4/FreePastry-2.0.4.jar:/home/booba/.m2/repository/de/uniba/wiai/lspi/OpenChord/1.0.5/OpenChord-1.0.5.jar:"/>
+    <property name="surefire.test.class.path" value="/home/booba/workspace/PeerUnit/target/test-classes:/home/booba/workspace/PeerUnit/target/generated-classes/cobertura:/home/booba/.m2/repository/log4j/log4j/1.2.12/log4j-1.2.12.jar:/home/booba/.m2/repository/MTR/mtrLib/1.0/mtrLib-1.0.jar:/home/booba/.m2/repository/rice/FreePastry/2.0.4/FreePastry-2.0.4.jar:/home/booba/.m2/repository/de/uniba/wiai/lspi/OpenChord/1.0.5/OpenChord-1.0.5.jar:/home/booba/.m2/repository/net/sourceforge/cobertura/cobertura/1.9/cobertura-1.9.jar:/home/booba/.m2/repository/org/apache/ant/ant/1.7.0/ant-1.7.0.jar:/home/booba/.m2/repository/org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar:/home/booba/.m2/repository/junit/junit/4.5/junit-4.5.jar:"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="50.0"/>
     <property name="sun.management.compiler" value="HotSpot Client Compiler"/>
@@ -45,7 +45,7 @@
     <property name="java.specification.version" value="1.6"/>
     <property name="file.encoding" value="UTF-8"/>
     <property name="user.name" value="booba"/>
-    <property name="java.class.path" value="/home/booba/workspace/PeerUnit/target/test-classes:/home/booba/workspace/PeerUnit/target/classes:/home/booba/.m2/repository/junit/junit/4.5/junit-4.5.jar:/home/booba/.m2/repository/log4j/log4j/1.2.12/log4j-1.2.12.jar:/home/booba/.m2/repository/rice/FreePastry/2.0.4/FreePastry-2.0.4.jar:/home/booba/.m2/repository/de/uniba/wiai/lspi/OpenChord/1.0.5/OpenChord-1.0.5.jar:"/>
+    <property name="java.class.path" value="/home/booba/workspace/PeerUnit/target/test-classes:/home/booba/workspace/PeerUnit/target/generated-classes/cobertura:/home/booba/.m2/repository/log4j/log4j/1.2.12/log4j-1.2.12.jar:/home/booba/.m2/repository/MTR/mtrLib/1.0/mtrLib-1.0.jar:/home/booba/.m2/repository/rice/FreePastry/2.0.4/FreePastry-2.0.4.jar:/home/booba/.m2/repository/de/uniba/wiai/lspi/OpenChord/1.0.5/OpenChord-1.0.5.jar:/home/booba/.m2/repository/net/sourceforge/cobertura/cobertura/1.9/cobertura-1.9.jar:/home/booba/.m2/repository/org/apache/ant/ant/1.7.0/ant-1.7.0.jar:/home/booba/.m2/repository/org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar:/home/booba/.m2/repository/junit/junit/4.5/junit-4.5.jar:"/>
     <property name="java.vm.specification.version" value="1.0"/>
     <property name="sun.arch.data.model" value="32"/>
     <property name="java.home" value="/home/booba/jdk1.6.0_12/jre"/>
@@ -64,6 +64,6 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="0.049" classname="test.executor.ExecutorImplTest" name="testBis"/>
-  <testcase time="0" classname="test.executor.ExecutorImplTest" name="testHasFailure"/>
+  <testcase time="0.045" classname="test.executor.ExecutorImplTest" name="testBis"/>
+  <testcase time="0.001" classname="test.executor.ExecutorImplTest" name="testHasFailure"/>
 </testsuite>

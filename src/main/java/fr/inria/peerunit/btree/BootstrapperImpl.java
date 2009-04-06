@@ -33,11 +33,7 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 
 	private static final long serialVersionUID = 1L;
 
-	private AtomicInteger registered = new AtomicInteger(0);
-	
 	private static int expectedTesters=TesterUtil.getExpectedPeers();
-	
-	private Map<Integer,Node> nodes = new HashMap<Integer,Node>();	
 	
 	private static final Logger log = Logger.getLogger(CoordinatorImpl.class
 			.getName());
@@ -128,17 +124,8 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 		}
 	}
 	
-	public synchronized int register(Node node)	throws RemoteException {		
-		int id = registered.getAndIncrement();
-		
-		if(id<context.getNodesSize()){
-			nodes.put(id, node);
-			System.out.println("[Bootstrapper] New Registered ID: " + id+" for "+node);
-			return id;
-		}else{
-			System.out.println("[Bootstrapper] Not registerd " + id+" for "+node);
-			return Integer.MAX_VALUE;
-		}		
+	public synchronized int register(Node node)	throws RemoteException {
+		return context.register(node);
 	}
 	
 	/**
@@ -146,7 +133,7 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 	 * @return the current number of registered nodes
 	 */
 	public int getRegistered(){
-		return registered.get();
+		return context.getRegistered(); 
 	}
 	
 	/**
@@ -160,37 +147,8 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 		return context.getNode(id).isRoot();
 	}
 	
-	private void setCommunication(){	
-		Node node;			
-		
-		for(Integer key:nodes.keySet()){
-			TreeElements te=new TreeElements();	
-			if(!context.getNode(key).isLeaf()){
-				for(AbstractBTreeNode child:context.getNode(key).getChildren()){
-					if(child!=null){
-						te.setChildren(nodes.get(child.getId()));
-					}
-				}
-			}else
-			{
-				te.setChildren(null);
-			}
-			
-			if(!context.getNode(key).isRoot()){
-				int parentId=context.getNode(key).getParent().getId();
-				te.setParent(nodes.get(parentId));
-			}
-			/**
-			 * Now we inform Node its tree elements. 
-			 */			
-			node=nodes.get(key);
-			System.out.println("[Bootstrapper] Contacting Node "+node);
-			try {
-				node.setElements(context.getNode(key),te);
-			} catch (RemoteException e) {				
-				e.printStackTrace();
-			}
-		}
+	private void setCommunication(){
+		context.setCommunication();
 	}
 
 	public void put(Integer key, Object object) throws RemoteException {	

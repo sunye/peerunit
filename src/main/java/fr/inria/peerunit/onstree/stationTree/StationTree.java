@@ -6,6 +6,10 @@ import java.util.List;
 import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.util.Util;
 
+/*
+ * @author Jeremy
+ * @author Aboubakar Koïta  
+ */
 public class StationTree  implements StationContainer  //XXX
 {
 	private String num;	
@@ -97,6 +101,10 @@ public class StationTree  implements StationContainer  //XXX
 			}
 		}
 		return tree.toString();
+	}
+
+	public Station getStation() {
+		return null;
 	}
 	
 }

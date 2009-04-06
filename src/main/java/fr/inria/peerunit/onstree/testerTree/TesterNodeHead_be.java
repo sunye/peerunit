@@ -8,6 +8,11 @@ import org.hamcrest.core.IsInstanceOf;
 
 import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 
+/*
+ * @author Jeremy
+ * @author Aboubakar Koïta  
+ */
+
 public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContainer, Serializable
 {
 	private static final long	serialVersionUID	= 1L;
@@ -18,6 +23,7 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 	private TesterNode_be childR;
 	private int equilibre;
 	private List<TesterNodeHead_be> listTesterNodeHead;
+	private String ip=null;
 	
 	public TesterNodeHead_be()
 	{
@@ -35,6 +41,19 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 		this.equilibre = equilibre;
 		listTesterNodeHead = new ArrayList<TesterNodeHead_be>();
 	}
+	
+	public TesterNodeHead_be(String ip, int id, String color, TesterNode_be childL,
+			TesterNode_be childR, int equilibre)
+	{
+		this.ip=ip;
+		this.id = id;
+		sColor = color;
+		this.childL = childL;
+		this.childR = childR;
+		this.equilibre = equilibre;
+		listTesterNodeHead = new ArrayList<TesterNodeHead_be>();
+	}
+	
 
 	public void addNodeHead(TesterNodeHead_be testNH)
 	{
@@ -98,33 +117,33 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 	@Override
 	public Comparable[] getKeys()
 	{
-		int childrenNumber = getNodesSize();
+//		int childrenNumber = getNodesSize();
 		int counter = 0;
-		Comparable[] tab_Keys = new Comparable[childrenNumber];
+		List<Comparable> tab_Keys = new ArrayList<Comparable>();
 		if(childL != null)
 		{
 			for(Comparable cp:childL.getKeys())
 			{
-				tab_Keys[counter++] = cp;
+				tab_Keys.add(cp);
 			}
 		}
-		tab_Keys[counter++] = (Comparable) id;
+		tab_Keys.add((Comparable) id);
 		if(childR != null)
 		{
 			for(Comparable cp:childR.getKeys())
 			{
-				tab_Keys[counter++] = cp;
+				tab_Keys.add(cp);
 			}
 		}
-
+/*
 		for(TesterNodeHead_be nodeHead:listTesterNodeHead)
 		{
 			for(Comparable cp:nodeHead.getKeys())
 			{
 				tab_Keys[counter++] = cp;
 			}
-		}
-		return tab_Keys;
+		}*/
+		return (Comparable[]) tab_Keys.toArray();
 	}
 
 	/* (non-Javadoc)
@@ -273,5 +292,17 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 		{
 			nodeHead.updateParent(this);
 		}
+	}
+
+	public String getIP() {
+		return ip;
+	}
+
+	public List<TesterNodeHead_be> getListTesterNodeHead() {
+		return listTesterNodeHead;
+	}
+
+	public void setListTesterNodeHead(List<TesterNodeHead_be> listTesterNodeHead) {
+		this.listTesterNodeHead = listTesterNodeHead;
 	}
 }

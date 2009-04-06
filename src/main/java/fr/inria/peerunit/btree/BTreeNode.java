@@ -135,7 +135,7 @@ public class BTreeNode extends AbstractBTreeNode implements Serializable{
 				i++;
 			}
 			
-			// Überlaufbehandlung
+			// Überlaufbehandlung  
 			if (newKey != null) {
 				// Neuen Knoten erzeugen, Schluessel
 				// kopieren und aus altem Knoten loeschen

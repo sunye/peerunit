@@ -10,6 +10,7 @@ import fr.inria.peerunit.test.oracle.Verdicts;
 /**
  * 
  * @author Eduardo Almeida
+ * @author Aboubakar Koïta 
  * @version 1.0
  * @since 1.0
  */
@@ -42,7 +43,10 @@ public interface Node extends Remote{
 	 * Receives a list of verdicts from a child
 	 * The children's verdicts are added to this node's verdict
 	 * @param localVerdicts The child's verdicts to be added to this node's own verdicts
-	 * @throws java.rmi.RemoteException
+	 * @throws java.rmi.RemoteException	
 	 */
 	public void sendVerdict(List<Verdicts> localVerdicts) throws RemoteException;
+
+
+	public String getIP();
 }

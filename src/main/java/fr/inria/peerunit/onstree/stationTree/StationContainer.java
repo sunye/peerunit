@@ -9,8 +9,9 @@ import java.util.List;
  */
 public interface StationContainer
 {
-	public Node addStation(Station st);
-	public StationRoot getStRoot();
-	public int getChildrenNumber();
-	public List<Node> getListChildStation();
+	Node addStation(Station st);
+	StationRoot getStRoot();
+	int getChildrenNumber();
+	List<Node> getListChildStation();
+	Station getStation();  // XXX	
 }

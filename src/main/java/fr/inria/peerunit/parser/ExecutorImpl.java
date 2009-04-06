@@ -14,7 +14,7 @@ import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.PeerUnitLogger;
 
-public class ExecutorImpl implements Executor {
+public class ExecutorImpl extends ExecutorAbstract implements Executor {
 
 	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
 	private TesterImpl tester;

@@ -17,12 +17,7 @@ public class MTRLib
 	{
 		try
 		{
-			// System.load("/home/booba/MTR/libmtr.so");
-			// String
-			// lib="./mtrLib.jar:"+System.getProperty("java.library.path");
-			// System.setProperty("java.library.path",lib);
 			System.out.println(System.getProperty("java.library.path"));
-			// System.loadLibrary("mtr");
 			InputStream stream = MTRLib.class
 					.getResourceAsStream("/mtrLib/libmtr.so");
 			File mtrLibFile = new File("libmtr");

@@ -41,6 +41,7 @@ public class BTree { //implements TreeStrategy {
 			newRoot.getChildren()[0] = root;
 			newRoot.getChildren()[1] = returnNode;
 			root = newRoot;
+			
 		}
 	}
 		

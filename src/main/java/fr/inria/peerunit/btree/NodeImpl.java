@@ -72,6 +72,8 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	Class<? extends TestCaseImpl> klass;
 	
 	private List<Verdicts> localVerdicts=new Vector<Verdicts>();
+
+	private String ip=null;
 	
 	/**
 	 * Constructs a new Node, and registers it to the specified Bootstrapper
@@ -361,5 +363,9 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}
 		
 		log.log(Level.FINEST, "[NodeImpl] Testers added: "+testers.size());
+	}
+
+	public String getIP() {
+		return ip;
 	}
 }

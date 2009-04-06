@@ -123,6 +123,11 @@ public class TesterUtil {
 	 */					
 	private static int  treeWaitForMethod;
 	
+	/**
+	 * 	This property correspond to the path of the file containing the tester's hosts addresses
+	 */
+	private static String hostsFilePath;	
+	
 
 	/**
 	 * Return the value of the property whose the name is given as argument
@@ -518,5 +523,23 @@ public class TesterUtil {
 			e.printStackTrace();
 		}
 		return stationTreeTrace;
-	}	
+	}
+	
+	/**
+	 * Return the value of the property that indicates the path of the file containing the tester's 
+	 * hosts addresses.
+	 *  
+	 * @return the path of the hosts file.
+	 */
+	public static String getHostsFilePath()
+	{
+		try {
+			hostsFilePath=TesterUtil.getProperty("tester.hostfile");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return hostsFilePath;
+	}
 }
+

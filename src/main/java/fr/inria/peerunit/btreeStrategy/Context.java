@@ -1,11 +1,13 @@
 package fr.inria.peerunit.btreeStrategy;
 
+import java.rmi.RemoteException;
+
+import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 
 /**
- * 
  * @author Veronique Pelleau
- *
+ * @author Aboubakar Koïta
  */
 public class Context {
 
@@ -15,7 +17,8 @@ public class Context {
     public Context(TreeStrategy strategy) {
         this.strategy = strategy;
     }
- 
+
+    
     public void buildTree() {
         this.strategy.buildTree();
     }
@@ -27,5 +30,17 @@ public class Context {
     public int getNodesSize() {
     	return this.strategy.getNodesSize();
     }
-
+    
+	public synchronized int register(Node node)	throws RemoteException {
+		return strategy.register(node);
+	}    
+    
+	public int getRegistered(){
+		return strategy.getRegistered(); 
+	}
+	
+	public void setCommunication(){
+		strategy.setCommunication();
+	}
+	
 }

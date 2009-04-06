@@ -7,6 +7,7 @@ import fr.inria.peerunit.util.TesterUtil;
 
 /**
  * @author Jeremy
+ * @author Aboubakar Koïta 
  * 
  */
 public class Station

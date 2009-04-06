@@ -11,7 +11,7 @@ import fr.inria.peerunit.util.Util;
 
 /** Use for station tree, it contains one station and stations children
  * @author Jeremy
- *
+ * @author Aboubakar Koïta 
  */
 public class Node implements StationContainer
 {
@@ -128,6 +128,10 @@ public class Node implements StationContainer
 	public StationRoot getStRoot()
 	{
 		return null;
+	}
+
+	public Station getStation() {  
+		return stParent;
 	}
 	
 }
