@@ -56,7 +56,7 @@ public class TesterSet {
 	 * 
 	 * @return the size of the testers's list
 	 */
-	public int getPeersQty(){
+	public int size(){
 		return peers.size();
 	}
 

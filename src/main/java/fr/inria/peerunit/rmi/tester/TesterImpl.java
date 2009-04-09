@@ -207,7 +207,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 */
 	private void executionOk(String methodAnnotation) {
 		try {
-			coord.greenLight();
+			coord.executionFinished();
 			LOG.log(Level.FINEST,"Executed "+methodAnnotation);
 			if(executor.isLastMethod(methodAnnotation)){
 				LOG.log(Level.FINEST,"Test Case finished by annotation "+methodAnnotation);

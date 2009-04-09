@@ -6,16 +6,24 @@ package test.remote;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.test.oracle.Verdicts;
 
 /**
  * @author sunye
@@ -25,15 +33,31 @@ public class CoordinatorImplTest {
 
 	private CoordinatorImpl coord;
 	private Tester tester;
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#CoordinatorImpl()}.
-	 */
-	@Test
-	public void testCoordinatorImpl() {
-		coord = new CoordinatorImpl();
-		assertNotNull(coord);
+	private List<MethodDescription> methods;
+	private Thread coordination;
+	private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
+	
+	
+	@BeforeClass
+	public static void init() {
+		Logger.getLogger("").getHandlers()[0].setLevel(Level.ALL);
+		log.setLevel(Level.INFO);
 	}
-
+	
+	@Before
+	public void setup() {
+		tester = mock(Tester.class);
+		methods = new ArrayList<MethodDescription>(3);
+		methods.add(new MethodDescription("first", "tc1", 1, "Test", 10));
+		methods.add(new MethodDescription("second", "tc1", 2, "Test", 10));
+		methods.add(new MethodDescription("third", "tc1", 3, "Test", 10));
+		
+		coord = new CoordinatorImpl(1);
+		coordination = new Thread(coord, "Coordinator");
+		
+		coordination.start();
+	}
+	
 	/**
 	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#CoordinatorImpl(int)}.
 	 */
@@ -56,18 +80,30 @@ public class CoordinatorImplTest {
 	 */
 	@Test
 	public void testRegister() {
-		MethodDescription md = new MethodDescription("name", "tc1", 1, "Test", 10);
-		ArrayList<MethodDescription> methods = new ArrayList<MethodDescription>();
-		methods.add(md);
 		try {
-			coord = new CoordinatorImpl(1);
-			tester = new TesterImpl(coord);
 			coord.register(tester, methods);
-			assertTrue(coord.getRegisteredTesters().contains(tester));
+			for (MethodDescription each : methods) {
+				assertTrue(coord.getTesterMap().containsKey(each));
+			}
+			for (int i = 0; i < methods.size(); i++) {
+				Thread.sleep(100);
+				coord.executionFinished();
+			}
 
+			coord.quit(tester, Verdicts.PASS);
+			coordination.join();
+
+			for (MethodDescription each : methods) {
+				verify(tester).execute(each);
+			}
+			
 		} catch (RemoteException e) {
 			fail("Remote Error");
+		} catch (InterruptedException e) {
+			fail("InterruptedException");
 		}
+		
+		
 
 
 	}
@@ -89,7 +125,7 @@ public class CoordinatorImplTest {
 	}
 
 	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#greenLight()}.
+	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#executionFinished()}.
 	 */
 	//@Test
 	public void testGreenLight() {

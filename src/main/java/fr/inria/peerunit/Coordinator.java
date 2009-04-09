@@ -17,7 +17,7 @@ public interface Coordinator extends Architecture {
 
 	public int getNewId(Tester t) throws RemoteException;
 
-	public void greenLight() throws RemoteException;
+	public void executionFinished() throws RemoteException;
 
 	/**
 	 * Finish the test case and calculates the global oracle

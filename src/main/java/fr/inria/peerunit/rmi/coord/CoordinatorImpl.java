@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,15 +24,14 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.ArchitectureImpl;
 import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.btree.Bootstrapper;
-import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
-public class CoordinatorImpl extends ArchitectureImpl implements Coordinator, Runnable, Serializable {
+public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
+		Runnable, Serializable {
 
 	/**
 	 *
@@ -62,11 +60,12 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator, Ru
 
 	private ExecutorService executor = Executors.newFixedThreadPool(10);
 
-	public CoordinatorImpl() {
-		this(TesterUtil.getExpectedPeers());
-	}
+	/*
+	 * public CoordinatorImpl() { this(TesterUtil.getExpectedPeers()); }
+	 */
 
 	public CoordinatorImpl(int i) {
+
 		expectedTesters = new AtomicInteger(i);
 	}
 
@@ -82,7 +81,8 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator, Ru
 			log.addHandler(handler);
 			log.setLevel(Level.parse(TesterUtil.getLogLevel()));
 
-			CoordinatorImpl cii = new CoordinatorImpl();
+			CoordinatorImpl cii = new CoordinatorImpl(TesterUtil
+					.getExpectedPeers());
 			Coordinator stub = (Coordinator) UnicastRemoteObject.exportObject(
 					cii, 0);
 			String servAddr = "";
@@ -99,8 +99,8 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator, Ru
 			// registry.rebind("Coordinator", stub);
 			registry.bind("Coordinator", stub);
 
-			Thread updateThread = new Thread(cii, "StockInfoUpdate");
-			updateThread.start();
+			Thread coordination = new Thread(cii, "Coordinator");
+			coordination.start();
 		} catch (RemoteException e) {
 			log.log(Level.SEVERE, "RemoteException", e);
 			e.printStackTrace();
@@ -140,13 +140,14 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator, Ru
 	public void run() {
 		waitForTesterRegistration();
 		for (MethodDescription key : testerMap.keySet()) {
-			log.log(Level.FINEST, "Execution sequence: " + key.toString());
+			log.finest("Execution sequence: " + key.toString());
 		}
 		Chronometer chrono = new Chronometer();
 		synchronized (this) {
 			try {
 				testcaseExecution(chrono);
 				finishExecution(chrono);
+				cleanUp();
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e1) {
@@ -155,54 +156,41 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator, Ru
 		}
 	}
 
-	private void finishExecution(Chronometer chrono) throws InterruptedException {
-		log.log(Level.FINEST, "Reseting semaphore ");
-		testerMap.clear();
+	private void finishExecution(Chronometer chrono)
+			throws InterruptedException {
 
-		// waiting everyone to execute quit to give the global verdict
-		while (registeredTesters.size() > 0) {
-			log.log(Level.FINEST, "Waiting everybody leave to judge ");
-			Thread.sleep(200);
-		}
+		waitAllTestersToQuit();
 
-		log.log(Level.INFO, "Test Verdict with index " + relaxIndex
-				+ "% is " + verdict.toString());
+		log.log(Level.INFO, "Test Verdict with index " + relaxIndex + "% is "
+				+ verdict.toString());
 
 		for (Map.Entry<String, ExecutionTime> entry : chrono.getExecutionTime()) {
-			log.log(Level.INFO, "Method " + entry.getKey()
-					+ " executed in " + entry.getValue());
+			log.log(Level.INFO, "Method " + entry.getKey() + " executed in "
+					+ entry.getValue());
 		}
 
-		runningTesters.set(0);
-		registeredTesters.clear();
-		executor.shutdown();
-		System.exit(0);
 	}
 
-	private void testcaseExecution(Chronometer chrono) throws RemoteException, InterruptedException {
+	private void testcaseExecution(Chronometer chrono) throws RemoteException,
+			InterruptedException {
 		TesterSet testerSet;
 		for (MethodDescription key : testerMap.keySet()) {
-
 			testerSet = testerMap.get(key);
+			log.fine("Method " + key.getName() + " will be executed by "
+					+ testerSet.size() + " testers");
 			chrono.start(key.getName());
 
 			for (Tester peer : testerSet.getTesters()) {
 				if (!testersInError.contains(peer)) {
-					log.log(Level.FINEST, "Peer : "
-							+ peer.getPeerName() + " will execute "
-							+ key);
+					log.log(Level.FINEST, "Peer : " + peer.getPeerName()
+							+ " will execute " + key);
 					executor.submit(new MethodExecute(peer, key));
 				}
 			}
-			expectedTesters.set(testerSet.getPeersQty());
+			expectedTesters.set(testerSet.size());
 
-			// log.log(Level.FINEST, "Waiting to begin the next test "+
-			// key.toString());
-
-			while (redLight()) {
-				Thread.sleep(TesterUtil.getWaitForMethod());
-			}
-
+			log.finest("Waiting to begin the next test " + key.toString());
+			waitForExecutionFinished();
 			chrono.stop(key.getName());
 
 			log.log(Level.FINEST, key.toString() + " executed in "
@@ -210,6 +198,55 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator, Ru
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see callback.Coordinator#namer(callback.Tester) Incremented with
+	 * java.util.concurrent to handle the semaphore concurrency access
+	 */
+	public synchronized int getNewId(Tester t) throws RemoteException {
+		int id = runningTesters.getAndIncrement();
+		log.info("New Registered Peer: " + id + " new client " + t);
+		return id;
+	}
+
+	public void executionFinished() throws RemoteException {
+		runningTesters.incrementAndGet();
+		synchronized (runningTesters) {
+			runningTesters.notifyAll();
+		}
+	}
+
+	public void quit(Tester t, Verdicts localVerdict) throws RemoteException {
+		expectedTesters.decrementAndGet();
+		registeredTesters.remove(t);
+		log.log(Level.INFO, "Test Case local verdict "
+				+ localVerdict.toString());
+		verdict.setGlobalVerdict(localVerdict, relaxIndex);
+
+		log.log(Level.FINEST, "Expecting " + registeredTesters.size());
+		log.log(Level.FINEST, "Judged " + verdict.getJudged());
+		synchronized (registeredTesters) {
+			registeredTesters.notifyAll();
+		}
+	}
+
+	public void put(Integer key, Object object) throws RemoteException {
+		log.log(Level.FINEST, "Caching global variable key " + key);
+		cacheMap.put(key, object);
+	}
+
+	/*
+	 * Testing methods
+	 */
+
+	public Map<MethodDescription, TesterSet> getTesterMap() {
+		return Collections.unmodifiableMap(this.testerMap);
+	}
+
+	/**
+	 * Waits for all expected testers to register.
+	 */
 	private void waitForTesterRegistration() {
 		while (registeredTesters.size() < expectedTesters.intValue()) {
 			try {
@@ -221,81 +258,45 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator, Ru
 			}
 		}
 
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see callback.Coordinator#namer(callback.Tester) Incremented with
-	 *      java.util.concurrent to handle the semaphore concurrency access
+	/**
+	 * Waits for all testers to finish the execution of a method.
 	 */
-	public synchronized int getNewId(Tester t) throws RemoteException {
-		int id = runningTesters.getAndIncrement();
-		log.info("New Registered Peer: " + id+ " new client " + t);
-		return id;
-	}
+	private void waitForExecutionFinished() {
 
-	private boolean redLight() {
-		if (registeredTesters.size() == 0) {
-			return false;
-		} else if (runningTesters.intValue() >= (expectedTesters.intValue() - testersInError
+		while (runningTesters.intValue() >= (expectedTesters.intValue() - testersInError
 				.size())) {
-			log.log(Level.FINEST, "Reseting semaphore ");
-			runningTesters.set(0);
-			return false;
-		} else
-			return true;
+			try {
+				synchronized (runningTesters) {
+					runningTesters.wait();
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
-	public void greenLight() throws RemoteException {
-		runningTesters.incrementAndGet();
-	}
-
-	//public void quit(Tester t, boolean error, Verdicts localVerdict)
-	public void quit(Tester t,  Verdicts localVerdict)
-			throws RemoteException {
-		expectedTesters.decrementAndGet();
-		registeredTesters.remove(t);
-		log.log(Level.INFO, "Test Case local verdict "
-				+ localVerdict.toString());
-		verdict.setGlobalVerdict(localVerdict, relaxIndex);
-
-		//if (error) {
-			testersInError.add(t);
-			log.log(Level.FINEST, "Tester quits by error " + t.toString());
-		/*} else {
-			log.log(Level.INFO, "Tester finished " + t.toString());
-		}*/
-		log.log(Level.FINEST, "Expecting " + registeredTesters.size());
-		log.log(Level.FINEST, "Judged " + verdict.getJudged());
-	}	
-	
-	public void put(Integer key, Object object) throws RemoteException {
-		log.log(Level.FINEST, "Caching global variable key " + key);
-		cacheMap.put(key, object);
-	}
-	
-	/*
-	 * Testing methods
+	/**
+	 * Waits for all testers to quit the system.
+	 * 
+	 * @throws InterruptedException
 	 */
-
-	public Map<MethodDescription, TesterSet> getTesterMap() {
-		return this.testerMap;
-	}
-
-	public List<Tester> getRegisteredTesters() {
-		return Collections.unmodifiableList(registeredTesters);
-	}
-	
-	/*
-	 * Check that the test.coordination property is correctly record in the configuration file tester.properties
-	 * i.e is equals at 0 for the centralized coordination
-	 */
-	private static void ckeckFileProperty() {
-		if (TesterUtil.getCoordinationType() != 0) {
-			log.log(Level.WARNING, "Running the centralized coordination but using the distributed coordination in the configuration file tester.properties. \n" +
-					"Set property test.coordination=0 to use centralized coordination.");
+	private void waitAllTestersToQuit() throws InterruptedException {
+		log.info("waiting everyone to execute quit to give the global verdict");
+		while (registeredTesters.size() > 0) {
+			synchronized (registeredTesters) {
+				registeredTesters.wait();
+			}
 		}
 	}
+
+	private void cleanUp() {
+		testerMap.clear();
+		runningTesters.set(0);
+		registeredTesters.clear();
+		executor.shutdown();
+	}
+
 }
