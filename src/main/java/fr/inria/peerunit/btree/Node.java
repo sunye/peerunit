@@ -47,6 +47,11 @@ public interface Node extends Remote{
 	 */
 	public void sendVerdict(List<Verdicts> localVerdicts) throws RemoteException;
 
-
-	public String getIP();
+	/**
+	 * Returns the IP addresses of the station hosting the node
+	 * 
+	 * @return a IP addresses
+	 * @throws RemoteException
+	 */
+	public String getIP() throws RemoteException;
 }
