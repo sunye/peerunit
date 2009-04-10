@@ -1,6 +1,9 @@
 package fr.inria.peerunit.btree;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -41,8 +44,8 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 	//static BTree btree=new BTree(TesterUtil.getTreeOrder());
 	static Context context;
 	
-	private static Long time;	
-	
+	private static Long time;
+		
 	protected BootstrapperImpl() throws RemoteException {
 		super();		
 	}
