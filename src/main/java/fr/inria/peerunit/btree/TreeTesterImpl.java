@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
-import fr.inria.peerunit.parser.ExecutorAbstract;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
@@ -249,5 +248,9 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	 */
 	public boolean containsKey(Object key)throws RemoteException{
 		return  boot.containsKey(key);
-	}	
+	}
+	
+	public String toString() {
+		return "Tester: "+id;
+	}
 }

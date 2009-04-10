@@ -127,6 +127,10 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	}
 
 
+	public String toString() {
+		return "Tester: "+id;
+	}
+	
 	/**
 	 * @param c the peer to be created. 
 	 * @throws IOException
@@ -207,7 +211,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 */
 	private void executionOk(String methodAnnotation) {
 		try {
-			coord.executionFinished();
+			coord.methodExecutionFinished();
 			LOG.log(Level.FINEST,"Executed "+methodAnnotation);
 			if(executor.isLastMethod(methodAnnotation)){
 				LOG.log(Level.FINEST,"Test Case finished by annotation "+methodAnnotation);
@@ -331,6 +335,8 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 				executionOk(md.getAnnotation());
 			}
 		}
+		
+
 	}
 
 	/**

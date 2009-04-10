@@ -11,8 +11,10 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,43 +32,62 @@ import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
+/**
+ * @author sunye
+ *
+ */
 public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 		Runnable, Serializable {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static int STARTING = 0;
+	private static int IDLE = 1;
+	private static int RUNNING = 2;
+	private static int LEAVING = 3;
+	private int status = STARTING;
+	
 
-	private Map<MethodDescription, TesterSet> testerMap = Collections
-			.synchronizedMap(new TreeMap<MethodDescription, TesterSet>());
+	private Map<MethodDescription, Set<Tester>> testerMap = Collections
+			.synchronizedMap(new TreeMap<MethodDescription, Set<Tester>>());
 
-	private List<Tester> registeredTesters = Collections
-			.synchronizedList(new ArrayList<Tester>());
+	private List<Tester> registeredTesters;
 
-	private AtomicInteger expectedTesters;
+	/**
+	 * Number of expected testers.
+	 */
+	final private AtomicInteger expectedTesters;
 
-	private int relaxIndex = TesterUtil.getRelaxIndex();
 
-	private AtomicInteger runningTesters = new AtomicInteger(0);
+	/**
+	 * Number of testers running the current method.
+	 */
+	private AtomicInteger runningTesters;
 
 	private static final Logger log = Logger.getLogger(CoordinatorImpl.class
 			.getName());
 
-	private List<Tester> testersInError = Collections
-			.synchronizedList(new ArrayList<Tester>());
+	/**
+	 * Global verdict, calculated once the test case is executed.
+	 */
+	private GlobalVerdict verdict;
 
-	private GlobalVerdict verdict = new GlobalVerdict();
-
+	/**
+	 * Pool of threads. Used to dispatch actions to testers.
+	 */
 	private ExecutorService executor = Executors.newFixedThreadPool(10);
 
-	/*
-	 * public CoordinatorImpl() { this(TesterUtil.getExpectedPeers()); }
+
+	/**
+	 * @param i Number of expected testers. The Coordinator will wait for
+	 * the connection of "i" testers before starting to dispatch actions
+	 * to Testers.
 	 */
-
 	public CoordinatorImpl(int i) {
-
 		expectedTesters = new AtomicInteger(i);
+		runningTesters  = new AtomicInteger(0);
+		registeredTesters =  Collections.synchronizedList(new ArrayList<Tester>(i));
+		verdict = new GlobalVerdict(TesterUtil.getRelaxIndex());
 	}
 
 	/**
@@ -125,9 +146,17 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	 */
 	public synchronized void register(Tester t, List<MethodDescription> list)
 			throws RemoteException {
+		
+		assert status == STARTING : "Trying to regiser while not starting";
+		
+		if (registeredTesters.size() >= expectedTesters.intValue()) {
+			log.warning("More registrations than expected");
+			return;
+		}
+		
 		for (MethodDescription m : list) {
 			if (!testerMap.containsKey(m)) {
-				testerMap.put(m, new TesterSet());
+				testerMap.put(m, Collections.synchronizedSet(new HashSet<Tester>()));
 			}
 			testerMap.get(m).add(t);
 		}
@@ -138,64 +167,83 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	}
 
 	public void run() {
-		waitForTesterRegistration();
-		for (MethodDescription key : testerMap.keySet()) {
-			log.finest("Execution sequence: " + key.toString());
-		}
 		Chronometer chrono = new Chronometer();
-		synchronized (this) {
-			try {
-				testcaseExecution(chrono);
-				finishExecution(chrono);
-				cleanUp();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
+		try {
+			waitForTesterRegistration();
+			testcaseExecution(chrono);
+			waitAllTestersToQuit();
+			calculateVerdict(chrono);
+			cleanUp();
+		} catch (RemoteException re) {
+			log.warning(re.getMessage());
+		} catch (InterruptedException ie) {
+			log.warning(ie.getMessage());
 		}
 	}
+	
 
-	private void finishExecution(Chronometer chrono)
+	/**
+	 * Waits for all testers to quit and calculates the global verdict
+	 * for a test case.
+	 * @param chrono
+	 * @throws InterruptedException
+	 */
+	private synchronized void calculateVerdict(Chronometer chrono)
 			throws InterruptedException {
-
-		waitAllTestersToQuit();
-
-		log.log(Level.INFO, "Test Verdict with index " + relaxIndex + "% is "
-				+ verdict.toString());
 
 		for (Map.Entry<String, ExecutionTime> entry : chrono.getExecutionTime()) {
 			log.log(Level.INFO, "Method " + entry.getKey() + " executed in "
 					+ entry.getValue());
 		}
+		log.info("Test Verdict: " + verdict);
 
 	}
 
+	/**
+	 * Dispatches actions to testers:
+	 * 
+	 * @param chrono
+	 * @throws RemoteException
+	 * @throws InterruptedException
+	 */
 	private void testcaseExecution(Chronometer chrono) throws RemoteException,
 			InterruptedException {
-		TesterSet testerSet;
-		for (MethodDescription key : testerMap.keySet()) {
-			testerSet = testerMap.get(key);
-			log.fine("Method " + key.getName() + " will be executed by "
-					+ testerSet.size() + " testers");
-			chrono.start(key.getName());
-
-			for (Tester peer : testerSet.getTesters()) {
-				if (!testersInError.contains(peer)) {
-					log.log(Level.FINEST, "Peer : " + peer.getPeerName()
-							+ " will execute " + key);
-					executor.submit(new MethodExecute(peer, key));
-				}
-			}
-			expectedTesters.set(testerSet.size());
-
-			log.finest("Waiting to begin the next test " + key.toString());
-			waitForExecutionFinished();
-			chrono.stop(key.getName());
-
-			log.log(Level.FINEST, key.toString() + " executed in "
-					+ chrono.getTime(key.getName()) + " msec");
+		
+		assert (status == IDLE) : "Trying to execute test case while not idle";
+		
+		Set<Tester> testers;
+		for (MethodDescription each : testerMap.keySet()) {
+			testers = testerMap.get(each);
+			log.finest("Method " + each.getName() + " will be executed by " + testers.size() + " testers");
+			
+			chrono.start(each.getName());
+			dispatchMethodToTesters(testers, each);
+			chrono.stop(each.getName());
+			log.finest("Method "+each + " executed in "+ chrono.getTime(each.getName()) + " msec");
 		}
+		
+		assert (status = LEAVING) == LEAVING;
+	}
+
+	/**
+	 * Dispatches a given action to a given set of testers.
+	 * @param testers
+	 * @param md
+	 * @throws RemoteException
+	 * @throws InterruptedException
+	 */
+	private  void dispatchMethodToTesters(Set<Tester> testers,
+			MethodDescription md) throws RemoteException, InterruptedException {
+		
+		assert (status = RUNNING) == RUNNING;
+		
+		
+		runningTesters.set(testers.size());
+		for (Tester each : testers) {
+			log.finest("Dispatching "+md+" to tester "+each);
+			executor.submit(new MethodExecute(each, md));
+		}
+		waitForExecutionFinished();
 	}
 
 	/*
@@ -210,72 +258,63 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 		return id;
 	}
 
-	public void executionFinished() throws RemoteException {
-		runningTesters.incrementAndGet();
+	public synchronized void methodExecutionFinished() throws RemoteException {
+		assert status == RUNNING : "Trying to finish before execution";
+		
+		
+		runningTesters.decrementAndGet();
 		synchronized (runningTesters) {
 			runningTesters.notifyAll();
 		}
 	}
 
-	public void quit(Tester t, Verdicts localVerdict) throws RemoteException {
-		expectedTesters.decrementAndGet();
-		registeredTesters.remove(t);
-		log.log(Level.INFO, "Test Case local verdict "
-				+ localVerdict.toString());
-		verdict.setGlobalVerdict(localVerdict, relaxIndex);
-
-		log.log(Level.FINEST, "Expecting " + registeredTesters.size());
-		log.log(Level.FINEST, "Judged " + verdict.getJudged());
+	public synchronized void quit(Tester t, Verdicts localVerdict) throws RemoteException {
+		assert status == LEAVING : "Trying to quit during execution";
+		
+		verdict.addLocalVerdict(localVerdict);
 		synchronized (registeredTesters) {
+			registeredTesters.remove(t);
 			registeredTesters.notifyAll();
 		}
 	}
 
-	public void put(Integer key, Object object) throws RemoteException {
-		log.log(Level.FINEST, "Caching global variable key " + key);
-		cacheMap.put(key, object);
-	}
-
-	/*
-	 * Testing methods
+	/**
+	 * @return A read-only map of (Methods X Testers).
 	 */
-
-	public Map<MethodDescription, TesterSet> getTesterMap() {
+	public Map<MethodDescription, Set<Tester>> getTesterMap() {
 		return Collections.unmodifiableMap(this.testerMap);
 	}
 
 	/**
 	 * Waits for all expected testers to register.
 	 */
-	private void waitForTesterRegistration() {
+	private void waitForTesterRegistration() throws InterruptedException {
+		assert status == STARTING : "Trying to register while not starting";
+		
+		log.info("Waiting for registration.");
 		while (registeredTesters.size() < expectedTesters.intValue()) {
-			try {
-				synchronized (registeredTesters) {
-					registeredTesters.wait();
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			synchronized (registeredTesters) {
+				registeredTesters.wait();
 			}
 		}
-
+		
+		assert (status = IDLE) == IDLE;
 	}
 
 	/**
 	 * Waits for all testers to finish the execution of a method.
 	 */
-	private void waitForExecutionFinished() {
-
-		while (runningTesters.intValue() >= (expectedTesters.intValue() - testersInError
-				.size())) {
-			try {
-				synchronized (runningTesters) {
-					runningTesters.wait();
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+	private void waitForExecutionFinished() throws InterruptedException {
+		assert status == RUNNING : "Trying to finish method while not running";
+		
+		log.info("Waiting for the end of the execution.");
+		while (runningTesters.intValue() > 0) {
+			synchronized (runningTesters) {
+				runningTesters.wait();
 			}
 		}
-
+		
+		assert (status = IDLE) == IDLE;
 	}
 
 	/**
@@ -284,19 +323,30 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	 * @throws InterruptedException
 	 */
 	private void waitAllTestersToQuit() throws InterruptedException {
-		log.info("waiting everyone to execute quit to give the global verdict");
+		assert status == LEAVING : "Trying to quit before time";
+		
+		log.info("Waiting all testers to quit.");
 		while (registeredTesters.size() > 0) {
+			log.info(String.valueOf(registeredTesters.size()));
 			synchronized (registeredTesters) {
 				registeredTesters.wait();
 			}
 		}
+		log.info("All testers quit.");
 	}
 
+	/**
+	 * Clears references to testers.
+	 */
 	private void cleanUp() {
+		log.info("Cleaning");
 		testerMap.clear();
 		runningTesters.set(0);
 		registeredTesters.clear();
 		executor.shutdown();
 	}
 
+	public String toString() {
+		return String.format("Coordinator(expected:%s,registered:%s,running:%s)", this.expectedTesters,this.registeredTesters.size(), this.runningTesters);
+	}
 }

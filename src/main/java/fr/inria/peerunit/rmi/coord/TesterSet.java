@@ -15,6 +15,8 @@ import fr.inria.peerunit.Tester;
 * @see fr.inria.peerunit.Tester
 * @see java.util.Collections#synchronizedList(List)
 */
+
+@Deprecated
 public class TesterSet {
 	private List<Tester> peers = Collections.synchronizedList(new ArrayList<Tester>());
 

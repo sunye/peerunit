@@ -72,9 +72,9 @@ public class TesterImplTest {
 		assertEquals(1, coord.getTesterMap().size());
 
 		assertTrue(coord.getTesterMap().containsKey(md));
-		assertTrue(coord.getTesterMap().get(md).getTesters().contains(tester0));
-		assertTrue(coord.getTesterMap().get(md).getTesters().contains(tester1));
-		assertTrue(coord.getTesterMap().get(md).getTesters().contains(tester2));
+		assertTrue(coord.getTesterMap().get(md).contains(tester0));
+		assertTrue(coord.getTesterMap().get(md).contains(tester1));
+		assertTrue(coord.getTesterMap().get(md).contains(tester2));
 
 	}
 

@@ -183,9 +183,9 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}
 		log.log(Level.INFO, "Whole execution time "+(System.currentTimeMillis()-this.time));
 		if(amIRoot){
-			GlobalVerdict verdict = new GlobalVerdict();
+			GlobalVerdict verdict = new GlobalVerdict(TesterUtil.getRelaxIndex());
 			for(Verdicts v:localVerdicts){
-				verdict.setGlobalVerdict(v, TesterUtil.getRelaxIndex());
+				verdict.addLocalVerdict(v);
 			}
 			log.log(Level.INFO, "Final verdict "+verdict);
 		}

@@ -6,19 +6,18 @@ package test.remote;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
@@ -51,11 +50,7 @@ public class CoordinatorImplTest {
 		methods.add(new MethodDescription("first", "tc1", 1, "Test", 10));
 		methods.add(new MethodDescription("second", "tc1", 2, "Test", 10));
 		methods.add(new MethodDescription("third", "tc1", 3, "Test", 10));
-		
-		coord = new CoordinatorImpl(1);
-		coordination = new Thread(coord, "Coordinator");
-		
-		coordination.start();
+
 	}
 	
 	/**
@@ -67,19 +62,13 @@ public class CoordinatorImplTest {
 		assertNotNull(coord);
 	}
 
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#main(java.lang.String[])}.
-	 */
-	//@Test
-	public void testMain() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#register(fr.inria.peerunit.Tester, java.util.List)}.
-	 */
 	@Test
-	public void testRegister() {
+	public void testSingleTester() {
+		
+		coord = new CoordinatorImpl(1);
+		coordination = new Thread(coord, "Coordinator");
+		
+		coordination.start();
 		try {
 			coord.register(tester, methods);
 			for (MethodDescription each : methods) {
@@ -87,14 +76,16 @@ public class CoordinatorImplTest {
 			}
 			for (int i = 0; i < methods.size(); i++) {
 				Thread.sleep(100);
-				coord.executionFinished();
+				coord.methodExecutionFinished();
 			}
-
+			Thread.sleep(1000);
 			coord.quit(tester, Verdicts.PASS);
 			coordination.join();
-
+			System.out.println(coord);
+			
+			InOrder order = inOrder(tester);
 			for (MethodDescription each : methods) {
-				verify(tester).execute(each);
+				order.verify(tester).execute(each);
 			}
 			
 		} catch (RemoteException e) {
@@ -102,90 +93,49 @@ public class CoordinatorImplTest {
 		} catch (InterruptedException e) {
 			fail("InterruptedException");
 		}
+	}
+
+	@Test
+	public void testSeveralTesters() {
+		int size = 10000;
+		coord = new CoordinatorImpl(size);
+		coordination = new Thread(coord, "Coordinator");
+		coordination.start();
 		
-		
+		try {
+			
+			Tester[] testers = new Tester[size];
+			for (int i = 0; i < testers.length; i++) {
+				testers[i] = mock(Tester.class);
+				coord.register(testers[i], methods);
+			}
+			for (int i = 0; i < methods.size(); i++) {
+				Thread.sleep(100 + size/10);
+				for (int j = 0; j < testers.length; j++) {
+					coord.methodExecutionFinished();
+				}
+			}
+			Thread.sleep(100 + size/10);
+			for (int i = 0; i < testers.length; i++) {
+				coord.quit(testers[i], Verdicts.PASS);
+			}		
+			
+			coordination.join(10000);
+			System.out.println(coord);
+			
+			for (int i = 0; i < testers.length; i++) {
+				InOrder order = inOrder(testers[i]);
+				for (MethodDescription each : methods) {
+					order.verify(testers[i]).execute(each);
+				}				
+			}
+			
+		} catch (RemoteException e) {
+			fail("Remote Error");
+		} catch (InterruptedException e) {
+			fail("InterruptedException");
+		}
 
-
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#run()}.
-	 */
-	//@Test
-	public void testRun() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#getNewId(fr.inria.peerunit.Tester)}.
-	 */
-	//@Test
-	public void testGetNewId() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#executionFinished()}.
-	 */
-	//@Test
-	public void testGreenLight() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#quit(fr.inria.peerunit.Tester, boolean, fr.inria.peerunit.test.oracle.Verdicts)}.
-	 */
-	//@Test
-	public void testQuit() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#put(java.lang.Integer, java.lang.Object)}.
-	 */
-	//@Test
-	public void testPut() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#get(java.lang.Integer)}.
-	 */
-	//@Test
-	public void testGet() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#getCollection()}.
-	 */
-	//@Test
-	public void testGetCollection() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#containsKey(java.lang.Object)}.
-	 */
-	//@Test
-	public void testContainsKey() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#clearCollection()}.
-	 */
-	//@Test
-	public void testClearCollection() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#getTesterMap()}.
-	 */
-	//@Test
-	public void testGetTesterMap() {
-		fail("Not yet implemented");
 	}
 
 }
