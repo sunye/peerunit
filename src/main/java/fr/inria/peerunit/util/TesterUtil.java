@@ -195,11 +195,9 @@ public class TesterUtil {
 	}
 
 	/**
-	 * This method decrement for every call the number of testers expected in the 
-	 * properties file and  return it, apart the first call where it initialize only
-	 * and return it.
+	 * This method return the Tester's Bootstrap addresses.
 	 * 
-	 * @return the number of testers expected that is decremented before
+	 * @return 	 a ip addresses
 	 */		
 	public static String getServerAddr(){
 		try {
