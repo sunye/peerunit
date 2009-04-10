@@ -25,10 +25,10 @@ public class Util
 	}
 	
 	/**
-	 * This method verify if ip addresses is valid.
+	 * This method verify if a ip addresses is valid.
 	 * 
 	 * @param ip the ip addresses
-	 * @return a <code>true</code> if the addresses si valid, <code>false</code> else. 
+	 * @return a <code>true</code> if the addresses is valid, <code>false</code> else. 
 	 */
 	public static boolean isAValidIP(String ip) 
 	{
