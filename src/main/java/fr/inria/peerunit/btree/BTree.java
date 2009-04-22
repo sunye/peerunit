@@ -57,7 +57,7 @@ public class BTree { //implements TreeStrategy {
 	 *  Builds the BTree, based on the number of expectedPeers (Defined by TesterUtil.getExpectedPeers)
 	 */
 	public void buildTree(){
-		for (Integer i =0; i< TesterUtil.getExpectedPeers();i++) {
+		for (Integer i =0; i< TesterUtil.instance.getExpectedTesters();i++) {
 			System.out.println("\nInserting: " + i);
 			insert(i);			
 		}

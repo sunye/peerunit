@@ -25,7 +25,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 	
 	private AtomicInteger registered = new AtomicInteger(0);
 	
-	private static int expectedTesters=TesterUtil.getExpectedPeers();
+	private static int expectedTesters=TesterUtil.instance.getExpectedTesters();
 	
 	private Map<Integer,Node> nodes = new HashMap<Integer,Node>();	
 	
@@ -35,7 +35,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 	
 	
 	public ConcreteBtreeStrategy() {
-		btree = new BTree(TesterUtil.getTreeOrder());
+		btree = new BTree(TesterUtil.instance.getTreeOrder());
 	}
 	
 	public void buildTree() {

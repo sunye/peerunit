@@ -1,0 +1,23 @@
+Peerunit
+
+  Peerunit is a testing framework for P2P systems. 
+  It is useful to developers who want to implement unit tests for a Java P2P system. 
+  The framework is based on two original aspects:
+
+    [[i]] the individual control of peers volatility 
+
+    [[i]] a distributed testing architecture to cope with large numbers of peers.
+
+  A distributed component, the tester, executes on peers, and controls their execution and their volatility, making them leave and join the system at any time, according to the needs of a test. Furthermore, testers communicate with each other across a balanced tree (B-Tree) structure to avoid using a centralized testing coordination. Peerunit is implemented in Java and has been validated on two popular open-source P2P systems (FreePastry and OpenChord). 
+
+  Peerunit is hosted on {{{http://gforge.inria.fr/}gforge}}  at Inria. The source, the compiled version and other material can be downloaded from the {{{./html/download.html}download}} section.
+
+Contact
+
+  * {{{http://www.sciences.univ-nantes.fr/info/perso/permanents/sunye/}Eduardo Cunha de Almeida}}.
+
+  * {{{http://www.sciences.univ-nantes.fr/lina/gdd/members/sunye}Gerson Sunyé}}
+
+  * {{{http://www.sciences.univ-nantes.fr/lina/ATLAS/members/valduriez/}Patrick Valduriez}}
+
+  * {{{http://www.irisa.fr/triskell/perso_pro/yletraon/}Yves Le Traon}}

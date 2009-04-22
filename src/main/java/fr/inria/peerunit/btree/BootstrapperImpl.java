@@ -36,7 +36,7 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 
 	private static final long serialVersionUID = 1L;
 
-	private static int expectedTesters=TesterUtil.getExpectedPeers();
+	private static int expectedTesters=TesterUtil.instance.getExpectedTesters();
 	
 	private static final Logger log = Logger.getLogger(CoordinatorImpl.class
 			.getName());
@@ -54,10 +54,10 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 		// Log creation
 		FileHandler handler;
 		try {
-			handler = new FileHandler(TesterUtil.getLogfile());
+			handler = new FileHandler(TesterUtil.instance.getLogfile());
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
-			log.setLevel(Level.parse(TesterUtil.getLogLevel()));
+			log.setLevel(TesterUtil.instance.getLogLevel());
 
 		} catch (SecurityException e) {
 			log.log(Level.SEVERE, "SecurityException", e);
@@ -76,7 +76,7 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 
 		time=System.currentTimeMillis();
 		
-		switch (TesterUtil.getTreeStrategy()) {
+		switch (TesterUtil.instance.getTreeStrategy()) {
 		case 1:
 			context = new Context(new ConcreteBtreeStrategy());
 			System.out.println("[Bootstrapper] Strategy BTree !");
@@ -164,7 +164,7 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 	 * i.e is equals at 1 for the distributed coordination
 	 */
 	private static void ckeckFileProperty() {
-		if (TesterUtil.getCoordinationType() != 1) {
+		if (TesterUtil.instance.getCoordinationType() != 1) {
 			log.log(Level.WARNING, "Running the distributed coordination but using the centralized coordination in the configuration file tester.properties. \n" +
 					"Set property test.coordination=1 to use distributed coordination.");
 		}

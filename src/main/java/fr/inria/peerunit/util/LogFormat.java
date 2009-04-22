@@ -21,17 +21,17 @@ public class LogFormat extends Formatter{
 	/**
 	 * The delimiter used for the logging.
 	 */
-	private static String delimiter=TesterUtil.getDelimiter();
+	private static String delimiter=TesterUtil.instance.getDelimiter();
 	
 	/**
 	 * The date format used for the logging.
 	 */
-	private static String dateformat=TesterUtil.getDateformat();
+	private static String dateformat=TesterUtil.instance.getDateformat();
 
 	/**
 	 * The time format used for the logging.
 	 */	
-	private static String timeformat=TesterUtil.getTimeformat();
+	private static String timeformat=TesterUtil.instance.getTimeformat();
 
 	/**
 	 *  This method is overridden to apply our own formatting

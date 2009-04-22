@@ -3,21 +3,25 @@ package test.remote;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.PeerUnitLogger;
+import fr.inria.peerunit.util.TesterUtil;
 
 public class TesterImplTest {
 
@@ -30,15 +34,18 @@ public class TesterImplTest {
 
 	@BeforeClass
 	public static void  inititalize() {
-		System.setProperty("tester.peers","3");
-		System.setProperty("tester.log.dateformat","yyyy-MM-dd");
-		System.setProperty("tester.log.timeformat","HH:mm:ss.SSS");
-		System.setProperty("tester.log.level","FINEST");
-		System.setProperty("tester.logfolder","/tmp/");
-		System.setProperty("tester.log.delimiter","|");
-		System.setProperty("tester.waitForMethod","500");
+		Properties properties = new Properties();
+		
+		properties.setProperty("tester.peers","3");
+		properties.setProperty("tester.log.dateformat","yyyy-MM-dd");
+		properties.setProperty("tester.log.timeformat","HH:mm:ss.SSS");
+		properties.setProperty("tester.log.level","FINEST");
+		properties.setProperty("tester.logfolder","/tmp/");
+		properties.setProperty("tester.log.delimiter","|");
+		properties.setProperty("tester.waitForMethod","500");
 		try {
-			coord = new CoordinatorImpl(3);
+			TesterUtil defaults = new TesterUtil(properties);
+			coord = new CoordinatorImpl(defaults);
 			new Thread(coord, "Coordinator").start();
 			tester0 = new TesterImpl(coord);
 			executor = new ExecutorImpl(tester0, LOG);
@@ -81,26 +88,28 @@ public class TesterImplTest {
 	@Test
 	public void testExecute() {
 		try {
+			Coordinator coord = mock(Coordinator.class);
+			TesterImpl tester = new TesterImpl(coord);
+			tester.export(Sample.class);
+
 			System.setProperty("executed", "nok");
-			List<MethodDescription> methods = executor
-					.register(Sample.class);
-			Thread tt = new Thread(tester0, "Tester 0");
+			List<MethodDescription> methods = executor.register(Sample.class);
+			Thread tt = new Thread(tester, "Test Execute");
 			tt.start();
+
 			for (MethodDescription md : methods) {
-				tester0.execute(md);
+				tester.execute(md);
 			}
-			try {
-				Thread.sleep(600);
-				Thread.yield();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Thread.sleep(1200);
+			Thread.yield();
+			tester.executionInterrupt();
+			assertEquals("ok", System.getProperty("executed"));
 		} catch (RemoteException e) {
-			fail("Error");
+			fail("RemoteException");
+		} catch (InterruptedException e) {
+			fail("InterruptedException");
 		}
-		tester0.executionInterrupt();
-		assertEquals("ok", System.getProperty("executed"));
+
 	}
 
 	@Test

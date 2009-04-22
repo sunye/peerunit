@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
@@ -19,6 +20,7 @@ import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.PeerUnitLogger;
+import fr.inria.peerunit.util.TesterUtil;
 
 public class ExecutorImplTest {
 	private static ExecutorImpl executor ;
@@ -28,15 +30,17 @@ public class ExecutorImplTest {
 	
 	@BeforeClass
 	public static void  inititalize() {
-		System.setProperty("tester.peers","3");
-		System.setProperty("tester.log.dateformat","yyyy-MM-dd");
-		System.setProperty("tester.log.timeformat","HH:mm:ss.SSS");
-		System.setProperty("tester.log.level","FINEST");
-		System.setProperty("tester.logfolder","/tmp/");
-		System.setProperty("tester.log.delimiter","|");
-		System.setProperty("tester.waitForMethod","500");
+		Properties properties = new Properties();
+		properties.setProperty("tester.peers","3");
+		properties.setProperty("tester.log.dateformat","yyyy-MM-dd");
+		properties.setProperty("tester.log.timeformat","HH:mm:ss.SSS");
+		properties.setProperty("tester.log.level","FINEST");
+		properties.setProperty("tester.logfolder","/tmp/");
+		properties.setProperty("tester.log.delimiter","|");
+		properties.setProperty("tester.waitForMethod","500");
 		try {
-			coord = new CoordinatorImpl(3);
+			TesterUtil defaults = new TesterUtil(properties);
+			coord = new CoordinatorImpl(defaults);
 			new Thread(coord, "Coordinator").start();
 			tester = new TesterImpl(coord);
 			PeerUnitLogger logger = new PeerUnitLogger("logger");

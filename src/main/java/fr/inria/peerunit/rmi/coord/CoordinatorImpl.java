@@ -78,67 +78,22 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	private ExecutorService executor = Executors.newFixedThreadPool(10);
 
 
+	private TesterUtil defaults = TesterUtil.instance;
+	
 	/**
 	 * @param i Number of expected testers. The Coordinator will wait for
 	 * the connection of "i" testers before starting to dispatch actions
 	 * to Testers.
 	 */
-	public CoordinatorImpl(int i) {
+	public CoordinatorImpl(TesterUtil tu)  {
+		defaults = tu;
+		int i = defaults.getExpectedTesters();
 		expectedTesters = new AtomicInteger(i);
 		runningTesters  = new AtomicInteger(0);
 		registeredTesters =  Collections.synchronizedList(new ArrayList<Tester>(i));
-		verdict = new GlobalVerdict(TesterUtil.getRelaxIndex());
+		verdict = new GlobalVerdict(TesterUtil.instance.getRelaxIndex());
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-
-		try {
-			// Log creation
-			FileHandler handler = new FileHandler(TesterUtil.getLogfile());
-			handler.setFormatter(new LogFormat());
-			log.addHandler(handler);
-			log.setLevel(Level.parse(TesterUtil.getLogLevel()));
-
-			CoordinatorImpl cii = new CoordinatorImpl(TesterUtil
-					.getExpectedPeers());
-			Coordinator stub = (Coordinator) UnicastRemoteObject.exportObject(
-					cii, 0);
-			String servAddr = "";
-			if (TesterUtil.getServerAddr() == null)
-				servAddr = InetAddress.getLocalHost().getHostAddress();
-			else
-				servAddr = TesterUtil.getServerAddr();
-
-			log.log(Level.INFO, "New Coordinator address is : " + servAddr);
-
-			// Bind the remote object's stub in the registry
-			Registry registry = LocateRegistry.createRegistry(1099);
-
-			// registry.rebind("Coordinator", stub);
-			registry.bind("Coordinator", stub);
-
-			Thread coordination = new Thread(cii, "Coordinator");
-			coordination.start();
-		} catch (RemoteException e) {
-			log.log(Level.SEVERE, "RemoteException", e);
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			log.log(Level.SEVERE, "UnknownHostException", e);
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			log.log(Level.SEVERE, "SecurityException", e);
-			e.printStackTrace();
-		} catch (IOException e) {
-			log.log(Level.SEVERE, "IOException", e);
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			log.log(Level.SEVERE, "AlreadyBoundException", e);
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester,
@@ -254,7 +209,7 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	 */
 	public synchronized int getNewId(Tester t) throws RemoteException {
 		int id = runningTesters.getAndIncrement();
-		log.info("New Registered Peer: " + id + " new client " + t);
+		log.info("New Registered Tester: " + id + " new client " + t);
 		return id;
 	}
 

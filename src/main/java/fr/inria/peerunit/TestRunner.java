@@ -42,11 +42,11 @@ public class TestRunner {
 	 */	
 	public TestRunner(Class<? extends TestCaseImpl> klass) {
 		try {
-			Registry registry = LocateRegistry.getRegistry(TesterUtil
+			Registry registry = LocateRegistry.getRegistry(TesterUtil.instance
 					.getServerAddr());
 			testcase = klass;
 			
-			switch (TesterUtil.getCoordinationType()) {
+			switch (TesterUtil.instance.getCoordinationType()) {
 			case 0:				
 				System.out.println("Using the centralized coordination.");
 				bootCentralized(registry);

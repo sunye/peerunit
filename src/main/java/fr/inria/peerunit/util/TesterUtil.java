@@ -1,7 +1,11 @@
 package fr.inria.peerunit.util;
 
-import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
+import java.util.logging.Level;
 
 /**
  * 
@@ -20,114 +24,45 @@ public class TesterUtil {
 	/**
 	 * The <tt>Properties</tt> object must containing the application properties
 	 */
-	private static Properties props;
+	private Properties props;
 	
 	/**
 	 * The number  of peers that will be in the simulation.
 	 */	
-	private static int peerName=Integer.MIN_VALUE;
-
-	/**
-	 * The <i>coordinator</i> or <i>bootstrapper</i>'s address depending on 
-	 * the testing architecture is distributed or centralized.
-	 */	
-	private static String serverAddr;
-	/**
-	 * The application log file name
-	 */		
-	private static String logfile;
-	/**
-	 * The application log file folder
-	 */			
-	private static String logfolder;
-	/**
-	 * The date format used for logging
-	 */				
-	private static String dateformat;
-	/**
-	 * The time format used for logging
-	 */					
-	private static String timeformat;
-	/**
-	 * The delimiter used for logging
-	 */						
-	private static String delimiter;
-	/**
-	 * The class of the parser used for parse the <i>test case</i> actions
-	 */							
-	private static String parserClass;
-	/**
-	 * The relaxation index used for fix the tolerance to inconclusive results
-	 */								
-	private static int relaxIndex;
-	/**
-	 * The <i>coordinator</i> or <i>bootstrapper</i>'s port depending on 
-	 * the testing architecture is distributed or centralized.
-	 */		
-	private static int port;
-	/**
-	 * This parameter fix the number of object to put in the Open chord or FreePastry's DHT
-	 * for the testing
-	 */			
-	private static int objects;
-	/**
-	 * This parameter fix in millisecond the <i>test actions</i> inactivity time for the synchronization
-	 */				
-	private static int sleep;
-	/**
-	 * The peers's bootstrap address, may be different from <i>tester's</i> bootstrap one
-	 */	
-	private static String bootstrap;
-	/**
-	 * The peers's bootstrap port, may be different from <i>tester's</i> bootstrap one
-	 */		
-	private static int bootstrapPort;
-	/**
-	 * This parameter fix in millisecond the <i>tester's</i> waiting time for the synchronization
-	 */					
-	private static int  waitForMethod;
-	/**
-	 * The number of try of a <i>test action</i>
-	 */						
-	private static int  loopToFail;
-	/**
-	 * This properties fix a percentage of peers's number that is used by some <i>test cases</i>
-	 * for  instance for choose the number of peers that join the test in first and those who join
-	 * it in second.  
-	 */							
-	private static int  churnPercentage;
-	/**
-	 * This properties fix the application logging level
-	 */								
-	private static String logLevel;
-	/**
-	 * The BTree order, if we are in distributed architecture
-	 */									
-	private static int  treeOrder;
-	/**
-	 * The BTree strategy, if we are in distributed architecture
-	 */									
-	private static int  treeStrategy;
-	/**
-	 * Show all traces during station tree building
-	 */
-	private static int  stationTreeTrace;
-	/**
-	 * The testing architecture type, centralized or distributed 
-	 */										
-	private static int  coordType;
-	/**
-	 * This parameter fix in millisecond the <i>treetester's</i> a specific waiting 
-	 * time for the synchronization.
-	 */					
-	private static int  treeWaitForMethod;
+	private  int peerName=Integer.MIN_VALUE;
 	
-	/**
-	 * 	This property correspond to the path of the file containing the tester's hosts addresses
-	 */
-	private static String hostsFilePath;	
+	final public static TesterUtil instance = new TesterUtil();
 	
+	private TesterUtil() {
 
+			try {
+				Properties defaults = new Properties();
+				InputStream is = this.getClass().getResourceAsStream("/peerunit.properties");
+				defaults.load(is);
+				props = new Properties(defaults);
+			} catch (IOException e) {
+				System.err.println("Could not find default properties' resource.");
+				System.exit(1);
+			}
+		}
+	
+	public TesterUtil(InputStream is) {
+		this();
+		try {
+			props.load(is);
+		} catch (IOException e) {
+			System.err.println("Could not find properties' file.");
+			System.exit(1);
+		}
+	}
+	
+	public TesterUtil(Properties p) {
+		this();
+		props.putAll(p);
+	}
+		
+
+	
 	/**
 	 * Return the value of the property whose the name is given as argument
 	 * 
@@ -135,24 +70,10 @@ public class TesterUtil {
 	 * @return the value of <code>property</code> property
 	 * @throws Exception if the properties file can't find
 	 */
-	private static String getProperty(String property) throws Exception {
-		if (props == null) {
-			props = new Properties();
-			
-			// FIXME : System.getProperty("user.dir") : Portable ? 
-			String propFilePath = System.getProperty("user.dir");
-			String propFile = "config/tester.properties";
-				
-			FileInputStream fs = new FileInputStream(propFilePath+"/"+propFile);
-			
-			if (fs == null) {
-				System.out.println("Do not find properties' file.");
-				props = System.getProperties();
-			} else {
-				props.load(fs);
-			}
-		}
-		return props.getProperty(property);
+	private  String getProperty(String property) {
+		String value = props.getProperty(property);
+		assert value != null : "Property "+property+" is undefined";
+		return value;
 	}
 	
 	/**
@@ -160,9 +81,9 @@ public class TesterUtil {
 	 * 
 	 * @return the number of testers expected in the properties file
 	 */
-	private static int readProperty(){
+	private  int readProperty(){
 		try {
-			peerName=Integer.valueOf(TesterUtil.getProperty("tester.peers")).intValue();
+			peerName=Integer.valueOf(this.getProperty("tester.peers")).intValue();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -175,8 +96,8 @@ public class TesterUtil {
 	 * 
 	 * @return the number of testers expected in the properties file
 	 */	
-	public static int getExpectedPeers(){
-		return readProperty();
+	public int getExpectedTesters(){
+		return Integer.valueOf(this.getProperty("tester.peers")).intValue();
 	}
 
 	/**
@@ -186,7 +107,7 @@ public class TesterUtil {
 	 * 
 	 * @return the number of testers expected that is decremented before
 	 */	
-	public static int getPeerName(){
+	public  int getPeerName(){
 		if(peerName == Integer.MIN_VALUE){
 			peerName=readProperty();
 		}else peerName--;
@@ -198,26 +119,27 @@ public class TesterUtil {
 	 * 
 	 * @return 	 a ip addresses
 	 */		
-	public static String getServerAddr(){
-		try {
-			serverAddr=TesterUtil.getProperty("tester.server");
-		} catch (Exception e) {
-			e.printStackTrace();
+	public  String getServerAddr() {
+		String address;
+		address = this.getProperty("tester.server");
+		if (address == null) {
+			try {
+				address = InetAddress.getLocalHost().getHostAddress();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		return serverAddr;
+
+		return address;		
 	}
 	
 	/**
 	 * Return the log file name
 	 * @return the log file name
 	 */
-	public static String getLogfile(){
-		try {
-			logfile=TesterUtil.getProperty("tester.logfile");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return logfile;
+	public  String getLogfile(){
+		return this.getProperty("tester.logfile");
 	}
 	
 	/**
@@ -225,13 +147,8 @@ public class TesterUtil {
 	 * 
 	 * @return  the date format used for logging
 	 */
-	public static String getDateformat(){
-		try {
-			dateformat=TesterUtil.getProperty("tester.log.dateformat");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return dateformat;
+	public  String getDateformat(){
+		return this.getProperty("tester.log.dateformat");
 	}
 	
 	/**
@@ -239,13 +156,8 @@ public class TesterUtil {
 	 * 
 	 * @return  the time format used for logging
 	 */	
-	public static String getTimeformat(){
-		try {
-			timeformat=TesterUtil.getProperty("tester.log.timeformat");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return timeformat;
+	public  String getTimeformat(){
+		return this.getProperty("tester.log.timeformat");
 	}
 	
 	/**
@@ -253,13 +165,8 @@ public class TesterUtil {
 	 * 
 	 * @return  the delimiter format used for logging
 	 */	
-	public static String getDelimiter(){
-		try {
-			delimiter=TesterUtil.getProperty("tester.log.delimiter");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return delimiter;
+	public  String getDelimiter(){
+		return this.getProperty("tester.log.delimiter");
 	}
 	
 	/**
@@ -267,14 +174,8 @@ public class TesterUtil {
 	 * 
 	 * @return the application log file folder
 	 */		
-	public static String getLogfolder(){
-		try {
-			logfolder=TesterUtil.getProperty("tester.logfolder");
-		} catch (Exception e) {
-			logfolder = ".";
-			//e.printStackTrace();
-		}
-		return logfolder;
+	public  String getLogfolder(){
+		return this.getProperty("tester.logfolder");
 	}
 	
 	/**
@@ -282,13 +183,10 @@ public class TesterUtil {
 	 * 
 	 * @return the class of the parser used for parse the <i>test case</i> actions
 	 */
-	public static String getParserClass(){
-		try {
-			parserClass=TesterUtil.getProperty("tester.parser");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return parserClass;
+	@Deprecated
+	public  String getParserClass(){
+
+		return this.getProperty("tester.parser");
 	}
 	
 	/**
@@ -296,14 +194,8 @@ public class TesterUtil {
 	 * 
 	 * @return  the relaxation index used for fix the tolerance to inconclusive results
 	 */
-	public static int getRelaxIndex(){
-		try {
-			relaxIndex=Integer.valueOf(TesterUtil.getProperty("tester.relaxindex")).intValue();
-		} catch (Exception e) {
-			relaxIndex = 1;
-			//e.printStackTrace();
-		}
-		return relaxIndex;
+	public  int getRelaxIndex(){
+		return Integer.valueOf(this.getProperty("tester.relaxindex")).intValue();
 	}
 
 	/**
@@ -313,14 +205,8 @@ public class TesterUtil {
 	 * @return the <i>coordinator</i> or <i>bootstrapper</i>'s port depending on 
 	 *         the testing architecture is distributed or centralized.
 	 */
-	public static int getPort(){
-		try {
-			port=Integer.valueOf(TesterUtil.getProperty("tester.port")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return port;
+	public  int getPort(){
+		return Integer.valueOf(this.getProperty("tester.port")).intValue();
 	}
 	
 	/**
@@ -329,14 +215,9 @@ public class TesterUtil {
 	 * 
 	 * @return  the relaxation index used for fix the tolerance to inconclusive results
 	 */	
-	public static int getObjects(){
-		try {
-			objects=Integer.valueOf(TesterUtil.getProperty("test.objects")).intValue();
+	public  int getObjects(){
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return objects;
+		return Integer.valueOf(this.getProperty("test.objects")).intValue();
 	}
 	
 	/**
@@ -344,14 +225,8 @@ public class TesterUtil {
 	 * 
 	 * @return Return the <i>test actions</i> inactivity time for the synchronization
 	 */
-	public static int getSleep(){
-		try {
-			sleep=Integer.valueOf(TesterUtil.getProperty("test.sleep")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return sleep;
+	public  int getSleep(){
+		return Integer.valueOf(this.getProperty("test.sleep")).intValue();
 	}
 	
 	/**
@@ -359,13 +234,8 @@ public class TesterUtil {
 	 * 	
 	 * @return  the peers's bootstrap address, may be different from <i>tester's</i> bootstrap one
 	 */
-	public static String getBootstrap(){
-		try {
-			bootstrap=TesterUtil.getProperty("test.bootstrap");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return bootstrap;
+	public  String getBootstrap(){
+		return this.getProperty("test.bootstrap");
 	}
 	
 	/**
@@ -373,14 +243,8 @@ public class TesterUtil {
 	 * 
 	 * @return the peers's bootstrap port, may be different from <i>tester's</i> bootstrap one
 	 */
-	public static int getBootstrapPort(){
-		try {
-			bootstrapPort=Integer.valueOf(TesterUtil.getProperty("test.bootstrap.port")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return bootstrapPort;
+	public  int getBootstrapPort(){
+		return Integer.valueOf(this.getProperty("test.bootstrap.port")).intValue();
 	}
 
 	/**
@@ -388,14 +252,8 @@ public class TesterUtil {
 	 * 
 	 * @return in millisecond the <i>tester's</i> waiting time for the synchronization
 	 */
-	public static int getWaitForMethod(){
-		try {
-			waitForMethod=Integer.valueOf(TesterUtil.getProperty("tester.waitForMethod")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return waitForMethod;
+	public  int getWaitForMethod(){
+		return Integer.valueOf(this.getProperty("tester.waitForMethod")).intValue();
 	}
 
 	/**
@@ -403,14 +261,8 @@ public class TesterUtil {
 	 * 
 	 * @return the number of try of a <i>test action</i>
 	 */	
-	public static int getLoopToFail(){
-		try {
-			loopToFail=Integer.valueOf(TesterUtil.getProperty("test.loopToFail")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return loopToFail;
+	public int getLoopToFail(){
+		return Integer.valueOf(this.getProperty("test.loopToFail")).intValue();
 	}
 	
 	/**
@@ -421,14 +273,8 @@ public class TesterUtil {
 	 *         for choose the number of peers that join the test in first and those who join it in
 	 *         second.
 	 */
-	public static int getChurnPercentage(){
-		try {
-			churnPercentage=Integer.valueOf(TesterUtil.getProperty("test.churnPercentage")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return churnPercentage;
+	public  int getChurnPercentage(){
+		return Integer.valueOf(this.getProperty("test.churnPercentage")).intValue();
 	}
 	
 	/**
@@ -436,13 +282,8 @@ public class TesterUtil {
 	 *  	
 	 * @return the property that fix the application logging level
 	 */
-	public static String getLogLevel(){
-		try {
-			logLevel=TesterUtil.getProperty("tester.log.level");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return logLevel;
+	public  Level getLogLevel(){
+		return Level.parse(this.getProperty("tester.log.level"));
 	}
 	
 	/**
@@ -450,14 +291,8 @@ public class TesterUtil {
 	 *  	
 	 * @return the BTree order, if we are in distributed architecture
 	 */	
-	public static int getTreeOrder(){
-		try {
-			treeOrder=Integer.valueOf(TesterUtil.getProperty("test.treeOrder")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return treeOrder;
+	public  int getTreeOrder(){
+		return Integer.valueOf(this.getProperty("test.treeOrder")).intValue();
 	}
 	
 	/**
@@ -465,14 +300,8 @@ public class TesterUtil {
 	 *  	
 	 * @return the BTree strategy, if we are in distributed architecture
 	 */	
-	public static int getTreeStrategy(){
-		try {
-			treeStrategy=Integer.valueOf(TesterUtil.getProperty("test.treeStrategy")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return treeStrategy;
+	public  int getTreeStrategy(){
+		return Integer.valueOf(this.getProperty("test.treeStrategy")).intValue();
 	}
 	
 	/**
@@ -480,14 +309,8 @@ public class TesterUtil {
 	 * 
 	 * @return the testing architecture type, centralized or distributed
 	 */
-	public static int getCoordinationType(){
-		try {
-			coordType=Integer.valueOf(TesterUtil.getProperty("test.coordination")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return coordType;
+	public  int getCoordinationType(){
+		return Integer.valueOf(this.getProperty("test.coordination")).intValue();
 	}
 	
 	/**
@@ -497,29 +320,16 @@ public class TesterUtil {
 	 * @return  Return the value of the property that fix in millisecond the <i>treetester's</i> a
 	 *          specific waiting time for the synchronization.
 	 */
-	public static int getTreeWaitForMethod(){
-		try {
-			treeWaitForMethod=Integer.valueOf(TesterUtil.getProperty("test.treeWaitForMethod")).intValue();
+	public  int getTreeWaitForMethod(){
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return treeWaitForMethod;
+		return Integer.valueOf(this.getProperty("test.treeWaitForMethod")).intValue();
 	}
 
 	/** 1 to show traces during the station tree building, 0 by default.
 	 * @return the stationTreeTrace
 	 */
-	public static int getStationTreeTrace()
-	{
-		stationTreeTrace = 0;
-		try {
-			stationTreeTrace=Integer.valueOf(TesterUtil.getProperty("tester.stationTreeTrace")).intValue();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return stationTreeTrace;
+	public  int getStationTreeTrace() {
+		return Integer.valueOf(this.getProperty("tester.stationTreeTrace")).intValue();
 	}
 	
 	/**
@@ -528,15 +338,9 @@ public class TesterUtil {
 	 *  
 	 * @return the path of the hosts file.
 	 */
-	public static String getHostsFilePath()
-	{
-		try {
-			hostsFilePath=TesterUtil.getProperty("tester.hostfile");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return hostsFilePath;
+	public  String getHostsFilePath() {
+
+		return this.getProperty("tester.hostfile");
 	}
 }
 

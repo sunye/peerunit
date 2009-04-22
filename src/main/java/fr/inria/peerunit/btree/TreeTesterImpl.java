@@ -31,7 +31,7 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	private Verdicts v= Verdicts.PASS;
 	List<MethodDescription> testList;
 	private static final PeerUnitLogger TESTER_LOG = new PeerUnitLogger(TreeTesterImpl.class.getName());
-	String logFolder = TesterUtil.getLogfolder();
+	String logFolder = TesterUtil.instance.getLogfolder();
 	
 	/**
 	 * Creates a new TreeTester with the specified id, and attached
@@ -93,9 +93,9 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	public  void newInstance(Class<? extends TestCaseImpl> c){
 		final Logger PEER_LOG = Logger.getLogger(c.getName());
 		LogFormat format = new LogFormat();
-		Level level = Level.parse(TesterUtil.getLogLevel());		
+		Level level = TesterUtil.instance.getLogLevel();		
 		try {			
-			String logFolder = TesterUtil.getLogfolder();
+			String logFolder = TesterUtil.instance.getLogfolder();
 				
 			FileHandler phandler;
 			phandler = new FileHandler(logFolder+"/" + c.getName()+ ".peer"+id+".log",true);

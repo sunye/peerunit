@@ -87,7 +87,7 @@ public class Node implements StationContainer
 	
 	public void print()
 	{
-		if(TesterUtil.getStationTreeTrace() == 1)
+		if(TesterUtil.instance.getStationTreeTrace() == 1)
 		{
 			System.out.println("|");
 			System.out.println("|-Station: "+num+" name: "+stParent.getName());

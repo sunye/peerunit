@@ -82,7 +82,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 		while (!stop) {
 			MethodDescription md=null;
 			try {
-				md = executionQueue.poll(TesterUtil.getWaitForMethod(),TimeUnit.MILLISECONDS);
+				md = executionQueue.poll(TesterUtil.instance.getWaitForMethod(),TimeUnit.MILLISECONDS);
 				if(md != null){
 					invokationThread = new Thread(new Invoke(md));
 					invokationThread.start();
@@ -140,10 +140,10 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	private void createLogFiles(Class<? extends TestCaseImpl> c) {
 
 		LogFormat format = new LogFormat();
-		Level level = Level.parse(TesterUtil.getLogLevel());
+		Level level = TesterUtil.instance.getLogLevel();
 
 		try {
-			String logFolder = TesterUtil.getLogfolder();
+			String logFolder = TesterUtil.instance.getLogfolder();
 			
 			PEER_LOG = Logger.getLogger(c.getName());
 			FileHandler phandler;

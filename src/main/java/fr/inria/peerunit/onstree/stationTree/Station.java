@@ -89,7 +89,7 @@ public class Station
 	
 	public void print()
 	{
-		if(TesterUtil.getStationTreeTrace() == 1)
+		if(TesterUtil.instance.getStationTreeTrace() == 1)
 		{
 			System.out.println("____________________");
 			System.out.println("|   "+this.ip+"   | -- Station "+this.name+" saut :"+nbSaut);

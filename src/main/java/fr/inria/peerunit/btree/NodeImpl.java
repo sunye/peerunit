@@ -57,7 +57,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	
 	private TreeElements tree= new TreeElements();
 	
-	String logFolder = TesterUtil.getLogfolder();
+	String logFolder = TesterUtil.instance.getLogfolder();
 		
 	AbstractBTreeNode bt;
 		
@@ -67,7 +67,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		
 	MethodDescription mdToExecute;
 	
-	int treeWaitForMethod=TesterUtil.getTreeWaitForMethod();
+	int treeWaitForMethod=TesterUtil.instance.getTreeWaitForMethod();
 	
 	Class<? extends TestCaseImpl> klass;
 	
@@ -95,9 +95,9 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		 * Creating logfile
 		 */
 		LogFormat format = new LogFormat();
-		Level level = Level.parse(TesterUtil.getLogLevel());		
+		Level level = TesterUtil.instance.getLogLevel();		
 					
-		String logFolder = TesterUtil.getLogfolder();
+		String logFolder = TesterUtil.instance.getLogfolder();
 		log = Logger.getLogger(NodeImpl.class.getName());
 		FileHandler phandler;
 		try {
@@ -142,7 +142,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		startTesters();			
 		if(amIRoot){	
 			try {
-				Thread.sleep(TesterUtil.getWaitForMethod());
+				Thread.sleep(TesterUtil.instance.getWaitForMethod());
 			} catch (InterruptedException e) {			
 				log.log(Level.SEVERE,e.toString());
 			}
@@ -183,7 +183,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		}
 		log.log(Level.INFO, "Whole execution time "+(System.currentTimeMillis()-this.time));
 		if(amIRoot){
-			GlobalVerdict verdict = new GlobalVerdict(TesterUtil.getRelaxIndex());
+			GlobalVerdict verdict = new GlobalVerdict(TesterUtil.instance.getRelaxIndex());
 			for(Verdicts v:localVerdicts){
 				verdict.addLocalVerdict(v);
 			}

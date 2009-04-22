@@ -38,7 +38,7 @@ public class PeerUnitLogger {
 	 */
 	public synchronized void createLogger(String pattern){
 		LogFormat format = new LogFormat();		
-		Level level = Level.parse(TesterUtil.getLogLevel());
+		Level level = TesterUtil.instance.getLogLevel();
 		FileHandler handler=null;
 		try {
 			handler = new FileHandler(pattern,true);

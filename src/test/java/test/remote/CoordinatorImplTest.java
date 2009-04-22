@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +24,7 @@ import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.test.oracle.Verdicts;
+import fr.inria.peerunit.util.TesterUtil;
 
 /**
  * @author sunye
@@ -40,7 +42,7 @@ public class CoordinatorImplTest {
 	@BeforeClass
 	public static void init() {
 		Logger.getLogger("").getHandlers()[0].setLevel(Level.ALL);
-		log.setLevel(Level.INFO);
+		log.setLevel(Level.FINE);
 	}
 	
 	@Before
@@ -58,14 +60,17 @@ public class CoordinatorImplTest {
 	 */
 	@Test
 	public void testCoordinatorImplInt() {
-		coord = new CoordinatorImpl(0);
+		coord = new CoordinatorImpl(TesterUtil.instance);
 		assertNotNull(coord);
 	}
 
 	@Test
 	public void testSingleTester() {
-		
-		coord = new CoordinatorImpl(1);
+		int size = 1;
+		Properties properties = new Properties();
+		properties.setProperty("tester.peers",Integer.toString(size));
+		TesterUtil defaults = new TesterUtil(properties);
+		coord = new CoordinatorImpl(defaults);
 		coordination = new Thread(coord, "Coordinator");
 		
 		coordination.start();
@@ -98,7 +103,10 @@ public class CoordinatorImplTest {
 	@Test
 	public void testSeveralTesters() {
 		int size = 10000;
-		coord = new CoordinatorImpl(size);
+		Properties properties = new Properties();
+		properties.setProperty("tester.peers",Integer.toString(size));
+		TesterUtil defaults = new TesterUtil(properties);
+		coord = new CoordinatorImpl(defaults);
 		coordination = new Thread(coord, "Coordinator");
 		coordination.start();
 		

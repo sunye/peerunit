@@ -45,7 +45,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	private HashMap<String, TesterNodeHead_be> ipNodeHeadMap = new HashMap<String, TesterNodeHead_be>();
 	private HashMap<String, Node> remotesNodesMap = new HashMap<String, Node>();
 	private AtomicInteger registered = new AtomicInteger(0);
-	private static int expectedTesters = TesterUtil.getExpectedPeers();
+	private static int expectedTesters = TesterUtil.instance.getExpectedTesters();
 
 	/**
 	 * Constructor by default
@@ -60,7 +60,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	 * @see fr.inria.peerunit.btreeStrategy.TreeStrategy#buildTree()
 	 */
 	public void buildTree() {
-		String hostsFile = TesterUtil.getHostsFilePath();
+		String hostsFile = TesterUtil.instance.getHostsFilePath();
 		InputStream input = ConcreteONSTreeStrategy.class
 				.getResourceAsStream(hostsFile);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -84,7 +84,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 		// Station tree
 		StationTree stTree = builder.buildStationTree(stRoot);
 
-		if (TesterUtil.getStationTreeTrace() == 1) {
+		if (TesterUtil.instance.getStationTreeTrace() == 1) {
 			stTree.print();
 		}
 
@@ -92,11 +92,11 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 		TesterTreeBuilder testTreeBuilder = new TesterTreeBuilder();
 		// parameter tester number = 165 for 11 stations (15 tester max by
 		// station)
-		testerNH = testTreeBuilder.buildTesterTree(stTree, TesterUtil
-				.getExpectedPeers());
+		testerNH = testTreeBuilder.buildTesterTree(stTree, TesterUtil.instance
+				.getExpectedTesters());
 		buildIPNodeHeadMap(testerNH);
 
-		if (TesterUtil.getStationTreeTrace() == 1) {
+		if (TesterUtil.instance.getStationTreeTrace() == 1) {
 			try {
 				PrintWriter out = new PrintWriter(new FileWriter(
 						"routersTree.txt"));

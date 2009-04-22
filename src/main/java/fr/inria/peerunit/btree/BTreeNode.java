@@ -17,7 +17,7 @@ public class BTreeNode extends AbstractBTreeNode implements Serializable{
 	private Comparable[] keys;
 	private BTreeNode[] children;
 	private BTreeNode parent;		
-	private int order=TesterUtil.getTreeOrder();
+	private int order=TesterUtil.instance.getTreeOrder();
 	private boolean isLeaf;
 	private boolean isRoot=false;
 	
