@@ -2,14 +2,16 @@ package fr.inria.peerunit.stationTree;
 
 import java.util.List;
 
+import fr.inria.peerunit.util.TesterUtil;
+
 public class StationTreeBuilder 
 {
 
 	public void buildNetTree(List<Station> listStation, StationRoot stRoot)
 	{
 		String currentNode = "";
-		Router currentRouter = new Router("localhost");
-		Router newRouter = new Router("localhost");
+		Router currentRouter = new Router(TesterUtil.instance.getServerAddr());
+		Router newRouter = new Router(TesterUtil.instance.getServerAddr());
 		int numNode = 0;
 		System.out.println("____________________");
 		System.out.println("|   "+stRoot.getName()+"   |");
