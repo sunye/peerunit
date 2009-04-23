@@ -16,7 +16,7 @@ import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
 public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContainer, Serializable
 {
 	private static final long	serialVersionUID	= 1L;
-	private int id;
+	private Integer id;
 	private String sColor;
 	private TesterNodeHead_be parent;
 	private TesterNode_be childL;
@@ -143,7 +143,14 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 				tab_Keys[counter++] = cp;
 			}
 		}*/
-		return (Comparable[]) tab_Keys.toArray();
+		Comparable[] comparables=new Comparable[tab_Keys.size()];
+		int cpt=0;
+		for (Comparable comparable:tab_Keys)
+		{
+			comparables[cpt++]=comparable;
+		}
+		
+		return  comparables;
 	}
 
 	/* (non-Javadoc)
