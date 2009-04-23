@@ -1,9 +1,10 @@
 package fr.inria.peerunit.btree;
 
+import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 
 
-public interface TreeTester {	
+public interface TreeTester extends Tester {	
 	/**
 	 * Sends a method to this tester to be processed by
 	 * it's test class

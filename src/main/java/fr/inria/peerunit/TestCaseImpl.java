@@ -3,8 +3,6 @@ package fr.inria.peerunit;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import fr.inria.peerunit.btree.TreeTesterImpl;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
 
 /**
  * An abstract implementation of <tt>TestCase</tt> interface. This class make available
@@ -26,13 +24,14 @@ public abstract class TestCaseImpl implements TestCase {
 	/**
 	 * The <i>tester</i> executing the <i>test case</i>
 	 */		
-	private StorageTester tester;	
+	private Tester tester;	
 
 	/**
 	 * Set the <i>tester</i> in centralized architecture executing the <i>test</i>
 	 * 
 	 * @param ti the <i>tester</> instance 
-	 */	
+	 *
+	@Deprecated
 	public void setTester(TesterImpl ti) {
 		tester = ti;
 		try {
@@ -41,22 +40,29 @@ public abstract class TestCaseImpl implements TestCase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	/**
 	 * Define the <i>tester</i> in distributed architecture executing 
 	 * the <i>test</i>.
 	 * 
 	 * @param tt the <i>tester</> instance 
-	 */		
+	 *
+	@Deprecated
 	public void setTester(TreeTesterImpl tt) {	
 		tester = tt;		
 		id = tt.getID();		
-	}
+	}*/
 	
 	
 	public void setTester(Tester t) {
-		throw new RuntimeException("Not implemented yet!");
+		tester = t;
+		try {
+			id = t.getPeerName();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -85,7 +91,7 @@ public abstract class TestCaseImpl implements TestCase {
 	 * @param key the key of <code>object</object>
 	 * @param object the variable to stock
 	 */			
-	public void put(Integer key,Object object) {
+	public void put(Integer key, Object object) {
 		tester.put(key, object);
 	}
 
@@ -124,7 +130,7 @@ public abstract class TestCaseImpl implements TestCase {
      * @return <tt>true</tt> if we can  map the key <tt>key</tt>, return <tt>false</tt> else
 	 * @throws RemoteException because the method is distant  
      */		
-	public boolean containsKey(Object key)throws RemoteException {
+	public boolean containsKey(Object key) throws RemoteException {
 		return tester.containsKey(key);
 	}
 

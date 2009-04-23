@@ -1,18 +1,18 @@
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.inria.peerunit.TestCase;
-import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.ExecutorImpl;
@@ -26,7 +26,7 @@ public class ExecutorImplTest {
 	private static ExecutorImpl executor ;
 	private static CoordinatorImpl coord;
 	private static TesterImpl tester;
-	private Logger log = Logger.getLogger("test");
+	//private Logger log = Logger.getLogger("test");
 	
 	@BeforeClass
 	public static void  inititalize() {
@@ -92,8 +92,8 @@ public class ExecutorImplTest {
 		Class<? extends TestCase> c = TestCase.class;
 		List<MethodDescription> listMethodDesc = executor.register(c);
 
-		int id2 = executor.getTester().getId();
-		TestCase testcase = executor.getTestcase();
+		//int id2 = executor.getTester().getId();
+		//TestCase testcase = executor.getTestcase();
 		
 		fr.inria.peerunit.parser.Test t;
 		fr.inria.peerunit.parser.BeforeClass bc;

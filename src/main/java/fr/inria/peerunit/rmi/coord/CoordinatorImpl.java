@@ -1,14 +1,7 @@
 package fr.inria.peerunit.rmi.coord;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,7 +12,6 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,7 +21,6 @@ import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.test.oracle.Verdicts;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -246,7 +237,7 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	private void waitForTesterRegistration() throws InterruptedException {
 		assert status == STARTING : "Trying to register while not starting";
 		
-		log.info("Waiting for registration.");
+		log.info("Waiting for registration. Expecting "+expectedTesters+" testers.");
 		while (registeredTesters.size() < expectedTesters.intValue()) {
 			synchronized (registeredTesters) {
 				registeredTesters.wait();

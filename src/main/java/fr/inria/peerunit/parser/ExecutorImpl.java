@@ -110,6 +110,7 @@ public class ExecutorImpl extends ExecutorAbstract implements Executor {
 
 		Method m = methods.get(md);
 		m.invoke(testcase, (Object[]) null);
+		
 	}
 
 	public boolean isLastMethod(String methodAnnotation) {

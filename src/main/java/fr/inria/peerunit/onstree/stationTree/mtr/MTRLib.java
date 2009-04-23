@@ -84,7 +84,7 @@ public class MTRLib
 	public static void main(String[] args)
 	{
 		MTRLib lib = new MTRLib();
-		ArrayList list = (ArrayList) lib.getMTRRoute("www.google.com");
+		ArrayList list = (ArrayList) MTRLib.getMTRRoute("www.google.com");
 		System.out.println("Tableau de " + list.size() + " éléments");
 		ArrayList<RouteElement> elements = list;
 		for (RouteElement routeElement : elements)
@@ -94,6 +94,6 @@ public class MTRLib
 			System.out.println(" ip=" + routeElement.getIp() + "  loss="
 					+ routeElement.getLoss());
 		}
-		System.out.println("Test Route" + lib.getRoute("www.yahoo.fr"));
+		System.out.println("Test Route" + MTRLib.getRoute("www.yahoo.fr"));
 	}
 }

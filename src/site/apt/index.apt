@@ -10,11 +10,11 @@ Peerunit
 
   A distributed component, the tester, executes on peers, and controls their execution and their volatility, making them leave and join the system at any time, according to the needs of a test. Furthermore, testers communicate with each other across a balanced tree (B-Tree) structure to avoid using a centralized testing coordination. Peerunit is implemented in Java and has been validated on two popular open-source P2P systems (FreePastry and OpenChord). 
 
-  Peerunit is hosted on {{{http://gforge.inria.fr/}gforge}}  at Inria. The source, the compiled version and other material can be downloaded from the {{{./html/download.html}download}} section.
+  Peerunit is hosted on {{{http://gforge.inria.fr/}gforge}}  at Inria. The source, the compiled version and other material can be downloaded from the {{{./download.html}download}} section.
 
 Contact
 
-  * {{{http://www.sciences.univ-nantes.fr/info/perso/permanents/sunye/}Eduardo Cunha de Almeida}}.
+  * {{{http://www.sciences.univ-nantes.fr/lina/gdd/members/almeida}Eduardo Cunha de Almeida}}.
 
   * {{{http://www.sciences.univ-nantes.fr/lina/gdd/members/sunye}Gerson Sunyé}}
 

@@ -76,7 +76,7 @@ public class TesterImplTest {
 		MethodDescription md = new MethodDescription("first", "action1", 1,
 				"Test", 1000);
 
-		assertEquals(1, coord.getTesterMap().size());
+		assertEquals(3, coord.getTesterMap().size());
 
 		assertTrue(coord.getTesterMap().containsKey(md));
 		assertTrue(coord.getTesterMap().get(md).contains(tester0));

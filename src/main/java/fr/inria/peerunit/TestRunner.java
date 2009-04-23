@@ -3,6 +3,9 @@
  */
 package fr.inria.peerunit;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -33,6 +36,8 @@ public class TestRunner {
 	 * passed at the command line.
 	 */
 	private Class <? extends TestCaseImpl> testcase;
+	
+	private TesterUtil defaults;
 
 	/**
 	 * Launch the right implementation of <i>tester</i> passing it as argument the <tt>Class</tt>
@@ -45,8 +50,16 @@ public class TestRunner {
 			Registry registry = LocateRegistry.getRegistry(TesterUtil.instance
 					.getServerAddr());
 			testcase = klass;
+			String filename = "peerunit.properties";
 			
-			switch (TesterUtil.instance.getCoordinationType()) {
+			if (new File(filename).exists()) {
+				FileInputStream fs = new FileInputStream(filename);
+				defaults = new TesterUtil(fs);
+			} else {
+				defaults = TesterUtil.instance;
+			}
+			
+			switch (defaults.getCoordinationType()) {
 			case 0:				
 				System.out.println("Using the centralized coordination.");
 				bootCentralized(registry);
@@ -68,6 +81,10 @@ public class TestRunner {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
 			System.out.println("Error: MalformedURLException.");
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			System.out.println("Error: File not found.");
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -104,9 +121,9 @@ public class TestRunner {
 	 * @throws RemoteException because the method is distant
 	 * @throws NotBoundException if the <i>coordinator</i> is not bound in the RMI Registry
 	 */	
-	private void bootCentralized(Registry registry)throws RemoteException, NotBoundException{
+	private void bootCentralized(Registry registry) throws RemoteException, NotBoundException{
 		Coordinator coord = (Coordinator) registry.lookup("Coordinator");		
-		TesterImpl tester = new TesterImpl(coord);
+		TesterImpl tester = new TesterImpl(coord,defaults);
 		UnicastRemoteObject.exportObject(tester);
 		tester.export(testcase);
 		tester.run();	
@@ -121,7 +138,7 @@ public class TestRunner {
 	 * @throws NotBoundException if the <i>boostrapper</i> is not bound in the RMI Registry
 	 * @throws MalformedURLException if the <i>boostrapper</i> is not bound in the RMI Registry 
 	 */			
-	private void bootBTree(Registry registry)throws RemoteException, NotBoundException, MalformedURLException{		
+	private void bootBTree(Registry registry) throws RemoteException, NotBoundException, MalformedURLException{		
 		Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
 		//Bootstrapper boot = (Bootstrapper)Naming.lookup("//"+TesterUtil.getServerAddr()+"/Bootstrapper");            
 		NodeImpl node= new NodeImpl(boot);

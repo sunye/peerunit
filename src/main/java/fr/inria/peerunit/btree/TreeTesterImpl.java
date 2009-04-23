@@ -10,7 +10,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
@@ -20,7 +19,7 @@ import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
-public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
+public class TreeTesterImpl implements TreeTester,Runnable {
 	public int id;	
 	MethodDescription md;
 	boolean executing=true;
@@ -246,11 +245,21 @@ public class TreeTesterImpl implements TreeTester,StorageTester,Runnable {
 	 * @return true if a testing global variable is associated to the key
 	 * @throws java.rmi.RemoteException
 	 */
-	public boolean containsKey(Object key)throws RemoteException{
+	public boolean containsKey(Object key) throws RemoteException{
 		return  boot.containsKey(key);
 	}
 	
 	public String toString() {
 		return "Tester: "+id;
+	}
+
+
+	public void execute(MethodDescription m) throws RemoteException {
+		this.inbox(m);
+	}
+
+
+	public int getPeerName() throws RemoteException {
+		return this.getID();
 	}
 }

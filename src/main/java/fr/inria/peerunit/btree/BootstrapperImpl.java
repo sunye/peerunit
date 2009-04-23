@@ -1,29 +1,22 @@
 package fr.inria.peerunit.btree;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
+import fr.inria.peerunit.ArchitectureImpl;
 import fr.inria.peerunit.btreeStrategy.ConcreteBtreeStrategy;
+import fr.inria.peerunit.btreeStrategy.ConcreteONSTreeStrategy;
 import fr.inria.peerunit.btreeStrategy.Context;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.util.LogFormat;
-import fr.inria.peerunit.ArchitectureImpl;
-import fr.inria.peerunit.btreeStrategy.ConcreteONSTreeStrategy;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**

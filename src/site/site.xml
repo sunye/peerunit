@@ -14,15 +14,16 @@
   <body>
     <menu name="Contents">
 	  <item name="Introduction" href="index.html"/>
-      <item name="Architecture" href="html/architecture.html"/>
-      <item name="Install" href="html/install.html"/>
-      <item name="Usage" href="html/howto.html"/>
-      <item name="Download" href="html/download.html"/>
+      <item name="Architecture" href="architecture.html"/>
+      <item name="Install" href="install.html"/>
+      <item name="Usage" href="howto.html"/>
+	  <item name="Example" href="example.html"/>
+      <item name="Download" href="download.html"/>
 	  <item name="Publications" href="publications.html"/>
     </menu>
     <menu name="Examples">
-      <item name="FreePastry" href="html/tests.html"/>
-      <item name="OpenChord" href="html/tests.html"/>
+      <item name="FreePastry" href="tests.html"/>
+      <item name="OpenChord" href="tests.html"/>
     </menu>
   </body>
 </project>

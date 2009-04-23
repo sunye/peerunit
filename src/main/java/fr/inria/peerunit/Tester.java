@@ -17,7 +17,7 @@ import fr.inria.peerunit.parser.MethodDescription;
  * @see fr.inria.peerunit.rmi.tester.TesterImpl
  * @see fr.inria.peerunit.tree.TreeTesterImpl 
  */
-public interface Tester extends Remote {
+public interface Tester extends Remote, StorageTester  {
 
 	/**
 	 * Execute a <i>test case action</i> thanks to it description.

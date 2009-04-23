@@ -20,7 +20,7 @@ public interface TestCase {
 
 
 	/**
-	 * For set the reference to the <i>tester</i> who  will execute the  <i>test case</i>
+	 * For set the reference to the <i>tester</i> which  will execute the  <i>test case</i>
 	 * in distributed  architecture. 
 	 * 
 	 * @param t the  reference of the subjacent <i>tester</i>

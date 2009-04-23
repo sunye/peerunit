@@ -1,7 +1,6 @@
 package fr.inria.peerunit.onstree.stationTree;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import fr.inria.peerunit.util.TesterUtil;
 

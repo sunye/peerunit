@@ -61,6 +61,8 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	private Verdicts v= Verdicts.PASS;
 
 	private BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
+	
+	private TesterUtil defaults = TesterUtil.instance;
 
 	/**
 	 * Used to give the identifier of the tester.
@@ -69,10 +71,17 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 * @throws RemoteException
 	 */
 	public TesterImpl(Coordinator c) throws RemoteException {
+		assert c != null;
+		
 		coord = c;
 		id = coord.getNewId(this);
 	}
 
+	public TesterImpl(Coordinator c, TesterUtil tu) throws RemoteException {
+		this(c);
+		assert tu != null;
+		defaults = tu;
+	}
 	/**
 	 * starts the tester
 	 * 
@@ -80,9 +89,9 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 */
 	public void run() {
 		while (!stop) {
-			MethodDescription md=null;
+			MethodDescription md = null;
 			try {
-				md = executionQueue.poll(TesterUtil.instance.getWaitForMethod(),TimeUnit.MILLISECONDS);
+				md = executionQueue.poll(defaults.getWaitForMethod(),TimeUnit.MILLISECONDS);
 				if(md != null){
 					invokationThread = new Thread(new Invoke(md));
 					invokationThread.start();
@@ -140,10 +149,10 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	private void createLogFiles(Class<? extends TestCaseImpl> c) {
 
 		LogFormat format = new LogFormat();
-		Level level = TesterUtil.instance.getLogLevel();
+		Level level = defaults.getLogLevel();
 
 		try {
-			String logFolder = TesterUtil.instance.getLogfolder();
+			String logFolder = defaults.getLogfolder();
 			
 			PEER_LOG = Logger.getLogger(c.getName());
 			FileHandler phandler;
@@ -214,7 +223,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			coord.methodExecutionFinished();
 			LOG.log(Level.FINEST,"Executed "+methodAnnotation);
 			if(executor.isLastMethod(methodAnnotation)){
-				LOG.log(Level.FINEST,"Test Case finished by annotation "+methodAnnotation);
+				LOG.log(Level.FINEST,"Test Case finished by annotation " + methodAnnotation);
 				executionInterrupt();
 			}
 		} catch (RemoteException e) {
@@ -319,8 +328,8 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			LOG.logStackTrace(e);		
 		} catch (IllegalAccessException e) {
 			LOG.logStackTrace(e);		
-		}catch (InvocationTargetException e) {	
-			Oracle oracle=new Oracle(e.getCause());
+		} catch (InvocationTargetException e) {	
+			Oracle oracle = new Oracle(e.getCause());
 			if(oracle.isPeerUnitFailure()){
 				error = false;
 			}
@@ -328,7 +337,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			LOG.logStackTrace(e);		    
 		} finally {
 			if (error) {
-				LOG.log(Level.WARNING," Executed in "+md.getName());
+				LOG.log(Level.WARNING," Executed in " + md.getName());
 				executionInterrupt();
 			} else{
 				LOG.log(Level.INFO," Executed "+md.getName());
