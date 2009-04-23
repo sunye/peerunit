@@ -2,15 +2,23 @@ package fr.inria.peerunit.btree;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.org.apache.xml.internal.utils.ListingErrorHandler;
 
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
@@ -25,6 +33,7 @@ import fr.inria.peerunit.util.TesterUtil;
 /**
  * 
  * @author Eduardo Almeida
+ * @author Aboubakar Koïta
  * @version 1.0
  * @since 1.0
  */
@@ -83,13 +92,33 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	 * @throws java.rmi.RemoteException
 	 */
 	public NodeImpl( Bootstrapper b) throws RemoteException {
+		try {
+//			InetAddress address = InetAddress.getLocalHost();
+			NetworkInterface networkInterface=NetworkInterface.getByName("eth1");
+			Enumeration<InetAddress> address=networkInterface.getInetAddresses();
+			ip=address.nextElement().getHostAddress();
+			int i=0;
+			while(address.hasMoreElements())
+			{
+				InetAddress address2=address.nextElement();
+				if(i==0)
+				{
+					ip=address2.getHostAddress();
+				}
+				System.out.println("Adresse: "+address2);
+			}
+			System.out.println("Adresse IP du  noeud="+ip);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		
 		boot=b;
 		UnicastRemoteObject.exportObject(this);	
 		id=boot.register(this);
 		
 		amIRoot = boot.isRoot(id);
 		
-		System.out.println("Log file to use : "+logFolder+ "/Node" + id + ".log");		
+		System.out.println("Log file to use : "+logFolder+ "/Node" + id + ".log");
 		
 		/**
 		 * Creating logfile
@@ -310,7 +339,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 				numberOfChildren++;
 		}
 		log.log(Level.FINEST, "[NodeImpl] I have these number of children: "+numberOfChildren);
-		
+		bt.getKeys();
 		amILeaf=bt.isLeaf();
 		synchronized (this) {
 			this.notify();	
@@ -331,6 +360,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 	}
 	
 	private synchronized void startTesters(){
+		System.out.println("Dans Synchronized");
 		/**
 		 * Initially we wait for the tree construction
 		 */
@@ -339,12 +369,12 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 		} catch (InterruptedException e) {
 			log.log(Level.SEVERE,e.toString());
 		}				
-		
+		System.out.println("Réveil");		
 		log.log(Level.INFO, "[NodeImpl] Starting "+bt.getKeys()+" Testers ");
 		/**
 		 * Using bt Node acknowledge the testers it must control, then start them
 		 */		
-		
+		System.out.println("Début création des testeurs");		
 		for(Comparable key:bt.getKeys()){			
 			if(key != null){
 				int peerID=new Integer(key.toString());				
@@ -353,6 +383,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			}
 		}	
 		
+		System.out.println("Testers créés");		
 		/**
 		 * Let's start testers
 		 */		
@@ -361,7 +392,7 @@ public class NodeImpl  implements Node,Serializable,Runnable{
 			t.setClass(klass);
 			new Thread(t).start();
 		}
-		
+		System.out.println("Testeurs démarrés");	
 		log.log(Level.FINEST, "[NodeImpl] Testers added: "+testers.size());
 	}
 
