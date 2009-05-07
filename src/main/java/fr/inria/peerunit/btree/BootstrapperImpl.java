@@ -29,21 +29,58 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 
 	private static final long serialVersionUID = 1L;
 
-	private static int expectedTesters=TesterUtil.instance.getExpectedTesters();
+	private  int expectedTesters=TesterUtil.instance.getExpectedTesters();
 	
 	private static final Logger log = Logger.getLogger(CoordinatorImpl.class
 			.getName());
 	
-	//static BTree btree=new BTree(TesterUtil.getTreeOrder());
-	static Context context;
+	private  Context context;
 	
-	private static Long time;
+	private  Long time;
 		
-	protected BootstrapperImpl() throws RemoteException {
-		super();		
+	
+	public BootstrapperImpl(TesterUtil defaults) {
+		
+		time=System.currentTimeMillis();
+		
+		switch (defaults.getTreeStrategy()) {
+		case 1:
+			context = new Context(new ConcreteBtreeStrategy());
+			log.info("[Bootstrapper] Strategy BTree !");
+			break;
+
+		case 2:
+			context = new Context(new ConcreteONSTreeStrategy());
+			log.info("[Bootstrapper] Strategy optimized station tree !");
+			break;
+			
+		case 3:
+			context = new Context(new ConcreteONSTreeStrategy());
+			break;
+			
+		default:
+			context = new Context(new ConcreteBtreeStrategy());
+			break;
+		}
+		
+		context.buildTree();
+		
+		time=System.currentTimeMillis()-time;		
+		log.info("[Bootstrapper] Built tree in: "+time+" msec");		
+		log.info("[Bootstrapper] Nodes expected :"+context.getNodesSize());
+		while (this.getRegistered() < expectedTesters) {
+			try {								
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		this.setCommunication();
+		log.info("[Bootstrapper] Finished !");
 	}
 	
-	public static void main(String[] args) throws RemoteException {	
+	public static void main(String[] args)  {	
 		// Log creation
 		FileHandler handler;
 		try {
@@ -63,47 +100,11 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 		// Check tester.coordination property
 		ckeckFileProperty();
 		
-		BootstrapperImpl boot=new BootstrapperImpl();
+		BootstrapperImpl boot=new BootstrapperImpl(TesterUtil.instance);
 		boot.startNet(boot);	
 		System.out.println("[Bootstrapper] Lets see the tree !");		
 
-		time=System.currentTimeMillis();
-		
-		switch (TesterUtil.instance.getTreeStrategy()) {
-		case 1:
-			context = new Context(new ConcreteBtreeStrategy());
-			System.out.println("[Bootstrapper] Strategy BTree !");
-			break;
 
-		case 2:
-			context = new Context(new ConcreteONSTreeStrategy());
-			System.out.println("[Bootstrapper] Strategy optimized station tree !");
-			break;
-			
-		case 3:
-			context = new Context(new ConcreteONSTreeStrategy());
-			break;
-			
-		default:
-			context = new Context(new ConcreteBtreeStrategy());
-			break;
-		}
-		
-		context.buildTree();
-		
-		time=System.currentTimeMillis()-time;		
-		System.out.println("[Bootstrapper] Built tree in: "+time+" msec");		
-		System.out.println("[Bootstrapper] Nodes expected :"+context.getNodesSize());
-		while (boot.getRegistered() < expectedTesters) {
-			try {								
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		boot.setCommunication();
-		System.out.println("[Bootstrapper] Finished !");
 	}	
 
 	private void startNet(BootstrapperImpl boot) {

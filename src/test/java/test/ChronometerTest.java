@@ -16,7 +16,6 @@ public class ChronometerTest {
 	private static String method = "test";
 	private static String method2 = "test2";
 	private static String method3 = "test3";
-	private static String method4 = "test4";
 	static long tp1 ;
 	static long tp2 ;
 	static long tp3 ;

@@ -4,13 +4,10 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 import fr.inria.peerunit.btree.BTree;
 import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.btree.TreeElements;
-import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
-import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -25,13 +22,13 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 	
 	private AtomicInteger registered = new AtomicInteger(0);
 	
-	private static int expectedTesters=TesterUtil.instance.getExpectedTesters();
+	//private static int expectedTesters=TesterUtil.instance.getExpectedTesters();
 	
 	private Map<Integer,Node> nodes = new HashMap<Integer,Node>();	
 	
-	private static final Logger log = Logger.getLogger(CoordinatorImpl.class
-			.getName());
-	private static Long time;	
+	//private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
+	
+	//private static Long time;	
 	
 	
 	public ConcreteBtreeStrategy() {

@@ -38,7 +38,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	private HashMap<String, TesterNodeHead_be> ipNodeHeadMap = new HashMap<String, TesterNodeHead_be>();
 	private HashMap<String, Node> remotesNodesMap = new HashMap<String, Node>();
 	private AtomicInteger registered = new AtomicInteger(0);
-	private static int expectedTesters = TesterUtil.instance.getExpectedTesters();
+	//private static int expectedTesters = TesterUtil.instance.getExpectedTesters();
 
 	/**
 	 * Constructor by default
