@@ -10,7 +10,7 @@ import java.util.Map;
  * @version 1.0
  * @since 1.0
  */
-public interface Architecture extends Remote{
+public interface Architecture extends Remote {
 	
 	/**
 	 * Used to cache testing global variables

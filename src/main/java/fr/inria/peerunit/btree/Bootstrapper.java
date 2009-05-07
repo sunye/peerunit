@@ -9,7 +9,7 @@ import fr.inria.peerunit.Architecture;
  * @version 1.0
  * @since 1.0
  */
-public interface Bootstrapper extends Architecture{
+public interface Bootstrapper extends Architecture {
 	/**
 	 * Adds a new BTree node to this Bootstrapper
 	 * 
@@ -26,5 +26,6 @@ public interface Bootstrapper extends Architecture{
 	 * @return
 	 * @throws RemoteException
 	 */
-	public boolean isRoot(int id) throws RemoteException;	
+	public boolean isRoot(int id) throws RemoteException;
+
 }

@@ -3,13 +3,7 @@
  */
 package fr.inria.peerunit.btreeStrategy;
 
-import fr.inria.peerunit.btree.Node;
-import fr.inria.peerunit.btree.TreeElements;
-import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
-
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,18 +13,17 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
+import mtr.MTRLib;
+import fr.inria.peerunit.btree.Node;
+import fr.inria.peerunit.btree.TreeElements;
 import fr.inria.peerunit.onstree.stationTree.Station;
 import fr.inria.peerunit.onstree.stationTree.StationRoot;
 import fr.inria.peerunit.onstree.stationTree.StationTree;
 import fr.inria.peerunit.onstree.stationTree.StationTreeBuilder;
-import fr.inria.peerunit.onstree.stationTree.mtr.MTRLib;
 import fr.inria.peerunit.onstree.testerTree.TesterNodeHead_be;
 import fr.inria.peerunit.onstree.testerTree.TesterTreeBuilder;
-import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**

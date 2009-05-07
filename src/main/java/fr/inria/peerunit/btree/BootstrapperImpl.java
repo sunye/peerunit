@@ -147,10 +147,7 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 		context.setCommunication();
 	}
 
-	public void put(Integer key, Object object) throws RemoteException {	
-		System.out.println("[Bootstrapper] Caching object "+object);
-		cacheMap.put(key, object);
-	}
+
 
 	/**
 	 * Check that the test.coordination property is correctly record in the configuration file tester.properties

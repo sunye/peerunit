@@ -14,7 +14,7 @@ public abstract class ArchitectureImpl implements Architecture {
 	/**
 	 * Caching global variables
 	 */
-	protected Map<Integer, Object> cacheMap = new ConcurrentHashMap<Integer, Object>();
+	private Map<Integer, Object> cacheMap = new ConcurrentHashMap<Integer, Object>();
 		
 	/**
 	 * Clears all global variables for this object
@@ -62,4 +62,5 @@ public abstract class ArchitectureImpl implements Architecture {
 	public void put(Integer key, Object object) throws RemoteException {
 		cacheMap.put(key, object);
 	}
+
 }
