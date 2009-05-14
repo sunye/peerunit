@@ -74,8 +74,6 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	public TesterImpl(Coordinator c) throws RemoteException {
 		assert c != null;
 		coord = c;
-		Tester stub = (Tester) UnicastRemoteObject.exportObject(this);
-		id = coord.getNewId(stub);
 	}
 
 	public TesterImpl(Coordinator c, TesterUtil tu) throws RemoteException {
@@ -117,7 +115,8 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	}
 
 	/**
-	 * Creates the peer and the test executor. Sends the actions to be executed to the executor. 
+	 * Creates the peer and the test executor. 
+	 * Sends the actions to be executed to the executor. 
 	 * 
 	 * @param c the peer to be created. 
 	 * @throws RemoteException
@@ -125,8 +124,10 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 */
 	public void export(Class<? extends TestCaseImpl> c) {
 
+	    
 		boolean exported = false;
 		try {
+		    	id = coord.getNewId(this);
 			createLogFiles(c);
 			executor = new ExecutorImpl(this,LOG);
 			coord.register(this, executor.register(c));

@@ -13,7 +13,7 @@
   </properties>
 
   <build>
-    <plugins>
+    <plugins>	
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -22,13 +22,13 @@
 	  <target>1.5</target>
         </configuration>
       </plugin>
-<!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>rmic-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
-            <id>rmi compilation</id>
+            <id>rmic-process-classes</id>
             <goals>
               <goal>rmic</goal>
             </goals>
@@ -38,8 +38,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
--->
+      </plugin>	
     </plugins>
   </build>
   <reporting>

@@ -120,8 +120,10 @@ public class TestRunner {
 	private void bootCentralized(Registry registry) throws RemoteException, NotBoundException {
 		Coordinator coord = (Coordinator) registry.lookup("Coordinator");		
 		TesterImpl tester = new TesterImpl(coord,defaults);
+		//Tester stub = (Tester) 
+		UnicastRemoteObject.exportObject(tester);
 		tester.export(testcase);
-		tester.run();	
+		tester.run();
 	}
 	
 	/**
