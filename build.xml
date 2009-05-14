@@ -8,13 +8,14 @@
 	<!-- directories -->
 	<property name="lib.dir" value="${basedir}/lib" />
 	<property name="src.dir" value="${basedir}/src/main/java/" />
+	<property name="rsc.dir" value="${basedir}/src/main/resources/" />
 	<property name="build.dir" value="${basedir}/target/classes/" />
 	<property name="temp.dir" value="${basedir}/temp" />
 	<property name="config.dir" value="${basedir}/config" />
 	<property name="openchord.dir" value="${temp.dir}/chord" />
 	<property name="temp.config.dir" value="${temp.dir}/config" />
 	<property name="scripts.dir" value="${basedir}/scripts" />
-	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="dist.dir" value="${basedir}/target" />
 	<property name="tests.dir" value="${basedir}/src/sample" />
 
 	<!-- urls for library installation -->
@@ -136,26 +137,31 @@
 	</target>
 
 	<target name="compile">
-	  	<javac srcdir="${src.dir}"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
-	   </javac>
+	  	<javac srcdir="${src.dir}"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" />
+		
+		<rmic classpath="${build.dir}" classname="fr.inria.peerunit.rmi.tester.TesterImpl" base="${build.dir}"></rmic>
+		<rmic classpath="${build.dir}" classname="fr.inria.peerunit.rmi.coord.CoordinatorImpl" base="${build.dir}"></rmic>
+	<!--
 	  	<javac srcdir="${tests.dir}"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" >
 	   </javac>
+	-->
 	</target>
 
 	<target name="build" description="Creates the peerunit jar file" depends="compile">
-		<!--<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.tester.TesterImpl" base="${build.dir}"></rmic>
-		<rmic classpath="${peerunit.jar}" classname="fr.inria.peerunit.rmi.coord.CoordinatorImpl" base="${build.dir}"></rmic>
-		-->
+
 		<jar basedir="${build.dir}" jarfile="${peerunit.jar}" update="no">
 		    <fileset
 		    	dir="${build.dir}"
 		    	includes="**/*.class"/>
+				<fileset dir="${rsc.dir}"/>
 		</jar>
+		<!--
 		<jar basedir="${tests.dir}" jarfile="${peerunit_tests.jar}" update="no">
 				    <fileset
 				    	dir="${tests.dir}"
 				    	includes="**/*.class"/>
 		</jar>
+	-->
 	</target>
 
 	<target name="deploy" depends="init">

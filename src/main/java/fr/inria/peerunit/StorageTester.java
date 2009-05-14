@@ -15,7 +15,7 @@ import java.util.Map;
  * @see Tester
  */
 
-public interface StorageTester extends VolatileTester{
+public interface StorageTester extends VolatileTester {
 	
 	/**
 	 * Allow to stock global variables who will accessed by all others
@@ -26,7 +26,7 @@ public interface StorageTester extends VolatileTester{
 	 * @param object
 	 *            the variable to stock
 	 */	
-	public void put(Integer key,Object object) ;
+	public void put(Integer key,Object object) throws RemoteException ;
 	
 
 	/**
@@ -46,7 +46,7 @@ public interface StorageTester extends VolatileTester{
 	 *            a key
 	 * @return object a variable corresponding to the key
 	 */
-	public Object get(Integer key) ;
+	public Object get(Integer key) throws RemoteException ;
 	
 	/**
 	 * Returns <tt>true</tt> if the key <tt>key</tt> can be map in the global
@@ -65,6 +65,6 @@ public interface StorageTester extends VolatileTester{
 	/**
 	 * Used to clear the Collection of testing global variables
 	 */	
-	public void clear() ;
+	public void clear() throws RemoteException;
 
 }

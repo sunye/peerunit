@@ -6,16 +6,15 @@ package fr.inria.peerunit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import fr.inria.peerunit.btree.Bootstrapper;
 import fr.inria.peerunit.btree.NodeImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.btree.Bootstrapper;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -79,9 +78,6 @@ public class TestRunner {
 		} catch (NotBoundException e) {
 			System.out.println("Error: Unable to bind.");
 			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			System.out.println("Error: MalformedURLException.");
-			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			System.out.println("Error: File not found.");
 			// TODO Auto-generated catch block
@@ -121,10 +117,9 @@ public class TestRunner {
 	 * @throws RemoteException because the method is distant
 	 * @throws NotBoundException if the <i>coordinator</i> is not bound in the RMI Registry
 	 */	
-	private void bootCentralized(Registry registry) throws RemoteException, NotBoundException{
+	private void bootCentralized(Registry registry) throws RemoteException, NotBoundException {
 		Coordinator coord = (Coordinator) registry.lookup("Coordinator");		
 		TesterImpl tester = new TesterImpl(coord,defaults);
-		UnicastRemoteObject.exportObject(tester);
 		tester.export(testcase);
 		tester.run();	
 	}
@@ -136,11 +131,9 @@ public class TestRunner {
 	 *        architecture.
 	 * @throws RemoteException because the method is distant
 	 * @throws NotBoundException if the <i>boostrapper</i> is not bound in the RMI Registry
-	 * @throws MalformedURLException if the <i>boostrapper</i> is not bound in the RMI Registry 
 	 */			
-	private void bootBTree(Registry registry) throws RemoteException, NotBoundException, MalformedURLException{		
+	private void bootBTree(Registry registry) throws RemoteException, NotBoundException{		
 		Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
-		//Bootstrapper boot = (Bootstrapper)Naming.lookup("//"+TesterUtil.getServerAddr()+"/Bootstrapper");            
 		NodeImpl node= new NodeImpl(boot);
 		node.export(testcase);
 		node.run();

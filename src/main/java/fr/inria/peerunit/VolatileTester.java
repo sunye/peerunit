@@ -1,5 +1,7 @@
 package fr.inria.peerunit;
 
+import java.rmi.RemoteException;
+
 /**
  * This interface define a volatile <i>tester</i>, more  a <i>tester</i> who can be stopped 
  * during the testing.
@@ -16,5 +18,5 @@ public interface VolatileTester {
 	/**
 	 * Stop the <i>tester</i>.
 	 */	
-	public void kill() ;
+	public void kill() throws RemoteException;
 }

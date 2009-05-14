@@ -120,8 +120,7 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 			waitAllTestersToQuit();
 			calculateVerdict(chrono);
 			cleanUp();
-		} catch (RemoteException re) {
-			log.warning(re.getMessage());
+			
 		} catch (InterruptedException ie) {
 			log.warning(ie.getMessage());
 		}
@@ -132,10 +131,8 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	 * Waits for all testers to quit and calculates the global verdict
 	 * for a test case.
 	 * @param chrono
-	 * @throws InterruptedException
 	 */
-	private synchronized void calculateVerdict(Chronometer chrono)
-			throws InterruptedException {
+	private  void calculateVerdict(Chronometer chrono) {
 
 		for (Map.Entry<String, ExecutionTime> entry : chrono.getExecutionTime()) {
 			log.log(Level.INFO, "Method " + entry.getKey() + " executed in "
@@ -149,11 +146,9 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	 * Dispatches actions to testers:
 	 * 
 	 * @param chrono
-	 * @throws RemoteException
 	 * @throws InterruptedException
 	 */
-	private void testcaseExecution(Chronometer chrono) throws RemoteException,
-			InterruptedException {
+	private void testcaseExecution(Chronometer chrono) throws InterruptedException {
 		
 		assert (status == IDLE) : "Trying to execute test case while not idle";
 		
@@ -175,11 +170,10 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	 * Dispatches a given action to a given set of testers.
 	 * @param testers
 	 * @param md
-	 * @throws RemoteException
 	 * @throws InterruptedException
 	 */
 	private  void dispatchMethodToTesters(Set<Tester> testers,
-			MethodDescription md) throws RemoteException, InterruptedException {
+			MethodDescription md) throws InterruptedException {
 		
 		assert (status = RUNNING) == RUNNING;
 		
@@ -292,7 +286,8 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 		executor.shutdown();
 	}
 
+	@Override
 	public String toString() {
-		return String.format("Coordinator(expected:%s,registered:%s,running:%s)", this.expectedTesters,this.registeredTesters.size(), this.runningTesters);
+		return String.format("Coordinator(expected:%s,registered:%s,running:%s)", this.expectedTesters, new Integer(this.registeredTesters.size()), this.runningTesters);
 	}
 }

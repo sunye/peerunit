@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -46,23 +47,23 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
 	private static Logger PEER_LOG;
 
-	final private Coordinator coord;
+	final transient private Coordinator coord;
 
-	final private int id;
+	private int id;
 
 	private boolean stop=false;
 
-	private Thread timeoutThread;
+	private transient Thread timeoutThread;
 
-	private Thread invokationThread;
+	private transient Thread invokationThread;
 
-	private ExecutorAbstract executor;
+	private transient ExecutorAbstract executor;
 
 	private Verdicts v= Verdicts.PASS;
 
-	private BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
+	private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
 	
-	private TesterUtil defaults = TesterUtil.instance;
+	private  TesterUtil defaults = TesterUtil.instance;
 
 	/**
 	 * Used to give the identifier of the tester.
@@ -72,9 +73,9 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 */
 	public TesterImpl(Coordinator c) throws RemoteException {
 		assert c != null;
-		
 		coord = c;
-		id = coord.getNewId(this);
+		Tester stub = (Tester) UnicastRemoteObject.exportObject(this);
+		id = coord.getNewId(stub);
 	}
 
 	public TesterImpl(Coordinator c, TesterUtil tu) throws RemoteException {
@@ -106,6 +107,12 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 			}
 		}
 		LOG.log(Level.INFO,"Stopping Tester ");
+		try {
+		    coord.quit(this, v);
+		} catch (RemoteException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
 		System.exit(0);
 	}
 
@@ -136,6 +143,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	}
 
 
+	@Override
 	public String toString() {
 		return "Tester: "+id;
 	}

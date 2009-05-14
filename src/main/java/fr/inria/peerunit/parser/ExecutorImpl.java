@@ -16,10 +16,10 @@ import fr.inria.peerunit.util.PeerUnitLogger;
 
 public class ExecutorImpl extends ExecutorAbstract implements Executor {
 
-	private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
-	private TesterImpl tester;
-	private TestCase testcase;
-	private PeerUnitLogger LOG;
+	//private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
+	//private TesterImpl tester;
+	//private TestCase testcase;
+	//private PeerUnitLogger LOG;
 	public ExecutorImpl(TesterImpl t, PeerUnitLogger l) {
 		this.tester = t;
 		this.LOG=l;

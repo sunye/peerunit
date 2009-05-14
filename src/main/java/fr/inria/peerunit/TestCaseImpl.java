@@ -91,7 +91,7 @@ public abstract class TestCaseImpl implements TestCase {
 	 * @param key the key of <code>object</object>
 	 * @param object the variable to stock
 	 */			
-	public void put(Integer key, Object object) {
+	public void put(Integer key, Object object) throws RemoteException{
 		tester.put(key, object);
 	}
 
@@ -108,7 +108,7 @@ public abstract class TestCaseImpl implements TestCase {
 	/**
 	 * Kill the <i>tester</i> executing the <i>test case</i>
 	 */	
-	public void kill() {
+	public void kill() throws RemoteException {
 		tester.kill();
 	}
 
@@ -118,7 +118,7 @@ public abstract class TestCaseImpl implements TestCase {
 	 * @param key a key
 	 * @return object  a variable corresponding to the key
 	 */	
-	public Object get(Integer key)  {
+	public Object get(Integer key)  throws RemoteException{
 		return tester.get(key);
 	}
 
@@ -137,7 +137,7 @@ public abstract class TestCaseImpl implements TestCase {
 	/**
 	 * Used to clear the Collection of testing global variables
 	 */		
-	public void clear() {
+	public void clear() throws RemoteException {
 		tester.clear();
 	}
 }

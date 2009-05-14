@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import mtr.MTRLib;
+//import mtr.MTRLib;
 import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.btree.TreeElements;
 import fr.inria.peerunit.onstree.stationTree.Station;
@@ -60,7 +60,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 		String host = null;
 		List<Station> listStation = new ArrayList<Station>();
 		int cpt = 1;
-		try {
+/*		try {
 			while ((host = reader.readLine()) != null) {
 				Station station = new Station(MTRLib.getRoute(host), host,
 						Integer.toString(cpt++));
@@ -68,7 +68,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}
+		}*/
 		// Rooter tree
 		StationRoot stRoot = new StationRoot("192.168.1.14", "BoutStrap");
 		StationTreeBuilder builder = new StationTreeBuilder();

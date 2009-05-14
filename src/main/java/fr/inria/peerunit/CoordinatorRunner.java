@@ -10,6 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
@@ -69,7 +70,7 @@ public class CoordinatorRunner {
 			stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
 			log.info("New Coordinator address is : " + defaults.getServerAddr());
 		} catch (Exception e) {
-
+		    log.log(Level.SEVERE, "Problem when running the coordinator", e);
 		}
 	}
 
@@ -81,8 +82,11 @@ public class CoordinatorRunner {
 			registry.bind("Coordinator", stub);
 			Thread coordination = new Thread(cii, "Coordinator");
 			coordination.start();
+			coordination.join();
+			log.info("Coordination thread finished");
+			registry.unbind("Coordinator");
 		} catch (Exception e) {
-
+		    log.log(Level.SEVERE, "Problem when running the coordinator", e);
 		}
 	}
 
