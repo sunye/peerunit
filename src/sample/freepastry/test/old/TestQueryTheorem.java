@@ -34,13 +34,13 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
 public class TestQueryTheorem extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestQueryTheorem.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	static TestQueryTheorem test;
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	boolean iAmBootsrapper=false;
 
@@ -63,8 +63,8 @@ public class TestQueryTheorem extends TestCaseImpl{
 			log.info("LocalPort:"+bindport);
 
 			// build the bootaddress from the command line args
-			InetAddress bootaddr = InetAddress.getByName(TesterUtil.getBootstrap());
-			Integer bootport = new Integer(TesterUtil.getBootstrapPort());
+			InetAddress bootaddr = InetAddress.getByName(TesterUtil.instance.getBootstrap());
+			Integer bootport = new Integer(TesterUtil.instance.getBootstrapPort());
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
@@ -179,7 +179,7 @@ public class TestQueryTheorem extends TestCaseImpl{
 		}
 
 		List<String> actuals= new ArrayList<String>();
-		while(timeToFind < TesterUtil.getLoopToFail()){
+		while(timeToFind < TesterUtil.instance.getLoopToFail()){
 			// Lookup first time
 			Id contentKey;
 			for (PastContent key : keySet) {

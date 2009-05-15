@@ -33,13 +33,13 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
 public class TestUpdateOnShrink  extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	static TestUpdateOnShrink test;
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	boolean iAmBootsrapper=false;
 
@@ -61,8 +61,8 @@ public class TestUpdateOnShrink  extends TestCaseImpl{
 			log.info("LocalPort:"+bindport);
 
 			// build the bootaddress from the command line args
-			InetAddress bootaddr = InetAddress.getByName(TesterUtil.getBootstrap());
-			Integer bootport = new Integer(TesterUtil.getBootstrapPort());
+			InetAddress bootaddr = InetAddress.getByName(TesterUtil.instance.getBootstrap());
+			Integer bootport = new Integer(TesterUtil.instance.getBootstrapPort());
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
@@ -186,7 +186,7 @@ public class TestUpdateOnShrink  extends TestCaseImpl{
 				List<Id>  previousVolatilesInTable= new ArrayList<Id>();
 
 				//Iterations to clean the volatiles from the routing table
-				int timeToClean=TesterUtil.getLoopToFail();
+				int timeToClean=TesterUtil.instance.getLoopToFail();
 				Id obj=null;
 				boolean tableUpdated=false;
 				while(timeToClean > 0){

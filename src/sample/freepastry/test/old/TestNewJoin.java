@@ -32,13 +32,13 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
 public class TestNewJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	static TestNewJoin test;
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	List<Id> firstSuccessors=new ArrayList<Id>();
 
@@ -62,8 +62,8 @@ public class TestNewJoin extends TestCaseImpl{
 			log.info("LocalPort:"+bindport);
 
 			// build the bootaddress from the command line args
-			InetAddress bootaddr = InetAddress.getByName(TesterUtil.getBootstrap());
-			Integer bootport = new Integer(TesterUtil.getBootstrapPort());
+			InetAddress bootaddr = InetAddress.getByName(TesterUtil.instance.getBootstrap());
+			Integer bootport = new Integer(TesterUtil.instance.getBootstrapPort());
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
@@ -221,7 +221,7 @@ public class TestNewJoin extends TestCaseImpl{
 				int timeToUpdate=0;
 				Id obj=null;
 				boolean tableUpdated=false;
-				while(!tableUpdated &&	timeToUpdate < TesterUtil.getLoopToFail()){
+				while(!tableUpdated &&	timeToUpdate < TesterUtil.instance.getLoopToFail()){
 					log.info("Verifying the "+timeToUpdate+" time ");
 					try {
 						Thread.sleep(sleep);

@@ -41,16 +41,16 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
 public class TestInsertJoinLeaveNew  extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestInsertJoinLeaveNew.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	List<Id> firstSuccessors=new ArrayList<Id>();
 
-	int churnPercentage=TesterUtil.getChurnPercentage();
+	int churnPercentage=TesterUtil.instance.getChurnPercentage();
 
 	Map<Integer,Object> objList=new HashMap<Integer, Object>();
 
@@ -93,13 +93,13 @@ public class TestInsertJoinLeaveNew  extends TestCaseImpl {
 		Random rand=new Random();
 		List<Integer> generated=new ArrayList<Integer>();
 		int chosePeer;
-		int netSize= (TesterUtil.getExpectedPeers()*TesterUtil.getChurnPercentage())/100;
+		int netSize= (TesterUtil.instance.getExpectedTesters()*TesterUtil.instance.getChurnPercentage())/100;
 		log.info("It will join "+netSize+" peers");
 		boolean peerChose;
 		while(netSize >0){
 			peerChose=false;
 			while(!peerChose){
-				chosePeer=rand.nextInt(TesterUtil.getExpectedPeers());
+				chosePeer=rand.nextInt(TesterUtil.instance.getExpectedTesters());
 				if(chosePeer!=0){
 					Integer genInt=new Integer(chosePeer);
 					if(!generated.contains(genInt)){
@@ -355,7 +355,7 @@ public class TestInsertJoinLeaveNew  extends TestCaseImpl {
 
 				List<String> actuals= new ArrayList<String>();
 				int timeToFind=0;
-				while(timeToFind < TesterUtil.getLoopToFail()){
+				while(timeToFind < TesterUtil.instance.getLoopToFail()){
 					log.info("Retrieval "+timeToFind);
 					for (Object actual : peer.getResultSet()) {
 						if(actual!=null){

@@ -32,7 +32,7 @@ public class TestInsertStableNew  extends TestCaseImpl {
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	List<String> expecteds= new ArrayList<String>();
 
@@ -120,7 +120,7 @@ public class TestInsertStableNew  extends TestCaseImpl {
 				log.info("I will insert");
 				List<PastContent> resultSet=new ArrayList<PastContent>();
 				// these variables are final so that the continuation can access them
-				for(int i=0; i < TesterUtil.getObjects() ; i++){
+				for(int i=0; i < TesterUtil.instance.getObjects() ; i++){
 					final String s = "test" + peer.env.getRandomSource().nextInt();
 						// build the past content
 					final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
@@ -161,7 +161,7 @@ public class TestInsertStableNew  extends TestCaseImpl {
 			List<String> actuals= new ArrayList<String>();
 
 			int timeToFind=0;
-			while(timeToFind < TesterUtil.getLoopToFail()){
+			while(timeToFind < TesterUtil.instance.getLoopToFail()){
 				for(PastContent p: cached){
 					peer.lookup(p.getId());
 				}

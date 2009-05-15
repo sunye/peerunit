@@ -33,7 +33,7 @@ public class TestInsertStable  extends TestCaseImpl {
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	@BeforeClass(place=-1,timeout=1000000)
 	public void start(){
@@ -54,8 +54,8 @@ public class TestInsertStable  extends TestCaseImpl {
 			log.info("LocalPort:"+bindport);
 
 			// build the bootaddress from the command line args
-			InetAddress bootaddr = InetAddress.getByName(TesterUtil.getBootstrap());
-			Integer bootport = new Integer(TesterUtil.getBootstrapPort());
+			InetAddress bootaddr = InetAddress.getByName(TesterUtil.instance.getBootstrap());
+			Integer bootport = new Integer(TesterUtil.instance.getBootstrapPort());
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
@@ -141,8 +141,8 @@ public class TestInsertStable  extends TestCaseImpl {
 		try {
 			Thread.sleep(test.getPeerName()*1000);
 			String s;
-			for(int i=0;i< TesterUtil.getObjects();i++){
-				s = "" + ((test.getPeerName()*TesterUtil.getObjects())+i);
+			for(int i=0;i< TesterUtil.instance.getObjects();i++){
+				s = "" + ((test.getPeerName()*TesterUtil.instance.getObjects())+i);
 
 				// 	build the past content
 				PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
@@ -164,7 +164,7 @@ public class TestInsertStable  extends TestCaseImpl {
 				List<PastContent> resultSet=new ArrayList<PastContent>();
 
 				// these variables are final so that the continuation can access them
-				for(int i=0; i < TesterUtil.getObjects() ; i++){
+				for(int i=0; i < TesterUtil.instance.getObjects() ; i++){
 					final String s = "test" + peer.env.getRandomSource().nextInt();
 
 					// build the past content
@@ -192,15 +192,15 @@ public class TestInsertStable  extends TestCaseImpl {
 			List<String> actuals= new ArrayList<String>();
 			List<String> expecteds= new ArrayList<String>();
 			int timeToFind=0;
-			while(timeToFind < TesterUtil.getLoopToFail()){
-				for(int i=0;i< TesterUtil.getObjects();i++){
+			while(timeToFind < TesterUtil.instance.getLoopToFail()){
+				for(int i=0;i< TesterUtil.instance.getObjects();i++){
 					log.info("lookup for "+i);
 					// Build the content
 					content=""+i;
 
 
 					if(bootstrapped(i)){
-						if(expecteds.size()<TesterUtil.getObjects()){
+						if(expecteds.size()<TesterUtil.instance.getObjects()){
 							expecteds.add(new MyPastContent(peer.localFactory.buildId(content), content).toString());
 						}
 						peer.lookup(peer.localFactory.buildId(content));

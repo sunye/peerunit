@@ -40,11 +40,11 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 
 	private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	private static DbCallback callback= new DbCallback();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	int actualResults=0;
 
@@ -88,7 +88,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 		}
 		URL bootstrapURL=null;
 		try {
-			bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+			bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}
@@ -168,7 +168,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 
 			List<String> listQuitPeers = new ArrayList<String>();
 			String quitPeer;
-			for(int i=0;i< TesterUtil.getExpectedPeers();i++){
+			for(int i=0;i< TesterUtil.instance.getExpectedTesters();i++){
 				if(i%2==0){
 					if(this.get(i)!=null){
 						quitPeer=this.get(i).toString().trim();
@@ -179,7 +179,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 			}
 			int timeToClean=0;
 			boolean tableUpdated=false;
-			while(timeToClean < TesterUtil.getLoopToFail()){
+			while(timeToClean < TesterUtil.instance.getLoopToFail()){
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {

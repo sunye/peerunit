@@ -23,15 +23,15 @@ public class Bootstrap {
 		
 		try {
 			// Log creation
-			FileHandler handler = new FileHandler(TesterUtil.getLogfolder()+"/bootstrap.log",true);
+			FileHandler handler = new FileHandler(TesterUtil.instance.getLogfolder()+"/bootstrap.log",true);
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);				
 			
 			/*String address = InetAddress.getLocalHost().toString();
 			address = address.substring(address.indexOf("/")+1,address.length());
-			localURL = new URL(protocol + "://"+address+":"+TesterUtil.getBootstrapPort()+"/");
-			log.info("[Bootstrap] Starting at: "+address+" "+TesterUtil.getBootstrapPort());*/
-			localURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");			
+			localURL = new URL(protocol + "://"+address+":"+TesterUtil.instance.getBootstrapPort()+"/");
+			log.info("[Bootstrap] Starting at: "+address+" "+TesterUtil.instance.getBootstrapPort());*/
+			localURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");			
 			log.info("[Dbpartout] Bootstrap : "+localURL);
 		} catch (MalformedURLException e){
 			throw new RuntimeException(e); 

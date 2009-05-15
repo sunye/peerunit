@@ -32,9 +32,9 @@ import fr.inria.peerunit.util.TesterUtil;
  */
 public class TestNewJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	boolean iAmBootsrapper=false;
 
@@ -91,7 +91,7 @@ public class TestNewJoin extends TestCaseImpl{
 				}
 				URL bootstrapURL=null;
 				try {
-					bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+					bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 				} catch (MalformedURLException e1) {
 					e1.printStackTrace();
 				}
@@ -173,7 +173,7 @@ public class TestNewJoin extends TestCaseImpl{
 				}
 				URL bootstrapURL=null;
 				try {
-					bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+					bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 				} catch (MalformedURLException e1) {
 					e1.printStackTrace();
 				}
@@ -213,7 +213,7 @@ public class TestNewJoin extends TestCaseImpl{
 				String successor=null;
 				int timeToUpdate=0;
 				boolean tableUpdated=false;
-				while(!tableUpdated &&	timeToUpdate < TesterUtil.getLoopToFail()){
+				while(!tableUpdated &&	timeToUpdate < TesterUtil.instance.getLoopToFail()){
 					for (int i = 0; i < succ.length; i++) {
 						if(i>0){
 							successor=succ[i].toString().trim();

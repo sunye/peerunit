@@ -28,11 +28,11 @@ import freepastry.Peer;
 public class TestUpdateOnShrink  extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	boolean iAmBootsrapper=false;
 
@@ -118,7 +118,7 @@ public class TestUpdateOnShrink  extends TestCaseImpl {
 				List<Id>  previousVolatilesInTable= new ArrayList<Id>();
 
 				//Iterations to clean the volatiles from the routing table
-				int timeToClean=TesterUtil.getLoopToFail();
+				int timeToClean=TesterUtil.instance.getLoopToFail();
 				Id obj=null;
 				boolean tableUpdated=false;
 				while((timeToClean > 0)&&(!tableUpdated)){

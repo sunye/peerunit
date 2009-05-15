@@ -21,12 +21,12 @@ public class Network {
 
 		// the port to use locally
 		//int bindport = port.getPort(); 
-		int bootport=TesterUtil.getBootstrapPort();
+		int bootport=TesterUtil.instance.getBootstrapPort();
 		
 		// build the bootaddress from the command line args			
 		InetAddress bootIP=null;
 		try {
-			bootIP = InetAddress.getByName(TesterUtil.getBootstrap());
+			bootIP = InetAddress.getByName(TesterUtil.instance.getBootstrap());
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

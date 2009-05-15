@@ -35,9 +35,9 @@ import fr.inria.peerunit.util.TesterUtil;
 public class TestPeerIsolation extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestPeerIsolation.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	boolean iAmBootsrapper=false;
 
@@ -100,7 +100,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 		}
 		URL bootstrapURL=null;
 		try {
-			bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+			bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}
@@ -226,7 +226,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 				int timeToClean=0;
 
 				boolean tableUpdated=false;
-				while(!tableUpdated &&	timeToClean < TesterUtil.getLoopToFail()){
+				while(!tableUpdated &&	timeToClean < TesterUtil.instance.getLoopToFail()){
 					log.info(" Let's verify the table "+timeToClean);
 					try {
 						Thread.sleep(1000);

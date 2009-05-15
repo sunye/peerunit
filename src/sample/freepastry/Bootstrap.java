@@ -18,7 +18,7 @@ public class Bootstrap {
 		// Log creation
 		FileHandler handler;
 		try {
-			handler = new FileHandler(TesterUtil.getLogfolder()+"/bootstrap.log",true);
+			handler = new FileHandler(TesterUtil.instance.getLogfolder()+"/bootstrap.log",true);
 			handler.setFormatter(new LogFormat());
 			log.addHandler(handler);
 		} catch (SecurityException e) {			

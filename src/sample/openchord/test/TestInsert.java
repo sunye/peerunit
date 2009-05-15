@@ -35,11 +35,11 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
  */
 public class TestInsert extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestInsert.class.getName());
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	static TestInsert test;
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	boolean iAmBootsrapper=false;
 
@@ -103,7 +103,7 @@ public class TestInsert extends TestCaseImpl{
 		}
 		URL bootstrapURL=null;
 		try {
-			bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+			bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}
@@ -178,7 +178,7 @@ public class TestInsert extends TestCaseImpl{
 		try {
 
 			int timeToFind=0;
-			while(timeToFind < TesterUtil.getLoopToFail()){
+			while(timeToFind < TesterUtil.instance.getLoopToFail()){
 				for (int i = 0; i < OBJECTS; i++) {
 					data = ""+ i;
 					key=new StringKey(data);

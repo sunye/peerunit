@@ -34,13 +34,13 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
 public class TestQueryTheoremC extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestQueryTheoremC.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	static TestQueryTheoremC test;
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 
 	@BeforeClass(place=-1,timeout=1000000)
@@ -51,7 +51,7 @@ public class TestQueryTheoremC extends TestCaseImpl{
 	public void starting(){
 //		 Loads pastry settings
 		Environment env = new Environment();
-		int netSize=TesterUtil.getExpectedPeers();
+		int netSize=TesterUtil.instance.getExpectedTesters();
 		if(netSize<10)
 			netSize=10;
 
@@ -62,8 +62,8 @@ public class TestQueryTheoremC extends TestCaseImpl{
 			log.info("LocalPort:"+bindport);
 			log.info("Bootstraps on system "+netSize/10);
 			// build the bootaddress from the command line args
-			InetAddress bootaddr = InetAddress.getByName(TesterUtil.getBootstrap());
-			Integer bootport = new Integer(TesterUtil.getBootstrapPort());
+			InetAddress bootaddr = InetAddress.getByName(TesterUtil.instance.getBootstrap());
+			Integer bootport = new Integer(TesterUtil.instance.getBootstrapPort());
 			InetSocketAddress bootaddress;
 
 			if(test.getPeerName()==0){

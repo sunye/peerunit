@@ -91,8 +91,13 @@ public abstract class TestCaseImpl implements TestCase {
 	 * @param key the key of <code>object</object>
 	 * @param object the variable to stock
 	 */			
-	public void put(Integer key, Object object) throws RemoteException{
-		tester.put(key, object);
+	public void put(Integer key, Object object) {
+		try {
+			tester.put(key, object);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -108,8 +113,13 @@ public abstract class TestCaseImpl implements TestCase {
 	/**
 	 * Kill the <i>tester</i> executing the <i>test case</i>
 	 */	
-	public void kill() throws RemoteException {
-		tester.kill();
+	public void kill()  {
+		try {
+			tester.kill();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -118,8 +128,15 @@ public abstract class TestCaseImpl implements TestCase {
 	 * @param key a key
 	 * @return object  a variable corresponding to the key
 	 */	
-	public Object get(Integer key)  throws RemoteException{
-		return tester.get(key);
+	public Object get(Integer key)  {
+		Object result = null;
+		try {
+			result = tester.get(key);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
 	}
 
     /**

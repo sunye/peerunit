@@ -89,7 +89,7 @@ public class BTreeNode extends AbstractBTreeNode implements Serializable{
 	 * @param returnNode the node associated to the added key
 	 * @return the new root's key
 	 */
-	Comparable insert(Comparable newKey,BTreeNode returnNode) {
+	Comparable insert(Comparable newKey, BTreeNode returnNode) {
 		// Einfügeknoten suchen (rekursiv)
 		if (!isLeaf()) {
 			for (int i = 0; i < children.length; i++) {

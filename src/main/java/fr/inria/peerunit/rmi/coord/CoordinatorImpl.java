@@ -32,10 +32,10 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 
 	private static final long serialVersionUID = 1L;
 	
-	private static int STARTING = 0;
-	private static int IDLE = 1;
-	private static int RUNNING = 2;
-	private static int LEAVING = 3;
+	private static final int STARTING = 0;
+	private static final int IDLE = 1;
+	private static final int RUNNING = 2;
+	private static final int LEAVING = 3;
 	private int status = STARTING;
 	
 

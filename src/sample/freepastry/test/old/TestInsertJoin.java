@@ -39,17 +39,17 @@ import freepastry.Peer;
 public class TestInsertJoin  extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestInsertJoin.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	static TestInsertJoin test;
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	List<Id> firstSuccessors=new ArrayList<Id>();
 
-	int churnPercentage=TesterUtil.getChurnPercentage();
+	int churnPercentage=TesterUtil.instance.getChurnPercentage();
 
 	Map<Integer,Object> objList=new HashMap<Integer, Object>();
 
@@ -73,8 +73,8 @@ public class TestInsertJoin  extends TestCaseImpl {
 			log.info("LocalPort:"+bindport);
 
 			// build the bootaddress from the command line args
-			InetAddress bootaddr = InetAddress.getByName(TesterUtil.getBootstrap());
-			Integer bootport = new Integer(TesterUtil.getBootstrapPort());
+			InetAddress bootaddr = InetAddress.getByName(TesterUtil.instance.getBootstrap());
+			Integer bootport = new Integer(TesterUtil.instance.getBootstrapPort());
 			InetSocketAddress bootaddress;
 
 			bootaddress = new InetSocketAddress(bootaddr,bootport.intValue());
@@ -102,13 +102,13 @@ public class TestInsertJoin  extends TestCaseImpl {
 		Random rand=new Random();
 		List<Integer> generated=new ArrayList<Integer>();
 		int chosePeer;
-		int netSize= (TesterUtil.getExpectedPeers()*TesterUtil.getChurnPercentage())/100;
+		int netSize= (TesterUtil.instance.getExpectedTesters()*TesterUtil.instance.getChurnPercentage())/100;
 		log.info("It will join "+netSize+" peers");
 		boolean peerChose;
 		while(netSize >0){
 			peerChose=false;
 			while(!peerChose){
-				chosePeer=rand.nextInt(TesterUtil.getExpectedPeers());
+				chosePeer=rand.nextInt(TesterUtil.instance.getExpectedTesters());
 				if(chosePeer!=0){
 					Integer genInt=new Integer(chosePeer);
 					if(!generated.contains(genInt)){
@@ -306,7 +306,7 @@ public class TestInsertJoin  extends TestCaseImpl {
 
 			List<String> actuals= new ArrayList<String>();
 			int timeToFind=0;
-			while(timeToFind < TesterUtil.getLoopToFail()){
+			while(timeToFind < TesterUtil.instance.getLoopToFail()){
 				log.info("Retrieval "+timeToFind);
 				for (Object actual : peer.getResultSet()) {
 					if(actual!=null){

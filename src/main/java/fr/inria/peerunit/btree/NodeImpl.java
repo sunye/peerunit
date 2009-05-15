@@ -5,12 +5,10 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,12 +16,9 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.org.apache.xml.internal.utils.ListingErrorHandler;
-
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.parser.ExecutorImpl;
 import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
-import fr.inria.peerunit.parser.ExecutorAbstract;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.test.oracle.Verdicts;

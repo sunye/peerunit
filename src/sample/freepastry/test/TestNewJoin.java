@@ -26,11 +26,11 @@ import freepastry.Peer;
 public class TestNewJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	Peer peer=new Peer();
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	List<Id> firstSuccessors=new ArrayList<Id>();
 
@@ -125,7 +125,7 @@ public class TestNewJoin extends TestCaseImpl{
 				int timeToUpdate=0;
 				Id obj=null;
 				boolean tableUpdated=false;
-				while(!tableUpdated &&	timeToUpdate < TesterUtil.getLoopToFail()){
+				while(!tableUpdated &&	timeToUpdate < TesterUtil.instance.getLoopToFail()){
 					log.info("Verifying the "+timeToUpdate+" time ");
 					try {
 						Thread.sleep(1000);

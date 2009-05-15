@@ -35,9 +35,9 @@ import fr.inria.peerunit.util.TesterUtil;
  */
 public class TestInsertJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestInsertJoin.class.getName());
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 	
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	boolean iAmBootsrapper=false;
 
@@ -98,7 +98,7 @@ public class TestInsertJoin extends TestCaseImpl{
 				}
 				URL bootstrapURL=null;
 				try {
-					bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+					bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 				} catch (MalformedURLException e1) {
 					e1.printStackTrace();
 				}
@@ -133,13 +133,13 @@ public class TestInsertJoin extends TestCaseImpl{
 		Random rand=new Random();
 		List<Integer> generated=new ArrayList<Integer>();
 		int chosePeer;
-		int netSize= (TesterUtil.getExpectedPeers()*TesterUtil.getChurnPercentage())/100;
+		int netSize= (TesterUtil.instance.getExpectedTesters()*TesterUtil.instance.getChurnPercentage())/100;
 		log.info("It will join "+netSize+" peers");
 		boolean peerChose;
 		while(netSize >0){
 			peerChose=false;
 			while(!peerChose){
-				chosePeer=rand.nextInt(TesterUtil.getExpectedPeers());
+				chosePeer=rand.nextInt(TesterUtil.instance.getExpectedTesters());
 				if(chosePeer!=0){
 					Integer genInt=new Integer(chosePeer);
 					if(!generated.contains(genInt)){
@@ -181,7 +181,7 @@ public class TestInsertJoin extends TestCaseImpl{
 				}
 				URL bootstrapURL=null;
 				try {
-					bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+					bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 				} catch (MalformedURLException e1) {
 					e1.printStackTrace();
 				}
@@ -280,7 +280,7 @@ public class TestInsertJoin extends TestCaseImpl{
 				}
 				URL bootstrapURL=null;
 				try {
-					bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+					bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 				} catch (MalformedURLException e1) {
 					e1.printStackTrace();
 				}

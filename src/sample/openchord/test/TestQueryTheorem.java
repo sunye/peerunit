@@ -49,13 +49,13 @@ public class TestQueryTheorem extends TestCaseImpl{
 
 	private static Logger log = Logger.getLogger(TestQueryTheorem.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	private static DbCallback callback= new DbCallback();
 
 	static TestQueryTheorem test;
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	int actualResults=0;
 
@@ -86,8 +86,8 @@ public class TestQueryTheorem extends TestCaseImpl{
 		try {
 			String address = InetAddress.getLocalHost().toString();
 			address = address.substring(address.indexOf("/")+1,address.length());
-			bootstrapURL = new URL(protocol + "://"+address+":"+TesterUtil.getPort()+"/");
-			log.info("[before] Starting at: "+address+" "+TesterUtil.getPort());
+			bootstrapURL = new URL(protocol + "://"+address+":"+TesterUtil.instance.getPort()+"/");
+			log.info("[before] Starting at: "+address+" "+TesterUtil.instance.getPort());
 
 		} catch (MalformedURLException e){
 			throw new RuntimeException(e);
@@ -141,7 +141,7 @@ public class TestQueryTheorem extends TestCaseImpl{
 			}
 			URL bootstrapURL=null;
 			try {
-				bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+				bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 			} catch (MalformedURLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -151,7 +151,7 @@ public class TestQueryTheorem extends TestCaseImpl{
 
 			if(bootstrapURL==null){
 				try {
-					bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getPort()+"/");
+					bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getPort()+"/");
 					log.info("[TestFind]  Forced Bootstrap: "+bootstrapURL);
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
@@ -247,7 +247,7 @@ public class TestQueryTheorem extends TestCaseImpl{
 			}
 		}
 		int timeToFind=0;
-		while(timeToFind < TesterUtil.getLoopToFail()){
+		while(timeToFind < TesterUtil.instance.getLoopToFail()){
 			for (int i = 0; i < OBJECTS; i++) {
 				data = ""+ i;
 				key=new StringKey(data);

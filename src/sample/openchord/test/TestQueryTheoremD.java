@@ -44,13 +44,13 @@ public class TestQueryTheoremD extends TestCaseImpl{
 
 	private static Logger log = Logger.getLogger(TestQueryTheorem.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+	private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	private static DbCallback callback= new DbCallback();
 
 	static TestQueryTheoremD test;
 
-	int sleep=TesterUtil.getSleep();
+	int sleep=TesterUtil.instance.getSleep();
 
 	int actualResults=0;
 
@@ -93,7 +93,7 @@ public class TestQueryTheoremD extends TestCaseImpl{
 		}
 		URL bootstrapURL=null;
 		try {
-			bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
+			bootstrapURL = new URL(protocol + "://"+TesterUtil.instance.getBootstrap()+":"+TesterUtil.instance.getBootstrapPort()+"/");
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}

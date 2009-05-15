@@ -133,7 +133,7 @@ public class Peer implements Application{
 		PastryIdFactory idf = new rice.pastry.commonapi.PastryIdFactory(env);
 
 		// Setting log(n) replicas
-		Double replica=Math.log(TesterUtil.getExpectedPeers())/Math.log(2);
+		Double replica=Math.log(TesterUtil.instance.getExpectedTesters())/Math.log(2);
 
 		//	create a different storage root for each node
 		String storageDirectory = "./storage"+node.getId().hashCode();
