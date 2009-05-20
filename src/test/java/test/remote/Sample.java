@@ -30,10 +30,5 @@ public class Sample extends TestCaseImpl {
 		assert false;
 	}	
 	
-	public void setTester(Tester ti) {
-
-		// TODO Auto-generated method stub
-		
-	}
 
 }

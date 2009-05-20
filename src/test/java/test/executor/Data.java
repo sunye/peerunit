@@ -55,8 +55,4 @@ public class Data extends TestCaseImpl {
 	public void end() {
 	}
 
-	public void setTester(Tester ti) {
-		// TODO Auto-generated method stub
-		
-	}
 }

@@ -20,7 +20,6 @@ public class SimpleTest extends TestCaseImpl{
 
 	@Test(place=-1,timeout=1000, name = "action2", step = 1)
 	public void action2(){
-		
 	}
 
 
@@ -52,10 +51,11 @@ public class SimpleTest extends TestCaseImpl{
 	}
 
 
+	/*
 	public void setTester(Tester t) {
 		// TODO Auto-generated method stub
 		
-	}
+	}*/
 
 }
 

@@ -124,18 +124,19 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 	 */
 	public void export(Class<? extends TestCaseImpl> c) {
 
-	    
 		boolean exported = false;
 		try {
-		    	id = coord.getNewId(this);
+			id = coord.getNewId(this);
+			System.out.println("Tester id: " + id);
+
 			createLogFiles(c);
-			executor = new ExecutorImpl(this,LOG);
+			executor = new ExecutorImpl(this, LOG);
 			coord.register(this, executor.register(c));
 			exported = true;
 		} catch (RemoteException e) {
-			LOG.logStackTrace(e);			    
+			LOG.logStackTrace(e);
 		} catch (SecurityException e) {
-			LOG.logStackTrace(e);			    
+			LOG.logStackTrace(e);
 		} finally {
 			if (!exported) {
 				executionInterrupt();
