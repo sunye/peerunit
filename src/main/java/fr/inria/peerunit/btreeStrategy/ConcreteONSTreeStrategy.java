@@ -53,24 +53,23 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	 * @see fr.inria.peerunit.btreeStrategy.TreeStrategy#buildTree()
 	 */
 	public void buildTree() {
-		String hostsFile = TesterUtil.instance.getHostsFilePath();
 		InputStream input = ConcreteONSTreeStrategy.class
-				.getResourceAsStream(hostsFile);
+				.getResourceAsStream("/hosts.txt");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 		String host = null;
 		List<Station> listStation = new ArrayList<Station>();
 		int cpt = 1;
-/*		try {
+		try {
 			while ((host = reader.readLine()) != null) {
-				Station station = new Station(MTRLib.getRoute(host), host,
+				Station station = new Station(traceroute.TraceRoute.getRoute(host), host,
 						Integer.toString(cpt++));
 				listStation.add(station);
 			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}*/
+		}
 		// Rooter tree
-		StationRoot stRoot = new StationRoot("192.168.1.14", "BoutStrap");
+		StationRoot stRoot = new StationRoot(TesterUtil.instance.getServerAddr(), "BoutStrap");
 		StationTreeBuilder builder = new StationTreeBuilder();
 		builder.buildNetTree(listStation, stRoot);
 
