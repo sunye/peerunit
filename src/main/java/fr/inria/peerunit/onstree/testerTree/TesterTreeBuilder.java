@@ -2,6 +2,7 @@ package fr.inria.peerunit.onstree.testerTree;
 
 import fr.inria.peerunit.onstree.stationTree.StationContainer;
 import fr.inria.peerunit.onstree.stationTree.StationRoot;
+import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.util.Util;
 
 ;
@@ -9,7 +10,7 @@ import fr.inria.peerunit.util.Util;
 public class TesterTreeBuilder {
 	private static long ID_auto = 0;
 	private static int TesterNumberCreated = 0;
-	private int lTesterMaxByStation = 15;
+	private int lTesterMaxByStation =TesterUtil.instance.getMaxTesterByStation();
 	private int lTesterMax = 0;
 
 	public TesterNodeHead_be buildTesterTree(StationContainer sTree,
