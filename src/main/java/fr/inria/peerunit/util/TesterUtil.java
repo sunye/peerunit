@@ -338,9 +338,15 @@ public class TesterUtil {
 	 *  
 	 * @return the path of the hosts file.
 	 */
-	public  String getHostsFilePath() {
+/*	public  String getHostsFilePath() {
 
 		return this.getProperty("tester.hostfile");
+	}
+	*/
+	
+	public int getMaxTesterByStation()
+	{
+		return Integer.valueOf(this.getProperty("tester.maxtesterbystation"));
 	}
 }
 
