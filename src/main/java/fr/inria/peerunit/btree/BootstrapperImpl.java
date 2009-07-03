@@ -64,6 +64,7 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 		}
 		
 		context.buildTree();
+		startNet(this);
 		
 		time=System.currentTimeMillis()-time;		
 		log.info("[Bootstrapper] Built tree in: "+time+" msec");		
@@ -101,7 +102,7 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 		ckeckFileProperty();
 		
 		BootstrapperImpl boot=new BootstrapperImpl(TesterUtil.instance);
-		boot.startNet(boot);	
+//		boot.startNet(boot);  	
 		System.out.println("[Bootstrapper] Lets see the tree !");		
 
 
