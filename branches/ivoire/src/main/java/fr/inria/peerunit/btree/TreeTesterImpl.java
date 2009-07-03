@@ -46,8 +46,8 @@ public class TreeTesterImpl implements TreeTester,Runnable {
 		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] Log file to use : "+logFolder+
 				"/tester" + id + ".log");
 		TESTER_LOG.log(Level.INFO, "[TreeTesterImpl] My Tester ID is: "+id);	
-		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl] instance ");
-		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl]  BOOT ID "+boot);
+		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl"+id+"] instance ");
+		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl"+id+"]  BOOT ID "+boot);
 	}
 	
 	
@@ -56,7 +56,7 @@ public class TreeTesterImpl implements TreeTester,Runnable {
 	 * If the tester has been killed, it can't be started again
 	 */
 	public  void run() {			
-		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl] start ");		
+		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl"+id+"] start ");		
 		while(executing){
 			synchronized (this) {			
 				try {
@@ -69,7 +69,7 @@ public class TreeTesterImpl implements TreeTester,Runnable {
 	}
 
 	public  void inbox(MethodDescription md) {
-		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl]  Tester "+id+" invoking");
+		TESTER_LOG.log(Level.FINEST, "[TreeTesterImpl"+id+"]  Tester "+id+" invoking");
 		invoke(md);
 	}
 	
@@ -138,11 +138,11 @@ public class TreeTesterImpl implements TreeTester,Runnable {
 				TESTER_LOG.logStackTrace(e);
 			} finally {
 				if (error) {
-					TESTER_LOG.log(Level.WARNING,"[TreeTesterImpl]  Executed in "+md.getName());									
+					TESTER_LOG.log(Level.WARNING,"[TreeTesterImpl"+id+"]  Executed in "+md.getName());									
 				} else{
-					TESTER_LOG.log(Level.INFO,"[TreeTesterImpl]  Executed "+md.getName());			
+					TESTER_LOG.log(Level.INFO,"[TreeTesterImpl"+id+"]  Executed "+md.getName());			
 					if(executor.isLastMethod(md.getAnnotation())){
-						TESTER_LOG.log(Level.FINEST,"[TreeTesterImpl] Test Case finished by annotation "+md.getAnnotation());			
+						TESTER_LOG.log(Level.FINEST,"[TreeTesterImpl"+id+"] Test Case finished by annotation "+md.getAnnotation());			
 						TESTER_LOG.log(Level.FINEST,"Local verdict "+v);				
 						isLastMethod=true;
 					}
@@ -172,7 +172,7 @@ public class TreeTesterImpl implements TreeTester,Runnable {
 	 * @return the tester's id
 	 */
 	public int getID(){
-		TESTER_LOG.log(Level.FINEST,"[TreeTesterImpl]  Tester ID "+id);
+		TESTER_LOG.log(Level.FINEST,"[TreeTesterImpl"+id+"]  Tester ID "+id);
 		return this.id;
 	}
 	
