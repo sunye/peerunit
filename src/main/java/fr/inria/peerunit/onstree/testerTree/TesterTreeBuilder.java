@@ -33,7 +33,7 @@ public class TesterTreeBuilder {
 			}
 
 			// Copy TesterNode root to TesterNodeHead
-			TesterNode_be root = tree.getRoot();
+			TesterNode root = tree.getRoot();
 			if (root != null) {
 				// color of the dot graph
 				Util.initColor();
@@ -84,7 +84,7 @@ public class TesterTreeBuilder {
 		}
 
 		// Copy TesterNode root to TesterNodeHead
-		TesterNode_be root = tree.getRoot();
+		TesterNode root = tree.getRoot();
 		if (root != null) {
 			// color of the dot graph
 			sColor = Util.getColor();
