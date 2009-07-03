@@ -4,14 +4,14 @@ import java.util.List;
 
 
 /**
- * @author Bouba
+ * @author Booba
  * interface Node
  */
 public interface StationContainer
 {
 	Node addStation(Station st);
-	StationRoot getStRoot();
+//	StationRoot getStRoot();
 	int getChildrenNumber();
 	List<Node> getListChildStation();
-	Station getStation();  // XXX	
+	AbstractStation getStation();  // XXX	
 }
