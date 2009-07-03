@@ -12,12 +12,12 @@ public interface TesterContainer
 	/** Return the child Right of the tree
 	 * @return an object TesterNode_be
 	 */
-	public TesterNode_be getChildR();
+	public TesterNode getChildR();
 	
 	/** Return the child Left of the tree
 	 * @return an object TesterNode_be
 	 */
-	public TesterNode_be getChildL();
+	public TesterNode getChildL();
 	
 	
 	/** Set the parent and update parents of children.
