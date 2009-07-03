@@ -10,8 +10,8 @@ public class StationTreeBuilder
 	public void buildNetTree(List<Station> listStation, StationRoot stRoot)
 	{
 		String currentNode = "";
-		Router currentRouter = new Router("localhost");
-		Router newRouter = new Router("localhost");
+		Router currentRouter = new Router(TesterUtil.instance.getServerAddr());
+		Router newRouter = new Router(TesterUtil.instance.getServerAddr());
 		int numNode = 0;
 		
 		if(TesterUtil.instance.getStationTreeTrace() == 1)
