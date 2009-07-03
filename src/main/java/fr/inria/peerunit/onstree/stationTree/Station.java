@@ -2,6 +2,8 @@ package fr.inria.peerunit.onstree.stationTree;
 
 import java.util.ArrayList;
 
+import org.w3c.dom.views.AbstractView;
+
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -9,7 +11,7 @@ import fr.inria.peerunit.util.TesterUtil;
  * @author Aboubakar Koïta 
  * 
  */
-public class Station
+public class Station   extends  AbstractStation
 {
 	private Integer nbSaut;
 	private ArrayList<String> listSaut;
