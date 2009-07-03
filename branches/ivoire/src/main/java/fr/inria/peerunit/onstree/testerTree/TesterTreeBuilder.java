@@ -1,7 +1,9 @@
 package fr.inria.peerunit.onstree.testerTree;
 
+import fr.inria.peerunit.onstree.stationTree.Node;
 import fr.inria.peerunit.onstree.stationTree.StationContainer;
 import fr.inria.peerunit.onstree.stationTree.StationRoot;
+import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.util.Util;
 
 ;
@@ -9,22 +11,22 @@ import fr.inria.peerunit.util.Util;
 public class TesterTreeBuilder {
 	private static long ID_auto = 0;
 	private static int TesterNumberCreated = 0;
-	private int lTesterMaxByStation = 15;
+	private int lTesterMaxByStation =TesterUtil.instance.getMaxTesterByStation();
 	private int lTesterMax = 0;
 
 	public TesterNodeHead_be buildTesterTree(StationContainer sTree,
 			int testNumber) {
 		int iComparable = 1;
-		int BeginTesterNumber = 0;
+		int nodeFirstTesterNumber = 0;
 		String sColor = "green";
-		StationRoot stRoot = sTree.getStRoot();
+		StationRoot stRoot = (StationRoot) sTree.getStation();
 		TesterTree tree = new TesterTree();
 		TesterNodeHead_be testerNH_root = new TesterNodeHead_be();
 		lTesterMax = testNumber;
 		if (stRoot != null && BuildPossible(sTree)) {
-			BeginTesterNumber = TesterNumberCreated;
-			for (iComparable = BeginTesterNumber; (iComparable < lTesterMaxByStation
-					+ BeginTesterNumber)
+			nodeFirstTesterNumber = TesterNumberCreated;
+			for (iComparable = nodeFirstTesterNumber; (iComparable < lTesterMaxByStation
+					+ nodeFirstTesterNumber)
 					&& (TesterNumberCreated < lTesterMax); iComparable++) {
 				TesterNumberCreated++;
 				tree.add(iComparable);
@@ -37,14 +39,14 @@ public class TesterTreeBuilder {
 				Util.initColor();
 				sColor = Util.getColor();
 				testerNH_root = new TesterNodeHead_be(
-						sTree.getStRoot().getIp(), root.getId(), sColor, root
+						sTree.getStation().getIp(), root.getId(), sColor, root
 								.getChildL(), root.getChildR(), root
 								.getEquilibre()); // XXX	
 			}
 
-			if (TesterNumberCreated < lTesterMax) {
+			if (TesterNumberCreated < lTesterMax) {				
 				// create other tester tree with children station
-				for (StationContainer stationNode : sTree.getListChildStation()) {
+				for (Node stationNode : sTree.getListChildStation()) {
 					if (TesterNumberCreated < lTesterMax) {
 						TesterNodeHead_be childTesterHead = createTree(stationNode);
 						if (childTesterHead != null) {
@@ -66,7 +68,7 @@ public class TesterTreeBuilder {
 		testerNH_root.updateParent(null);
 	}
 
-	private TesterNodeHead_be createTree(StationContainer station) {
+	private TesterNodeHead_be createTree(Node node) {
 		int iComparable = 0;
 		int BeginTesterNumber = 0;
 		TesterTree tree = new TesterTree();
@@ -86,12 +88,11 @@ public class TesterTreeBuilder {
 		if (root != null) {
 			// color of the dot graph
 			sColor = Util.getColor();
-			testerNH_root = new TesterNodeHead_be(station.getStation().getIp(),root.getId(), sColor, root
+			testerNH_root = new TesterNodeHead_be(node.getStParent().getIp(),root.getId(), sColor, root
 					.getChildL(), root.getChildR(), root.getEquilibre());
 			if (TesterNumberCreated < lTesterMax) {
 				// create other tester tree with children station
-				for (StationContainer stationNode : station
-						.getListChildStation()) {
+				for (Node stationNode : node.getListChildStation()) {
 					if (TesterNumberCreated < lTesterMax) {
 						TesterNodeHead_be childTesterHead = createTree(stationNode);
 						if (childTesterHead != null) {
