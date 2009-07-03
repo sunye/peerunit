@@ -14,14 +14,14 @@ public class TesterTreeBuilder {
 	private int lTesterMaxByStation =TesterUtil.instance.getMaxTesterByStation();
 	private int lTesterMax = 0;
 
-	public TesterNodeHead_be buildTesterTree(StationContainer sTree,
+	public TesterNodeHead buildTesterTree(StationContainer sTree,
 			int testNumber) {
 		int iComparable = 1;
 		int nodeFirstTesterNumber = 0;
 		String sColor = "green";
 		StationRoot stRoot = (StationRoot) sTree.getStation();
 		TesterTree tree = new TesterTree();
-		TesterNodeHead_be testerNH_root = new TesterNodeHead_be();
+		TesterNodeHead testerNH_root = new TesterNodeHead();
 		lTesterMax = testNumber;
 		if (stRoot != null && BuildPossible(sTree)) {
 			nodeFirstTesterNumber = TesterNumberCreated;
@@ -38,7 +38,7 @@ public class TesterTreeBuilder {
 				// color of the dot graph
 				Util.initColor();
 				sColor = Util.getColor();
-				testerNH_root = new TesterNodeHead_be(
+				testerNH_root = new TesterNodeHead(
 						sTree.getStation().getIp(), root.getId(), sColor, root
 								.getChildL(), root.getChildR(), root
 								.getEquilibre()); // XXX	
@@ -48,7 +48,7 @@ public class TesterTreeBuilder {
 				// create other tester tree with children station
 				for (Node stationNode : sTree.getListChildStation()) {
 					if (TesterNumberCreated < lTesterMax) {
-						TesterNodeHead_be childTesterHead = createTree(stationNode);
+						TesterNodeHead childTesterHead = createTree(stationNode);
 						if (childTesterHead != null) {
 							testerNH_root.addNodeHead(childTesterHead);
 						}
@@ -64,15 +64,15 @@ public class TesterTreeBuilder {
 	/**
 	 * update parent every nodes
 	 */
-	private void updateNodeParent(TesterNodeHead_be testerNH_root) {
+	private void updateNodeParent(TesterNodeHead testerNH_root) {
 		testerNH_root.updateParent(null);
 	}
 
-	private TesterNodeHead_be createTree(Node node) {
+	private TesterNodeHead createTree(Node node) {
 		int iComparable = 0;
 		int BeginTesterNumber = 0;
 		TesterTree tree = new TesterTree();
-		TesterNodeHead_be testerNH_root = new TesterNodeHead_be();
+		TesterNodeHead testerNH_root = new TesterNodeHead();
 		String sColor = "red";
 
 		BeginTesterNumber = TesterNumberCreated;
@@ -88,13 +88,13 @@ public class TesterTreeBuilder {
 		if (root != null) {
 			// color of the dot graph
 			sColor = Util.getColor();
-			testerNH_root = new TesterNodeHead_be(node.getStParent().getIp(),root.getId(), sColor, root
+			testerNH_root = new TesterNodeHead(node.getStParent().getIp(),root.getId(), sColor, root
 					.getChildL(), root.getChildR(), root.getEquilibre());
 			if (TesterNumberCreated < lTesterMax) {
 				// create other tester tree with children station
 				for (Node stationNode : node.getListChildStation()) {
 					if (TesterNumberCreated < lTesterMax) {
-						TesterNodeHead_be childTesterHead = createTree(stationNode);
+						TesterNodeHead childTesterHead = createTree(stationNode);
 						if (childTesterHead != null) {
 							testerNH_root.addNodeHead(childTesterHead);
 						}
