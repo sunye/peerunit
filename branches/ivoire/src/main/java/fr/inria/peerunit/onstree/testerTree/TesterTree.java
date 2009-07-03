@@ -1,16 +1,16 @@
 package fr.inria.peerunit.onstree.testerTree;
 
 public class TesterTree {
-	private TesterNode_be root = null;
+	private TesterNode root = null;
 
 	// La m�thode de r��quilibrage suivante est appel�e apr�s un ajout dans le
 	// sous-arbre droit qui a provoqu� une augmentation de la hauteur du sous
 	// arbre droit :
-	private boolean equilibreD(TesterNode_be r, TesterNode_be p, boolean g) {
+	private boolean equilibreD(TesterNode r, TesterNode p, boolean g) {
 		// r est le fils gauche de p si g vaut true, r est le fils droit de p si
 		// g vaut false
 		// retourne true si apr�s �quilibrage l'arbre a grandi
-		TesterNode_be r1, r2;
+		TesterNode r1, r2;
 		switch (r.equilibre) {
 		case -1:
 			r.equilibre = 0;
@@ -58,11 +58,11 @@ public class TesterTree {
 	// La m�thode de r��quilibrage suivante est appel�e apr�s un ajout dans le
 	// sous-arbre childL qui a provoqu� une augmentation de la hauteur du sous
 	// arbre childL :
-	private boolean equilibreG(TesterNode_be r, TesterNode_be p, boolean g) {
+	private boolean equilibreG(TesterNode r, TesterNode p, boolean g) {
 		// r est le fils childL de p si g vaut true, r est le fils childR de p
 		// si g vaut false
 		// retourne true si apr�s �quilibrage l'arbre a grandi
-		TesterNode_be r1, r2;
+		TesterNode r1, r2;
 		switch (r.equilibre) {
 		case 1:
 			r.equilibre = 0;
@@ -119,10 +119,10 @@ public class TesterTree {
 	 * @param e
 	 * @return
 	 */
-	private boolean ajoutAVL(TesterNode_be r, TesterNode_be p, boolean g, int e) {
+	private boolean ajoutAVL(TesterNode r, TesterNode p, boolean g, int e) {
 		if (r == null) // construction du sous arbre de testeurs d'une station
 		{
-			r = new TesterNode_be(e, null, null);
+			r = new TesterNode(e, null, null);
 			if (p == null)
 				root = r;
 			else if (g)
@@ -164,7 +164,7 @@ public class TesterTree {
 		return 0;
 	}
 
-	public TesterNode_be getRoot() {
+	public TesterNode getRoot() {
 		return root;
 	}
 
