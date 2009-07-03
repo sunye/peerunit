@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import fr.inria.peerunit.util.Util;
 
-public class StationRoot
+public class StationRoot extends AbstractStation
 {
 	private String ip;
 	private String name;
