@@ -103,8 +103,8 @@ public class StationTree  implements StationContainer  //XXX
 		return tree.toString();
 	}
 
-	public Station getStation() {
-		return null;
+	public AbstractStation getStation() {
+		return stRoot;
 	}
 	
 }
