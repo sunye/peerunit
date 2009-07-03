@@ -125,12 +125,7 @@ public class Node implements StationContainer
 		return listChildStation;
 	}
 
-	public StationRoot getStRoot()
-	{
-		return null;
-	}
-
-	public Station getStation() {  
+	public AbstractStation getStation() {  
 		return stParent;
 	}
 	
