@@ -168,7 +168,7 @@ public class TesterNodeHead extends AbstractBTreeNode implements TesterContainer
 	@Override
 	public boolean isLeaf()
 	{
-		if((childL == null) && (childR == null))
+		if((childL == null) && (childR == null)&& !isRoot() )
 		{
 			return true;
 		}
