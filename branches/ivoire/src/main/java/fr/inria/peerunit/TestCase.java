@@ -16,9 +16,6 @@ package fr.inria.peerunit;
  **/
 public interface TestCase {
 
-//	public void setTester(TesterImpl ti);
-
-
 	/**
 	 * For set the reference to the <i>tester</i> which  will execute the  <i>test case</i>
 	 * in distributed  architecture. 
