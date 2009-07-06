@@ -9,8 +9,8 @@ import fr.inria.peerunit.util.Util;
 ;
 
 public class TesterTreeBuilder {
-	private static long ID_auto = 0;
-	private static int TesterNumberCreated = 0;
+	private long ID_auto = 0;
+	private int TesterNumberCreated = 0;
 	private int lTesterMaxByStation =TesterUtil.instance.getMaxTesterByStation();
 	private int lTesterMax = 0;
 
@@ -43,10 +43,11 @@ public class TesterTreeBuilder {
 								.getChildL(), root.getChildR(), root
 								.getEquilibre()); // XXX	
 			}
-
+			
 			if (TesterNumberCreated < lTesterMax) {				
 				// create other tester tree with children station
 				for (Node stationNode : sTree.getListChildStation()) {
+					System.out.println("Root child="+stationNode.getStParent().getIp());					
 					if (TesterNumberCreated < lTesterMax) {
 						TesterNodeHead childTesterHead = createTree(stationNode);
 						if (childTesterHead != null) {
@@ -119,15 +120,15 @@ public class TesterTreeBuilder {
 		return false;
 	}
 
-	public static long getID_Auto() {
+	public long getID_Auto() {
 		return ID_auto++;
 	}
 
-	public static void setTesterNumberCreated() {
+	public  void setTesterNumberCreated() {
 		TesterNumberCreated++;
 	}
 
-	public static long getTesterNumberCreated() {
+	public long getTesterNumberCreated() {
 		return TesterNumberCreated;
 	}
 }
