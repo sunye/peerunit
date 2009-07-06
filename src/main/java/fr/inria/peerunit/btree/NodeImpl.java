@@ -128,8 +128,7 @@ public class NodeImpl implements Node, Serializable, Runnable {
 			e.printStackTrace();
 		}*/
 
-		ip=System.getProperty("java.rmi.server.hostname");		
-		System.out.println("Djava.rmi.server.hostname="+ip);		
+		ip=System.getProperty("java.rmi.server.hostname");				
 		boot = b;
 		UnicastRemoteObject.exportObject(this,0);
 		id = boot.register(this);
@@ -171,7 +170,7 @@ public class NodeImpl implements Node, Serializable, Runnable {
 	public void export(Class<? extends TestCaseImpl> c) {
 
 		try {
-			log.log(Level.INFO, "[NodeImpl] Registering actions");
+			log.log(Level.INFO, "[NodeImpl:"+ip+"]"+"  Registering actions");
 			executor = new ExecutorImpl();
 			testList = executor.register(c);
 			klass = c;
@@ -235,7 +234,7 @@ public class NodeImpl implements Node, Serializable, Runnable {
 				log.log(Level.SEVERE, e.toString());
 			}
 		}
-		log.log(Level.INFO, "Whole execution time "
+		log.log(Level.INFO, "[NodeImpl:"+ip+"]"+" Whole execution time "
 				+ (System.currentTimeMillis() - this.time));
 		if (amIRoot) {
 			GlobalVerdict verdict = new GlobalVerdict(TesterUtil.instance
@@ -243,7 +242,7 @@ public class NodeImpl implements Node, Serializable, Runnable {
 			for (Verdicts v : localVerdicts) {
 				verdict.addLocalVerdict(v);
 			}
-			log.log(Level.INFO, "Final verdict " + verdict);
+			log.log(Level.INFO, "[NodeImpl:"+ip+"]"+" Final verdict " + verdict);
 		}
 		System.exit(0);
 	}
