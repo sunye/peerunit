@@ -10,12 +10,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //import mtr.MTRLib;
+import fr.inria.peerunit.btree.Bootstrapper;
 import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.btree.TreeElements;
 import fr.inria.peerunit.onstree.stationTree.Station;
@@ -23,6 +26,7 @@ import fr.inria.peerunit.onstree.stationTree.StationContainer;
 import fr.inria.peerunit.onstree.stationTree.StationRoot;
 import fr.inria.peerunit.onstree.stationTree.StationTree;
 import fr.inria.peerunit.onstree.stationTree.StationTreeBuilder;
+import fr.inria.peerunit.onstree.testerTree.RemoteTesterTreeBuilder;
 import fr.inria.peerunit.onstree.testerTree.TesterNodeHead;
 import fr.inria.peerunit.onstree.testerTree.TesterTreeBuilder;
 import fr.inria.peerunit.util.TesterUtil;
@@ -56,7 +60,21 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	 * @see fr.inria.peerunit.btreeStrategy.TreeStrategy#buildTree()
 	 */
 	public void buildTree() {
+		try {
+			if (System.getSecurityManager() == null) {
+				System.setSecurityManager(new SecurityManager());
+			}						
+			Registry registry = LocateRegistry.getRegistry(TesterUtil.instance
+					.getOnStationRoot());
+			RemoteTesterTreeBuilder remoteTesterTreeBuilder = (RemoteTesterTreeBuilder) registry
+					.lookup("TesterTreeBuilder");
+			testerNH = remoteTesterTreeBuilder.getTesterTreeRoot();
+			ipNodeHeadMap = remoteTesterTreeBuilder.getIPNodeHeadMap(testerNH);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -108,15 +126,18 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 
 	public void setCommunication() {
 		for (String key : ipNodeHeadMap.keySet()) {
-			System.out.println("Current Key="+key);
+			System.out.println("Current Key=" + key);
 			TreeElements te = new TreeElements();
 			AbstractBTreeNode node = getNode(key);
 			if (!node.isLeaf()) {
-				TesterNodeHead nodeHead=(TesterNodeHead)getNode(key);
-				List<TesterNodeHead> childsNheads =nodeHead.getListTesterNodeHead();
-				System.out.println("Setcommunication NodeHead="+nodeHead.getIP());				
+				TesterNodeHead nodeHead = (TesterNodeHead) getNode(key);
+				List<TesterNodeHead> childsNheads = nodeHead
+						.getListTesterNodeHead();
+				System.out.println("Setcommunication NodeHead="
+						+ nodeHead.getIP());
 				for (TesterNodeHead nodeHeadBe : childsNheads) {
-					System.out.println("Setcommunication Childs="+nodeHeadBe.getIP());					
+					System.out.println("Setcommunication Childs="
+							+ nodeHeadBe.getIP());
 					if (nodeHeadBe != null) {
 						Node node2 = remotesNodesMap.get(nodeHeadBe.getIP());
 						te.setChildren(node2);
@@ -144,21 +165,4 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 			}
 		}
 	}
-
-    private void printStTree(fr.inria.peerunit.onstree.stationTree.StationContainer station)
-    {
-		System.out.println("Station IP="+station.getStation().getIp());
-    	for(fr.inria.peerunit.onstree.stationTree.Node node:station.getListChildStation())
-    	{
-    		System.out.println("Station child IP="+node.getStParent().getIp());    		
-    	}
-
-    	
-    	System.out.println("\n\n");
-    	
-    	for(fr.inria.peerunit.onstree.stationTree.Node node:station.getListChildStation())
-    	{
-    		printStTree(node);
-    	}	
-    }
 }
