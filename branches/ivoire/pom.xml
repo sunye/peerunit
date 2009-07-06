@@ -114,18 +114,18 @@
 	  <artifactId>OpenChord</artifactId>
 	  <version>1.0.5</version>
 	  <scope>compile</scope>
-	</dependency>
-	<dependency>	
-		<groupId>fr.inria.peerunit</groupId>
-  		<artifactId>mtrLib</artifactId>
-		<version>1.0</version>
-	    <scope>compile</scope>
-    </dependency>
+	</dependency>    
 	<dependency>
 	  <groupId>org.mockito</groupId>
 	  <artifactId>mockito-all</artifactId>
 	  <version>1.7</version>
 	<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>fr.inria.peerunit</groupId>
+		<artifactId>traceroute</artifactId>
+		<version>1.0</version>
+		<scope>compile</scope>
 	</dependency>
   </dependencies>
 
@@ -138,7 +138,7 @@
             <role>Project Manager</role>
             <role>Architect</role>
          </roles>
-         <organization>Université de Nantes</organization>
+         <organization>Universitï¿½ de Nantes</organization>
          <timezone>-1</timezone>
        </developer>         
    </developers>
