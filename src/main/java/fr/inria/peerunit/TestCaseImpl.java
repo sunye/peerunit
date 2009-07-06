@@ -25,39 +25,11 @@ public abstract class TestCaseImpl implements TestCase {
 	 * The <i>tester</i> executing the <i>test case</i>
 	 */		
 	private Tester tester;	
-
-	/**
-	 * Set the <i>tester</i> in centralized architecture executing the <i>test</i>
-	 * 
-	 * @param ti the <i>tester</> instance 
-	 *
-	@Deprecated
-	public void setTester(TesterImpl ti) {
-		tester = ti;
+	
+	
+	public final void setTester(Tester t) {
 		try {
-			id = ti.getPeerName();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
-	
-	/**
-	 * Define the <i>tester</i> in distributed architecture executing 
-	 * the <i>test</i>.
-	 * 
-	 * @param tt the <i>tester</> instance 
-	 *
-	@Deprecated
-	public void setTester(TreeTesterImpl tt) {	
-		tester = tt;		
-		id = tt.getID();		
-	}*/
-	
-	
-	public void setTester(Tester t) {
-		tester = t;
-		try {
+			tester = t;
 			id = t.getPeerName();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
