@@ -142,8 +142,9 @@ public class BootstrapperImpl extends ArchitectureImpl implements  Bootstrapper,
 	 */
 	public boolean isRoot(int id) throws RemoteException {
 
-		return context.getNode(id).isRoot();
+		return context.getNode(new Integer(id)).isRoot();
 	}
+		
 	
 	private void setCommunication(){
 		context.setCommunication();
