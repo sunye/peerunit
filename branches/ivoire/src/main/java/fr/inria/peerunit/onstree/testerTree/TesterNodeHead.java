@@ -197,19 +197,17 @@ public class TesterNodeHead extends AbstractBTreeNode implements TesterContainer
 	public AbstractBTreeNode getNode(Integer i)
 	{
 		AbstractBTreeNode aBTNode = null;
-		if(i == id)
+		if(i.intValue()==id.intValue())
 		{
 			aBTNode = this;
 		}
-		if((i < id) && (childL != null))
+		else if((i.intValue() < id.intValue()) && (childL != null))
 		{
 			aBTNode = childL.getNode(i);
-		}
-		if((i > id) && (childR != null))
+		} else 	if((i.intValue() > id.intValue()) && (childR != null))
 		{
 			aBTNode = childR.getNode(i);
-		}
-		if(aBTNode == null)
+		} else 	if(aBTNode == null)
 		{
 			for(TesterNodeHead nodeHead:listTesterNodeHead)
 			{
