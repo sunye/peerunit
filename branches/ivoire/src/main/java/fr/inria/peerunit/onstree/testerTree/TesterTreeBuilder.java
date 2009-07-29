@@ -71,7 +71,8 @@ public class TesterTreeBuilder {
 
 	private TesterNodeHead createTree(Node node) {
 		int iComparable = 0;
-		int BeginTesterNumber = 0;
+//		int BeginTesterNumber = 0;
+		int BeginTesterNumber =TesterNumberCreated-1; // XXX		
 		TesterTree tree = new TesterTree();
 		TesterNodeHead testerNH_root = new TesterNodeHead();
 		String sColor = "red";
