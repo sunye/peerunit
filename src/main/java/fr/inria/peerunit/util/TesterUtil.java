@@ -352,6 +352,10 @@ public class TesterUtil {
 	public String getOnStationRoot()
 	{
 		return  this.getProperty("tester.onstationroot");
+	}
+
+	public int getExpectedNodes() {
+		return  Integer.valueOf(this.getProperty("tester.nodes"));	
 	}	
 }
 
