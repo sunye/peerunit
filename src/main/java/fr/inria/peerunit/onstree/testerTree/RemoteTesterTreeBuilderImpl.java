@@ -44,6 +44,7 @@ public class RemoteTesterTreeBuilderImpl implements RemoteTesterTreeBuilder,
 
 	public TesterNodeHead getTesterTreeRoot() throws RemoteException {
 
+		long startTime=System.currentTimeMillis();
 		InputStream input = ConcreteONSTreeStrategy.class
 				.getResourceAsStream("/hosts.txt");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -114,6 +115,7 @@ public class RemoteTesterTreeBuilderImpl implements RemoteTesterTreeBuilder,
 				e.printStackTrace();
 			}
 		}
+		System.out.println("TesterTree construction duration :"+(System.currentTimeMillis()-startTime)+ " ms");
 		return testerNH;
 	}
 
@@ -125,8 +127,8 @@ public class RemoteTesterTreeBuilderImpl implements RemoteTesterTreeBuilder,
 	}
 
 	private void buildIPNodeheapMap(TesterNodeHead testerNodeHead,
-			HashMap<String, TesterNodeHead> iNodeHeadMap) {
-		iNodeHeadMap.put(testerNodeHead.getIP(), testerNodeHead);
+			HashMap<String, TesterNodeHead> ipNodeHeadMap) {
+		ipNodeHeadMap.put(testerNodeHead.getIP(), testerNodeHead);
 		System.out.println("NodeHeapIP=" + testerNodeHead.getIP());
 		System.out.println("childs");
 		for (TesterNodeHead nodeHeadBe : testerNodeHead.getListTesterNodeHead()) {
@@ -134,7 +136,7 @@ public class RemoteTesterTreeBuilderImpl implements RemoteTesterTreeBuilder,
 		}
 		System.out.println("\n\n");
 		for (TesterNodeHead nodeHeadBe : testerNodeHead.getListTesterNodeHead()) {
-			buildIPNodeheapMap(nodeHeadBe, iNodeHeadMap);
+			buildIPNodeheapMap(nodeHeadBe, ipNodeHeadMap);
 		}
 	}
 
