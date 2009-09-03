@@ -82,6 +82,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	 * fr.inria.peerunit.btreeStrategy.TreeStrategy#getNode(java.lang.Integer)
 	 */
 	public AbstractBTreeNode getNode(Integer i) {
+		System.out.println("GetNodeInteger");		
 		return testerNH.getNode(i);
 	}
 
@@ -110,6 +111,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	}
 
 	public AbstractBTreeNode getNode(String ip) {
+		System.out.println("Key="+ip + "  "+ipNodeHeadMap.get(ip).getIP());
 		return ipNodeHeadMap.get(ip);
 	}
 
@@ -126,7 +128,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 
 	public void setCommunication() {
 		for (String key : ipNodeHeadMap.keySet()) {
-			System.out.println("Current Key=" + key);
+			System.out.println("Current Key=" + key);			
 			TreeElements te = new TreeElements();
 			AbstractBTreeNode node = getNode(key);
 			if (!node.isLeaf()) {
@@ -152,12 +154,13 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 				te.setParent(remotesNodesMap.get(parent.getIP()));
 			}
 
-			System.out.println("[Bootstrapper] Befor Contacting Node ");
+			System.out.println("[Bootstrapper] Befor Contacting Node ");			
 			/**
 			 * Now we inform Node its tree elements.
 			 */
-			Node remoteNode = remotesNodesMap.get(key);
+			Node remoteNode = remotesNodesMap.get(key);			
 			System.out.println("[Bootstrapper] Contacting Node " + remoteNode);
+			System.out.println(getNode(key));			
 			try {
 				remoteNode.setElements(getNode(key), te);
 			} catch (RemoteException e) {
