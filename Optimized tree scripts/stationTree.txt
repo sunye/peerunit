@@ -1,0 +1,3 @@
+digraph myTree {
+	node [shape=circle, style=filled, color=green]; Bootstrap;	node [shape=circle, style=filled, color=red]; 2;	node [shape=circle, style=filled, color=blue]; 3;	2 -> 3[color=red];	node [shape=circle, style=filled, color=yellow]; 4;	2 -> 4[color=red];	node [shape=circle, style=filled, color=hotpink]; 5;	2 -> 5[color=red];	node [shape=circle, style=filled, color=indigo]; 1;	2 -> 1[color=red];	Bootstrap -> 2[color=green];
+}
