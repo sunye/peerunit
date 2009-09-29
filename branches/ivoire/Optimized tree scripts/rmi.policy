@@ -1,0 +1,5 @@
+grant {
+ permission java.security.AllPermission;
+
+ permission java.net.SocketPermission "172.16.113.57:1024-65535","connect,accept,resolve";
+};
