@@ -38,4 +38,9 @@ public interface Tester extends Remote, StorageTester  {
 
 
         public int getId() throws RemoteException;
+
+         /**
+	 * Stop the <i>tester</i>.
+	 */
+	public void kill() throws RemoteException;
 }

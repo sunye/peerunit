@@ -47,5 +47,5 @@ public interface Architecture extends Remote {
 	 * Clears all global variables for this object
 	 * @throws java.rmi.RemoteException
 	 */
-	public void clearCollection()throws RemoteException ;
+	public void clearCollection() throws RemoteException ;
 }
