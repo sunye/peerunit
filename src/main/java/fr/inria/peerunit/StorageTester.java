@@ -15,7 +15,7 @@ import java.util.Map;
  * @see Tester
  */
 
-public interface StorageTester extends VolatileTester {
+public interface StorageTester  {
 	
 	/**
 	 * Allow to stock global variables who will accessed by all others
