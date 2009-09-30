@@ -1,9 +1,9 @@
 package fr.inria.peerunit.rmi.tester;
 
+import fr.inria.peerunit.Architecture;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -13,12 +13,11 @@ import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.VolatileTester;
+import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
-import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 import java.util.logging.Logger;
 
@@ -33,12 +32,13 @@ import java.util.logging.Logger;
  * @see fr.inria.peerunit.Coordinator
  * @see java.util.concurrent.BlockingQueue<Object>
  */
-public class TesterImpl extends Object implements Tester, Serializable, Runnable, StorageTester, VolatileTester {
+public class TesterImpl extends AbstractTester implements Tester, Serializable, Runnable {
 
     private static final long serialVersionUID = 1L;
     private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
     final transient private Coordinator coord;
-    private int id;
+    //private int id;
+    //private Architecture coord;
     private boolean stop = false;
     private transient Thread timeoutThread;
     private transient Thread invokationThread;
@@ -113,7 +113,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
 
         boolean exported = false;
         try {
-            id = coord.getNewId(this);
+            this.setId(coord.getNewId(this));
             executor = new ExecutorImpl(this, LOG);
             coord.register(this, executor.register(c));
             exported = true;
@@ -132,10 +132,6 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
         }
     }
 
-    @Override
-    public String toString() {
-        return "Tester: " + id;
-    }
 
     /**
      * Used to add an action to be executed
@@ -156,20 +152,8 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
         }
     }
 
-    /**
-     * @return the tester's identifier
-     * @throws RemoteException
-     */
-    public int getPeerName() throws RemoteException {
-        return id;
-    }
 
-    /**
-     * @return the tester's identifier
-     */
-    public int getId() {
-        return id;
-    }
+
 
     /**
      * An example how to kill a peer
@@ -217,7 +201,7 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
                 //error=true;
             }
             executionQueue.clear();
-            LOG.log(Level.INFO, "Test Case local verdict to peer " + id + " is " + v.toString());
+            LOG.log(Level.INFO, "Test Case local verdict to peer " + getId() + " is " + v.toString());
             //coord.quit(this,error,v);
             coord.quit(this, v);
         } catch (RemoteException e) {
@@ -230,76 +214,10 @@ public class TesterImpl extends Object implements Tester, Serializable, Runnable
         }
     }
 
-    /**
-     * Used to cache testing global variables
-     * @param key
-     * @param object
-     * @throws RemoteException
-     */
-    public void put(Integer key, Object object) {
-        try {
-            coord.put(key, object);
-        } catch (RemoteException e) {
-                        for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
 
-        }
+    protected Architecture globalTable() {
+        return coord;
     }
-
-    /**
-     * Used to clear the Collection of testing global variables
-     *
-     * @throws RemoteException
-     */
-    public void clear() {
-        try {
-            coord.clearCollection();
-        } catch (RemoteException e) {
-                        for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
-
-        }
-    }
-
-    /**
-     *  Used to retrieve testing global variables
-     * @param key
-     * @return Object
-     * @throws RemoteException
-     */
-    public Object get(Integer key) {
-        Object object = null;
-        try {
-            object = coord.get(key);
-        } catch (RemoteException e) {
-                        for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
-
-        }
-        return object;
-    }
-
-    /**
-     *  Used to retrieve all the keys of the testing global variables
-     * @return Collection<Object>
-     * @throws RemoteException
-     */
-    public Map<Integer, Object> getCollection() throws RemoteException {
-        return coord.getCollection();
-    }
-
-    /**
-     *  Used to retrieve all the keys of the testing global variables
-     * @return Collection<Object>
-     * @throws RemoteException
-     */
-    public boolean containsKey(Object key) throws RemoteException {
-        return coord.containsKey(key);
-    }
-
     /**
      *  Used to invoke an action
      * @param md the action will be invoked
