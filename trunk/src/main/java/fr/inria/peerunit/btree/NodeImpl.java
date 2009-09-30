@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.TestCaseImpl;
-import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
+import fr.inria.peerunit.util.BTreeNode;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.test.oracle.Verdicts;
@@ -48,7 +48,7 @@ public class NodeImpl implements Node, Serializable, Runnable {
     private boolean isLastMethod = false;
     private int numberOfChildren = 0;
     private TreeElements tree = new TreeElements();
-    private AbstractBTreeNode bt;
+    private BTreeNode bt;
     private AtomicInteger childrenTalk = new AtomicInteger(0);
     private MethodDescription mdToExecute;
     private int treeWaitForMethod = TesterUtil.instance.getTreeWaitForMethod();
@@ -267,11 +267,11 @@ public class NodeImpl implements Node, Serializable, Runnable {
             this.localVerdicts.addAll(localVerdicts);
     }
 
-    public void setElements(AbstractBTreeNode bt, TreeElements tree) throws RemoteException {
+    public void setElements(BTreeNode bt, TreeElements tree) throws RemoteException {
         log.log(Level.FINEST, "[NodeImpl] id " + id + " bt " + bt + " tree " + tree);
         this.tree = tree;
         this.bt = bt;
-        for (AbstractBTreeNode child : this.bt.getChildren()) {
+        for (BTreeNode child : this.bt.getChildren()) {
             if (child != null) {
                 numberOfChildren++;
             }
