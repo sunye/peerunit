@@ -1,6 +1,6 @@
 package fr.inria.peerunit.onstree.testerTree;
 
-import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
+import fr.inria.peerunit.util.BTreeNode;
 
 /** Tester node of type container (TesterNodeHead, TesterNode)
  * @author Jeremy Masson
@@ -24,5 +24,5 @@ public interface TesterContainer
 	 * To use only after that tree is built
 	 * @param parent AbstractBTreeNode
 	 */
-	public void updateParent(AbstractBTreeNode parent);
+	public void updateParent(BTreeNode parent);
 }

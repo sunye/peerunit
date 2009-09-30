@@ -6,14 +6,14 @@ import java.util.List;
 
 //import org.hamcrest.core.IsInstanceOf;
 
-import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
+import fr.inria.peerunit.util.BTreeNode;
 
 /*
  * @author Jeremy
  * @author Aboubakar Koïta  
  */
 
-public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContainer, Serializable
+public class TesterNodeHead_be implements BTreeNode,  TesterContainer, Serializable
 {
 	private static final long	serialVersionUID	= 1L;
 	private Integer id;
@@ -96,12 +96,11 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#getChildren()
 	 */
-	@Override
-	public AbstractBTreeNode[] getChildren()
+	public BTreeNode[] getChildren()
 	{
 		int nbNode = listTesterNodeHead.size()+2;
 		int counter = 2;
-		AbstractBTreeNode[] tab_aBTNode = new AbstractBTreeNode[nbNode];
+		BTreeNode[] tab_aBTNode = new BTreeNode[nbNode];
 		tab_aBTNode[0] = childL;
 		tab_aBTNode[1] = childR;
 		for(TesterNodeHead_be nodeHead:listTesterNodeHead)
@@ -114,7 +113,6 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#getKeys()
 	 */
-	@Override
 	public Comparable[] getKeys()
 	{
 //		int childrenNumber = getNodesSize();
@@ -156,8 +154,7 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#getParent()
 	 */
-	@Override
-	public AbstractBTreeNode getParent()
+	public BTreeNode getParent()
 	{
 		return parent;
 	}
@@ -165,7 +162,6 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#isLeaf()
 	 */
-	@Override
 	public boolean isLeaf()
 	{
 		if((childL == null) && (childR == null))
@@ -179,7 +175,6 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#isRoot()
 	 */
-	@Override
 	public boolean isRoot()
 	{
 		if(parent == null)
@@ -194,9 +189,9 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 	 * @param i id number of the Tester
 	 * @return
 	 */
-	public AbstractBTreeNode getNode(Integer i)
+	public BTreeNode getNode(Integer i)
 	{
-		AbstractBTreeNode aBTNode = null;
+		BTreeNode aBTNode = null;
 		if(i == id)
 		{
 			aBTNode = this;
@@ -277,7 +272,7 @@ public class TesterNodeHead_be extends AbstractBTreeNode implements TesterContai
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.onstree.testerTree.TesterContainer#setParent(fr.inria.peerunit.btreeStrategy.AbstractBTreeNode)
 	 */
-	public void updateParent(AbstractBTreeNode parent)
+	public void updateParent(BTreeNode parent)
 	{
 		// update parent himself
 		if(parent != null && parent instanceof TesterNodeHead_be)
