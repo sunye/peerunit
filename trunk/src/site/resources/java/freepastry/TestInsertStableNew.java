@@ -18,7 +18,7 @@ import rice.tutorial.past.MyPastContent;
 import util.FreeLocalPort;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.LogFormat;
@@ -68,7 +68,7 @@ public class TestInsertStableNew  extends TesterImpl{
 		log.info("Starting test peer  ");
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {
 			if(test.getPeerName()==0){
@@ -91,7 +91,7 @@ public class TestInsertStableNew  extends TesterImpl{
 		}				
 	}
 	
-	@Test(place=-1,timeout=1000000, name = "action2", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action2", step = 0)
 	public void joiningNet(){	
 
 		try {			
@@ -127,7 +127,7 @@ public class TestInsertStableNew  extends TesterImpl{
 	/**
 	 * Stabilize the network. 
 	 */
-	@Test(place=-1,timeout=1000000, name = "action3", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action3", step = 0)
 	public void stabilize(){
 		for (int i = 0; i < 4; i++) {
 			try{	
@@ -140,7 +140,7 @@ public class TestInsertStableNew  extends TesterImpl{
 		}
 	}	
 	
-	@Test(place=-1,timeout=10000000, name = "action4", step = 0)
+	@TestStep(place=-1,timeout=10000000, name = "action4", step = 0)
 	public void testInsert(){
 		try {			
 			if(test.getPeerName()==0){
@@ -168,7 +168,7 @@ public class TestInsertStableNew  extends TesterImpl{
 	}
 
 
-	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testRetrieve(){		
 		// Get inserted data
 		List<PastContent> cached=(List<PastContent>)test.get(0);

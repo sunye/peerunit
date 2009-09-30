@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import static fr.inria.peerunit.test.assertion.Assert.*;
 import fr.inria.peerunit.util.LogFormat;
 import static fr.inria.peerunit.test.assertion.Assert.*;
@@ -42,7 +42,7 @@ public class TestInconclusiveArray  extends TestCaseImpl{
 		log.info("[TestInc] Init");
 	}
 
-	@Test(name="action1",measure=true,step=1,timeout=10000000,place=-1)
+	@TestStep(name="action1",measure=true,step=1,timeout=10000000,place=-1)
 	public void testInconc() {
 
 		try {

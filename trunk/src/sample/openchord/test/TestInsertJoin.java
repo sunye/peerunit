@@ -24,7 +24,7 @@ import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.TesterUtil;
 
@@ -73,7 +73,7 @@ public class TestInsertJoin extends TestCaseImpl{
 		log.info("Starting test DHT ");
 	}
 
-	@Test(name="action1",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action1",measure=true,step=1,timeout=10000000, place=-1)
 	public void init() {
 		try{
 			if(this.getPeerName()==0){
@@ -128,7 +128,7 @@ public class TestInsertJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=0,timeout=1000000, name = "action2", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action2", step = 0)
 	public void chosingPeer(){
 		Random rand=new Random();
 		List<Integer> generated=new ArrayList<Integer>();
@@ -156,7 +156,7 @@ public class TestInsertJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(name="action3",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action3",measure=true,step=1,timeout=10000000, place=-1)
 	public void initInitHalf() {
 		try{
 			if(!chosenOne(this.getPeerName())&&(this.getPeerName()!=0)){
@@ -211,7 +211,7 @@ public class TestInsertJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=0,timeout=1000000, name = "action4", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action4", step = 0)
 	public void testInsert(){
 		try{
 			Thread.sleep(sleep);
@@ -228,7 +228,7 @@ public class TestInsertJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testRetrieve(){
 		List<String> resultSet=new ArrayList<String>();
 		try {
@@ -256,7 +256,7 @@ public class TestInsertJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(name="action6",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action6",measure=true,step=1,timeout=10000000, place=-1)
 	public void initOtherHalf() {
 		try{
 			if(chosenOne(this.getPeerName())){
@@ -312,7 +312,7 @@ public class TestInsertJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testRetrieveByOthers(){
 
 		try {

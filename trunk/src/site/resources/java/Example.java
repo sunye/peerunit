@@ -30,31 +30,31 @@ public class Example extends TesterImpl{
         Peer peer=new Peer();
     }
 
-    @Test(from=0,to=2,timeout=100, name = "action1", step = 0)
+    @TestStep(from=0,to=2,timeout=100, name = "action1", step = 0)
     public void join(){       
         // Let's join the system
         peer.join();
     }
    
-    @Test(place=2,timeout=100, name = "action2", step = 0)
+    @TestStep(place=2,timeout=100, name = "action2", step = 0)
     public void put(){       
         // Put data
         peer.put(expectedKey,expected);
     }
    
-    @Test(from=3,to=4,timeout=100, name = "action3", step = 0)
+    @TestStep(from=3,to=4,timeout=100, name = "action3", step = 0)
     public void joinOthers(){
         // The rest of the peers join the system
         peer.join();
     }
    
-    @Test(from=3,to=4,timeout=100, name = "action4", step = 0)
+    @TestStep(from=3,to=4,timeout=100, name = "action4", step = 0)
     public void retrieve(){
         // Retrieving the inserted data
         actual=peer.get(expectedKey);       
     }
    
-    @Test(from=3,to=4,timeout=100, name = "action5", step = 0)
+    @TestStep(from=3,to=4,timeout=100, name = "action5", step = 0)
     public void assertRetrieve(){
         // Let's see if we got the expected data
         assertEquals(expected, actual);

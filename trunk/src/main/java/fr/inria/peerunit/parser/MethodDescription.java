@@ -24,7 +24,7 @@ public class MethodDescription implements Comparable<MethodDescription>,
 	private int step;
 
 	/**
-	 * Annotation associated to method ("Test", "BeforeClass" or "AfterClass")
+	 * Annotation associated to method ("TestStep", "BeforeClass" or "AfterClass")
 	 */
 	private String annotation;
 
@@ -45,7 +45,7 @@ public class MethodDescription implements Comparable<MethodDescription>,
 	 * @param m
 	 * @param t
 	 */
-	public MethodDescription(Method m, Test t) {
+	public MethodDescription(Method m, TestStep t) {
 		this(m.getName(), t.name(), t.step(), t.annotationType()
 				.getSimpleName(), t.timeout());
 	}

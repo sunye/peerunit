@@ -21,7 +21,7 @@ import rice.p2p.past.PastContent;
 import rice.tutorial.past.MyPastContent;
 import util.FreeLocalPort;
 import fr.inria.peerunit.parser.AfterClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
@@ -78,7 +78,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		log.info("[PastryTest] Starting test peer  ");
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {	
 			if(test.getPeerName()==0){
@@ -119,7 +119,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		}				
 	}
 
-	@Test(place=0,timeout=1000000, name = "action2", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action2", step = 0)
 	public void chosingPeer(){
 		Random rand=new Random();
 		List<Integer> generated=new ArrayList<Integer>();
@@ -151,7 +151,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action3", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action3", step = 0)
 	public void startingInitNet(){	
 
 		try {			
@@ -189,7 +189,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void testInsert(){
 		try {
 			Thread.sleep(sleep);		
@@ -216,7 +216,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testRetrieve(){		
 		
 		try {
@@ -262,7 +262,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action6", step = 0)
 	public void volatility(){	
 
 		try {
@@ -307,7 +307,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		}
 	}	
 	
-	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testInitialRetrieve(){		
 		try {
 			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("leave")){
@@ -349,7 +349,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		}
 		
 	}
-	@Test(place=-1,timeout=1000000, name = "action8", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action8", step = 0)
 	public void buildExpecteds(){	
 		try {
 			Set<Integer> newKeySet=test.getCollection().keySet();
@@ -377,7 +377,7 @@ public class TestInsertJoinLeave  extends TesterImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action9", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action9", step = 0)
 	public void testRetrieveByOthers(){		
 		try {			
 			if(!chosenOne(test.getPeerName()).equalsIgnoreCase("leave")){

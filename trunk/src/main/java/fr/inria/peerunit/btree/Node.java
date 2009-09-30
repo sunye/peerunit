@@ -14,7 +14,7 @@ import fr.inria.peerunit.test.oracle.Verdicts;
  * @version 1.0
  * @since 1.0
  */
-public interface Node extends Remote{
+public interface Node extends Remote {
     
     
 	/**
@@ -27,7 +27,7 @@ public interface Node extends Remote{
 	 * @param mdToExecute
 	 * @throws RemoteException
 	 */
-	public void send(MessageType message,MethodDescription mdToExecute) throws RemoteException;
+	public void accept(MessageType message,MethodDescription mdToExecute) throws RemoteException;
 	
 	
 	/**
@@ -45,7 +45,7 @@ public interface Node extends Remote{
 	 * @param localVerdicts The child's verdicts to be added to this node's own verdicts
 	 * @throws java.rmi.RemoteException	
 	 */
-	public void sendVerdict(List<Verdicts> localVerdicts) throws RemoteException;
+	public void acceptVerdict(List<Verdicts> localVerdicts) throws RemoteException;
 
 	/**
 	 * Returns the IP addresses of the station hosting the node

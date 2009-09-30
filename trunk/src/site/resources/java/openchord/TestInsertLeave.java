@@ -48,7 +48,7 @@ public class TestInsertLeave extends TestCaseImpl{
 		log.info("Starting test DHT ");
 	}
 
-	@Test(name="action1",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action1",measure=true,step=1,timeout=10000000, place=-1)
 	public void init() {
 		try{
 
@@ -103,7 +103,7 @@ public class TestInsertLeave extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=0,timeout=1000000, name = "action2", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action2", step = 0)
 	public void chosingPeer(){
 		Random rand=new Random();
 		List<Integer> generated=new ArrayList<Integer>();
@@ -131,7 +131,7 @@ public class TestInsertLeave extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=0,timeout=1000000, name = "action3", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action3", step = 0)
 	public void testInsert(){
 		try{
 			Thread.sleep(sleep);
@@ -149,7 +149,7 @@ public class TestInsertLeave extends TestCaseImpl{
 
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void testRetrieve(){
 
 		try {
@@ -173,7 +173,7 @@ public class TestInsertLeave extends TestCaseImpl{
 		}
 	}
 
-	@Test(name="action5",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action5",measure=true,step=1,timeout=10000000, place=-1)
 	public void leaving() {
 		try{
 			if(chosenOne(this.getPeerName())){
@@ -185,7 +185,7 @@ public class TestInsertLeave extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action6", step = 0)
 	public void testInitialRetrieve(){
 
 		try {
@@ -213,7 +213,7 @@ public class TestInsertLeave extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void buildExpecteds(){
 		try {
 			Set<Integer> keySet=this.getCollection().keySet();
@@ -243,7 +243,7 @@ public class TestInsertLeave extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action8", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action8", step = 0)
 	public void testFinalRetrieve(){
 
 		try {

@@ -1,5 +1,6 @@
 package fr.inria.peerunit;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import fr.inria.peerunit.parser.MethodDescription;
@@ -32,6 +33,17 @@ public interface Executor {
 	 * @return true if the method is the last one to be executed, false else
 	 * @see MethodDescription 
 	 */
-	public boolean isLastMethod(String methodAnnotation);
+	public boolean isLastMethod(String md);
+
+    /**
+     * Execute the given method description
+     *
+     * @param md : method description to execute
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    void invoke(MethodDescription md) throws IllegalArgumentException,
+            IllegalAccessException, InvocationTargetException;
 
 }

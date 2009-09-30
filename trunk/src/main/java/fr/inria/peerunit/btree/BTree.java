@@ -15,17 +15,17 @@ import fr.inria.peerunit.util.TesterUtil;
 public class BTree { //implements TreeStrategy {
 	
 	int order;
-	static BTreeNode root = null;
-	public Map<Integer,BTreeNode> nodes = new HashMap<Integer,BTreeNode>();
+	static BTreeNodeImpl root = null;
+	public Map<Integer,BTreeNodeImpl> nodes = new HashMap<Integer,BTreeNodeImpl>();
 	Integer nodeKey=0;
 
 	/**
-	 * Constructs a new BinaryTree, and initializes it with a single BTreeNode as root
+	 * Constructs a new BinaryTree, and initializes it with a single BTreeNodeImpl as root
 	 * @param o
 	 */
 	public BTree(int o) {
 		order = o;
-		root = new BTreeNode();
+		root = new BTreeNodeImpl();
 	}
 
 	/**
@@ -33,10 +33,10 @@ public class BTree { //implements TreeStrategy {
 	 * @param newKey the key to be inserted
 	 */
 	private void insert(Comparable newKey) {
-		BTreeNode returnNode = new BTreeNode();
+		BTreeNodeImpl returnNode = new BTreeNodeImpl();
 		Comparable newRootKey = root.insert(newKey, returnNode);
 		if (newRootKey != null) {
-			BTreeNode newRoot = new BTreeNode();
+			BTreeNodeImpl newRoot = new BTreeNodeImpl();
 			newRoot.getKeys()[0] = newRootKey;
 			newRoot.getChildren()[0] = root;
 			newRoot.getChildren()[1] = returnNode;
@@ -49,7 +49,7 @@ public class BTree { //implements TreeStrategy {
 	 * Retrieves all the nodes contained in this BTree
 	 * @return all the nodes contained in this BTree
 	 */
-	private  Map<Integer,BTreeNode> getNodes(){
+	private  Map<Integer,BTreeNodeImpl> getNodes(){
 		return nodes;
 	}
 	
@@ -70,15 +70,15 @@ public class BTree { //implements TreeStrategy {
 	 * Defines the BTree hierarchy : indicates recursively to each node who its parent is
 	 * @param parent
 	 */
-	private void returnNode(BTreeNode parent){
-		BTreeNode btParent = (BTreeNode)parent;
+	private void returnNode(BTreeNodeImpl parent){
+		BTreeNodeImpl btParent = (BTreeNodeImpl)parent;
 		btParent.setId(nodeKey);
 		System.out.println("BTreeNode: " + parent);
 		for (AbstractBTreeNode bt:btParent.getChildren()){
 			if (bt != null){
 				nodeKey++;
-				BTreeNode btChildren = (BTreeNode)bt;
-				btChildren.setParent((BTreeNode)parent);
+				BTreeNodeImpl btChildren = (BTreeNodeImpl)bt;
+				btChildren.setParent((BTreeNodeImpl)parent);
 				nodes.put(nodeKey, btChildren);
 				returnNode(btChildren);
 			} else

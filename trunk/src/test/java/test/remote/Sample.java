@@ -2,7 +2,7 @@ package test.remote;
 
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import static fr.inria.peerunit.test.assertion.Assert.*;
 
 /**
@@ -14,18 +14,18 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
  */
 public class Sample extends TestCaseImpl {
 
-	@Test(place = -1, timeout = 1000, name = "action1", step = 1)
+	@TestStep(place = -1, timeout = 1000, name = "action1", step = 1)
 	public void first() {
 		System.setProperty("executed", "ok");
 	}
 
 	
-	@Test(place = -1, timeout = 1000, name = "action1", step = 2)
+	@TestStep(place = -1, timeout = 1000, name = "action1", step = 2)
 	public void error() {
 		assertTrue(false);
 	}
 	
-	@Test(place = -1, timeout = 1000, name = "action1", step = 3)
+	@TestStep(place = -1, timeout = 1000, name = "action1", step = 3)
 	public void assertionError() {
 		assert false;
 	}	

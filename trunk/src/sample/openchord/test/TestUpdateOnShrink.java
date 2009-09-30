@@ -23,7 +23,7 @@ import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class TestUpdateOnShrink extends TestCaseImpl{
@@ -63,7 +63,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 		log.info("Starting test DHT ");
 	}
 
-	@Test(name="action1",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action1",measure=true,step=1,timeout=10000000, place=-1)
 	public void init() {
 		try{
 			Thread.sleep(sleep);
@@ -111,7 +111,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 		log.info("Peer init");
 	}
 
-	@Test(name="action2",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action2",measure=true,step=1,timeout=10000000, place=-1)
 	public void find() {
 
 		chordPrint=(ChordImpl)chord;
@@ -130,7 +130,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 		}
 	}
 
-	@Test(name="action4",measure=true,step=1,timeout=10000000,place=-1)
+	@TestStep(name="action4",measure=true,step=1,timeout=10000000,place=-1)
 	public void testLeave() {
 		try {
 
@@ -153,7 +153,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 		}
 	}
 
-	@Test(name="action5",measure=true,step=1,timeout=10000000,place=-1)
+	@TestStep(name="action5",measure=true,step=1,timeout=10000000,place=-1)
 	public void testRetrieve() {
 
 		if(this.getName()%2!=0){

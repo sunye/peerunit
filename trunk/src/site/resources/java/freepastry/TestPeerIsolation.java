@@ -13,7 +13,7 @@ import rice.pastry.NodeHandle;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
@@ -42,7 +42,7 @@ public class TestPeerIsolation extends TestCaseImpl {
 		log.info("[PastryTest] Starting test peer  ");
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action1", step = 1)
+	@TestStep(place=-1,timeout=1000000, name = "action1", step = 1)
 	public void startingNetwork(){
 		try {
 
@@ -66,7 +66,7 @@ public class TestPeerIsolation extends TestCaseImpl {
 
 
 
-	@Test(name="action4",measure=true,step=0,timeout=10000000,place=0)
+	@TestStep(name="action4",measure=true,step=0,timeout=10000000,place=0)
 	public void listingTheNeighbours() {
 		try {
 
@@ -90,7 +90,7 @@ public class TestPeerIsolation extends TestCaseImpl {
 		}
 	}
 
-	@Test(name="action5",measure=true,step=0,timeout=10000000,place=-1)
+	@TestStep(name="action5",measure=true,step=0,timeout=10000000,place=-1)
 	public void testLeave() {
 		try {
 			// Waiting a while to get the global variable
@@ -112,7 +112,7 @@ public class TestPeerIsolation extends TestCaseImpl {
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action6", step = 0)
 	public void searchingNeighbour(){
 		try {
 			if(this.getPeerName()==0){

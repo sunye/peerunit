@@ -18,7 +18,7 @@ import util.FreeLocalPort;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.LogFormat;
@@ -48,7 +48,7 @@ public class TestQueryTheoremB extends TestCaseImpl{
 	public void bc(){
 		log.info("[PastryTest] Starting test peer  ");
 	}
-	@Test(place=0,timeout=1000000, name = "action1", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {
 			iAmBootsrapper=true;
@@ -91,7 +91,7 @@ public class TestQueryTheoremB extends TestCaseImpl{
 	}
 
 
-	@Test(place=-1,timeout=1000000, name = "action2", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action2", step = 0)
 	public void startingBootstraps(){
 
 		try {
@@ -133,7 +133,7 @@ public class TestQueryTheoremB extends TestCaseImpl{
 		}
 	}
 
-	@Test(from=1,to=8,timeout=1000000, name = "action3", step = 0)
+	@TestStep(from=1,to=8,timeout=1000000, name = "action3", step = 0)
 	public void testInsert(){
 		try {
 			Thread.sleep(sleep);
@@ -154,7 +154,7 @@ public class TestQueryTheoremB extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void testRetrieve(){
 
 		try {

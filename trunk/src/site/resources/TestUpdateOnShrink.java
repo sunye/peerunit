@@ -15,7 +15,7 @@ import rice.pastry.NodeHandle;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
@@ -40,7 +40,7 @@ public class TestUpdateOnShrink  extends TestCaseImpl {
 	public void bc(){
 		log.info("[PastryTest] Starting test peer  ");
 	}
-	@Test(place=-1,timeout=1000000, name = "action1", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {
 
@@ -67,7 +67,7 @@ public class TestUpdateOnShrink  extends TestCaseImpl {
 	}
 
 
-	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void testFind(){
 		try {
 			Thread.sleep(sleep);
@@ -79,7 +79,7 @@ public class TestUpdateOnShrink  extends TestCaseImpl {
 			log.info("Successor NodeId "+nd.getId());
 		}
 	}
-	@Test(name="action5",measure=true,step=0,timeout=10000000,place=-1)
+	@TestStep(name="action5",measure=true,step=0,timeout=10000000,place=-1)
 	public void testLeave() {
 		try {
 			Thread.sleep(sleep);
@@ -95,7 +95,7 @@ public class TestUpdateOnShrink  extends TestCaseImpl {
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action6", step = 0)
 	public void testFindAgain(){
 		try {
 			if(super.getPeerName()%2==0){
@@ -171,7 +171,7 @@ public class TestUpdateOnShrink  extends TestCaseImpl {
 		}
 	}
 	
-	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void getHandle(){
 		List<PastContent> cont=peer.getInsertedContent();
 		PastContentHandle pch;
