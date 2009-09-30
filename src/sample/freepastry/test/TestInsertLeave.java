@@ -23,7 +23,7 @@ import util.FreeLocalPort;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Peer;
@@ -58,7 +58,7 @@ public class TestInsertLeave  extends TestCaseImpl {
 		log.info("[PastryTest] Starting test peer  ");
 	}
 
-	@Test(place=0,timeout=1000000, name = "action1", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {
 
@@ -98,7 +98,7 @@ public class TestInsertLeave  extends TestCaseImpl {
 		}
 	}
 
-	@Test(place=0,timeout=1000000, name = "action2", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action2", step = 0)
 	public void chosingPeer(){
 		Random rand=new Random();
 		List<Integer> generated=new ArrayList<Integer>();
@@ -126,7 +126,7 @@ public class TestInsertLeave  extends TestCaseImpl {
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action3", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action3", step = 0)
 	public void startingInitNet(){
 
 		try {
@@ -166,7 +166,7 @@ public class TestInsertLeave  extends TestCaseImpl {
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void testInsert(){
 		try {
 			Thread.sleep(sleep);
@@ -193,7 +193,7 @@ public class TestInsertLeave  extends TestCaseImpl {
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testRetrieve(){
 		try {
 			Thread.sleep(sleep);
@@ -233,7 +233,7 @@ public class TestInsertLeave  extends TestCaseImpl {
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action6", step = 0)
 	public void leaving(){
 		try{
 			if(chosenOne(this.getPeerName())){
@@ -245,7 +245,7 @@ public class TestInsertLeave  extends TestCaseImpl {
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testInitialRetrieve(){
 		try {
 			if(!chosenOne(this.getPeerName())){
@@ -287,7 +287,7 @@ public class TestInsertLeave  extends TestCaseImpl {
 		}
 
 	}
-	@Test(place=-1,timeout=1000000, name = "action8", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action8", step = 0)
 	public void buildExpecteds(){
 		try {
 			Set<Integer> newKeySet=this.getCollection().keySet();
@@ -315,7 +315,7 @@ public class TestInsertLeave  extends TestCaseImpl {
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action9", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action9", step = 0)
 	public void testRetrieveByOthers(){
 		try {
 			if(!chosenOne(this.getPeerName())){

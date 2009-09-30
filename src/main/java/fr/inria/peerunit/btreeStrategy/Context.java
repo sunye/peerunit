@@ -9,6 +9,7 @@ import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
  * @author Veronique Pelleau
  * @author Aboubakar Koïta
  */
+@Deprecated
 public class Context {
 
     TreeStrategy strategy;

@@ -17,7 +17,7 @@ import util.FreeLocalPort;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
@@ -48,7 +48,7 @@ public class TestNewJoin extends TestCaseImpl{
 		log.info("[PastryTest] Starting test peer  ");
 	}
 
-	@Test(place=0,timeout=1000000, name = "action1", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action1", step = 0)
 	public void startingNetwork(){
 		try {
 
@@ -88,7 +88,7 @@ public class TestNewJoin extends TestCaseImpl{
 	}
 
 
-	@Test(place=-1,timeout=1000000, name = "action2", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action2", step = 0)
 	public void startingHalfNet(){
 
 		try {
@@ -131,7 +131,7 @@ public class TestNewJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void testFind(){
 		try {
 			Thread.sleep(sleep);
@@ -147,7 +147,7 @@ public class TestNewJoin extends TestCaseImpl{
 		}
 
 	}
-	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void startingOtherHalfNet(){
 
 		try {
@@ -193,7 +193,7 @@ public class TestNewJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(place=-1,timeout=1000000, name = "action6", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action6", step = 0)
 	public void updatingTables(){
 		try {
 			Thread.sleep(sleep);
@@ -211,7 +211,7 @@ public class TestNewJoin extends TestCaseImpl{
 	}
 
 
-	@Test(place=-1,timeout=1000000, name = "action7", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testFindAgain(){
 		try {
 			if((test.getPeerName()%2!=0)||(test.getPeerName()==0)){

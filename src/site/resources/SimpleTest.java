@@ -17,7 +17,7 @@ import rice.tutorial.past.MyPastContent;
 import util.FreeLocalPort;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.util.LogFormat;
@@ -59,7 +59,7 @@ public class SimpleTest extends TesterImpl{
 		log.info("Starting the test ");
 	}
 
-        @Test(place=-1,timeout=1000000, name = "action1", step = 1)
+        @TestStep(place=-1,timeout=1000000, name = "action1", step = 1)
 	public void startingNetwork(){
 		try {
 
@@ -83,7 +83,7 @@ public class SimpleTest extends TesterImpl{
 	/**
 	 * Stabilize the network. 
 	 */
-	@Test(place=-1,timeout=1000000, name = "action2", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action2", step = 0)
 	public void stabilize(){
 		for (int i = 0; i < 4; i++) {
 			try{	
@@ -98,7 +98,7 @@ public class SimpleTest extends TesterImpl{
 	/**
 	 * Put some data and store in test variables.
 	 */
-	@Test(place=0,timeout=1000000, name = "action3", step = 0)
+	@TestStep(place=0,timeout=1000000, name = "action3", step = 0)
 	public void put(){
 		for(int i=0; i < 2 ; i++){
 			// build the past content
@@ -130,7 +130,7 @@ public class SimpleTest extends TesterImpl{
 	/**
 	 * Get the data and the verdict.
 	 */
-	@Test(place=-1,timeout=1000000, name = "action4", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void get(){
 		// Lookup 
 		List<PastContent> expectedContent=(List<PastContent>)test.get(1);			

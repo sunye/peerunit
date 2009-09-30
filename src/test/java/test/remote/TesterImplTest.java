@@ -48,7 +48,7 @@ public class TesterImplTest {
 			coord = new CoordinatorImpl(defaults);
 			new Thread(coord, "Coordinator").start();
 			tester0 = new TesterImpl(coord);
-			executor = new ExecutorImpl(tester0, LOG);
+			executor = new ExecutorImpl((Tester) tester0, LOG);
 			tester1 = new TesterImpl(coord);
 			tester2 = new TesterImpl(coord);
 			tester0.export(Sample.class);

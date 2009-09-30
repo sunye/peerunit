@@ -22,7 +22,7 @@ import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.Test;
+import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -66,7 +66,7 @@ public class TestNewJoin extends TestCaseImpl{
 		log.info("Starting test DHT ");
 	}
 
-	@Test(name="action1",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action1",measure=true,step=1,timeout=10000000, place=-1)
 	public void init() {
 		try{
 			if(this.getPeerName()%2!=0){
@@ -121,7 +121,7 @@ public class TestNewJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(name="action2",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action2",measure=true,step=1,timeout=10000000, place=-1)
 	public void routingTable() {
 
 		try{
@@ -148,7 +148,7 @@ public class TestNewJoin extends TestCaseImpl{
 		}
 	}
 
-	@Test(name="action3",measure=true,step=1,timeout=10000000, place=-1)
+	@TestStep(name="action3",measure=true,step=1,timeout=10000000, place=-1)
 	public void initOtherHalf() {
 		try{
 			if(this.getPeerName()%2==0){
@@ -203,7 +203,7 @@ public class TestNewJoin extends TestCaseImpl{
 		}
 	}
 	
-	@Test(place=-1,timeout=1000000, name = "action5", step = 0)
+	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testFindAgain(){
 		try {
 			if(this.getPeerName()%2!=0){

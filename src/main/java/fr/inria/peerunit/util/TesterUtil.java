@@ -178,16 +178,6 @@ public class TesterUtil {
 		return this.getProperty("tester.logfolder");
 	}
 	
-	/**
-	 * Return the class of the parser used for parse the <i>test case</i> actions
-	 * 
-	 * @return the class of the parser used for parse the <i>test case</i> actions
-	 */
-	@Deprecated
-	public  String getParserClass(){
-
-		return this.getProperty("tester.parser");
-	}
 	
 	/**
 	 * Return the relaxation index used for fix the tolerance to inconclusive results.
