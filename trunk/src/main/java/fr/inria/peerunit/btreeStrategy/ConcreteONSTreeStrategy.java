@@ -25,7 +25,7 @@ import fr.inria.peerunit.onstree.stationTree.StationTreeBuilder;
 import fr.inria.peerunit.onstree.testerTree.TesterNodeHead_be;
 import fr.inria.peerunit.onstree.testerTree.TesterTreeBuilder;
 import fr.inria.peerunit.util.TesterUtil;
-
+import fr.inria.peerunit.util.BTreeNode;
 /**
  * This strategy allow to use the Optimized Network Station Tree
  * 
@@ -138,7 +138,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	 * @see
 	 * fr.inria.peerunit.btreeStrategy.TreeStrategy#getNode(java.lang.Integer)
 	 */
-	public AbstractBTreeNode getNode(Integer i) {
+	public BTreeNode getNode(Integer i) {
 		return testerNH.getNode(i);
 	}
 
@@ -157,7 +157,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	 * @see
 	 * fr.inria.peerunit.btreeStrategy.TreeStrategy#getNode(java.lang.Object)
 	 */
-	public AbstractBTreeNode getNode(Object key) {
+	public BTreeNode getNode(Object key) {
 		if (key instanceof Integer) {
 			return getNode((Integer) key);
 		} else {
@@ -166,7 +166,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 
 	}
 
-	public AbstractBTreeNode getNode(String ip) {
+	public BTreeNode getNode(String ip) {
 		return ipNodeHeadMap.get(ip);
 	}
 
@@ -184,7 +184,7 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	public void setCommunication() {
 		for (String key : ipNodeHeadMap.keySet()) {
 			TreeElements te = new TreeElements();
-			AbstractBTreeNode node = getNode(key);
+			BTreeNode node = getNode(key);
 			if (!node.isLeaf()) {
 				List<TesterNodeHead_be> chilNhead = ((TesterNodeHead_be) getNode(key))
 						.getListTesterNodeHead();

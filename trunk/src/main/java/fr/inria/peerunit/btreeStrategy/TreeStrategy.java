@@ -3,7 +3,7 @@ package fr.inria.peerunit.btreeStrategy;
 import java.rmi.RemoteException;
 
 import fr.inria.peerunit.btree.Node;
-import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
+import fr.inria.peerunit.util.BTreeNode;
 
 /**
  * The classes that implement a concrete strategy should implement this
@@ -15,7 +15,7 @@ import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
  */
 public interface TreeStrategy {
 	public void buildTree();
-	public AbstractBTreeNode getNode(Object key);  // XXX
+	public BTreeNode getNode(Object key);  // XXX
 	public int getNodesSize();
 	public int register(Node node)	throws RemoteException;   
 	void setCommunication();
