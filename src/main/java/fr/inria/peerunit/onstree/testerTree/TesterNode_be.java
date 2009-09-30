@@ -2,14 +2,14 @@ package fr.inria.peerunit.onstree.testerTree;
 
 import java.io.Serializable;
 
-import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
+import fr.inria.peerunit.util.BTreeNode;
 
 /** This tree node follows to a tester. It can be a child of the head node of a station
  * tree type: balance binary tree
  * @author Jeremy Masson
  *
  */
-public class TesterNode_be extends AbstractBTreeNode implements TesterContainer, Serializable
+public class TesterNode_be  implements BTreeNode,TesterContainer, Serializable
 {
 	private static final long	serialVersionUID	= 1L;
 	public int id;
@@ -78,10 +78,9 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer,
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#getChildren()
 	 */
-	@Override
-	public AbstractBTreeNode[] getChildren()
+	public BTreeNode[] getChildren()
 	{
-		AbstractBTreeNode[] tab_aBTNode = new AbstractBTreeNode[2];
+		BTreeNode[] tab_aBTNode = new BTreeNode[2];
 		tab_aBTNode[0] = childL;
 		tab_aBTNode[1] = childR;
 		return tab_aBTNode;
@@ -90,7 +89,6 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer,
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#getKeys()
 	 */
-	@Override
 	public Comparable[] getKeys()
 	{
 		int childrenNumber = getNodesSize();
@@ -118,8 +116,8 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer,
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#getParent()
 	 */
-	@Override
-	public AbstractBTreeNode getParent()
+	
+	public BTreeNode getParent()
 	{
 		if(parentNodeHead != null)
 		{
@@ -136,7 +134,7 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer,
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#isLeaf()
 	 */
-	@Override
+	
 	public boolean isLeaf()
 	{
 		if((childL == null) && (childR == null))
@@ -150,7 +148,7 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer,
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#isRoot()
 	 */
-	@Override
+	
 	public boolean isRoot()
 	{
 		return false;
@@ -159,7 +157,7 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer,
 	/** Return the node (Tester) following the id number
 	 * @param i id number of the Tester
 	 */
-	public AbstractBTreeNode getNode(Integer i)
+	public BTreeNode getNode(Integer i)
 	{
 		if(i == id)
 		{
@@ -199,7 +197,7 @@ public class TesterNode_be extends AbstractBTreeNode implements TesterContainer,
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.onstree.testerTree.TesterContainer#setParent(fr.inria.peerunit.btreeStrategy.AbstractBTreeNode)
 	 */
-	public void updateParent(AbstractBTreeNode parent)
+	public void updateParent(BTreeNode parent)
 	{
 		// update parent himself
 		if(parent instanceof TesterNodeHead_be)
