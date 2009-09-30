@@ -1,33 +1,33 @@
 package fr.inria.peerunit.btree;
 
+import fr.inria.peerunit.Architecture;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.TestCaseImpl;
+import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
-import fr.inria.peerunit.util.TesterUtil;
 
-public class TreeTesterImpl implements TreeTester, Runnable {
+public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
 
-    public int id;
-    MethodDescription md;
-    boolean executing = true;
-    boolean isLastMethod = false;
+    //private int id;
+    private MethodDescription md;
+    private boolean executing = true;
+    private boolean isLastMethod = false;
     private ExecutorImpl executor;
     private TestCaseImpl testcase;
-    private Bootstrapper boot;
+    //private Bootstrapper boot;
+    private Architecture boot;
     private Verdicts v = Verdicts.PASS;
-    List<MethodDescription> testList;
+    private List<MethodDescription> testList;
     private static final Logger LOG = Logger.getLogger(TreeTesterImpl.class.getName());
-    String logFolder = TesterUtil.instance.getLogfolder();
 
     /**
      * Creates a new TreeTester with the specified id, and attached
@@ -36,7 +36,7 @@ public class TreeTesterImpl implements TreeTester, Runnable {
      * @param boot The tester's Bootstrapper
      */
     public TreeTesterImpl(int id, Bootstrapper boot) {
-        this.id = id;
+        this.setId(id);
         this.boot = boot;
     }
 
@@ -58,7 +58,7 @@ public class TreeTesterImpl implements TreeTester, Runnable {
     }
 
     public void execute(MethodDescription md) {
-        LOG.log(Level.FINEST, "[TreeTesterImpl]  Tester " + id + " invoking");
+        LOG.log(Level.FINEST, "[TreeTesterImpl]  Tester " + getId() + " invoking");
         invoke(md);
     }
 
@@ -160,14 +160,7 @@ public class TreeTesterImpl implements TreeTester, Runnable {
         return isLastMethod;
     }
 
-    /**
-     * Returns this tester's id
-     * @return the tester's id
-     */
-    public int getId() {
-        LOG.log(Level.FINEST, "[TreeTesterImpl]  Tester ID " + id);
-        return this.id;
-    }
+
 
     /**
      * Kills the tester, preventing it from processing any other treatment
@@ -179,83 +172,10 @@ public class TreeTesterImpl implements TreeTester, Runnable {
         }
     }
 
-    /**
-     * Used to cache testing global variables
-     * @param key the global variable's key to be set
-     * @param object the global variable's value to be set
-     * @throws RemoteException
-     */
-    public void put(Integer key, Object object) {
-        try {
-            boot.put(key, object);
-        } catch (RemoteException e) {
-            for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
 
-        }
+
+    protected Architecture globalTable() {
+        return boot;
     }
 
-    /**
-     * Used to clear the Collection of testing global variables
-     *
-     * @throws RemoteException
-     */
-    public void clear() {
-        try {
-            boot.clearCollection();
-        } catch (RemoteException e) {
-            for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
-
-        }
-    }
-
-    /**
-     * Used to retrieve the testing global variables associated
-     * to the specified key
-     * @param key
-     * @return Object
-     * @throws RemoteException
-     */
-    public Object get(Integer key) {
-        Object object = null;
-        try {
-            object = boot.get(key);
-        } catch (RemoteException e) {
-            for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
-
-        }
-        return object;
-    }
-
-    /**
-     * Returns the testing global variables
-     * @return the testing global variables
-     * @throws java.rmi.RemoteException
-     */
-    public Map<Integer, Object> getCollection() throws RemoteException {
-        return boot.getCollection();
-    }
-
-    /**
-     * Determines if the specified key is mapped to a testing global variable
-     * @param key
-     * @return true if a testing global variable is associated to the key
-     * @throws java.rmi.RemoteException
-     */
-    public boolean containsKey(Object key) throws RemoteException {
-        return boot.containsKey(key);
-    }
-
-    public String toString() {
-        return "Tester: " + id;
-    }
-
-    public int getPeerName() throws RemoteException {
-        return this.getId();
-    }
 }

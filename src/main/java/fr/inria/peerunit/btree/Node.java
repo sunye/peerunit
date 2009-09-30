@@ -4,7 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import fr.inria.peerunit.btreeStrategy.AbstractBTreeNode;
+import fr.inria.peerunit.util.BTreeNode;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Verdicts;
 /**
@@ -36,7 +36,7 @@ public interface Node extends Remote {
 	 * @param te The TreeElement to be associated to this Node
 	 * @throws java.rmi.RemoteException
 	 */
-	public void setElements(AbstractBTreeNode abstractBTreeNode,TreeElements te) throws RemoteException;	
+	public void setElements(BTreeNode abstractBTreeNode,TreeElements te) throws RemoteException;
 	
 	
 	/**
