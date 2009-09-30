@@ -22,6 +22,7 @@ import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
+import java.util.logging.Logger;
 
 public class TesterImplTest {
 
@@ -30,7 +31,7 @@ public class TesterImplTest {
 	private static CoordinatorImpl coord;
 	private static TesterImpl tester0, tester1, tester2;
 	
-	private static PeerUnitLogger LOG = new PeerUnitLogger("test");
+	private static Logger LOG = Logger.getLogger("test");
 
 	@BeforeClass
 	public static void  inititalize() {

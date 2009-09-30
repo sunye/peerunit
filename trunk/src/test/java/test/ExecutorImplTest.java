@@ -47,7 +47,7 @@ public class ExecutorImplTest {
             coord = new CoordinatorImpl(defaults);
             new Thread(coord, "Coordinator").start();
             tester = new TesterImpl(coord);
-            PeerUnitLogger logger = new PeerUnitLogger("logger");
+            Logger logger = Logger.getLogger("logger");
             executor = new ExecutorImpl(tester, logger);
 
         } catch (RemoteException e) {
