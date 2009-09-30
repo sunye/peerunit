@@ -35,7 +35,7 @@ public abstract class AbstractExecutor implements Executor {
     private Logger LOG;
 
     public AbstractExecutor(Tester t, Logger l) {
-        //assert t != null ;
+        assert t != null ;
 
         this.tester = t;
         this.LOG = l;
@@ -196,10 +196,10 @@ public abstract class AbstractExecutor implements Executor {
         return new ArrayList<MethodDescription>(methods.keySet());
     }
 
-    public Tester getTester() {
+/*    public Tester getTester() {
         return tester;
     }
-
+*/
     public TestCase getTestcase() {
         return testcase;
     }
