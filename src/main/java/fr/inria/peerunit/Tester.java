@@ -32,11 +32,8 @@ public interface Tester extends Remote, StorageTester  {
 	/**
 	 * Return the <i>tester's</i> id.
 	 * 
-	 * @throws RemoteException because the method is distant
+	 * @throws RemoteException 
 	 */		
-	public int getPeerName() throws RemoteException;
-
-
         public int getId() throws RemoteException;
 
          /**
