@@ -58,7 +58,7 @@ public abstract class TestCaseImpl implements TestCase {
 	public void setTester(Tester t) {
 		tester = t;
 		try {
-			id = t.getPeerName();
+			id = t.getId();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
