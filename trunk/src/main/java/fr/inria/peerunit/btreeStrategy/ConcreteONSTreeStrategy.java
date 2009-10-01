@@ -3,11 +3,7 @@
  */
 package fr.inria.peerunit.btreeStrategy;
 
-import java.io.BufferedReader;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -15,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-//import mtr.MTRLib;
 import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.btree.TreeElements;
 import fr.inria.peerunit.onstree.stationTree.Station;
@@ -24,8 +19,8 @@ import fr.inria.peerunit.onstree.stationTree.StationTree;
 import fr.inria.peerunit.onstree.stationTree.StationTreeBuilder;
 import fr.inria.peerunit.onstree.testerTree.TesterNodeHead_be;
 import fr.inria.peerunit.onstree.testerTree.TesterTreeBuilder;
-import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.util.BTreeNode;
+import fr.inria.peerunit.util.TesterUtil;
 /**
  * This strategy allow to use the Optimized Network Station Tree
  * 
@@ -53,14 +48,8 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	 * @see fr.inria.peerunit.btreeStrategy.TreeStrategy#buildTree()
 	 */
 	public void buildTree() {
-		String hostsFile = TesterUtil.instance.getHostsFilePath();
-		InputStream input = ConcreteONSTreeStrategy.class
-				.getResourceAsStream(hostsFile);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-		String host = null;
 		List<Station> listStation = new ArrayList<Station>();
-		int cpt = 1;
-/*		try {
+		/*		try {
 			while ((host = reader.readLine()) != null) {
 				Station station = new Station(MTRLib.getRoute(host), host,
 						Integer.toString(cpt++));

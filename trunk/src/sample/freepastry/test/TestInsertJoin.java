@@ -2,7 +2,6 @@ package freepastry.test;
 
 import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -100,8 +99,6 @@ public class TestInsertJoin  extends TestCaseImpl {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -138,6 +135,7 @@ public class TestInsertJoin  extends TestCaseImpl {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testRetrieve(){
 		try {
@@ -205,13 +203,12 @@ public class TestInsertJoin  extends TestCaseImpl {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testRetrieveByOthers(){
 		try {

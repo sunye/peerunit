@@ -17,8 +17,6 @@ import fr.inria.peerunit.test.oracle.Verdicts;
 
 public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
 
-    //private int id;
-    private MethodDescription md;
     private boolean executing = true;
     private boolean isLastMethod = false;
     private ExecutorImpl executor;

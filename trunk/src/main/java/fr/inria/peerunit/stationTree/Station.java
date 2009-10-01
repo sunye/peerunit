@@ -1,7 +1,6 @@
 package fr.inria.peerunit.stationTree;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Jeremy

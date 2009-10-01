@@ -2,7 +2,6 @@ package freepastry.test;
 import static fr.inria.peerunit.test.assertion.Assert.fail;
 import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ import freepastry.Peer;
 public class TestNewJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
 
-	private static final int OBJECTS=TesterUtil.instance.getObjects();
+	//private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	Peer peer=new Peer();
 
@@ -62,8 +61,6 @@ public class TestNewJoin extends TestCaseImpl{
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -107,8 +104,6 @@ public class TestNewJoin extends TestCaseImpl{
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -11,7 +11,6 @@ import java.util.Map;
  */
 public class BTreeImpl implements BTree { //implements TreeStrategy {
 
-    private int order;
     private static BTreeNodeImpl root = null;
     private Map<Integer, BTreeNodeImpl> nodes = new HashMap<Integer, BTreeNodeImpl>();
     private Integer nodeKey = 0;
@@ -21,7 +20,6 @@ public class BTreeImpl implements BTree { //implements TreeStrategy {
      * @param o
      */
     public BTreeImpl(int o) {
-        order = o;
         root = new BTreeNodeImpl();
     }
 
@@ -29,7 +27,8 @@ public class BTreeImpl implements BTree { //implements TreeStrategy {
      * Creates a new Node into this BTree, associated to the specified key
      * @param newKey the key to be inserted
      */
-    private void insert(Comparable newKey) {
+    @SuppressWarnings("unchecked")
+	private void insert(Comparable newKey) {
         BTreeNodeImpl returnNode = new BTreeNodeImpl();
         Comparable newRootKey = root.insert(newKey, returnNode);
         if (newRootKey != null) {
@@ -98,7 +97,8 @@ public class BTreeImpl implements BTree { //implements TreeStrategy {
      * Test method for BTree
      * @param args
      */
-    public static void main(String[] args) {
+    @SuppressWarnings("unchecked")
+	public static void main(String[] args) {
         BTreeImpl btree = new BTreeImpl(2);
         btree.buildTree();
 

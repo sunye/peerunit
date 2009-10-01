@@ -1,6 +1,7 @@
 package freepastry.test.old;
 
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import rice.environment.Environment;
@@ -24,9 +24,7 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Peer;
 
@@ -194,6 +192,7 @@ public class TestInsertJoinB  extends TestCaseImpl {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testRetrieve(){
 		try {
@@ -278,6 +277,7 @@ public class TestInsertJoinB  extends TestCaseImpl {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testRetrieveByOthers(){
 		try {

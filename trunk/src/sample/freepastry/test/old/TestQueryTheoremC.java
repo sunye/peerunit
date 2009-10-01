@@ -1,16 +1,13 @@
 package freepastry.test.old;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import rice.environment.Environment;
 import rice.p2p.past.PastContent;
 import rice.tutorial.past.MyPastContent;
 import util.FreeLocalPort;
@@ -18,12 +15,9 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Peer;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 
 /**
  * Should rebuild
@@ -50,7 +44,7 @@ public class TestQueryTheoremC extends TestCaseImpl{
 	@TestStep(place=-1,timeout=1000000, name = "action1", step = 0)
 	public void starting(){
 //		 Loads pastry settings
-		Environment env = new Environment();
+		//Environment env = new Environment();
 		int netSize=TesterUtil.instance.getExpectedTesters();
 		if(netSize<10)
 			netSize=10;
@@ -204,6 +198,7 @@ public class TestQueryTheoremC extends TestCaseImpl{
 		log.info("[PastryTest] Peer bye bye");
 	}
 
+	@SuppressWarnings("unchecked")
 	private void retrieveAssert(){
 		List<PastContent> resultSet=(List<PastContent>)test.get(-1);
 		for (PastContent content : resultSet) {

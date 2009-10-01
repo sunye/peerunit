@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -18,7 +17,6 @@ import util.FreeLocalPort;
 import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.AsynChord;
-import de.uniba.wiai.lspi.chord.service.Key;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.TestCaseImpl;
@@ -59,7 +57,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 
 	int expectedResults=0;
 
-	private Collection<Key> insertedKeys= new ArrayList<Key>(OBJECTS);
+	//private Collection<Key> insertedKeys= new ArrayList<Key>(OBJECTS);
 
 	URL localURL = null;
 
@@ -132,7 +130,7 @@ public class TestPeerIsolation extends TestCaseImpl{
 			Thread.sleep(sleep);
 			if(this.getPeerName()==0){
 				chosePeer = rand.nextInt(this.getCollection().size());
-				ID id=(ID)this.get(chosePeer);
+				//ID id=(ID)this.get(chosePeer);
 				log.info("Chose peer "+chosePeer+" ID "+chord.getID());
 				this.clear();
 				Thread.sleep(sleep);

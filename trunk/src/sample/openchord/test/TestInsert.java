@@ -1,6 +1,5 @@
 package openchord.test;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import openchord.DbCallback;
@@ -23,11 +21,8 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 /**
  * Test E3 on experiments list
  * @author almeida
@@ -172,6 +167,7 @@ public class TestInsert extends TestCaseImpl{
 		test.put(0, resultSet);
 	}
 
+	@SuppressWarnings("unchecked")
 	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void testRetrieve(){
 		List<String> actuals=new ArrayList<String>();

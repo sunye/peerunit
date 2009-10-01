@@ -28,7 +28,7 @@ import freepastry.Peer;
 public class TestUpdateOnShrink  extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
 
-	private static final int OBJECTS=TesterUtil.instance.getObjects();
+	//private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	Peer peer=new Peer();
 

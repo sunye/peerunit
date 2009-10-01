@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -17,7 +16,6 @@ import openchord.StringKey;
 import util.FreeLocalPort;
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.AsynChord;
-import de.uniba.wiai.lspi.chord.service.Key;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.TestCaseImpl;
@@ -50,7 +48,7 @@ public class TestUpdateOnShrink extends TestCaseImpl{
 
 	int expectedResults=0;
 
-	private Collection<Key> insertedKeys= new ArrayList<Key>(OBJECTS);
+	//private Collection<Key> insertedKeys= new ArrayList<Key>(OBJECTS);
 
 	URL localURL = null;
 	public TestUpdateOnShrink() {

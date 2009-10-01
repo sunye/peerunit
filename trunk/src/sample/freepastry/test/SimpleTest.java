@@ -2,27 +2,19 @@ package freepastry.test;
 
 import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import rice.environment.Environment;
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastContent;
 import rice.p2p.past.PastContentHandle;
 import rice.tutorial.past.MyPastContent;
-import util.FreeLocalPort;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
 import freepastry.test.old.TestInsertLeaveB;
@@ -114,6 +106,7 @@ public class SimpleTest extends TestCaseImpl{
 	/**
 	 * Get the data and the verdict.
 	 */
+	@SuppressWarnings("unchecked")
 	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
 	public void get(){
 		// Lookup
