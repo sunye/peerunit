@@ -1,7 +1,5 @@
 package test;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,19 +8,20 @@ import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.inria.peerunit.TestCase;
+import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
-import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class ExecutorImplTest {
@@ -104,7 +103,7 @@ public class ExecutorImplTest {
         fr.inria.peerunit.parser.AfterClass ac;
         int valid = 0;
 
-        if (tester.getPeerName() != 0) {
+        if (tester.getId() != 0) {
 //	TODO		assertNotNull(executor.getTestcase().getId());
         }
         //assertTrue(testcase.getId()==id2);

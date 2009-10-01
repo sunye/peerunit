@@ -27,7 +27,7 @@ import freepastry.Peer;
 public class TestPeerIsolation extends TestCaseImpl {
 	private static Logger log = Logger.getLogger(TestPeerIsolation.class.getName());
 
-	private static final int OBJECTS=TesterUtil.instance.getObjects();
+	//private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	Peer peer=new Peer();
 
@@ -90,6 +90,7 @@ public class TestPeerIsolation extends TestCaseImpl {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@TestStep(name="action5",measure=true,step=0,timeout=10000000,place=-1)
 	public void testLeave() {
 		try {

@@ -312,6 +312,7 @@ public class TestInsertJoin extends TestCaseImpl{
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
 	public void testRetrieveByOthers(){
 

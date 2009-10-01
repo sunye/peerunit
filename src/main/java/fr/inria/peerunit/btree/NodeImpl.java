@@ -297,7 +297,8 @@ public class NodeImpl implements Node, Serializable, Runnable {
         return "Node id: " + id;
     }
 
-    private synchronized void startTesters() {
+    @SuppressWarnings("unchecked")
+	private synchronized void startTesters() {
         /**
          * Initially we wait for the tree construction
          */

@@ -32,13 +32,11 @@ public abstract class AbstractExecutor implements Executor {
     private TestCase testcase;
     private int testerId = -1;
     private Tester tester;
-    private Logger LOG;
 
     public AbstractExecutor(Tester t, Logger l) {
         assert t != null ;
 
         this.tester = t;
-        this.LOG = l;
         try {
             this.testerId = tester.getId();
         } catch (RemoteException ex) {

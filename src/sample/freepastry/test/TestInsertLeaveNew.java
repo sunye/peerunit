@@ -1,10 +1,8 @@
 package freepastry.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.*;
-import java.io.IOException;
-import java.net.InetAddress;
+import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,21 +10,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import rice.environment.Environment;
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastContent;
 import rice.tutorial.past.MyPastContent;
-import util.FreeLocalPort;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.test.assertion.Assert;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
@@ -142,8 +135,6 @@ public class TestInsertLeaveNew  extends TestCaseImpl {
 			e.printStackTrace();
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-				e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -176,6 +167,7 @@ public class TestInsertLeaveNew  extends TestCaseImpl {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
 	public void testRetrieve(){
 		try {
@@ -270,6 +262,7 @@ public class TestInsertLeaveNew  extends TestCaseImpl {
 		}
 
 	}
+	@SuppressWarnings("unchecked")
 	@TestStep(place=-1,timeout=1000000, name = "action8", step = 0)
 	public void buildExpecteds(){
 		try {

@@ -1,17 +1,14 @@
 package openchord.test;
 
-import java.io.IOException;
+import static fr.inria.peerunit.test.assertion.Assert.assertEquals;
+
 import java.rmi.RemoteException;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
-import static fr.inria.peerunit.test.assertion.Assert.*;
-import fr.inria.peerunit.util.LogFormat;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 
 public class TestInconclusive extends TestCaseImpl{
 
@@ -27,7 +24,7 @@ public class TestInconclusive extends TestCaseImpl{
 	private String testString;
 
 
-
+/*
 	private int getName(){
 		int peerName=0;
 		try {
@@ -36,7 +33,7 @@ public class TestInconclusive extends TestCaseImpl{
 			e.printStackTrace();
 		}
 		return peerName;
-	}
+	}*/
 
 	@BeforeClass(place=-1,timeout=1000000)
 	public void init() {

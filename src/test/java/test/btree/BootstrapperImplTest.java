@@ -1,13 +1,11 @@
 package test.btree;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import java.rmi.RemoteException;
 import java.util.Properties;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import fr.inria.peerunit.btree.Bootstrapper;
 import fr.inria.peerunit.btree.BootstrapperImpl;

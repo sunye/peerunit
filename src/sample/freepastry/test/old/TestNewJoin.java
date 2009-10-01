@@ -1,5 +1,8 @@
 package freepastry.test.old;
 
+import static fr.inria.peerunit.test.assertion.Assert.fail;
+import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -7,7 +10,6 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import rice.environment.Environment;
@@ -18,11 +20,8 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Peer;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 
 /**
  * Test routing table update in an expanding system
@@ -32,7 +31,7 @@ import static fr.inria.peerunit.test.assertion.Assert.*;
 public class TestNewJoin extends TestCaseImpl{
 	private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
 
-	private static final int OBJECTS=TesterUtil.instance.getObjects();
+	//private static final int OBJECTS=TesterUtil.instance.getObjects();
 
 	static TestNewJoin test;
 

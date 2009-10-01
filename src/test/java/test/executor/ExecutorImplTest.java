@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,9 +19,7 @@ import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
-import java.util.logging.Logger;
 
 public class ExecutorImplTest {
 

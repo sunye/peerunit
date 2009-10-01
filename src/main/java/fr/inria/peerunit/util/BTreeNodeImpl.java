@@ -12,7 +12,8 @@ class BTreeNodeImpl implements BTreeNode, Serializable {
 
     private static final long serialVersionUID = 1L;
     private int id;
-    private Comparable[] keys;
+    @SuppressWarnings("unchecked")
+	private Comparable[] keys;
     private BTreeNodeImpl[] children;
     private BTreeNodeImpl parent;
     private int order;
@@ -41,7 +42,8 @@ class BTreeNodeImpl implements BTreeNode, Serializable {
         children = copy.children.clone();
     }
 
-    private void setKeys(Comparable[] k) {
+    @SuppressWarnings("unchecked")
+	private void setKeys(Comparable[] k) {
         keys = k;
     }
 
@@ -93,7 +95,8 @@ class BTreeNodeImpl implements BTreeNode, Serializable {
      * @param returnNode the node associated to the added key
      * @return the new root's key
      */
-    Comparable insert(Comparable newKey, BTreeNodeImpl returnNode) {
+    @SuppressWarnings("unchecked")
+	Comparable insert(Comparable newKey, BTreeNodeImpl returnNode) {
         // Search and insert node (recursive)
         if (!isLeaf()) {
             for (int i = 0; i < children.length; i++) {
@@ -182,7 +185,8 @@ class BTreeNodeImpl implements BTreeNode, Serializable {
         return id;
     }
 
-    public Comparable[] getKeys() {
+    @SuppressWarnings("unchecked")
+	public Comparable[] getKeys() {
         return keys;
     }
 

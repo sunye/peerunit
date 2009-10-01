@@ -1,15 +1,14 @@
 
 package openchord.test;
 
-import java.io.IOException;
+import static fr.inria.peerunit.test.assertion.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import openchord.DbCallback;
@@ -17,17 +16,13 @@ import openchord.StringKey;
 import util.FreeLocalPort;
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.AsynChord;
-import de.uniba.wiai.lspi.chord.service.Key;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
-import static fr.inria.peerunit.test.assertion.Assert.*;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
-import static fr.inria.peerunit.test.assertion.Assert.*;
 
 public class TestFindSuccTheoremC extends TestCaseImpl{
 
@@ -55,7 +50,7 @@ public class TestFindSuccTheoremC extends TestCaseImpl{
 
 	int expectedResults=0;
 
-	private Collection<Key> insertedKeys= new ArrayList<Key>(OBJECTS);
+	//private Collection<Key> insertedKeys= new ArrayList<Key>(OBJECTS);
 
 	public TestFindSuccTheoremC() {
 		super();

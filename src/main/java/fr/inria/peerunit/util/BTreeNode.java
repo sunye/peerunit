@@ -9,7 +9,8 @@ package fr.inria.peerunit.util;
 public interface BTreeNode {
 	
 	 public int getId();
-	 public Comparable[] getKeys();
+	 @SuppressWarnings("unchecked")
+	public Comparable[] getKeys();
 	 public BTreeNode getParent();
 	 public BTreeNode[] getChildren();
 	 public boolean isLeaf();

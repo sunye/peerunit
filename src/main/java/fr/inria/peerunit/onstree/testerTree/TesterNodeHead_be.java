@@ -21,7 +21,6 @@ public class TesterNodeHead_be implements BTreeNode,  TesterContainer, Serializa
 	private TesterNodeHead_be parent;
 	private TesterNode_be childL;
 	private TesterNode_be childR;
-	private int equilibre;
 	private List<TesterNodeHead_be> listTesterNodeHead;
 	private String ip=null;
 	
@@ -38,7 +37,6 @@ public class TesterNodeHead_be implements BTreeNode,  TesterContainer, Serializa
 		sColor = color;
 		this.childL = childL;
 		this.childR = childR;
-		this.equilibre = equilibre;
 		listTesterNodeHead = new ArrayList<TesterNodeHead_be>();
 	}
 	
@@ -50,7 +48,6 @@ public class TesterNodeHead_be implements BTreeNode,  TesterContainer, Serializa
 		sColor = color;
 		this.childL = childL;
 		this.childR = childR;
-		this.equilibre = equilibre;
 		listTesterNodeHead = new ArrayList<TesterNodeHead_be>();
 	}
 	
@@ -113,10 +110,9 @@ public class TesterNodeHead_be implements BTreeNode,  TesterContainer, Serializa
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#getKeys()
 	 */
+	@SuppressWarnings("unchecked")
 	public Comparable[] getKeys()
 	{
-//		int childrenNumber = getNodesSize();
-		int counter = 0;
 		List<Comparable> tab_Keys = new ArrayList<Comparable>();
 		if(childL != null)
 		{

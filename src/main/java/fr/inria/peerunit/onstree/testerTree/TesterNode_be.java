@@ -89,6 +89,7 @@ public class TesterNode_be  implements BTreeNode,TesterContainer, Serializable
 	/* (non-Javadoc)
 	 * @see fr.inria.peerunit.btreeStrategy.AbstractBTreeNode#getKeys()
 	 */
+	@SuppressWarnings("unchecked")
 	public Comparable[] getKeys()
 	{
 		int childrenNumber = getNodesSize();

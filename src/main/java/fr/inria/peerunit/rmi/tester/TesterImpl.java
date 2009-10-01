@@ -1,6 +1,5 @@
 package fr.inria.peerunit.rmi.tester;
 
-import fr.inria.peerunit.Architecture;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
@@ -8,9 +7,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import fr.inria.peerunit.Architecture;
 import fr.inria.peerunit.Coordinator;
-import fr.inria.peerunit.StorageTester;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
@@ -19,7 +19,6 @@ import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.TesterUtil;
-import java.util.logging.Logger;
 
 /**
  * @author Eduardo Almeida
