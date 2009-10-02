@@ -1,6 +1,6 @@
 package fr.inria.peerunit.btree;
 
-import fr.inria.peerunit.Architecture;
+import fr.inria.peerunit.GlobalVariables;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -21,8 +21,7 @@ public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
     private boolean isLastMethod = false;
     private ExecutorImpl executor;
     private TestCaseImpl testcase;
-    //private Bootstrapper boot;
-    private Architecture boot;
+
     private Verdicts v = Verdicts.PASS;
     private List<MethodDescription> testList;
     private static final Logger LOG = Logger.getLogger(TreeTesterImpl.class.getName());
@@ -31,11 +30,11 @@ public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
      * Creates a new TreeTester with the specified id, and attached
      * to the specified Bootstrapper
      * @param id The tester's id
-     * @param boot The tester's Bootstrapper
+     * @param globals The tester's Bootstrapper
      */
-    public TreeTesterImpl(int id, Bootstrapper boot) {
+    public TreeTesterImpl(int id, GlobalVariables gv) {
+        super(gv);
         this.setId(id);
-        this.boot = boot;
     }
 
     /**
@@ -55,6 +54,7 @@ public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
         }
     }
 
+    @Override
     public void execute(MethodDescription md) {
         LOG.log(Level.FINEST, "[TreeTesterImpl]  Tester " + getId() + " invoking");
         invoke(md);
@@ -163,17 +163,12 @@ public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
     /**
      * Kills the tester, preventing it from processing any other treatment
      */
+    @Override
     public void kill() {
         executing = false;
         synchronized (this) {
             this.notify();
         }
-    }
-
-
-
-    protected Architecture globalTable() {
-        return boot;
     }
 
 }

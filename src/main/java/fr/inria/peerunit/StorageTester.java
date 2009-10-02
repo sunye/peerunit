@@ -59,7 +59,7 @@ public interface StorageTester  {
 	 * @throws RemoteException
 	 *             because the method is distant
 	 */	
-	public boolean containsKey(Object key)throws RemoteException;
+	public boolean containsKey(Integer key)throws RemoteException;
 
 
 	/**

@@ -1,5 +1,6 @@
 package fr.inria.peerunit.btree;
 
+import fr.inria.peerunit.GlobalVariables;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -41,7 +42,9 @@ public class NodeImpl implements Node, Serializable, Runnable {
     /**
      * The Bootstraper node.
      */
-    private Bootstrapper boot;
+    final private Bootstrapper boot;
+    final private GlobalVariables globals;
+
     private int id;
     private boolean amIRoot = false;
     private boolean amILeaf = false;
@@ -63,7 +66,7 @@ public class NodeImpl implements Node, Serializable, Runnable {
      * @param b
      * @throws java.rmi.RemoteException
      */
-    public NodeImpl(Bootstrapper b) throws RemoteException {
+    public NodeImpl(Bootstrapper b, GlobalVariables gv) throws RemoteException {
         try {
             InetAddress addr = InetAddress.getLocalHost();
             this.hostAddress = addr.getHostAddress();
@@ -72,6 +75,7 @@ public class NodeImpl implements Node, Serializable, Runnable {
         } 
 
         boot = b;
+        globals = gv;
         UnicastRemoteObject.exportObject(this);
         id = boot.register(this);
         amIRoot = boot.isRoot(id);
@@ -317,7 +321,7 @@ public class NodeImpl implements Node, Serializable, Runnable {
             if (key != null) {
                 int peerID = new Integer(key.toString());
                 log.log(Level.FINEST, "[NodeImpl] Tester " + key.toString());
-                testers.add(new TreeTesterImpl(peerID, boot));
+                testers.add(new TreeTesterImpl(peerID, globals));
             }
         }
 

@@ -1,15 +1,15 @@
 package fr.inria.peerunit.btree;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import fr.inria.peerunit.Architecture;
 /**
  * 
  * @author Eduardo Almeida, Veronique Pelleau
  * @version 1.0
  * @since 1.0
  */
-public interface Bootstrapper extends Architecture {
+public interface Bootstrapper extends Remote {
 	/**
 	 * Adds a new BTree node to this Bootstrapper
 	 * 

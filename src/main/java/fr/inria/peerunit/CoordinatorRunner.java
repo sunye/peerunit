@@ -26,6 +26,7 @@ public class CoordinatorRunner {
     private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
     private Coordinator stub;
     private CoordinatorImpl cii;
+    private GlobalVariables globals;
 
     /**
      * @param args
@@ -64,6 +65,7 @@ public class CoordinatorRunner {
             log.addHandler(handler);
             log.setLevel(defaults.getLogLevel());
 
+            globals = (GlobalVariables) UnicastRemoteObject.exportObject(new GlobalVariablesImpl(), 0);
             cii = new CoordinatorImpl(defaults);
             stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
             log.info("New Coordinator address is : " + defaults.getServerAddr());
@@ -78,6 +80,7 @@ public class CoordinatorRunner {
             // Bind the remote object's stub in the registry
             Registry registry = LocateRegistry.createRegistry(1099);
             registry.bind("Coordinator", stub);
+            registry.bind("Globals", globals);
             Thread coordination = new Thread(cii, "Coordinator");
             coordination.start();
             coordination.join();

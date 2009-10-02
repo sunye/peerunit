@@ -12,7 +12,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.ArchitectureImpl;
 import fr.inria.peerunit.btreeStrategy.ConcreteBtreeStrategy;
 import fr.inria.peerunit.btreeStrategy.ConcreteONSTreeStrategy;
 import fr.inria.peerunit.btreeStrategy.TreeStrategy;
@@ -27,7 +26,7 @@ import java.io.FileNotFoundException;
  * @version 1.0
  * @since 1.0
  */
-public class BootstrapperImpl extends ArchitectureImpl implements Bootstrapper, Serializable {
+public class BootstrapperImpl implements Bootstrapper, Serializable {
 
     private static final long serialVersionUID = 1L;
     private int expectedTesters;

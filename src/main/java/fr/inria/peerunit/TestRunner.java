@@ -126,9 +126,11 @@ public class TestRunner {
      * @throws NotBoundException if the <i>coordinator</i> is not bound in the RMI Registry
      */
     private void bootCentralized(Registry registry) throws RemoteException, NotBoundException {
+        assert registry != null : "Null registry";
+        
         Coordinator coord = (Coordinator) registry.lookup("Coordinator");
-        TesterImpl tester = new TesterImpl(coord, defaults);
-        //Tester stub = (Tester)
+        GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
+        TesterImpl tester = new TesterImpl(coord, globals, defaults);
         UnicastRemoteObject.exportObject(tester);
         tester.export(testcase);
         tester.run();
@@ -147,7 +149,8 @@ public class TestRunner {
 
 
         Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
-        NodeImpl node = new NodeImpl(boot);
+        GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
+        NodeImpl node = new NodeImpl(boot, globals);
         node.registerTestCase(testcase);
         node.run();
     }
