@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.Architecture;
+import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
@@ -37,7 +37,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
     final transient private Coordinator coord;
     //private int id;
-    //private Architecture coord;
+    //private GlobalVariables coord;
     private boolean stop = false;
     private transient Thread timeoutThread;
     private transient Thread invokationThread;
@@ -52,14 +52,18 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @param c the coordinator which give the tester's identifier.
      * @throws RemoteException
      */
-    public TesterImpl(Coordinator c) throws RemoteException {
-        assert c != null;
+    public TesterImpl(Coordinator c, GlobalVariables gv) throws RemoteException {
+        super(gv);
+        assert c != null : "Null coordinator";
+
         coord = c;
+
     }
 
-    public TesterImpl(Coordinator c, TesterUtil tu) throws RemoteException {
-        this(c);
-        assert tu != null;
+    public TesterImpl(Coordinator c, GlobalVariables gv, TesterUtil tu) throws RemoteException {
+        this(c, gv);
+
+        assert tu != null : "Null properties";
         defaults = tu;
     }
 
@@ -112,9 +116,9 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
 
         boolean exported = false;
         try {
-            this.setId(coord.getNewId(this));
+            this.setId(coord.register(this));
             executor = new ExecutorImpl(this, LOG);
-            coord.register(this, executor.register(c));
+            coord.registerMethods(this, executor.register(c));
             exported = true;
         } catch (RemoteException e) {
             for (StackTraceElement each : e.getStackTrace()) {
@@ -131,13 +135,13 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         }
     }
 
-
     /**
      * Used to add an action to be executed
      *
      * @throws RemoteException
      * @throws InterruptedException
      */
+    @Override
     public synchronized void execute(MethodDescription md)
             throws RemoteException {
         LOG.log(Level.FINEST, "Starting TesterImpl::execute(MethodDescription) with: " + md);
@@ -151,9 +155,6 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         }
     }
 
-
-
-
     /**
      * An example how to kill a peer
      * <code> YourTestClass test = new YourTestClass();
@@ -162,6 +163,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * ...	 // code
      * test.kill(); </code>
      */
+    @Override
     public void kill() {
         executionInterrupt();
         LOG.log(Level.INFO, "Test Case finished by kill ");
@@ -214,9 +216,6 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     }
 
 
-    protected Architecture globalTable() {
-        return coord;
-    }
     /**
      *  Used to invoke an action
      * @param md the action will be invoked
@@ -229,12 +228,12 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
             executor.invoke(md);
             error = false;
         } catch (IllegalArgumentException e) {
-                        for (StackTraceElement each : e.getStackTrace()) {
+            for (StackTraceElement each : e.getStackTrace()) {
                 LOG.severe(each.toString());
             }
 
         } catch (IllegalAccessException e) {
-                        for (StackTraceElement each : e.getStackTrace()) {
+            for (StackTraceElement each : e.getStackTrace()) {
                 LOG.severe(each.toString());
             }
 
@@ -244,7 +243,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                 error = false;
             }
             v = oracle.getVerdict();
-                       for (StackTraceElement each : e.getStackTrace()) {
+            for (StackTraceElement each : e.getStackTrace()) {
                 LOG.severe(each.toString());
             }
 

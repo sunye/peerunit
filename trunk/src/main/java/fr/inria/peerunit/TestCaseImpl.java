@@ -147,7 +147,7 @@ public abstract class TestCaseImpl implements TestCase {
      * @return <tt>true</tt> if we can  map the key <tt>key</tt>, return <tt>false</tt> else
 	 * @throws RemoteException because the method is distant  
      */		
-	public boolean containsKey(Object key) throws RemoteException {
+	public boolean containsKey(Integer key) throws RemoteException {
 		return tester.containsKey(key);
 	}
 

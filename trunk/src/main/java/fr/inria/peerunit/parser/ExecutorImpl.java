@@ -1,6 +1,7 @@
 package fr.inria.peerunit.parser;
 
 
+import fr.inria.peerunit.GlobalVariablesImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractExecutor;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
@@ -20,7 +21,8 @@ public class ExecutorImpl extends AbstractExecutor {
         public static void main(String[] argv) {
         try {
             CoordinatorImpl coord = new CoordinatorImpl(TesterUtil.instance);
-            TesterImpl tester = new TesterImpl(coord);
+            GlobalVariablesImpl globals = new GlobalVariablesImpl();
+            TesterImpl tester = new TesterImpl(coord, globals);
             Logger logger = Logger.getLogger(ExecutorImpl.class.getName());
             ExecutorImpl executor = new ExecutorImpl(tester, logger);
             System.out.println(executor);

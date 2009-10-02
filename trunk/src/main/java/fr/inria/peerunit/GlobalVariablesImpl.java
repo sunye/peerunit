@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version 1.0
  * @since 1.0
  */
-public abstract class ArchitectureImpl implements Architecture {
+public class GlobalVariablesImpl implements GlobalVariables {
 	/**
 	 * Caching global variables
 	 */
@@ -30,7 +30,7 @@ public abstract class ArchitectureImpl implements Architecture {
 	 * @return true if this bootstrapper contains the specified variable.
 	 * @throws java.rmi.RemoteException
 	 */
-	public boolean containsKey(Object key) throws RemoteException {
+	public boolean containsKey(Integer key) throws RemoteException {
 		return cacheMap.containsKey(key);
 	}
 

@@ -25,5 +25,11 @@
       <item name="FreePastry" href="tests.html"/>
       <item name="OpenChord" href="tests.html"/>
     </menu>
+    <menu name="Development">
+        <item name="PMD" href="pmd.html"/>
+        <item name="Emma" href="emma/index.html"/>
+        <item name="Dependencies" href="dependencies.html"/>
+        <item name="Maven Plugins" href=" plugins.html"/>
+    </menu>
   </body>
 </project>

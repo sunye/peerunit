@@ -5,7 +5,7 @@
 
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.Architecture;
+import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 import java.rmi.RemoteException;
@@ -17,7 +17,12 @@ import java.util.Map;
  */
 public abstract class AbstractTester implements Tester {
     private int id;
+    private GlobalVariables globals;
 
+
+    public AbstractTester(GlobalVariables gv) {
+        this.globals = gv;
+    }
      /**
      * Returns this tester's id
      * @return the tester's id
@@ -60,7 +65,7 @@ public abstract class AbstractTester implements Tester {
         return this.globalTable().get(key);
     }
 
-    public boolean containsKey(Object key) throws RemoteException {
+    public boolean containsKey(Integer key) throws RemoteException {
         return this.globalTable().containsKey(key);
     }
 
@@ -68,5 +73,7 @@ public abstract class AbstractTester implements Tester {
         this.globalTable().clearCollection();
     }
 
-    protected abstract Architecture globalTable();
+    private final GlobalVariables globalTable() {
+        return globals;
+    }
 }

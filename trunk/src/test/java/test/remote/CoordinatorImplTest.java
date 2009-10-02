@@ -75,7 +75,7 @@ public class CoordinatorImplTest {
 		
 		coordination.start();
 		try {
-			coord.register(tester, methods);
+			coord.registerMethods(tester, methods);
 			for (MethodDescription each : methods) {
 				assertTrue(coord.getTesterMap().containsKey(each));
 			}
@@ -115,7 +115,7 @@ public class CoordinatorImplTest {
 			Tester[] testers = new Tester[size];
 			for (int i = 0; i < testers.length; i++) {
 				testers[i] = mock(Tester.class);
-				coord.register(testers[i], methods);
+				coord.registerMethods(testers[i], methods);
 			}
 			for (int i = 0; i < methods.size(); i++) {
 				Thread.sleep(100 + size/10);

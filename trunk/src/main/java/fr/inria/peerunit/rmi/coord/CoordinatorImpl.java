@@ -15,9 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.ArchitectureImpl;
 import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.test.oracle.Verdicts;
@@ -27,7 +27,7 @@ import fr.inria.peerunit.util.TesterUtil;
  * @author sunye
  *
  */
-public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
+public class CoordinatorImpl implements Coordinator, Bootstrapper,
 		Runnable, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -42,7 +42,7 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	private Map<MethodDescription, Set<Tester>> testerMap = Collections
 			.synchronizedMap(new TreeMap<MethodDescription, Set<Tester>>());
 
-	private List<Tester> registeredTesters;
+	final private List<Tester> registeredTesters;
 
 	/**
 	 * Number of expected testers.
@@ -51,9 +51,9 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 
 
 	/**
-	 * Number of testers running the current method.
+	 * Number of testers running the current method (test step).
 	 */
-	private AtomicInteger runningTesters;
+	final private AtomicInteger runningTesters;
 
 	private static final Logger log = Logger.getLogger(CoordinatorImpl.class
 			.getName());
@@ -87,10 +87,10 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 
 
 	/**
-	 * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester,
+	 * @see fr.inria.peerunit.Coordinator#registerMethods(fr.inria.peerunit.Tester,
 	 *      java.util.List)
 	 */
-	public synchronized void register(Tester t, List<MethodDescription> list)
+	public synchronized void registerMethods(Tester t, List<MethodDescription> list)
 			throws RemoteException {
 		
 		assert status == STARTING : "Trying to regiser while not starting";
@@ -192,7 +192,7 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	 * @see callback.Coordinator#namer(callback.Tester) Incremented with
 	 * java.util.concurrent to handle the semaphore concurrency access
 	 */
-	public synchronized int getNewId(Tester t) throws RemoteException {
+	public synchronized int register(Tester t) throws RemoteException {
 		int id = runningTesters.getAndIncrement();
 		log.info("New Registered Tester: " + id + " new client " + t);
 		return id;
@@ -226,7 +226,7 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	}
 
 	/**
-	 * Waits for all expected testers to register.
+	 * Waits for all expected testers to registerMethods.
 	 */
 	private void waitForTesterRegistration() throws InterruptedException {
 		assert status == STARTING : "Trying to register while not starting";
@@ -290,4 +290,9 @@ public class CoordinatorImpl extends ArchitectureImpl implements Coordinator,
 	public String toString() {
 		return String.format("Coordinator(expected:%s,registered:%s,running:%s)", this.expectedTesters, new Integer(this.registeredTesters.size()), this.runningTesters);
 	}
+
+
+    public boolean isRoot(int id) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

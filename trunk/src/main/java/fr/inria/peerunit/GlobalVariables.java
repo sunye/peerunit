@@ -10,7 +10,7 @@ import java.util.Map;
  * @version 1.0
  * @since 1.0
  */
-public interface Architecture extends Remote {
+public interface GlobalVariables extends Remote {
 	
 	/**
 	 * Used to cache testing global variables
@@ -41,7 +41,7 @@ public interface Architecture extends Remote {
 	 * @return true if the boostrapper or the coordinator contains the specified variable.
 	 * @throws java.rmi.RemoteException
 	 */
-	public boolean containsKey(Object key) throws RemoteException ;
+	public boolean containsKey(Integer key) throws RemoteException ;
 	
 	/**
 	 * Clears all global variables for this object
