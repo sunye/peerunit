@@ -100,7 +100,7 @@ public class CoordinatorImplTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testSeveralTesters() {
 		int size = 10000;
 		Properties properties = new Properties();

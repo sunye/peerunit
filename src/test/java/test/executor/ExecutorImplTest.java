@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import fr.inria.peerunit.GlobalVariables;
+import fr.inria.peerunit.GlobalVariablesImpl;
 import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.parser.ExecutorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
@@ -26,6 +28,7 @@ public class ExecutorImplTest {
 	private static ExecutorImpl executor;
 
 	private static CoordinatorImpl coord;
+    private static GlobalVariables globals; 
 	private static TesterImpl tester;
 //	private static Logger log = Logger.getLogger();
 	
@@ -44,8 +47,9 @@ public class ExecutorImplTest {
 		try {
 			TesterUtil defaults = new TesterUtil(properties);
 			coord = new CoordinatorImpl(defaults);
+			globals = new GlobalVariablesImpl();
 			new Thread(coord, "Coordinator").start();
-			tester = new TesterImpl(coord);
+			tester = new TesterImpl(coord, globals);
 			executor = new ExecutorImpl(tester, LOG);
 
 		} catch (RemoteException e) {

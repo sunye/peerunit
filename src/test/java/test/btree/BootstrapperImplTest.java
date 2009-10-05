@@ -4,6 +4,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
+import org.junit.Test;
+
 import java.rmi.RemoteException;
 import java.util.Properties;
 
@@ -55,13 +57,15 @@ public class BootstrapperImplTest {
         }
     }
 
-    //@Test
+    @Test
     public void testGetRegistered() {
-        fail("Not yet implemented");
+        //fail("Not yet implemented");
     }
 
-    //@Test
+    @Test
     public void testIsRoot() {
-        fail("Not yet implemented");
+        //fail("Not yet implemented");
     }
+    
+    
 }
