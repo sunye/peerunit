@@ -12,6 +12,8 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.Bootstrapper;
+import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.btreeStrategy.ConcreteBtreeStrategy;
 import fr.inria.peerunit.btreeStrategy.ConcreteONSTreeStrategy;
 import fr.inria.peerunit.btreeStrategy.TreeStrategy;
@@ -96,8 +98,8 @@ public class BootstrapperImpl implements Bootstrapper, Serializable {
         }
     }
 
-    public synchronized int register(Node node) throws RemoteException {
-        return context.register(node);
+    public synchronized int register(Tester t) throws RemoteException {
+        return context.register(t);
     }
 
     /**

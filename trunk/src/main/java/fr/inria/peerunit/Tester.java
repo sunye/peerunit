@@ -18,7 +18,17 @@ import fr.inria.peerunit.parser.MethodDescription;
  * @see fr.inria.peerunit.tree.TreeTesterImpl 
  */
 public interface Tester extends Remote, StorageTester  {
-
+	
+	
+	/**
+	 * Sets the coordinator for this tester.
+	 * 
+	 * @param coord
+	 */
+	public void setCoordinator(Coordinator coord);
+	
+	
+	
 	/**
 	 * Execute a <i>test case action</i> thanks to it description.
 	 * 

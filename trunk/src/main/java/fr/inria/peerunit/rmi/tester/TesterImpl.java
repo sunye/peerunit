@@ -9,8 +9,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.Coordinator;
+import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
@@ -35,9 +37,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
 
     private static final long serialVersionUID = 1L;
     private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
-    final transient private Coordinator coord;
-    //private int id;
-    //private GlobalVariables coord;
+    private transient Coordinator coord;
     private boolean stop = false;
     private transient Thread timeoutThread;
     private transient Thread invokationThread;
@@ -52,27 +52,32 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @param c the coordinator which give the tester's identifier.
      * @throws RemoteException
      */
-    public TesterImpl(Coordinator c, GlobalVariables gv) throws RemoteException {
+    public TesterImpl(Bootstrapper boot, GlobalVariables gv) throws RemoteException {
         super(gv);
-        assert c != null : "Null coordinator";
-
-        coord = c;
+        int id = boot.register(this);
+        this.setId(id);
 
     }
 
-    public TesterImpl(Coordinator c, GlobalVariables gv, TesterUtil tu) throws RemoteException {
-        this(c, gv);
-
-        assert tu != null : "Null properties";
+    public TesterImpl(Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
+        this(boot, gv);
         defaults = tu;
     }
 
+    public void setCoordinator(Coordinator c) {
+    	assert c != null : "Null coordinator";
+    	
+    	this.coord = c;
+    }
+    
     /**
      * starts the tester
      *
      * @throws InterruptedException
      */
     public void run() {
+    	assert coord != null : "Null coordinator";
+    	
         while (!stop) {
             MethodDescription md = null;
             try {
@@ -112,11 +117,11 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @throws SecurityException
      */
     public void export(Class<? extends TestCaseImpl> c) {
-
+    	assert coord != null : "Null coordinator";
 
         boolean exported = false;
         try {
-            this.setId(coord.register(this));
+            
             executor = new ExecutorImpl(this, LOG);
             coord.registerMethods(this, executor.register(c));
             exported = true;
@@ -141,7 +146,6 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @throws RemoteException
      * @throws InterruptedException
      */
-    @Override
     public synchronized void execute(MethodDescription md)
             throws RemoteException {
         LOG.log(Level.FINEST, "Starting TesterImpl::execute(MethodDescription) with: " + md);
@@ -163,7 +167,6 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * ...	 // code
      * test.kill(); </code>
      */
-    @Override
     public void kill() {
         executionInterrupt();
         LOG.log(Level.INFO, "Test Case finished by kill ");
@@ -176,8 +179,10 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      *  @param methodAnnotation the method which was executed
      */
     private void executionOk(MethodDescription md) {
+    	assert coord != null : "Null coordinator";
+    	
         try {
-            coord.methodExecutionFinished();
+            coord.methodExecutionFinished(this, MessageType.OK);
             LOG.log(Level.FINEST, "Executed " + md.getName());
             if (executor.isLastMethod(md.getAnnotation())) {
                 LOG.log(Level.FINEST, "Test Case finished by annotation " + md.getAnnotation());
@@ -194,8 +199,9 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     /**
      *  Used to interrupt actions's execution. Cleans the action'list and give a local verdict
      */
-    //public void executionInterrupt(boolean error) {
     public void executionInterrupt() {
+    	assert coord != null : "Null coordinator";
+    	
         try {
             if (v == null) {
                 v = Verdicts.INCONCLUSIVE;

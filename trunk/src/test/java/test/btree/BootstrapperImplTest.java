@@ -9,7 +9,6 @@ import org.junit.Test;
 import java.rmi.RemoteException;
 import java.util.Properties;
 
-import fr.inria.peerunit.btree.Bootstrapper;
 import fr.inria.peerunit.btree.BootstrapperImpl;
 import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.util.TesterUtil;
@@ -30,9 +29,10 @@ public class BootstrapperImplTest {
 
     //@Test
     public void testBootstrapperIml() {
+    	/*
         properties.setProperty("tester.peers", "1");
         TesterUtil defaults = new TesterUtil(properties);
-        Bootstrapper b = new BootstrapperImpl(defaults);
+        fr.inria.peerunit.Bootstrapper b = new BootstrapperImpl(defaults);
         Node node = mock(Node.class);
         try {
             b.register(node);
@@ -41,10 +41,12 @@ public class BootstrapperImplTest {
         }
 
         assertTrue(b != null);
+        */
     }
 
     //@Test
     public void testRegister() {
+    	/*
         int id = 0;
         try {
             for (int i = 0; i < 5; i++) {
@@ -55,6 +57,7 @@ public class BootstrapperImplTest {
         } catch (RemoteException e) {
             fail(e.getMessage());
         }
+        */
     }
 
     @Test

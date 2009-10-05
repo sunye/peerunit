@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.GlobalVariablesImpl;
@@ -50,9 +51,12 @@ public class TesterImplTest {
             globals = new GlobalVariablesImpl();
             new Thread(coord, "Coordinator").start();
             tester0 = new TesterImpl(coord, globals);
+            tester0.setCoordinator(coord);
             executor = new ExecutorImpl((Tester) tester0, LOG);
             tester1 = new TesterImpl(coord, globals);
+            tester1.setCoordinator(coord);
             tester2 = new TesterImpl(coord, globals);
+            tester2.setCoordinator(coord);
             tester0.export(Sample.class);
             tester1.export(Sample.class);
             tester2.export(Sample.class);
@@ -90,7 +94,9 @@ public class TesterImplTest {
     public void testExecute() {
         try {
             Coordinator coord = mock(Coordinator.class);
-            TesterImpl tester = new TesterImpl(coord, globals);
+            Bootstrapper boot = mock(Bootstrapper.class);
+            TesterImpl tester = new TesterImpl(boot, globals);
+            tester.setCoordinator(coord);
             tester.export(Sample.class);
 
             System.setProperty("executed", "nok");

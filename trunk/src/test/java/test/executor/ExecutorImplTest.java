@@ -30,7 +30,6 @@ public class ExecutorImplTest {
 	private static CoordinatorImpl coord;
     private static GlobalVariables globals; 
 	private static TesterImpl tester;
-//	private static Logger log = Logger.getLogger();
 	
 	private static Logger LOG = Logger.getLogger("test");
 
@@ -50,6 +49,7 @@ public class ExecutorImplTest {
 			globals = new GlobalVariablesImpl();
 			new Thread(coord, "Coordinator").start();
 			tester = new TesterImpl(coord, globals);
+			tester.setCoordinator(coord);
 			executor = new ExecutorImpl(tester, LOG);
 
 		} catch (RemoteException e) {
