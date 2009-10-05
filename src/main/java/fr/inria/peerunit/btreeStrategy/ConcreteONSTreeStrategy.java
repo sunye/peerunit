@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.btree.TreeElements;
 import fr.inria.peerunit.onstree.stationTree.Station;
@@ -159,11 +160,14 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 		return ipNodeHeadMap.get(ip);
 	}
 
-	public int register(Node node) throws RemoteException {
+	public int register(Tester node) throws RemoteException {
+		/*
 		remotesNodesMap.put(node.getIP(), node);
 		TesterNodeHead_be nodeHeadBe = ipNodeHeadMap.get(node.getIP());
 		registered.incrementAndGet();
 		return nodeHeadBe.getId();
+		*/
+		return -1;
 	}
 
 	public int getRegistered() {

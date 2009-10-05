@@ -1,6 +1,11 @@
 package fr.inria.peerunit.btree;
 
+import fr.inria.peerunit.Bootstrapper;
+import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.GlobalVariables;
+import fr.inria.peerunit.MessageType;
+import fr.inria.peerunit.Tester;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -8,6 +13,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -27,7 +33,7 @@ import fr.inria.peerunit.util.TesterUtil;
  * @version 1.0
  * @since 1.0
  */
-public class NodeImpl implements Node, Serializable, Runnable {
+public class NodeImpl implements Node, Serializable, Runnable, Tester {
     /*
      * @TODO: It seems that this class has too many attributes.
      */
@@ -341,4 +347,44 @@ public class NodeImpl implements Node, Serializable, Runnable {
     public String getIP() {
         return hostAddress;
     }
+
+	public void execute(MethodDescription m) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void kill() throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setCoordinator(Coordinator coord) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void clear() throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean containsKey(Integer key) throws RemoteException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public Object get(Integer key) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<Integer, Object> getCollection() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void put(Integer key, Object object) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 }

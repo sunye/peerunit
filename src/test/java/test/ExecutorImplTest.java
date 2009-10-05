@@ -50,6 +50,7 @@ public class ExecutorImplTest {
             globals = new GlobalVariablesImpl();
             new Thread(coord, "Coordinator").start();
             tester = new TesterImpl(coord, globals);
+            tester.setCoordinator(coord);
             Logger logger = Logger.getLogger("logger");
             executor = new ExecutorImpl(tester, logger);
 

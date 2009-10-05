@@ -4,6 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.util.BTreeNode;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Verdicts;

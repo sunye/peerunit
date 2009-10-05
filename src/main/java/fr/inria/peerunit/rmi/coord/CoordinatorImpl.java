@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.Coordinator;
+import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.parser.MethodDescription;
@@ -93,7 +94,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 	public synchronized void registerMethods(Tester t, List<MethodDescription> list)
 			throws RemoteException {
 		
-		assert status == STARTING : "Trying to regiser while not starting";
+		assert status == STARTING : "Trying to register while not starting";
 		
 		if (registeredTesters.size() >= expectedTesters.intValue()) {
 			log.warning("More registrations than expected");
@@ -198,7 +199,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 		return id;
 	}
 
-	public synchronized void methodExecutionFinished() throws RemoteException {
+	public synchronized void methodExecutionFinished(Tester tester, MessageType message) throws RemoteException {
 		assert status == RUNNING : "Trying to finish before execution";
 		
 		

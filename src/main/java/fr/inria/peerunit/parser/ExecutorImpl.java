@@ -23,6 +23,7 @@ public class ExecutorImpl extends AbstractExecutor {
             CoordinatorImpl coord = new CoordinatorImpl(TesterUtil.instance);
             GlobalVariablesImpl globals = new GlobalVariablesImpl();
             TesterImpl tester = new TesterImpl(coord, globals);
+            tester.setCoordinator(coord);
             Logger logger = Logger.getLogger(ExecutorImpl.class.getName());
             ExecutorImpl executor = new ExecutorImpl(tester, logger);
             System.out.println(executor);

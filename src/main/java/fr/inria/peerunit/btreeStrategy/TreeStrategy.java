@@ -2,6 +2,7 @@ package fr.inria.peerunit.btreeStrategy;
 
 import java.rmi.RemoteException;
 
+import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.util.BTreeNode;
 
@@ -17,7 +18,7 @@ public interface TreeStrategy {
 	public void buildTree();
 	public BTreeNode getNode(Object key);  // XXX
 	public int getNodesSize();
-	public int register(Node node)	throws RemoteException;   
+	public int register(Tester t)	throws RemoteException;   
 	void setCommunication();
 	public int getRegistered();	
 	

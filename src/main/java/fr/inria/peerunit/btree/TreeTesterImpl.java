@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
@@ -54,7 +55,6 @@ public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
         }
     }
 
-    @Override
     public void execute(MethodDescription md) {
         LOG.log(Level.FINEST, "[TreeTesterImpl]  Tester " + getId() + " invoking");
         invoke(md);
@@ -163,12 +163,15 @@ public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
     /**
      * Kills the tester, preventing it from processing any other treatment
      */
-    @Override
     public void kill() {
         executing = false;
         synchronized (this) {
             this.notify();
         }
     }
+
+	public void setCoordinator(Coordinator coord) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 
 }

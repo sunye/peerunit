@@ -20,6 +20,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
@@ -81,7 +82,7 @@ public class CoordinatorImplTest {
 			}
 			for (int i = 0; i < methods.size(); i++) {
 				Thread.sleep(100);
-				coord.methodExecutionFinished();
+				coord.methodExecutionFinished(tester, MessageType.OK);
 			}
 			Thread.sleep(1000);
 			coord.quit(tester, Verdicts.PASS);
@@ -120,7 +121,7 @@ public class CoordinatorImplTest {
 			for (int i = 0; i < methods.size(); i++) {
 				Thread.sleep(100 + size/10);
 				for (int j = 0; j < testers.length; j++) {
-					coord.methodExecutionFinished();
+					coord.methodExecutionFinished(testers[j], MessageType.OK);
 				}
 			}
 			Thread.sleep(100 + size/10);

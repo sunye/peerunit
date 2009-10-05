@@ -12,7 +12,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-import fr.inria.peerunit.btree.Bootstrapper;
 import fr.inria.peerunit.btree.NodeImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
@@ -129,8 +128,10 @@ public class TestRunner {
         assert registry != null : "Null registry";
         
         Coordinator coord = (Coordinator) registry.lookup("Coordinator");
+        Bootstrapper boot = (Bootstrapper) coord;
         GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
-        TesterImpl tester = new TesterImpl(coord, globals, defaults);
+        TesterImpl tester = new TesterImpl(boot, globals, defaults);
+        tester.setCoordinator(coord);
         UnicastRemoteObject.exportObject(tester);
         tester.export(testcase);
         tester.run();

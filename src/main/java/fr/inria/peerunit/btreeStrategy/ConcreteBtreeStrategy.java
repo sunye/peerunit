@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.util.BTreeImpl;
 import fr.inria.peerunit.util.BTreeNode;
 import fr.inria.peerunit.btree.Node;
@@ -20,7 +21,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
     private BTreeImpl btree;
     private AtomicInteger registered = new AtomicInteger(0);
     //private static int expectedTesters=TesterUtil.instance.getExpectedTesters();
-    private Map<Integer, Node> nodes = new HashMap<Integer, Node>();
+    private Map<Integer, Tester> nodes = new HashMap<Integer, Tester>();
 
     //private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
     //private static Long time;
@@ -52,7 +53,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
             if (!getNode(key).isLeaf()) {
                 for (BTreeNode child : getNode(key).getChildren()) {
                     if (child != null) {
-                        te.setChildren(nodes.get(child.getId()));
+                        //te.setChildren(nodes.get(child.getId()));
                     }
                 }
             } else {
@@ -61,11 +62,12 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 
             if (!getNode(key).isRoot()) {
                 int parentId = getNode(key).getParent().getId();
-                te.setParent(nodes.get(parentId));
+                //te.setParent(nodes.get(parentId));
             }
             /**
              * Now we inform Node its tree elements.
              */
+            /*
             node = nodes.get(key);
             System.out.println("[Bootstrapper] Contacting Node " + node);
             try {
@@ -73,10 +75,11 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            */
         }
     }
 
-    public int register(Node node) throws RemoteException {
+    public int register(Tester node) throws RemoteException {
         int id = registered.getAndIncrement();
         if (id < getNodesSize()) {
             nodes.put(id, node);

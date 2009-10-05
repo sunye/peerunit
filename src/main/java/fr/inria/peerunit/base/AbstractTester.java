@@ -44,13 +44,14 @@ public abstract class AbstractTester implements Tester {
         return "Tester: " + id;
     }
 
+    /*
     public void execute(MethodDescription m) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public void kill() throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
+    }*/
 
     public void put(Integer key, Object object) throws RemoteException {
         this.globalTable().put(key, object);
