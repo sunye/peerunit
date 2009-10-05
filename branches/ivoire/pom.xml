@@ -4,7 +4,7 @@
   <groupId>fr.inria.peerunit</groupId>
   <artifactId>PeerUnit</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-IVOIRE</version>
   <name>PeerUnit</name>
   <url>http://peerunit.gforge.inria.fr/</url>
 

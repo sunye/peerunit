@@ -28,8 +28,10 @@ public class ExecutorImplTest {
 	private static ExecutorImpl executor;
 
 	private static CoordinatorImpl coord;
+
     private static GlobalVariables globals; 
-	private static TesterImpl tester;
+
+    private static TesterImpl tester;
 	
 	private static Logger LOG = Logger.getLogger("test");
 

@@ -3,7 +3,6 @@ package fr.inria.peerunit.btreeStrategy;
 import java.rmi.RemoteException;
 
 import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.btree.Node;
 import fr.inria.peerunit.util.BTreeNode;
 
 /**

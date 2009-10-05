@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.btree.TreeElements;
 import fr.inria.peerunit.util.BTreeImpl;
 import fr.inria.peerunit.util.BTreeNode;
-import fr.inria.peerunit.btree.Node;
-import fr.inria.peerunit.btree.TreeElements;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -46,7 +45,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
     }
 
     public void setCommunication() {
-        Node node;
+        //Node node;
 
         for (Integer key : nodes.keySet()) {
             TreeElements te = new TreeElements();
@@ -61,7 +60,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
             }
 
             if (!getNode(key).isRoot()) {
-                int parentId = getNode(key).getParent().getId();
+                //int parentId = getNode(key).getParent().getId();
                 //te.setParent(nodes.get(parentId));
             }
             /**
