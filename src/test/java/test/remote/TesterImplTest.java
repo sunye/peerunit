@@ -93,7 +93,6 @@ public class TesterImplTest {
     @Test
     public void testExecute() {
         try {
-            Coordinator coord = mock(Coordinator.class);
             Bootstrapper boot = mock(Bootstrapper.class);
             TesterImpl tester = new TesterImpl(boot, globals);
             tester.setCoordinator(coord);

@@ -7,7 +7,6 @@ package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.parser.MethodDescription;
 import java.rmi.RemoteException;
 import java.util.Map;
 
