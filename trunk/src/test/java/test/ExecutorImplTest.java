@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import fr.inria.peerunit.GlobalVariables;
+import fr.inria.peerunit.GlobalVariablesImpl;
 import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.exception.AnnotationFailure;
@@ -28,6 +30,7 @@ public class ExecutorImplTest {
 
     private static ExecutorImpl executor;
     private static CoordinatorImpl coord;
+    private static GlobalVariables globals; 
     private static Tester tester;
     //private Logger log = Logger.getLogger("test");
 
@@ -44,8 +47,9 @@ public class ExecutorImplTest {
         try {
             TesterUtil defaults = new TesterUtil(properties);
             coord = new CoordinatorImpl(defaults);
+            globals = new GlobalVariablesImpl();
             new Thread(coord, "Coordinator").start();
-            tester = new TesterImpl(coord);
+            tester = new TesterImpl(coord, globals);
             Logger logger = Logger.getLogger("logger");
             executor = new ExecutorImpl(tester, logger);
 
