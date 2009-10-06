@@ -6,6 +6,8 @@ package fr.inria.peerunit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -13,6 +15,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.btree.BootstrapperImpl;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
@@ -27,7 +30,87 @@ public class CoordinatorRunner {
     private Coordinator stub;
     private CoordinatorImpl cii;
     private GlobalVariables globals;
+    private BootstrapperImpl bootstrapper;
+    private TesterUtil defaults;
 
+
+
+    /**
+     * @param defaults
+     */
+    public CoordinatorRunner(TesterUtil tu) {
+    	defaults = tu;
+    	
+    	
+        try {
+            initializeLogger();
+            initializeGlobals();
+            if (defaults.getCoordinationType() == 1) {
+                this.initializeCoordinator();
+            } else {
+            	this.initializeBootstrapper();
+            }           
+            
+
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Problem when running the coordinator", e);
+        }
+        
+
+        
+    }
+
+	/**
+	 * @throws RemoteException
+	 */
+	private void initializeCoordinator() throws RemoteException {
+		cii = new CoordinatorImpl(defaults);
+		stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
+		log.info("New Coordinator address is : " + defaults.getServerAddr());
+	}
+
+	
+	private void initializeBootstrapper() throws RemoteException {
+        bootstrapper  = new BootstrapperImpl(defaults);
+        //BootstrapperImpl.startNet(boot);
+        bootstrapper.start();
+	}
+	
+	/**
+	 * @throws RemoteException
+	 */
+	private void initializeGlobals() throws RemoteException {
+		globals = (GlobalVariables) UnicastRemoteObject.exportObject(new GlobalVariablesImpl(), 0);
+	}
+
+	/**
+	 * @param defaults
+	 * @throws IOException
+	 */
+	private void initializeLogger() throws IOException {
+		FileHandler handler = new FileHandler(defaults.getLogfile());
+		handler.setFormatter(new LogFormat());
+		log.addHandler(handler);
+		log.setLevel(defaults.getLogLevel());
+	}
+
+    private void start() {
+
+        try {
+            // Bind the remote object's stub in the registry
+            Registry registry = LocateRegistry.getRegistry();
+            registry.bind("Coordinator", stub);
+            registry.bind("Globals", globals);
+            Thread coordination = new Thread(cii, "Coordinator");
+            coordination.start();
+            coordination.join();
+            log.info("Coordination thread finished");
+            registry.unbind("Coordinator");
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Problem when running the coordinator", e);
+        }
+    }
+    
     /**
      * @param args
      */
@@ -55,39 +138,5 @@ public class CoordinatorRunner {
             System.exit(1);
         }
 
-    }
-
-    public CoordinatorRunner(TesterUtil defaults) {
-
-        try {
-            FileHandler handler = new FileHandler(defaults.getLogfile());
-            handler.setFormatter(new LogFormat());
-            log.addHandler(handler);
-            log.setLevel(defaults.getLogLevel());
-
-            globals = (GlobalVariables) UnicastRemoteObject.exportObject(new GlobalVariablesImpl(), 0);
-            cii = new CoordinatorImpl(defaults);
-            stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
-            log.info("New Coordinator address is : " + defaults.getServerAddr());
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Problem when running the coordinator", e);
-        }
-    }
-
-    private void start() {
-
-        try {
-            // Bind the remote object's stub in the registry
-            Registry registry = LocateRegistry.createRegistry(1099);
-            registry.bind("Coordinator", stub);
-            registry.bind("Globals", globals);
-            Thread coordination = new Thread(cii, "Coordinator");
-            coordination.start();
-            coordination.join();
-            log.info("Coordination thread finished");
-            registry.unbind("Coordinator");
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Problem when running the coordinator", e);
-        }
     }
 }

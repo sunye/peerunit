@@ -4,6 +4,7 @@ import fr.inria.peerunit.GlobalVariables;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -172,6 +173,11 @@ public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
 
 	public void setCoordinator(Coordinator coord) {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public void start() throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

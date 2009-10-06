@@ -63,6 +63,12 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         this(boot, gv);
         defaults = tu;
     }
+    
+    protected TesterImpl(GlobalVariables gv, int i, TesterUtil tu) {
+    	super(gv);
+    	defaults = tu;
+    	this.setId(i);
+    }
 
     public void setCoordinator(Coordinator c) {
     	assert c != null : "Null coordinator";
@@ -284,4 +290,9 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
             invoke(md);
         }
     }
+
+	public void start() throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 }

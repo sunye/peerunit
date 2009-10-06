@@ -73,7 +73,7 @@ public abstract class AbstractTester implements Tester {
         this.globalTable().clearCollection();
     }
 
-    private final GlobalVariables globalTable() {
+    protected final GlobalVariables globalTable() {
         return globals;
     }
 }
