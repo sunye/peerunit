@@ -194,10 +194,7 @@ public abstract class AbstractExecutor implements Executor {
         return new ArrayList<MethodDescription>(methods.keySet());
     }
 
-/*    public Tester getTester() {
-        return tester;
-    }
-*/
+
     public TestCase getTestcase() {
         return testcase;
     }

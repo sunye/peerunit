@@ -50,4 +50,8 @@ public interface Tester extends Remote, StorageTester  {
 	 * Stop the <i>tester</i>.
 	 */
 	public void kill() throws RemoteException;
+
+
+
+		public void start() throws RemoteException;
 }

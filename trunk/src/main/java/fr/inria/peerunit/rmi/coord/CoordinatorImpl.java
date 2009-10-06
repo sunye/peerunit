@@ -3,6 +3,7 @@ package fr.inria.peerunit.rmi.coord;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -67,31 +68,37 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 	/**
 	 * Pool of threads. Used to dispatch actions to testers.
 	 */
-	private ExecutorService executor = Executors.newFixedThreadPool(10);
+	private ExecutorService executor;
 
-
-	private TesterUtil defaults = TesterUtil.instance;
 	
 	/**
 	 * @param i Number of expected testers. The Coordinator will wait for
 	 * the connection of "i" testers before starting to dispatch actions
 	 * to Testers.
 	 */
-	public CoordinatorImpl(TesterUtil tu)  {
-		defaults = tu;
-		int i = defaults.getExpectedTesters();
-		expectedTesters = new AtomicInteger(i);
+	public CoordinatorImpl(int testerNbr, int relaxIndex) {
+		expectedTesters = new AtomicInteger(testerNbr);
 		runningTesters  = new AtomicInteger(0);
-		registeredTesters =  Collections.synchronizedList(new ArrayList<Tester>(i));
-		verdict = new GlobalVerdict(TesterUtil.instance.getRelaxIndex());
+		registeredTesters =  Collections.synchronizedList(new ArrayList<Tester>(testerNbr));
+		verdict = new GlobalVerdict(relaxIndex);
+		executor = Executors.newFixedThreadPool(testerNbr > 10 ? 10 : testerNbr);
+	}
+	
+	
+	public CoordinatorImpl(TesterUtil tu)  {
+		this(tu.getExpectedTesters(), tu.getRelaxIndex());
 	}
 
 
+	public void registerTesters(List<Tester> testers) throws RemoteException {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+	
 	/**
 	 * @see fr.inria.peerunit.Coordinator#registerMethods(fr.inria.peerunit.Tester,
 	 *      java.util.List)
 	 */
-	public synchronized void registerMethods(Tester t, List<MethodDescription> list)
+	public synchronized void registerMethods(Tester t, Collection<MethodDescription> list)
 			throws RemoteException {
 		
 		assert status == STARTING : "Trying to register while not starting";
@@ -153,13 +160,11 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 		
 		assert (status == IDLE) : "Trying to execute test case while not idle";
 		
-		Set<Tester> testers;
+		
 		for (MethodDescription each : testerMap.keySet()) {
-			testers = testerMap.get(each);
-			log.finest("Method " + each.getName() + " will be executed by " + testers.size() + " testers");
 			
 			chrono.start(each.getName());
-			dispatchMethodToTesters(testers, each);
+			execute(each);
 			chrono.stop(each.getName());
 			log.finest("Method "+each + " executed in "+ chrono.getTime(each.getName()) + " msec");
 		}
@@ -169,16 +174,18 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 
 	/**
 	 * Dispatches a given action to a given set of testers.
+	 * Waits (blocks) until all tester have executed the action.
 	 * @param testers
 	 * @param md
 	 * @throws InterruptedException
 	 */
-	private  void dispatchMethodToTesters(Set<Tester> testers,
-			MethodDescription md) throws InterruptedException {
+	public  void execute(MethodDescription md) throws InterruptedException {
 		
 		assert (status = RUNNING) == RUNNING;
 		
-		
+		Set<Tester> testers = testerMap.get(md);
+		log.finest("Method " + md + " will be executed by " + testers.size() + " testers");
+
 		runningTesters.set(testers.size());
 		for (Tester each : testers) {
 			log.finest("Dispatching "+md+" to tester "+each);
@@ -203,6 +210,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 		assert status == RUNNING : "Trying to finish before execution";
 		
 		
+		// TODO Improve the usage of the results.
 		runningTesters.decrementAndGet();
 		synchronized (runningTesters) {
 			runningTesters.notifyAll();
@@ -229,7 +237,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 	/**
 	 * Waits for all expected testers to registerMethods.
 	 */
-	private void waitForTesterRegistration() throws InterruptedException {
+	public void waitForTesterRegistration() throws InterruptedException {
 		assert status == STARTING : "Trying to register while not starting";
 		
 		log.info("Waiting for registration. Expecting "+expectedTesters+" testers.");

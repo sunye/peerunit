@@ -387,4 +387,9 @@ public class NodeImpl implements Node, Serializable, Runnable, Tester {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void start() throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 }
