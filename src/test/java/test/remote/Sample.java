@@ -20,16 +20,17 @@ public class Sample extends TestCaseImpl {
 	}
 
 	
-	@TestStep(place = -1, timeout = 1000, name = "action1", step = 2)
+	@TestStep(place = -1, timeout = 1000, name = "action2", step = 2)
 	public void error() {
 		assertTrue(false);
 	}
 	
-	@TestStep(place = -1, timeout = 1000, name = "action1", step = 3)
+	@TestStep(place = -1, timeout = 1000, name = "action3", step = 3)
 	public void assertionError() {
 		assert false;
 	}	
-	
+
+        @Override
 	public void setTester(Tester ti) {
 
 		// TODO Auto-generated method stub

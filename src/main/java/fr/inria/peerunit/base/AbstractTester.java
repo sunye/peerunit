@@ -9,15 +9,26 @@ import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.Tester;
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  *
  * @author sunye
  */
 public abstract class AbstractTester implements Tester {
-    private int id;
-    private GlobalVariables globals;
 
+    private static final Logger log = Logger.getLogger(AbstractTester.class.getName());
+
+    private transient int id;
+    private transient GlobalVariables globals;
+
+    /**
+     * No arguments constructor.
+     * Needed for serialization/deserialization of subclasses.
+     */
+    public AbstractTester() {
+    	
+    }
 
     public AbstractTester(GlobalVariables gv) {
         this.globals = gv;
@@ -27,11 +38,15 @@ public abstract class AbstractTester implements Tester {
      * @return the tester's id
      */
     public int getId() {
+        log.entering("AbstractTester", "getId()");
+
         return this.id;
     }
 
     public void setId(int i) {
-        this.id =i;
+        log.entering("AbstractTester", "setId(int)");
+
+       this.id =i;
     }
 
     public int getPeerName() throws RemoteException {

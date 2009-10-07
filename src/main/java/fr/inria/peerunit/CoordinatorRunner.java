@@ -31,7 +31,8 @@ public class CoordinatorRunner {
     private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
     private Coordinator stub;
     private CoordinatorImpl cii;
-    private GlobalVariables globals;
+    private GlobalVariablesImpl globals;
+    private GlobalVariables globalsStub;
     private BootstrapperImpl bootstrapper;
     private TesterUtil defaults;
 
@@ -53,20 +54,26 @@ public class CoordinatorRunner {
      * @throws IOException
      */
     private void initializeLogger() throws IOException {
-        FileHandler handler = new FileHandler(defaults.getLogfile());
+        FileHandler handler = new FileHandler("coordination.log");
         handler.setFormatter(new LogFormat());
-        log.addHandler(handler);
-        log.setLevel(defaults.getLogLevel());
+        handler.setLevel(Level.FINER);
+        Logger.getLogger("").addHandler(handler);
+        //Logger.getLogger("").setLevel(defaults.getLogLevel());
+        Logger.getLogger("fr.inria").setLevel(Level.FINER);
+        Logger.getLogger("").getHandlers()[0].setLevel(Level.FINER);
     }
 
     private void start() throws RemoteException, AlreadyBoundException, InterruptedException, NotBoundException {
+        log.entering("CoordinatorRunner", "start()");
 
         // Bind the remote object's stub in the registry
-        Registry registry = LocateRegistry.getRegistry();
-        globals = (GlobalVariables) UnicastRemoteObject.exportObject(new GlobalVariablesImpl(), 0);
-        registry.bind("Globals", globals);
+        Registry registry = LocateRegistry.createRegistry(1099);
+        globals = new GlobalVariablesImpl();
+        globalsStub = (GlobalVariables) UnicastRemoteObject.exportObject(globals, 0);
+        registry.bind("Globals", globalsStub);
 
-        if (defaults.getCoordinationType() == 1) {
+        if (defaults.getCoordinationType() == 0) {
+            log.info("Using the centralized architecture");
             cii = new CoordinatorImpl(defaults);
             stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
             log.info("New Coordinator address is : " + defaults.getServerAddr());
@@ -78,10 +85,14 @@ public class CoordinatorRunner {
             log.info("Coordination thread finished");
             registry.unbind("Coordinator");
         } else {
+            log.info("Using the distributed architecture");
             bootstrapper = new BootstrapperImpl(defaults);
             Bootstrapper bootStub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
             registry.bind("Bootstrapper", bootStub);
-            bootstrapper.start();
+            Thread boot = new Thread(bootstrapper, "Bootstrapper");
+            boot.start();
+            boot.join();
+            log.info("Bootstrap thread finished");
 
         }
 
@@ -110,13 +121,13 @@ public class CoordinatorRunner {
             cr.start();
 
         } catch (RemoteException ex) {
-            Logger.getLogger(CoordinatorRunner.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
         } catch (AlreadyBoundException ex) {
-            Logger.getLogger(CoordinatorRunner.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
-            Logger.getLogger(CoordinatorRunner.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
         } catch (NotBoundException ex) {
-            Logger.getLogger(CoordinatorRunner.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
         } catch (FileNotFoundException e) {
             System.err.println("Error: Unable to open properties file");
             System.exit(1);

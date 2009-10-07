@@ -38,13 +38,14 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     private static final long serialVersionUID = 1L;
     private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
     private transient Coordinator coord;
-    private boolean stop = false;
+    private transient Bootstrapper bootstrapper;
+    private transient boolean stop = false;
     private transient Thread timeoutThread;
     private transient Thread invokationThread;
     private transient ExecutorImpl executor;
     private Verdicts v = Verdicts.PASS;
     private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
-    private TesterUtil defaults = TesterUtil.instance;
+    private transient TesterUtil defaults = TesterUtil.instance;
 
     /**
      * Used to give the identifier of the tester.
@@ -54,9 +55,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      */
     public TesterImpl(Bootstrapper boot, GlobalVariables gv) throws RemoteException {
         super(gv);
-        int id = boot.register(this);
-        this.setId(id);
-
+        bootstrapper = boot;
     }
 
     public TesterImpl(Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
@@ -71,17 +70,23 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     }
 
     public void setCoordinator(Coordinator c) {
+        LOG.entering("TesterImpl", "setCoordinator");
     	assert c != null : "Null coordinator";
-    	
     	this.coord = c;
     }
-    
+
+
+    public void start() throws RemoteException {
+        //this.setId(bootstrapper.register(this));
+    }
+
     /**
      * starts the tester
      *
      * @throws InterruptedException
      */
     public void run() {
+        LOG.entering("TesterImpl", "run");
     	assert coord != null : "Null coordinator";
     	
         while (!stop) {
@@ -122,25 +127,25 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @throws RemoteException
      * @throws SecurityException
      */
-    public void export(Class<? extends TestCaseImpl> c) {
+    public void registerTestCase(Class<? extends TestCaseImpl> c) {
     	assert coord != null : "Null coordinator";
 
+        
+        
         boolean exported = false;
         try {
-            
+            this.setId(bootstrapper.register(this));
             executor = new ExecutorImpl(this, LOG);
             coord.registerMethods(this, executor.register(c));
             exported = true;
         } catch (RemoteException e) {
-            for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
+            LOG.log(Level.INFO, null, e);
         } catch (SecurityException e) {
-            for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
+            LOG.log(Level.INFO, null, e);
         } finally {
+            
             if (!exported) {
+                LOG.info("Not exported");
                 executionInterrupt();
             }
         }
@@ -291,8 +296,4 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         }
     }
 
-	public void start() throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
 }

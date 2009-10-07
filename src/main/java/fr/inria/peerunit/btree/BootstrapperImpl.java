@@ -18,7 +18,7 @@ import fr.inria.peerunit.util.TesterUtil;
  * @version 1.0
  * @since 1.0
  */
-public class BootstrapperImpl implements Bootstrapper, Serializable {
+public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,19 +36,28 @@ public class BootstrapperImpl implements Bootstrapper, Serializable {
         }
     }
 
-    public void start() {
+    public void run() {
+        log.entering("BootstrapperImpl", "run()");
+        log.info("Starting Bootstrapper");
+        
         try {
-            context.buildTree();
+            
             context.waitForTesterRegistration();
+            context.buildTree();
+            
+            
             this.setCommunication();
             
             log.info("[Bootstrapper] Finished !");
+            
         } catch (InterruptedException ex) {
+            log.info("wait interrupted");
             log.log(Level.SEVERE, null, ex);
         }
     }
 
     public synchronized int register(Tester t) throws RemoteException {
+        log.entering("BootstrapperImpl", "register()");
         return context.register(t);
     }
 
@@ -57,6 +66,7 @@ public class BootstrapperImpl implements Bootstrapper, Serializable {
      * @return the current number of registered nodes
      */
     public int getRegistered() {
+        log.entering("BootstrapperImpl", "getRegistered()");
         return context.getRegistered();
     }
 
@@ -67,11 +77,13 @@ public class BootstrapperImpl implements Bootstrapper, Serializable {
      * @throws RemoteException
      */
     public boolean isRoot(int id) throws RemoteException {
+        log.entering("BootstrapperImpl", "isRoot(int)");
 
         return context.getNode(null).isRoot();
     }
 
     private void setCommunication() {
+        log.entering("BootstrapperImpl", "setCommunication()");
         context.setCommunication();
     }
 

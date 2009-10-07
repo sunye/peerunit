@@ -1,22 +1,24 @@
 package fr.inria.peerunit.btreeStrategy;
 
 import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.btree.TreeElements;
 import fr.inria.peerunit.util.BTreeImpl;
 import fr.inria.peerunit.util.BTreeNode;
 import fr.inria.peerunit.util.TesterUtil;
-import java.util.Collections;
 
 /**
  * @author Veronique Pelleau
  * @author Aboubakar Koïta
  */
 public class ConcreteBtreeStrategy implements TreeStrategy {
+
+    private static final Logger log = Logger.getLogger(ConcreteBtreeStrategy.class.getName());
 
     /**
      * Map containing Tester Id X Tester
@@ -48,13 +50,18 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
      * @throws RemoteException
      */
     public int register(Tester tester) throws RemoteException {
+        log.entering("ConcreteBtreeStrategy", "register(Tester)");
+
         int id = testers.size() + 1;
         testers.put(new Integer(id), tester);
-        testers.notifyAll();
+        synchronized(testers) {
+            testers.notifyAll();
+            }
         return id;
     }
 
     public void buildTree() {
+        log.entering("ConcreteBtreeStrategy", "buildTree()");
         btree.buildTree();
     }
 
@@ -74,6 +81,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
             TreeElements te = new TreeElements();
             if (!getNode(key).isLeaf()) {
                 for (BTreeNode child : getNode(key).getChildren()) {
+                	System.out.println("#########"+child);
                     if (child != null) {
                         //te.setChildren(testers.get(child.getId()));
                     }
@@ -109,8 +117,10 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
      * Waits for all expected testers to registerMethods.
      */
     public void waitForTesterRegistration() throws InterruptedException {
-
+        log.entering("ConcreteBtreeStrategy", "waitForTesterRegistration()");
+        log.info("Waiting for tester registration");
         while (testers.size() < expectedTesters) {
+            log.fine("Comparing " + testers.size() + " with: " + expectedTesters);
             synchronized (testers) {
                 testers.wait();
             }
