@@ -15,10 +15,15 @@ import fr.inria.peerunit.util.BTreeNode;
  */
 public interface TreeStrategy {
 	public void buildTree();
-	public BTreeNode getNode(Object key);  // XXX
+	public BTreeNode getNode(Integer key);  // XXX
 	public int getNodesSize();
 	public int register(Tester t)	throws RemoteException;   
 	void setCommunication();
-	public int getRegistered();	
+	public int getRegistered();
+
+        /**
+         * Blocks current thread until all expected testers have registered.
+         */
+        public void waitForTesterRegistration() throws InterruptedException;
 	
 }
