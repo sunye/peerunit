@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -33,84 +35,58 @@ public class CoordinatorRunner {
     private BootstrapperImpl bootstrapper;
     private TesterUtil defaults;
 
-
-
     /**
      * @param defaults
      */
     public CoordinatorRunner(TesterUtil tu) {
-    	defaults = tu;
-    	
-    	
+        defaults = tu;
         try {
-            initializeLogger();
-            initializeGlobals();
-            if (defaults.getCoordinationType() == 1) {
-                this.initializeCoordinator();
-            } else {
-            	this.initializeBootstrapper();
-            }           
-            
-
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Problem when running the coordinator", e);
+            this.initializeLogger();
+        } catch (IOException ex) {
+            log.log(Level.SEVERE, null, ex);
         }
-        
 
-        
     }
 
-	/**
-	 * @throws RemoteException
-	 */
-	private void initializeCoordinator() throws RemoteException {
-		cii = new CoordinatorImpl(defaults);
-		stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
-		log.info("New Coordinator address is : " + defaults.getServerAddr());
-	}
+    /**
+     * @param defaults
+     * @throws IOException
+     */
+    private void initializeLogger() throws IOException {
+        FileHandler handler = new FileHandler(defaults.getLogfile());
+        handler.setFormatter(new LogFormat());
+        log.addHandler(handler);
+        log.setLevel(defaults.getLogLevel());
+    }
 
-	
-	private void initializeBootstrapper() throws RemoteException {
-        bootstrapper  = new BootstrapperImpl(defaults);
-        //BootstrapperImpl.startNet(boot);
-        bootstrapper.start();
-	}
-	
-	/**
-	 * @throws RemoteException
-	 */
-	private void initializeGlobals() throws RemoteException {
-		globals = (GlobalVariables) UnicastRemoteObject.exportObject(new GlobalVariablesImpl(), 0);
-	}
+    private void start() throws RemoteException, AlreadyBoundException, InterruptedException, NotBoundException {
 
-	/**
-	 * @param defaults
-	 * @throws IOException
-	 */
-	private void initializeLogger() throws IOException {
-		FileHandler handler = new FileHandler(defaults.getLogfile());
-		handler.setFormatter(new LogFormat());
-		log.addHandler(handler);
-		log.setLevel(defaults.getLogLevel());
-	}
+        // Bind the remote object's stub in the registry
+        Registry registry = LocateRegistry.getRegistry();
+        globals = (GlobalVariables) UnicastRemoteObject.exportObject(new GlobalVariablesImpl(), 0);
+        registry.bind("Globals", globals);
 
-    private void start() {
-
-        try {
-            // Bind the remote object's stub in the registry
-            Registry registry = LocateRegistry.getRegistry();
+        if (defaults.getCoordinationType() == 1) {
+            cii = new CoordinatorImpl(defaults);
+            stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
+            log.info("New Coordinator address is : " + defaults.getServerAddr());
             registry.bind("Coordinator", stub);
-            registry.bind("Globals", globals);
+
             Thread coordination = new Thread(cii, "Coordinator");
             coordination.start();
             coordination.join();
             log.info("Coordination thread finished");
             registry.unbind("Coordinator");
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Problem when running the coordinator", e);
+        } else {
+            bootstrapper = new BootstrapperImpl(defaults);
+            Bootstrapper bootStub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
+            registry.bind("Bootstrapper", bootStub);
+            bootstrapper.start();
+
         }
+
     }
-    
+
     /**
      * @param args
      */
@@ -133,6 +109,14 @@ public class CoordinatorRunner {
             CoordinatorRunner cr = new CoordinatorRunner(defaults);
             cr.start();
 
+        } catch (RemoteException ex) {
+            Logger.getLogger(CoordinatorRunner.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (AlreadyBoundException ex) {
+            Logger.getLogger(CoordinatorRunner.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CoordinatorRunner.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(CoordinatorRunner.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FileNotFoundException e) {
             System.err.println("Error: Unable to open properties file");
             System.exit(1);

@@ -147,14 +147,15 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 	 * @see
 	 * fr.inria.peerunit.btreeStrategy.TreeStrategy#getNode(java.lang.Object)
 	 */
-	public BTreeNode getNode(Object key) {
+	/*
+         public BTreeNode getNode(Integer key) {
 		if (key instanceof Integer) {
 			return getNode((Integer) key);
 		} else {
 			return getNode((String) key);
 		}
 
-	}
+	}*/
 
 	public BTreeNode getNode(String ip) {
 		return ipNodeHeadMap.get(ip);
@@ -209,4 +210,8 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
 			}
 		}
 	}
+
+    public void waitForTesterRegistration() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

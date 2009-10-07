@@ -10,6 +10,7 @@ import fr.inria.peerunit.btree.TreeElements;
 import fr.inria.peerunit.util.BTreeImpl;
 import fr.inria.peerunit.util.BTreeNode;
 import fr.inria.peerunit.util.TesterUtil;
+import java.util.Collections;
 
 /**
  * @author Veronique Pelleau
@@ -17,15 +18,40 @@ import fr.inria.peerunit.util.TesterUtil;
  */
 public class ConcreteBtreeStrategy implements TreeStrategy {
 
+    /**
+     * Map containing Tester Id X Tester
+     */
+    private final Map<Integer, Tester> testers;
+    /**
+     * default values for global variables
+     */
+    TesterUtil defaults;
     private BTreeImpl btree;
-    private AtomicInteger registered = new AtomicInteger(0);
-    //private static int expectedTesters=TesterUtil.instance.getExpectedTesters();
-    private Map<Integer, Tester> nodes = new HashMap<Integer, Tester>();
+    
+    /**
+     * Number of expected testers.
+     */
+    private final int expectedTesters;
 
-    //private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
-    //private static Long time;
-    public ConcreteBtreeStrategy() {
-        btree = new BTreeImpl(TesterUtil.instance.getTreeOrder());
+    public ConcreteBtreeStrategy(TesterUtil tu) {
+        defaults = tu;
+        btree = new BTreeImpl(defaults.getTreeOrder());
+        testers = Collections.synchronizedMap(new HashMap<Integer, Tester>());
+        expectedTesters = defaults.getExpectedTesters();
+
+    }
+
+    /**
+     *
+     * @param tester
+     * @return
+     * @throws RemoteException
+     */
+    public int register(Tester tester) throws RemoteException {
+        int id = testers.size() + 1;
+        testers.put(new Integer(id), tester);
+        testers.notifyAll();
+        return id;
     }
 
     public void buildTree() {
@@ -40,19 +66,16 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
         return btree.getNodesSize();
     }
 
-    public BTreeNode getNode(Object key) {  // XXX
-        return getNode((Integer) key);
-    }
-
     public void setCommunication() {
-        //Node node;
+        //TODO Clean this method
+        //Node tester;
 
-        for (Integer key : nodes.keySet()) {
+        for (Integer key : testers.keySet()) {
             TreeElements te = new TreeElements();
             if (!getNode(key).isLeaf()) {
                 for (BTreeNode child : getNode(key).getChildren()) {
                     if (child != null) {
-                        //te.setChildren(nodes.get(child.getId()));
+                        //te.setChildren(testers.get(child.getId()));
                     }
                 }
             } else {
@@ -61,36 +84,39 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 
             if (!getNode(key).isRoot()) {
                 //int parentId = getNode(key).getParent().getId();
-                //te.setParent(nodes.get(parentId));
+                //te.setParent(testers.get(parentId));
             }
             /**
              * Now we inform Node its tree elements.
              */
             /*
-            node = nodes.get(key);
-            System.out.println("[Bootstrapper] Contacting Node " + node);
+            tester = testers.get(key);
+            System.out.println("[Bootstrapper] Contacting Node " + tester);
             try {
-                node.setElements(getNode(key), te);
+            tester.setElements(getNode(key), te);
             } catch (RemoteException e) {
-                e.printStackTrace();
+            e.printStackTrace();
             }
-            */
-        }
-    }
-
-    public int register(Tester node) throws RemoteException {
-        int id = registered.getAndIncrement();
-        if (id < getNodesSize()) {
-            nodes.put(id, node);
-            System.out.println("[Bootstrapper] New Registered ID: " + id + " for " + node);
-            return id;
-        } else {
-            System.out.println("[Bootstrapper] Not registerd " + id + " for " + node);
-            return Integer.MAX_VALUE;
+             */
         }
     }
 
     public int getRegistered() {
-        return registered.intValue();
+        return testers.size();
+    }
+
+    /**
+     * Waits for all expected testers to registerMethods.
+     */
+    public void waitForTesterRegistration() throws InterruptedException {
+
+        while (testers.size() < expectedTesters) {
+            synchronized (testers) {
+                testers.wait();
+            }
+        }
+
     }
 }
+
+
