@@ -6,11 +6,12 @@ package test.remote;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +36,7 @@ public class CoordinatorImplTest {
 
 	private CoordinatorImpl coord;
 	private Tester tester;
-	private List<MethodDescription> methods;
+	private Collection<MethodDescription> methods;
 	private Thread coordination;
 	private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
 	

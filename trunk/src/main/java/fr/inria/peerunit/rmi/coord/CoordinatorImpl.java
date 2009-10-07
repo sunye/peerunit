@@ -201,6 +201,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 	 * java.util.concurrent to handle the semaphore concurrency access
 	 */
 	public synchronized int register(Tester t) throws RemoteException {
+            log.entering("CoordinatorIml", "register(Tester)");
 		int id = runningTesters.getAndIncrement();
 		log.info("New Registered Tester: " + id + " new client " + t);
 		return id;

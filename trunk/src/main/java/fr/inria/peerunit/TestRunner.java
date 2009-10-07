@@ -5,21 +5,22 @@ package fr.inria.peerunit;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-
-import fr.inria.peerunit.btree.NodeImpl;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.util.TesterUtil;
-import fr.inria.peerunit.util.LogFormat;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.rmi.tester.DistributedTester;
+import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.util.TesterUtil;
 
 /**
  * A <i>test</i> on a peer is launched by a instance of the <tt>TestRunner</tt> class. Its role consists
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
  * to the <i>test case</i> to perform.
  * 
  * @author sunye
- * @author Aboubakar Koïta
+ * @author Aboubakar Koita
  * @version 1.0
  * @since 1.0
  */
@@ -39,7 +40,11 @@ public class TestRunner {
      * passed at the command line.
      */
     private Class<? extends TestCaseImpl> testcase;
+    
     private TesterUtil defaults;
+    
+    private Registry registry;
+    
     private static final Logger log = Logger.getLogger(TesterImpl.class.getName());
 
     /**
@@ -48,49 +53,92 @@ public class TestRunner {
      *
      * @param klass the<tt>Class</tt> instance corresponding to the <i>test case</i> to execute
      */
-    public TestRunner(Class<? extends TestCaseImpl> klass) {
-        try {
-            
-            testcase = klass;
-            String filename = "peerunit.properties";
+    public TestRunner(Class<? extends TestCaseImpl> klass, TesterUtil tu) {
 
-            if (new File(filename).exists()) {
-                FileInputStream fs = new FileInputStream(filename);
-                defaults = new TesterUtil(fs);
-            } else {
-                defaults = TesterUtil.instance;
+        defaults = tu;
+        testcase = klass;
+
+        Bootstrapper boot = null;
+
+        registry = null;
+        int times = 0;
+        boolean centralized = true;
+
+        initializeLogger();
+
+        while (times < 3 && boot == null) {
+            try {
+                registry = LocateRegistry.getRegistry();
+                boot = (Bootstrapper) registry.lookup("Bootstrapper");
+                centralized = false;
+
+            } catch (NotBoundException ex) {
+                try {
+                    boot = (Bootstrapper) registry.lookup("Coordinator");
+                } catch (Exception e) {
+                }
+            } catch (AccessException ex) {
+            } catch (RemoteException ex) {
             }
-            Registry registry = LocateRegistry.getRegistry();
+            if (boot == null)  {
+            	try {
+					Thread.sleep(300);
+				} catch (InterruptedException e) {
+				}
+            }
+            times++;
+        }
 
-            FileHandler handler = new FileHandler(defaults.getLogfile());
+        if (boot == null) {
+            log.severe("Unable to bind");
+            System.exit(1);
+        }
+
+        try {
+            GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
+            if (centralized) {
+                log.info("Coordinator found, using the centralized architecture.");
+                TesterImpl tester = new TesterImpl(boot, globals, defaults);
+                UnicastRemoteObject.exportObject(tester);
+                
+                tester.setCoordinator((Coordinator) boot);
+                tester.start();
+                tester.registerTestCase(testcase);
+                tester.run();
+
+            } else {
+                log.info("Bootstrapper found, using the distributed architecture.");
+                DistributedTester tester = new DistributedTester(boot, globals, defaults);
+                UnicastRemoteObject.exportObject(tester);
+                tester.register();
+                tester.registerTestCase(testcase);
+                //tester.run();
+            }
+        } catch (Exception e) {
+        }
+
+    }
+
+	private void initializeLogger() {
+		FileHandler handler;
+		try {
+            handler = new FileHandler("tester.log");
             handler.setFormatter(new LogFormat());
+            handler.setLevel(Level.FINER);
+
             log.addHandler(handler);
             log.setLevel(defaults.getLogLevel());
+            Logger.getLogger("").addHandler(handler);
+            //Logger.getLogger("").setLevel(defaults.getLogLevel());
+            Logger.getLogger("fr.inria").setLevel(Level.FINER);
+            Logger.getLogger("").getHandlers()[0].setLevel(Level.FINER);
 
-
-            switch (defaults.getCoordinationType()) {
-                case 0:
-                    System.out.println("Using the centralized coordination.");
-                    bootCentralized(registry);
-                    break;
-                case 1:
-                    System.out.println("Using the distributed coordination.");
-                    bootBTree(registry);
-                    break;
-
-                default:
-                    System.out.println("Error: Cannot know where to boot.");
-                    break;
-            }
         } catch (IOException ex) {
-            Logger.getLogger(TestRunner.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
-            Logger.getLogger(TestRunner.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NotBoundException e) {
-            System.out.println("Error: Unable to bind.");
-            e.printStackTrace();
+            log.log(Level.SEVERE, null, ex);
         }
-    }
+	}
 
     /**
      * In the main method, we get the only argument corresponding to class name of
@@ -100,59 +148,39 @@ public class TestRunner {
      * @param args The only argument should be a class name of <i>test case</i> to execute
      */
     public static void main(String[] args) {
-        if (args.length != 1) {
-            System.out.println("Usage: java TestRunner <Test Case Class>");
+        TesterUtil defaults;
+        String filename;
+
+        if (args.length < 1) {
+            System.out.println("Usage: java TestRunner TestCaseClass [Properties File]");
         } else {
             String name = args[0];
             try {
                 Class<?> klass = Class.forName(name);
                 Class<? extends TestCaseImpl> tklass = klass.asSubclass(TestCaseImpl.class);
-                new TestRunner(tklass);
+
+                if (args.length > 1) {
+                    filename = args[1];
+                    FileInputStream fs = new FileInputStream(filename);
+                    defaults = new TesterUtil(fs);
+                } else if (new File("peerunit.properties").exists()) {
+                    filename = "peerunit.properties";
+                    FileInputStream fs = new FileInputStream(filename);
+                    defaults = new TesterUtil(fs);
+                } else {
+                    defaults = TesterUtil.instance;
+                }
+
+                new TestRunner(tklass, defaults);
+
+            } catch (FileNotFoundException e) {
+                System.err.println("Error: Unable to open properties file");
+                System.exit(1);
             } catch (ClassCastException e) {
                 System.out.println("Error: Class " + name + " does not implement TestCase interface.");
             } catch (ClassNotFoundException e) {
                 System.out.println("Error: Class " + name + " not found.");
             }
         }
-    }
-
-    /**
-     * To create a <i>tester</i> in the centralized architecture.
-     *
-     * @param registry a instance of RMI Registry used to retrieve the </i>coordinator</i> of the centralized
-     *        architecture.
-     * @throws RemoteException because the method is distant
-     * @throws NotBoundException if the <i>coordinator</i> is not bound in the RMI Registry
-     */
-    private void bootCentralized(Registry registry) throws RemoteException, NotBoundException {
-        assert registry != null : "Null registry";
-        
-        Coordinator coord = (Coordinator) registry.lookup("Coordinator");
-        Bootstrapper boot = (Bootstrapper) coord;
-        GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
-        TesterImpl tester = new TesterImpl(boot, globals, defaults);
-        tester.setCoordinator(coord);
-        UnicastRemoteObject.exportObject(tester);
-        tester.export(testcase);
-        tester.run();
-    }
-
-    /**
-     * To create a <i>tester</i> in  the distributed architecture.
-     *
-     * @param registry a instance of RMI Registry used to retrieve the </i>bootstrapper</i> of the distributed
-     *        architecture.
-     * @throws RemoteException because the method is distant
-     * @throws NotBoundException if the <i>boostrapper</i> is not bound in the RMI Registry
-     */
-    private void bootBTree(Registry registry) throws RemoteException, NotBoundException {
-        assert registry != null : "Null registry";
-
-
-        Bootstrapper boot = (Bootstrapper) registry.lookup("Bootstrapper");
-        GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
-        NodeImpl node = new NodeImpl(boot, globals);
-        node.registerTestCase(testcase);
-        node.run();
     }
 }
