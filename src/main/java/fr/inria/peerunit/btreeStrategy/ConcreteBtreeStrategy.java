@@ -1,35 +1,33 @@
 package fr.inria.peerunit.btreeStrategy;
 
+import fr.inria.peerunit.Coordinator;
 import java.rmi.RemoteException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.btree.TreeElements;
-import fr.inria.peerunit.util.BTreeImpl;
 import fr.inria.peerunit.util.BTreeNode;
+import fr.inria.peerunit.util.HTree;
+import fr.inria.peerunit.util.HNode;
 import fr.inria.peerunit.util.TesterUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Veronique Pelleau
- * @author Aboubakar Koïta
+ * @author Aboubakar Koita
  */
 public class ConcreteBtreeStrategy implements TreeStrategy {
 
     private static final Logger log = Logger.getLogger(ConcreteBtreeStrategy.class.getName());
-
-    /**
-     * Map containing Tester Id X Tester
-     */
-    private final Map<Integer, Tester> testers;
     /**
      * default values for global variables
      */
-    TesterUtil defaults;
-    private BTreeImpl btree;
-    
+    private TesterUtil defaults;
+    /**
+     * Tree containing Tester Id X Tester
+     */
+    private final HTree<Integer, Tester> testers;
     /**
      * Number of expected testers.
      */
@@ -37,10 +35,8 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 
     public ConcreteBtreeStrategy(TesterUtil tu) {
         defaults = tu;
-        btree = new BTreeImpl(defaults.getTreeOrder());
-        testers = Collections.synchronizedMap(new HashMap<Integer, Tester>());
+        testers = new HTree<Integer, Tester>(defaults.getTreeOrder());
         expectedTesters = defaults.getExpectedTesters();
-
     }
 
     /**
@@ -54,58 +50,50 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 
         int id = testers.size() + 1;
         testers.put(new Integer(id), tester);
-        synchronized(testers) {
+        synchronized (testers) {
             testers.notifyAll();
-            }
+        }
         return id;
     }
 
     public void buildTree() {
-        log.entering("ConcreteBtreeStrategy", "buildTree()");
-        btree.buildTree();
     }
 
     public BTreeNode getNode(Integer i) {
-        return btree.getNode(i);
+        //return tree.getNode(i);
+        return null;
     }
 
     public int getNodesSize() {
-        return btree.getNodesSize();
+        //return tree.getNodesSize();
+        return 0;
     }
 
     public void setCommunication() {
-        //TODO Clean this method
-        //Node tester;
+        HNode<Integer, Tester> node = testers.head();
+        this.setCommunication(node);
+    }
 
-        for (Integer key : testers.keySet()) {
-            TreeElements te = new TreeElements();
-            if (!getNode(key).isLeaf()) {
-                for (BTreeNode child : getNode(key).getChildren()) {
-                	System.out.println("#########"+child);
-                    if (child != null) {
-                        //te.setChildren(testers.get(child.getId()));
-                    }
-                }
-            } else {
-                te.setChildren(null);
-            }
+    private void setCommunication(HNode<Integer, Tester> n) {
+        assert !n.isLeaf();
 
-            if (!getNode(key).isRoot()) {
-                //int parentId = getNode(key).getParent().getId();
-                //te.setParent(testers.get(parentId));
+        HNode<Integer, Tester>[] children = n.children();
+        List<Tester> nodes = new ArrayList<Tester>(children.length);
+        for (HNode<Integer, Tester> each : children) {
+            nodes.add(each.value());
+        }
+        
+        try {
+            Coordinator c = (Coordinator) n.value();
+            c.registerTesters(nodes);
+        } catch (RemoteException ex) {
+            log.log(Level.SEVERE, null, ex);
+        }
+
+        for (HNode<Integer, Tester> each : children) {
+            if (!each.isLeaf()) {
+                this.setCommunication(each);
             }
-            /**
-             * Now we inform Node its tree elements.
-             */
-            /*
-            tester = testers.get(key);
-            System.out.println("[Bootstrapper] Contacting Node " + tester);
-            try {
-            tester.setElements(getNode(key), te);
-            } catch (RemoteException e) {
-            e.printStackTrace();
-            }
-             */
         }
     }
 

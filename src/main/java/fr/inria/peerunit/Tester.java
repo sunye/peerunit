@@ -4,6 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import fr.inria.peerunit.parser.MethodDescription;
+import java.util.List;
 
 /**
  * This interface represent a <i>tester/i>. A <i>tester</i> is a component who control a peer 
@@ -46,4 +47,6 @@ public interface Tester extends Remote, StorageTester {
     public void kill() throws RemoteException;
 
     public void start() throws RemoteException;
+
+    public void registerTesters(List<Tester> testers) throws RemoteException;
 }

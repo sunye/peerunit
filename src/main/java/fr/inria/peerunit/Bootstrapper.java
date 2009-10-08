@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
  * @author sunye
  */
 public interface Bootstrapper extends Remote {
+    
 	/**
 	 * Registers a tester to this Bootstrapper
 	 *

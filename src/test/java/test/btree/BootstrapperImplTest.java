@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.btree.BootstrapperImpl;
-import fr.inria.peerunit.rmi.tester.DistributedTester;
+import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class BootstrapperImplTest {
@@ -54,7 +54,7 @@ public class BootstrapperImplTest {
 		int id = 0;
 		try {
 			for (int i = 0; i < 5; i++) {
-				DistributedTester tester = mock(DistributedTester.class);
+				DistributedTesterImpl tester = mock(DistributedTesterImpl.class);
 				id = bootstrapper.register(tester);
 				assertTrue(id == i + 1);
 			}
@@ -73,7 +73,7 @@ public class BootstrapperImplTest {
 			
 			Bootstrapper remoteBoot = (Bootstrapper) registry.lookup("BootTest");
 			
-			DistributedTester tester = new DistributedTester(remoteBoot, null, defaults);
+			DistributedTesterImpl tester = new DistributedTesterImpl(remoteBoot, null, defaults);
 			tester.register();
 			
 			assertTrue(tester.getId() == 1);

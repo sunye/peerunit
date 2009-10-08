@@ -9,6 +9,7 @@ package fr.inria.peerunit.util;
  *
  * @author sunye
  */
+@Deprecated
 public interface BTree {
 
     /**

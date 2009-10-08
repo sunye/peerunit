@@ -10,7 +10,7 @@ import org.junit.Test;
 
 
 import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.rmi.tester.DistributedTester;
+import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
 
 
@@ -21,7 +21,7 @@ public class DistributedTesterTest {
         Registry registry;
 		try {
 			registry = LocateRegistry.createRegistry(1099);
-	        DistributedTester dt = new DistributedTester(null, null, TesterUtil.instance);
+	        DistributedTesterImpl dt = new DistributedTesterImpl(null, null, TesterUtil.instance);
 	        Tester stub = (Tester) UnicastRemoteObject.exportObject(dt, 0);
 			registry.bind("DT", stub);
 		} catch (RemoteException e) {

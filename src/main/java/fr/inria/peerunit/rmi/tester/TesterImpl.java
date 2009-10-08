@@ -3,6 +3,7 @@ package fr.inria.peerunit.rmi.tester;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -275,6 +276,10 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         }
 
 
+    }
+
+    public void registerTesters(List<Tester> testers) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**

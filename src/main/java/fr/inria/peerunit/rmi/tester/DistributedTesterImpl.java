@@ -36,7 +36,7 @@ import fr.inria.peerunit.util.TesterUtil;
  * 
  * @author sunye
  */
-public class DistributedTester extends AbstractTester implements Tester, Coordinator, Serializable  {
+public class DistributedTesterImpl extends AbstractTester implements Tester, Coordinator, Serializable  {
 
 	/**
 	 * 
@@ -74,7 +74,7 @@ public class DistributedTester extends AbstractTester implements Tester, Coordin
     
     private transient TesterUtil defaults;
 
-    public DistributedTester(Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
+    public DistributedTesterImpl(Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
         super(gv);
         defaults = tu;
         bootstrapper = boot;
@@ -105,7 +105,11 @@ public class DistributedTester extends AbstractTester implements Tester, Coordin
      */
     public void registerTesters(List<Tester> testers) throws RemoteException {
         assert testers != null;
+        assert !testers.isEmpty();
 
+        LOG.entering("DistributedTesterImpl", "registerTesters(List<Tester>)");
+        this.startCoordination();
+        
         this.testers.addAll(testers);
         for (Tester each : testers) {
             each.setCoordinator(this);
@@ -116,6 +120,8 @@ public class DistributedTester extends AbstractTester implements Tester, Coordin
      *
      */
     private void startCoordination() {
+        LOG.entering("DistributedTester", "startCoordination()");
+
         this.coordinator = new CoordinatorImpl(testers.size(), defaults.getRelaxIndex());
     }
 
@@ -124,7 +130,7 @@ public class DistributedTester extends AbstractTester implements Tester, Coordin
      */
     public void registerMethods(Tester tester, Collection<MethodDescription> list) throws RemoteException {
         assert testers.contains(tester);
-
+        
         coordinator.registerMethods(tester, list);
 
     }
@@ -180,6 +186,8 @@ public class DistributedTester extends AbstractTester implements Tester, Coordin
      * @see fr.inria.peerunit.Tester#setCoordinator(fr.inria.peerunit.Coordinator)
      */
     public void setCoordinator(Coordinator coord) {
+        LOG.entering("DistributedTesterImpl", "setCoordinator(Coordinator)");
+        
         this.parent = coord;
     }
 
@@ -208,6 +216,7 @@ public class DistributedTester extends AbstractTester implements Tester, Coordin
         for (Tester each : testers) {
             each.start();
         }
+        
         try {
             this.startCoordination();
             coordinator.waitForTesterRegistration();

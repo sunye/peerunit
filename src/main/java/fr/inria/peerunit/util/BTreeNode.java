@@ -6,6 +6,7 @@ package fr.inria.peerunit.util;
  * @version 1.0
  * @since 1.0
  */
+@Deprecated
 public interface BTreeNode {
 	
 	 public int getId();

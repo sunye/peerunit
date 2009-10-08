@@ -8,6 +8,7 @@ import java.io.Serializable;
  * @version 1.0
  * @since 1.0
  */
+@Deprecated
 class BTreeNodeImpl implements BTreeNode, Serializable {
 
     private static final long serialVersionUID = 1L;
