@@ -111,7 +111,7 @@ public class TestRunner {
                 DistributedTesterImpl tester = new DistributedTesterImpl(boot, globals, defaults);
                 UnicastRemoteObject.exportObject(tester);
                 tester.register();
-                //tester.registerTestCase(testcase);
+                tester.registerTestCase(testcase);
                 //tester.run();
             }
         } catch (Exception e) {

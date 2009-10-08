@@ -48,5 +48,4 @@ public interface Tester extends Remote, StorageTester {
 
     public void start() throws RemoteException;
 
-    public void registerTesters(List<Tester> testers) throws RemoteException;
 }
