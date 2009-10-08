@@ -274,13 +274,8 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                 executionOk(md);
             }
         }
-
-
     }
 
-    public void registerTesters(List<Tester> testers) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     /**
      * @author Eduardo Almeida.
