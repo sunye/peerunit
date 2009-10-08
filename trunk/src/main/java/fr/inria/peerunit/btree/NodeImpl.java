@@ -33,6 +33,7 @@ import fr.inria.peerunit.util.TesterUtil;
  * @version 1.0
  * @since 1.0
  */
+@Deprecated
 public class NodeImpl implements Node, Serializable, Runnable, Tester {
     /*
      * @TODO: It seems that this class has too many attributes.
@@ -392,4 +393,8 @@ public class NodeImpl implements Node, Serializable, Runnable, Tester {
 		// TODO Auto-generated method stub
 		
 	}
+
+    public void registerTesters(List<Tester> testers) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

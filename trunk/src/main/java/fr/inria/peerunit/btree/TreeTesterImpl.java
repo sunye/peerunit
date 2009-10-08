@@ -17,6 +17,7 @@ import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
 
+@Deprecated
 public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
 
     private boolean executing = true;
@@ -179,5 +180,9 @@ public class TreeTesterImpl extends AbstractTester implements Tester, Runnable {
 		// TODO Auto-generated method stub
 		
 	}
+
+    public void registerTesters(List<Tester> testers) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
 }

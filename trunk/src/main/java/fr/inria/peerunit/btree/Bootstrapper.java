@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
  * @version 1.0
  * @since 1.0
  */
+@Deprecated
 public interface Bootstrapper extends Remote {
 	/**
 	 * Adds a new BTree node to this Bootstrapper

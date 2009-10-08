@@ -17,7 +17,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.rmi.tester.DistributedTester;
+import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
@@ -108,10 +108,10 @@ public class TestRunner {
 
             } else {
                 log.info("Bootstrapper found, using the distributed architecture.");
-                DistributedTester tester = new DistributedTester(boot, globals, defaults);
+                DistributedTesterImpl tester = new DistributedTesterImpl(boot, globals, defaults);
                 UnicastRemoteObject.exportObject(tester);
                 tester.register();
-                tester.registerTestCase(testcase);
+                //tester.registerTestCase(testcase);
                 //tester.run();
             }
         } catch (Exception e) {

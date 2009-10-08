@@ -9,6 +9,7 @@ import java.util.Map;
  * @version 1.0
  * @since 1.0
  */
+@Deprecated
 public class BTreeImpl implements BTree { //implements TreeStrategy {
 
     private static BTreeNodeImpl root = null;

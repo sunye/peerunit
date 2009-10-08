@@ -44,8 +44,6 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
             
             context.waitForTesterRegistration();
             context.buildTree();
-            
-            
             this.setCommunication();
             
             log.info("[Bootstrapper] Finished !");
