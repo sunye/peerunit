@@ -21,7 +21,7 @@ public class DistributedTesterTest {
         Registry registry;
 		try {
 			registry = LocateRegistry.createRegistry(1099);
-	        DistributedTesterImpl dt = new DistributedTesterImpl(null, null, TesterUtil.instance);
+	        DistributedTesterImpl dt = new DistributedTesterImpl(null, null, null, TesterUtil.instance);
 	        Tester stub = (Tester) UnicastRemoteObject.exportObject(dt, 0);
 			registry.bind("DT", stub);
 		} catch (RemoteException e) {

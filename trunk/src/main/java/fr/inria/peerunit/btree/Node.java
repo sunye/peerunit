@@ -15,6 +15,7 @@ import fr.inria.peerunit.test.oracle.Verdicts;
  * @version 1.0
  * @since 1.0
  */
+@Deprecated
 public interface Node extends Remote {
     
     

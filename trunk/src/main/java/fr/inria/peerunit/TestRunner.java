@@ -102,16 +102,17 @@ public class TestRunner {
                 UnicastRemoteObject.exportObject(tester);
                 
                 tester.setCoordinator((Coordinator) boot);
-                tester.start();
+                
                 tester.registerTestCase(testcase);
+                tester.start();
                 tester.run();
 
             } else {
                 log.info("Bootstrapper found, using the distributed architecture.");
-                DistributedTesterImpl tester = new DistributedTesterImpl(boot, globals, defaults);
+                DistributedTesterImpl tester = new DistributedTesterImpl(testcase,boot, globals, defaults);
                 UnicastRemoteObject.exportObject(tester);
                 tester.register();
-                tester.registerTestCase(testcase);
+                //tester.registerTestCase(testcase);
                 //tester.run();
             }
         } catch (Exception e) {
@@ -122,16 +123,17 @@ public class TestRunner {
 	private void initializeLogger() {
 		FileHandler handler;
 		try {
+                    Level level = defaults.getLogLevel();
             handler = new FileHandler("tester.log");
             handler.setFormatter(new LogFormat());
-            handler.setLevel(Level.FINER);
+            handler.setLevel(level);
 
             log.addHandler(handler);
             log.setLevel(defaults.getLogLevel());
             Logger.getLogger("").addHandler(handler);
             //Logger.getLogger("").setLevel(defaults.getLogLevel());
-            Logger.getLogger("fr.inria").setLevel(Level.FINER);
-            Logger.getLogger("").getHandlers()[0].setLevel(Level.FINER);
+            Logger.getLogger("fr.inria").setLevel(level);
+            Logger.getLogger("").getHandlers()[0].setLevel(level);
 
         } catch (IOException ex) {
             log.log(Level.SEVERE, null, ex);

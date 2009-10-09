@@ -214,4 +214,8 @@ public class ConcreteONSTreeStrategy implements TreeStrategy {
     public void waitForTesterRegistration() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    public void startRoot() throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

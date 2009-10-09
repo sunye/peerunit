@@ -44,13 +44,15 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
             
             context.waitForTesterRegistration();
             context.buildTree();
-            this.setCommunication();
+            context.setCommunication();
+            context.startRoot();
             
             log.info("[Bootstrapper] Finished !");
             
+        } catch (RemoteException ex) {
+            log.log(Level.SEVERE, "Remote exception", ex);
         } catch (InterruptedException ex) {
-            log.info("wait interrupted");
-            log.log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE,"Wait interrupted" , ex);
         }
     }
 
@@ -78,11 +80,6 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
         log.entering("BootstrapperImpl", "isRoot(int)");
 
         return context.getNode(null).isRoot();
-    }
-
-    private void setCommunication() {
-        log.entering("BootstrapperImpl", "setCommunication()");
-        context.setCommunication();
     }
 
 }
