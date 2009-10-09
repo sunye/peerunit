@@ -59,6 +59,10 @@ public class TesterImplTest {
             tester0.registerTestCase(Sample.class);
             tester1.registerTestCase(Sample.class);
             tester2.registerTestCase(Sample.class);
+
+            tester0.start();
+            tester1.start();
+            tester2.start();
             //new Thread(tester0, "Tester 0").start();
         } catch (RemoteException e) {
             e.printStackTrace();

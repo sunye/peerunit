@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,9 +21,11 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.rmi.coord.Chronometer;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.TesterUtil;
+import java.util.ArrayList;
 
 /**
  * The DistributedTester is both, a Tester and a Coordinator.
@@ -36,90 +37,83 @@ import fr.inria.peerunit.util.TesterUtil;
  * 
  * @author sunye
  */
-public class DistributedTesterImpl extends AbstractTester implements Tester, Coordinator, Serializable  {
+public class DistributedTesterImpl extends AbstractTester implements Tester, Coordinator, Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2806863880157215029L;
-
-	private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
-    
-	/**
+    /**
+     *
+     */
+    private static final long serialVersionUID = 2806863880157215029L;
+    private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
+    /**
      * The coordinator of this tester. Since DistributedTester is used in
      * a distributed architecture, the coordinator is also a DistributedTester.
      *
      */
-
     private transient Coordinator parent;
+
     /**
      * Set of testers that are coordinated by this tester.
      */
-
     private transient List<Tester> testers = new LinkedList<Tester>();
-    /**
-     * Set of testers that have registered their methods with this tester.
-     */
 
     /**
      * The bootstrapper, that will help me to find my parent and my children.
      */
     private transient Bootstrapper bootstrapper;
 
-    private transient List<Tester> registeredTesters = Collections.synchronizedList(new LinkedList<Tester>());
-    
     private transient TesterImpl tester;
-    
     private transient CoordinatorImpl coordinator;
-    
     private transient TesterUtil defaults;
+    private transient Class<? extends TestCaseImpl> testCaseClass;
 
-    public DistributedTesterImpl(Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
+    public DistributedTesterImpl(Class<? extends TestCaseImpl> klass, Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
         super(gv);
         defaults = tu;
         bootstrapper = boot;
+        testCaseClass = klass;
     }
 
-
+    /**
+     * Registers this distributed tester with the bootstrapper and
+     * receives an id.
+     * 
+     * 
+     * 
+     */
     public void register() {
         LOG.entering("DistributedTester", "register()");
 
         try {
-            LOG.info("Contacting bootstrapper");
-            int id = bootstrapper.register(this);
-            LOG.info("Got an answer");
-            this.setId(id);
-            this.tester = new TesterImpl(this.globalTable(), this.getId(), defaults);
-            this.testers.add(tester);
+            this.setId(bootstrapper.register(this));
+
         } catch (RemoteException ex) {
-            LOG.info("Shit happens");
             LOG.log(Level.SEVERE, null, ex);
         }
 
+//        this.tester = new TesterImpl(this.globalTable(), this.getId(), defaults);
+//        tester.registerTestCase(testCaseClass);
+//        this.testers.add(tester);
     }
+
     /**
      * Sets the testers that are controlled by this tester and
      * informs the tester that this tester is their controller
      *
      * @see fr.inria.peerunit.Coordinator#registerTesters(java.util.List)
      */
-    public void registerTesters(List<Tester> testers) throws RemoteException {
-        assert testers != null;
-        assert !testers.isEmpty();
+    public void registerTesters(List<Tester> l) throws RemoteException {
+        assert l != null : "Null argument";
+        assert !l.isEmpty() : "Empty argument";
 
-        LOG.entering("DistributedTesterImpl", "registerTesters(List<Tester>)");
-        this.startCoordination();
-        
-        this.testers.addAll(testers);
-        for (Tester each : testers) {
-            each.setCoordinator(this);
-        }
+        LOG.entering("DistributedTesterImpl", "registerTesters(List<Tester>)", l.size());
+        testers.addAll(l);
+
     }
 
     /**
-     *
+     * Starts the Coordinator, which will control my children.
      */
-    private void startCoordination() {
+    private void createLocalCoordinator() {
         LOG.entering("DistributedTester", "startCoordination()");
 
         this.coordinator = new CoordinatorImpl(testers.size(), defaults.getRelaxIndex());
@@ -130,7 +124,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
      */
     public void registerMethods(Tester tester, Collection<MethodDescription> list) throws RemoteException {
         assert testers.contains(tester);
-        
+
         coordinator.registerMethods(tester, list);
 
     }
@@ -149,8 +143,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
 
             parent.methodExecutionFinished(this, MessageType.OK);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, null, e);
         }
     }
 
@@ -167,8 +160,8 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
      * @see fr.inria.peerunit.Coordinator#quit(fr.inria.peerunit.Tester, fr.inria.peerunit.test.oracle.Verdicts)
      */
     public void quit(Tester t, Verdicts v) throws RemoteException {
-        assert parent != null : "Null Coordinator";
-
+        assert coordinator != null : "Null Coordinator";
+        
         coordinator.quit(t, v);
     }
 
@@ -181,62 +174,78 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
         }
     }
 
-
     /**
      * @see fr.inria.peerunit.Tester#setCoordinator(fr.inria.peerunit.Coordinator)
      */
     public void setCoordinator(Coordinator coord) {
         LOG.entering("DistributedTesterImpl", "setCoordinator(Coordinator)");
-        
+
         this.parent = coord;
     }
 
     /**
-     * Sets the test case class.
-     *
-     * @param klass The test case class to execute
-     */
-    public void registerTestCase(Class<? extends TestCaseImpl> klass) {
-        LOG.entering("DistributedTester", "registerTestCase(Class)");
-
-        tester.registerTestCase(klass);
-    }
-
-    /**
      * Starts the distributed tester:
-     * 		-
+     * 		- Creates the local tester and the local coordinator.
+     *          - Starts all child testers.
      * @throws RemoteException
      * @throws InterruptedException
      */
     public void start() throws RemoteException {
-        assert parent != null;
-
         LOG.entering("DistributedTester", "start()");
+        LOG.fine(String.format("Starting Tester %d", this.getId()));
+        
+        this.createLocalTester();
+        this.createLocalCoordinator();
+
+        for (Tester each : testers) {
+            each.setCoordinator(this);
+        }
 
         for (Tester each : testers) {
             each.start();
         }
-        
+
+        Thread tt = new Thread(tester, "LocalTester for DT: " + id);
+        tt.start();
+
         try {
-            this.startCoordination();
             coordinator.waitForTesterRegistration();
-            this.registerWithCoordinator();
-
-
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            LOG.exiting("DistributedTester", "start()");
+        } catch (InterruptedException ex) {
+            LOG.log(Level.SEVERE, null, ex);
         }
+        LOG.info("Registration finished");
+
+        if (parent == null) {
+            LOG.info(String.format("DistributedTester %d is root", id));
+            Chronometer chrono = new Chronometer();
+            try {
+                coordinator.testcaseExecution(chrono);
+ //               coordinator.waitAllTestersToQuit();
+//                coordinator.calculateVerdict(chrono);
+//                coordinator.cleanUp();
+            } catch (InterruptedException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            }
+        } else {
+            LOG.info(String.format("DistributedTester %d will register with parent", id));
+            this.registerWithParent();
+        }
+        LOG.exiting("DistributedTester", "start()");
+
 
     }
 
-    private void registerWithCoordinator() throws RemoteException {
-        assert parent != null;
-        assert registeredTesters.size() == testers.size();
+    private void createLocalTester() {
+        this.tester = new TesterImpl(this.globalTable(), this.getId(), defaults);
+        tester.registerTestCase(testCaseClass);
+        this.testers.add(tester);
+    }
 
-        Set<MethodDescription> methods = coordinator.getTesterMap().keySet();
+    private void registerWithParent() throws RemoteException {
+        assert parent != null : "Trying to register with a null parent";
+
+        // NB: KeySets are not serializable.
+        List<MethodDescription> methods = new ArrayList<MethodDescription>(coordinator.getTesterMap().keySet());
         parent.registerMethods(this, methods);
     }
 }

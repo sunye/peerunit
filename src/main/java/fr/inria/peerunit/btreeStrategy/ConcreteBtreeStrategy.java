@@ -82,7 +82,12 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
         for (HNode<Integer, Tester> each : children) {
             nodes.add(each.value());
         }
-        
+        try {
+            log.info(String.format("Registering %d testers to tester %d", nodes.size(), n.value().getId()));
+        } catch (RemoteException ex) {
+            Logger.getLogger(ConcreteBtreeStrategy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         try {
             Coordinator c = (Coordinator) n.value();
             c.registerTesters(nodes);
@@ -114,6 +119,10 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
             }
         }
 
+    }
+
+    public void startRoot() throws RemoteException {
+        testers.head().value().start();
     }
 }
 

@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.peerunit.Bootstrapper;
+import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.BootstrapperImpl;
 import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
@@ -72,8 +73,7 @@ public class BootstrapperImplTest {
 			registry.bind("BootTest", stub);
 			
 			Bootstrapper remoteBoot = (Bootstrapper) registry.lookup("BootTest");
-			
-			DistributedTesterImpl tester = new DistributedTesterImpl(remoteBoot, null, defaults);
+			DistributedTesterImpl tester = new DistributedTesterImpl(TestCaseImpl.class, remoteBoot, null, defaults);
 			tester.register();
 			
 			assertTrue(tester.getId() == 1);

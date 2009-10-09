@@ -9,6 +9,7 @@ import java.util.List;
  * @version 1.0
  * @since 1.0
  */
+@Deprecated
 public class TreeElements implements Serializable{	
 	
 	private static final long serialVersionUID = 1L;

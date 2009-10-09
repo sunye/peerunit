@@ -48,15 +48,20 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
     private transient TesterUtil defaults = TesterUtil.instance;
 
+    private Class<? extends TestCaseImpl> testCaseClass;
+
     /**
      * Used to give the identifier of the tester.
      *
-     * @param c the coordinator which give the tester's identifier.
+     * @param klass the coordinator which give the tester's identifier.
      * @throws RemoteException
      */
     public TesterImpl(Bootstrapper boot, GlobalVariables gv) throws RemoteException {
         super(gv);
         bootstrapper = boot;
+
+        this.setId(bootstrapper.register(this));
+        executor = new ExecutorImpl(this, LOG);
     }
 
     public TesterImpl(Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
@@ -68,6 +73,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     	super(gv);
     	defaults = tu;
     	this.setId(i);
+        executor = new ExecutorImpl(this, LOG);
     }
 
     public void setCoordinator(Coordinator c) {
@@ -78,7 +84,10 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
 
 
     public void start() throws RemoteException {
-        //this.setId(bootstrapper.register(this));
+        LOG.entering("TesterImpl", "start()");
+    	assert coord != null : "Null coordinator";
+
+        coord.registerMethods(this, executor.register(testCaseClass));
     }
 
     /**
@@ -87,7 +96,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @throws InterruptedException
      */
     public void run() {
-        LOG.entering("TesterImpl", "run");
+        LOG.entering("TesterImpl", "run()");
     	assert coord != null : "Null coordinator";
     	
         while (!stop) {
@@ -124,38 +133,20 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * Creates the peer and the test executor.
      * Sends the actions to be executed to the executor.
      *
-     * @param c the peer to be created.
+     * @param klass the Test Case Class.
      * @throws RemoteException
      * @throws SecurityException
      */
-    public void registerTestCase(Class<? extends TestCaseImpl> c) {
-    	assert coord != null : "Null coordinator";
-
+    public void registerTestCase(Class<? extends TestCaseImpl> klass) {
+        LOG.entering("TesterImpl", "registerTestCase(CLass)");
+        testCaseClass = klass;
         
-        
-        boolean exported = false;
-        try {
-            this.setId(bootstrapper.register(this));
-            executor = new ExecutorImpl(this, LOG);
-            coord.registerMethods(this, executor.register(c));
-            exported = true;
-        } catch (RemoteException e) {
-            LOG.log(Level.INFO, null, e);
-        } catch (SecurityException e) {
-            LOG.log(Level.INFO, null, e);
-        } finally {
-            
-            if (!exported) {
-                LOG.info("Not exported");
-                executionInterrupt();
-            }
-        }
     }
 
     /**
      * Used to add an action to be executed
      *
-     * @throws RemoteException
+     * @throws RemoteExcption
      * @throws InterruptedException
      */
     public synchronized void execute(MethodDescription md)
@@ -209,7 +200,8 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     }
 
     /**
-     *  Used to interrupt actions's execution. Cleans the action'list and give a local verdict
+     *  Used to interrupt actions's execution. 
+     *  Cleans the action list and gives a local verdict
      */
     public void executionInterrupt() {
     	assert coord != null : "Null coordinator";
@@ -220,7 +212,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                 //error=true;
             }
             executionQueue.clear();
-            LOG.log(Level.INFO, "Test Case local verdict to peer " + getId() + " is " + v.toString());
+            LOG.info(String.format("Local verdict to tester %d is %s",id, v));
             //coord.quit(this,error,v);
             coord.quit(this, v);
         } catch (RemoteException e) {

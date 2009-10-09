@@ -54,13 +54,14 @@ public class CoordinatorRunner {
      * @throws IOException
      */
     private void initializeLogger() throws IOException {
+        Level l = defaults.getLogLevel();
         FileHandler handler = new FileHandler("coordination.log");
         handler.setFormatter(new LogFormat());
-        handler.setLevel(Level.FINER);
+        handler.setLevel(l);
         Logger.getLogger("").addHandler(handler);
         //Logger.getLogger("").setLevel(defaults.getLogLevel());
-        Logger.getLogger("fr.inria").setLevel(Level.FINER);
-        Logger.getLogger("").getHandlers()[0].setLevel(Level.FINER);
+        Logger.getLogger("fr.inria").setLevel(l);
+        Logger.getLogger("").getHandlers()[0].setLevel(l);
     }
 
     private void start() throws RemoteException, AlreadyBoundException, InterruptedException, NotBoundException {

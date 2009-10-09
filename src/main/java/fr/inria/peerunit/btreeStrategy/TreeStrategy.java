@@ -32,4 +32,5 @@ public interface TreeStrategy {
 	 */
 	public void waitForTesterRegistration() throws InterruptedException;
 
+        public void startRoot() throws RemoteException;
 }
