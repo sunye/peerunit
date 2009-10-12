@@ -25,6 +25,7 @@ import fr.inria.peerunit.rmi.coord.Chronometer;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.TesterUtil;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 /**
@@ -50,17 +51,14 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
      *
      */
     private transient Coordinator parent;
-
     /**
      * Set of testers that are coordinated by this tester.
      */
     private transient List<Tester> testers = new LinkedList<Tester>();
-
     /**
      * The bootstrapper, that will help me to find my parent and my children.
      */
     private transient Bootstrapper bootstrapper;
-
     private transient TesterImpl tester;
     private transient CoordinatorImpl coordinator;
     private transient TesterUtil defaults;
@@ -161,7 +159,9 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
      */
     public void quit(Tester t, Verdicts v) throws RemoteException {
         assert coordinator != null : "Null Coordinator";
-        
+
+        LOG.entering(null, null);
+        LOG.fine(String.format("Tester %s leaving with verdict %s", t, v));
         coordinator.quit(t, v);
     }
 
@@ -192,44 +192,9 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
      */
     public void start() throws RemoteException {
         LOG.entering("DistributedTester", "start()");
-        LOG.fine(String.format("Starting Tester %d", this.getId()));
-        
-        this.createLocalTester();
-        this.createLocalCoordinator();
 
-        for (Tester each : testers) {
-            each.setCoordinator(this);
-        }
+        (new Thread(new DistributedTesterThread())).start();
 
-        for (Tester each : testers) {
-            each.start();
-        }
-
-        Thread tt = new Thread(tester, "LocalTester for DT: " + id);
-        tt.start();
-
-        try {
-            coordinator.waitForTesterRegistration();
-        } catch (InterruptedException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
-        LOG.info("Registration finished");
-
-        if (parent == null) {
-            LOG.info(String.format("DistributedTester %d is root", id));
-            Chronometer chrono = new Chronometer();
-            try {
-                coordinator.testcaseExecution(chrono);
- //               coordinator.waitAllTestersToQuit();
-//                coordinator.calculateVerdict(chrono);
-//                coordinator.cleanUp();
-            } catch (InterruptedException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            }
-        } else {
-            LOG.info(String.format("DistributedTester %d will register with parent", id));
-            this.registerWithParent();
-        }
         LOG.exiting("DistributedTester", "start()");
 
 
@@ -247,5 +212,64 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
         // NB: KeySets are not serializable.
         List<MethodDescription> methods = new ArrayList<MethodDescription>(coordinator.getTesterMap().keySet());
         parent.registerMethods(this, methods);
+    }
+
+    class DistributedTesterThread implements Runnable {
+
+        public void run() {
+
+            LOG.fine(String.format("Starting Tester %d", id));
+
+            createLocalTester();
+            createLocalCoordinator();
+
+            try {
+                for (Tester each : testers) {
+                    each.setCoordinator(DistributedTesterImpl.this);
+                }
+
+                for (Tester each : testers) {
+                    each.start();
+                }
+
+                Thread tt = new Thread(tester, "LocalTester for DT: " + id);
+                tt.start();
+
+                coordinator.waitForTesterRegistration();
+
+                LOG.info("Registration finished");
+
+                if (parent == null) {
+                    LOG.fine(String.format("DistributedTester %d is root", id));
+                    Chronometer chrono = new Chronometer();
+                    LOG.fine("ROOT: will start the execution.");
+                    coordinator.testcaseExecution(chrono);
+                    LOG.fine("ROOT: execution finished, waiting fo testers to quit.");
+                    coordinator.waitAllTestersToQuit();
+                    LOG.fine("ROOT: all testers quit, calculating verdict.");
+                    coordinator.calculateVerdict(chrono);
+                    coordinator.cleanUp();
+
+                } else {
+                    LOG.info(String.format("DistributedTester %d will register with parent", id));
+                    registerWithParent();
+                    coordinator.waitAllTestersToQuit();
+                    LOG.info(String.format("DistributedTester %d will now quit", id));
+                    coordinator.cleanUp();
+                    parent.quit(DistributedTesterImpl.this, Verdicts.PASS);
+                }
+
+                LOG.fine("Waiting for tester thread");
+                tt.join();
+                LOG.fine("Tester thread finished");
+
+            } catch (RemoteException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            }
+
+
+        }
     }
 }
