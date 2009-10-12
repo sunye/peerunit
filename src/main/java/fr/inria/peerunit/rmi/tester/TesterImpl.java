@@ -3,7 +3,6 @@ package fr.inria.peerunit.rmi.tester;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -119,14 +118,13 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
 
             }
         }
-        LOG.log(Level.INFO, "Stopping Tester ");
+        LOG.info("Stopping Tester ");
         try {
             coord.quit(this, v);
         } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.log(Level.SEVERE,"Error calling Coordinator.quit()",e);
         }
-        System.exit(0);
+        //System.exit(0);
     }
 
     /**
@@ -186,7 +184,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     	
         try {
             coord.methodExecutionFinished(this, MessageType.OK);
-            LOG.log(Level.FINEST, "Executed " + md.getName());
+            LOG.log(Level.FINEST, "Tester ["+id+"] Executed " + md.getName());
             if (executor.isLastMethod(md.getAnnotation())) {
                 LOG.log(Level.FINEST, "Test Case finished by annotation " + md.getAnnotation());
                 executionInterrupt();
@@ -262,7 +260,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                 LOG.log(Level.WARNING, " Executed in " + md.getName());
                 executionInterrupt();
             } else {
-                LOG.log(Level.INFO, " Executed " + md.getName());
+                LOG.log(Level.INFO, "Tester ["+id+"] executed method: " + md.getName());
                 executionOk(md);
             }
         }

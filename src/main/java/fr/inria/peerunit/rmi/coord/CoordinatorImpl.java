@@ -37,7 +37,9 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     private static final int IDLE = 1;
     private static final int RUNNING = 2;
     private static final int LEAVING = 3;
+
     private int status = STARTING;
+
     private Map<MethodDescription, Set<Tester>> testerMap = Collections.synchronizedMap(new TreeMap<MethodDescription, Set<Tester>>());
     final private List<Tester> registeredTesters;
     /**
@@ -206,7 +208,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 
     public synchronized void quit(Tester t, Verdicts localVerdict) throws RemoteException {
         //assert status == LEAVING : "Trying to quit during execution";
-
+        log.fine(String.format("Tester %s leaving with verdict %s",t,localVerdict));
         verdict.addLocalVerdict(localVerdict);
         synchronized (registeredTesters) {
             registeredTesters.remove(t);
@@ -259,13 +261,14 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      * @throws InterruptedException
      */
     public void waitAllTestersToQuit() throws InterruptedException {
-        assert status == LEAVING : "Trying to quit before time";
+        //assert status == LEAVING : "Trying to quit before time";
 
         log.fine("Waiting all testers to quit.");
         while (registeredTesters.size() > 0) {
             synchronized (registeredTesters) {
                 registeredTesters.wait();
             }
+            log.fine(String.format("Waiting for %d testers to quit.", registeredTesters.size()));
         }
         log.fine("All testers quit.");
     }
@@ -274,7 +277,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      * Clears references to testers.
      */
     public void cleanUp() {
-        log.info("Cleaning");
+        log.info("Cleaning up.");
         testerMap.clear();
         runningTesters.set(0);
         registeredTesters.clear();
