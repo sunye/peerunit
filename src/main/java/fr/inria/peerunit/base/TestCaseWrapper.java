@@ -4,7 +4,6 @@
  */
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.Executor;
 import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.exception.AnnotationFailure;
@@ -26,9 +25,10 @@ import java.util.logging.Logger;
  *
  * @author sunye
  */
-public class TestCaseWrapper implements Executor {
+public class TestCaseWrapper {
 
     private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
+    private List<MethodDescription> remainingMethods;
     private TestCase testcase;
     private int testerId = -1;
     private Tester tester;
@@ -78,27 +78,35 @@ public class TestCaseWrapper implements Executor {
      * Execute the given method description
      *
      * @param md : method description to execute
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
+     * @throws Throwable if any exception is thrown
      */
-    public void invoke(MethodDescription md) throws IllegalArgumentException,
-            IllegalAccessException, InvocationTargetException {
+    public void invoke(MethodDescription md) throws Throwable {
 
         assert methods.containsKey(md) : "Method should be registered";
+        assert remainingMethods.contains(md) : "Method already executed";
         assert testcase != null : "Test Case instance should not be null";
 
         Method m = methods.get(md);
-        m.invoke(testcase, (Object[]) null);
+        try {
+            m.invoke(testcase, (Object[]) null);
+        } catch (IllegalAccessException e) {
+            e.fillInStackTrace();
+        } catch (InvocationTargetException e) {
+            e.fillInStackTrace();
+            throw e;
+        } finally {
+            remainingMethods.remove(md);
+        }
     }
 
     /**
      * Verifies if the method is the last one to be executed by its annotation
-     * @param method
+     * 
      * @return true if the method is the last one to be executed
      */
-    public boolean isLastMethod(String methodAnnotation) {
-        return methodAnnotation.equalsIgnoreCase("AfterClass");
+    public boolean isLastMethod() {
+
+        return remainingMethods.isEmpty();
     }
 
     /**
@@ -191,7 +199,10 @@ public class TestCaseWrapper implements Executor {
                 methods.put(new MethodDescription(each, ac), each);
             }
         }
-        return new ArrayList<MethodDescription>(methods.keySet());
+
+
+        remainingMethods = new ArrayList<MethodDescription>(methods.keySet());
+        return remainingMethods;
     }
 
 
