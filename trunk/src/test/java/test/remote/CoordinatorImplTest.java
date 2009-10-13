@@ -23,6 +23,7 @@ import org.mockito.InOrder;
 
 import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.base.Result;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.test.oracle.Verdicts;
@@ -81,9 +82,10 @@ public class CoordinatorImplTest {
 			for (MethodDescription each : methods) {
 				assertTrue(coord.getTesterMap().containsKey(each));
 			}
-			for (int i = 0; i < methods.size(); i++) {
+			for (MethodDescription each : methods) {
 				Thread.sleep(100);
-				coord.methodExecutionFinished(tester, MessageType.OK);
+                                Result result = new Result(tester.getId(), each);
+				coord.methodExecutionFinished(result);
 			}
 			Thread.sleep(1000);
 			coord.quit(tester, Verdicts.PASS);
@@ -119,10 +121,10 @@ public class CoordinatorImplTest {
 				testers[i] = mock(Tester.class);
 				coord.registerMethods(testers[i], methods);
 			}
-			for (int i = 0; i < methods.size(); i++) {
+			for (MethodDescription each : methods) {
 				Thread.sleep(100 + size/10);
 				for (int j = 0; j < testers.length; j++) {
-					coord.methodExecutionFinished(testers[j], MessageType.OK);
+					coord.methodExecutionFinished(new Result(testers[j].getId(), each));
 				}
 			}
 			Thread.sleep(100 + size/10);
