@@ -20,6 +20,8 @@ import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.Bootstrapper;
+import fr.inria.peerunit.base.Result;
+import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.test.oracle.Verdicts;
@@ -59,6 +61,8 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      * Pool of threads. Used to dispatch actions to testers.
      */
     private ExecutorService executor;
+
+    private ResultSet resultSet = new ResultSet();
 
     /**
      * @param i Number of expected testers. The Coordinator will wait for
@@ -195,11 +199,10 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
         return id;
     }
 
-    public synchronized void methodExecutionFinished(Tester tester, MessageType message) throws RemoteException {
+    public synchronized void methodExecutionFinished(Result result) throws RemoteException {
         assert status == RUNNING : "Trying to finish before execution";
 
-
-        // TODO Improve the usage of the results.
+        //resultSet.add(result);
         runningTesters.decrementAndGet();
         synchronized (runningTesters) {
             runningTesters.notifyAll();
@@ -221,6 +224,10 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      */
     public Map<MethodDescription, Set<Tester>> getTesterMap() {
         return Collections.unmodifiableMap(this.testerMap);
+    }
+
+    public ResultSet getResultSet() {
+        return resultSet;
     }
 
     /**
