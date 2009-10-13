@@ -19,7 +19,7 @@ import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.GlobalVariablesImpl;
 import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.parser.ExecutorImpl;
+import fr.inria.peerunit.base.TestCaseWrapper;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
@@ -27,7 +27,7 @@ import fr.inria.peerunit.util.TesterUtil;
 
 public class TesterImplTest {
 
-    private static ExecutorImpl executor;
+    private static TestCaseWrapper executor;
     private static CoordinatorImpl coord;
     private static GlobalVariables globals; 
     private static TesterImpl tester0, tester1, tester2;
@@ -51,7 +51,7 @@ public class TesterImplTest {
             new Thread(coord, "Coordinator").start();
             tester0 = new TesterImpl(coord, globals);
             tester0.setCoordinator(coord);
-            executor = new ExecutorImpl((Tester) tester0, LOG);
+            executor = new TestCaseWrapper((Tester) tester0, LOG);
             tester1 = new TesterImpl(coord, globals);
             tester1.setCoordinator(coord);
             tester2 = new TesterImpl(coord, globals);

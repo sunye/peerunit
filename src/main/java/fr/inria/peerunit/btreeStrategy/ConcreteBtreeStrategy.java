@@ -1,17 +1,16 @@
 package fr.inria.peerunit.btreeStrategy;
 
-import fr.inria.peerunit.Coordinator;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.util.BTreeNode;
-import fr.inria.peerunit.util.HTree;
 import fr.inria.peerunit.util.HNode;
+import fr.inria.peerunit.util.HTree;
 import fr.inria.peerunit.util.TesterUtil;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Veronique Pelleau
@@ -59,10 +58,6 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
     public void buildTree() {
     }
 
-    public BTreeNode getNode(Integer i) {
-        //return tree.getNode(i);
-        return null;
-    }
 
     public int getNodesSize() {
         //return tree.getNodesSize();
@@ -83,7 +78,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
             nodes.add(each.value());
         }
         try {
-            log.info(String.format("Registering %d testers to tester %d", nodes.size(), n.value().getId()));
+            log.fine(String.format("Registering %d testers to tester %d", nodes.size(), n.value().getId()));
         } catch (RemoteException ex) {
             Logger.getLogger(ConcreteBtreeStrategy.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -111,9 +106,10 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
      */
     public void waitForTesterRegistration() throws InterruptedException {
         log.entering("ConcreteBtreeStrategy", "waitForTesterRegistration()");
-        log.info("Waiting for tester registration");
+
         while (testers.size() < expectedTesters) {
-            log.fine("Comparing " + testers.size() + " with: " + expectedTesters);
+            log.fine(String.format("Waiting for %d testers to register", 
+                    expectedTesters - testers.size()));
             synchronized (testers) {
                 testers.wait();
             }
@@ -123,6 +119,10 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 
     public void startRoot() throws RemoteException {
         testers.head().value().start();
+    }
+
+    public void cleanUp() {
+        testers.clear();
     }
 }
 

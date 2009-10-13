@@ -52,13 +52,18 @@ public class HTree<K,V> {
         return size;
     }
 
+    public void clear() {
+        head = null;
+        size = 0;
+    }
+
     class HNodeImpl<K,V> implements HNode<K,V> {
         private int position = 0;
 
         private K key;
         private V value;
 
-        private HNodeImpl[] children = new HNodeImpl[order];
+        private HNodeImpl<K,V>[] children = new HNodeImpl[order];
         
         public HNodeImpl(K k, V v) {
             key = k;
@@ -100,7 +105,7 @@ public class HTree<K,V> {
         /**
          * Inserts an element into this node.
          * When this node is full (no more null child), elements
-         * are inserted in the children in a equulibrated way.
+         * are inserted in the children in a equilibrated way.
          * @param e
          */
         public void put(K k, V v) {

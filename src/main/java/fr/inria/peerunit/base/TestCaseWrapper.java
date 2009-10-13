@@ -26,21 +26,21 @@ import java.util.logging.Logger;
  *
  * @author sunye
  */
-public abstract class AbstractExecutor implements Executor {
+public class TestCaseWrapper implements Executor {
 
     private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
     private TestCase testcase;
     private int testerId = -1;
     private Tester tester;
 
-    public AbstractExecutor(Tester t, Logger l) {
+    public TestCaseWrapper(Tester t, Logger l) {
         assert t != null ;
 
         this.tester = t;
         try {
             this.testerId = tester.getId();
         } catch (RemoteException ex) {
-            Logger.getLogger(AbstractExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TestCaseWrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

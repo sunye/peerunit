@@ -17,7 +17,7 @@ import org.junit.Test;
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.GlobalVariablesImpl;
 import fr.inria.peerunit.exception.AnnotationFailure;
-import fr.inria.peerunit.parser.ExecutorImpl;
+import fr.inria.peerunit.base.TestCaseWrapper;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
@@ -25,7 +25,7 @@ import fr.inria.peerunit.util.TesterUtil;
 
 public class ExecutorImplTest {
 
-	private static ExecutorImpl executor;
+	private static TestCaseWrapper executor;
 
 	private static CoordinatorImpl coord;
 
@@ -52,7 +52,7 @@ public class ExecutorImplTest {
 			new Thread(coord, "Coordinator").start();
 			tester = new TesterImpl(coord, globals);
 			tester.setCoordinator(coord);
-			executor = new ExecutorImpl(tester, LOG);
+			executor = new TestCaseWrapper(tester, LOG);
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
