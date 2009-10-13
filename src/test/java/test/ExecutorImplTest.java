@@ -137,7 +137,7 @@ public class ExecutorImplTest {
             if (executor.isValid(ac)) {
                 valid++;
                 assertTrue(listMethodDesc.contains(new MethodDescription(each, ac)));
-                assertFalse(executor.isLastMethod(each.getName()));
+                assertFalse(executor.isLastMethod());
             }
         }
 

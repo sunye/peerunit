@@ -24,83 +24,82 @@ import fr.inria.peerunit.util.TesterUtil;
 
 public class BootstrapperImplTest {
 
-	private BootstrapperImpl bootstrapper;
-	private Properties properties;
-	private TesterUtil defaults;
+    private BootstrapperImpl bootstrapper;
+    private Properties properties;
+    private TesterUtil defaults;
 
-	@Before
-	public void setup() {
-		properties = new Properties();
-		properties.setProperty("tester.peers", "3");
-		properties.setProperty("test.treeStrategy", "1");
-		defaults = new TesterUtil(properties);
-		bootstrapper = new BootstrapperImpl(defaults);
-	}
+    @Before
+    public void setup() {
+        properties = new Properties();
+        properties.setProperty("tester.peers", "3");
+        properties.setProperty("test.treeStrategy", "1");
+        defaults = new TesterUtil(properties);
+        bootstrapper = new BootstrapperImpl(defaults);
+    }
 
-	// @Test
-	public void testBootstrapperIml() {
-		/*
-		 * properties.setProperty("tester.peers", "1"); TesterUtil defaults =
-		 * new TesterUtil(properties); fr.inria.peerunit.Bootstrapper b = new
-		 * BootstrapperImpl(defaults); Node node = mock(Node.class); try {
-		 * b.register(node); } catch (RemoteException e) { fail(e.getMessage());
-		 * }
-		 * 
-		 * assertTrue(b != null);
-		 */
-	}
+    // @Test
+    public void testBootstrapperIml() {
+        /*
+         * properties.setProperty("tester.peers", "1"); TesterUtil defaults =
+         * new TesterUtil(properties); fr.inria.peerunit.Bootstrapper b = new
+         * BootstrapperImpl(defaults); Node node = mock(Node.class); try {
+         * b.register(node); } catch (RemoteException e) { fail(e.getMessage());
+         * }
+         *
+         * assertTrue(b != null);
+         */
+    }
 
-	@Test
-	public void testRegister() {
-		int id = 0;
-		try {
-			for (int i = 0; i < 5; i++) {
-				DistributedTesterImpl tester = mock(DistributedTesterImpl.class);
-				id = bootstrapper.register(tester);
-				assertTrue(id == i + 1);
-			}
-			
-		} catch (RemoteException e) {
-			fail(e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testRemoteRegister() {
+    @Test
+    public void testRegister() {
+        int id = 0;
+        try {
+            for (int i = 0; i < 5; i++) {
+                DistributedTesterImpl tester = mock(DistributedTesterImpl.class);
+                id = bootstrapper.register(tester);
+                assertTrue(id == i + 1);
+            }
+
+        } catch (RemoteException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testRemoteRegister() {
         try {
             Registry registry = LocateRegistry.createRegistry(1099);
             Bootstrapper stub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
-			registry.bind("BootTest", stub);
-			
-			Bootstrapper remoteBoot = (Bootstrapper) registry.lookup("BootTest");
-			DistributedTesterImpl tester = new DistributedTesterImpl(TestCaseImpl.class, remoteBoot, null, defaults);
-			tester.register();
-			
-			assertTrue(tester.getId() == 1);
-		} catch (AccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
+            registry.bind("BootTest", stub);
 
-	@Test
-	public void testGetRegistered() {
-		// fail("Not yet implemented");
-	}
+            Bootstrapper remoteBoot = (Bootstrapper) registry.lookup("BootTest");
+            DistributedTesterImpl tester = new DistributedTesterImpl(TestCaseImpl.class, remoteBoot, null, defaults);
+            tester.register();
 
-	@Test
-	public void testIsRoot() {
-		// fail("Not yet implemented");
-	}
+            assertTrue(tester.getId() == 1);
+        } catch (AccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (AlreadyBoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
+    }
+
+    @Test
+    public void testGetRegistered() {
+        // fail("Not yet implemented");
+    }
+
+    @Test
+    public void testIsRoot() {
+        // fail("Not yet implemented");
+    }
 }
