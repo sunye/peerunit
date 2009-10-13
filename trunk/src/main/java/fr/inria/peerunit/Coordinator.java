@@ -1,5 +1,6 @@
 package fr.inria.peerunit;
 
+import fr.inria.peerunit.base.Result;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +24,7 @@ public interface Coordinator extends Remote {
 	public void registerMethods(Tester tester, Collection<MethodDescription> list)
 			throws RemoteException;
 
-	public void methodExecutionFinished(Tester tester, MessageType message)
+	public void methodExecutionFinished(Result result)
 			throws RemoteException;
 
 	/**
