@@ -1,7 +1,6 @@
 package fr.inria.peerunit.rmi.tester;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -12,13 +11,12 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.Coordinator;
-import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
+import fr.inria.peerunit.base.Result;
 import fr.inria.peerunit.base.TestCaseWrapper;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.TesterUtil;
 
@@ -41,7 +39,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     private transient Bootstrapper bootstrapper;
     private transient boolean stop = false;
 
-    private transient TestCaseWrapper executor;
+    private transient TestCaseWrapper testCase;
     private Verdicts v = Verdicts.PASS;
     private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
     private transient TesterUtil defaults = TesterUtil.instance;
@@ -59,7 +57,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         bootstrapper = boot;
 
         this.setId(bootstrapper.register(this));
-        executor = new TestCaseWrapper(this, LOG);
+        testCase = new TestCaseWrapper(this, LOG);
     }
 
     public TesterImpl(Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
@@ -71,7 +69,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     	super(gv);
     	defaults = tu;
     	this.setId(i);
-        executor = new TestCaseWrapper(this, LOG);
+        testCase = new TestCaseWrapper(this, LOG);
     }
 
     public void setCoordinator(Coordinator c) {
@@ -85,7 +83,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         LOG.entering("TesterImpl", "start()");
     	assert coord != null : "Null coordinator";
 
-        coord.registerMethods(this, executor.register(testCaseClass));
+        coord.registerMethods(this, testCase.register(testCaseClass));
     }
 
     /**
@@ -114,7 +112,9 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                     }
                 }
             } catch (InterruptedException e) {
-                LOG.log(Level.SEVERE,null,e);
+                Result r = new Result(id, md);
+                r.addTimeout(e);
+                this.executionFinished(r);
             }
         }
         LOG.fine("Stopping Tester ");
@@ -127,8 +127,8 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     }
 
     /**
-     * Creates the peer and the test executor.
-     * Sends the actions to be executed to the executor.
+     * Creates the peer and the test testCase.
+     * Sends the actions to be executed to the testCase.
      *
      * @param klass the Test Case Class.
      * @throws RemoteException
@@ -178,14 +178,15 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      *  is interrupted.
      *  @param methodAnnotation the method which was executed
      */
-    private void executionOk(MethodDescription md) {
+    private void executionFinished(Result r) {
     	assert coord != null : "Null coordinator";
-    	
+
+        MethodDescription md = r.getMethodDescription();
         try {
-            coord.methodExecutionFinished(this, MessageType.OK);
-            LOG.log(Level.FINEST, "Tester ["+id+"] Executed " + md.getName());
-            if (executor.isLastMethod(md.getAnnotation())) {
-                LOG.log(Level.FINEST, "Test Case finished by annotation " + md.getAnnotation());
+            coord.methodExecutionFinished(r);
+            
+            if (testCase.isLastMethod()) {
+                LOG.log(Level.FINEST, "Test Case finished");
                 executionInterrupt();
             }
         } catch (RemoteException e) {
@@ -228,41 +229,22 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @param md the action will be invoked
      */
     private synchronized void invoke(MethodDescription md) {
-        assert executor != null : "Null executor";
+        assert testCase != null : "Null executor";
 
-        boolean error = true;
+        Result result = new Result(id, md);
         try {
-            executor.invoke(md);
-            error = false;
-        } catch (IllegalArgumentException e) {
-            for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
-
-        } catch (IllegalAccessException e) {
-            for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
-
-        } catch (InvocationTargetException e) {
-            Oracle oracle = new Oracle(e.getCause());
-            if (oracle.isPeerUnitFailure()) {
-                error = false;
-            }
-            v = oracle.getVerdict();
-            for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
-
+            result.start();
+            testCase.invoke(md);   
+        } catch (AssertionError e) {
+            result.addFailure(e);
+        } catch (Throwable e) {
+            result.addError(e);
         } finally {
-            if (error) {
-                LOG.log(Level.WARNING, " Executed in " + md.getName());
-                executionInterrupt();
-            } else {
-                LOG.fine("Tester ["+id+"] executed method: " + md.getName());
-                executionOk(md);
-            }
+            result.stop();
         }
+        
+        LOG.log(Level.FINEST, "Tester ["+id+"] Executed " + md);
+        this.executionFinished(result);
     }
 
 

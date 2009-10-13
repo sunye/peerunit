@@ -22,6 +22,7 @@ import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
+import fr.inria.peerunit.base.Result;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.Chronometer;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
@@ -139,7 +140,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
             // TODO retrieve information about method execution,
             // before sending a OK to parent !
 
-            parent.methodExecutionFinished(this, MessageType.OK);
+            parent.methodExecutionFinished(null);
         } catch (InterruptedException e) {
             LOG.log(Level.SEVERE, null, e);
         }
@@ -148,10 +149,10 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     /**
      * @see fr.inria.peerunit.Coordinator#methodExecutionFinished(Tester, fr.inria.peerunit.MessageType)
      */
-    public void methodExecutionFinished(Tester tester, MessageType message) throws RemoteException {
+    public void methodExecutionFinished(Result result) throws RemoteException {
         assert coordinator != null : "Null Coordinator";
 
-        coordinator.methodExecutionFinished(tester, message);
+        coordinator.methodExecutionFinished(result);
     }
 
     /** 
