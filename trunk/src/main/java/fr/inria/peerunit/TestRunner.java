@@ -40,11 +40,8 @@ public class TestRunner {
      * passed at the command line.
      */
     private Class<? extends TestCaseImpl> testcase;
-    
     private TesterUtil defaults;
-    
     private Registry registry;
-    
     private static final Logger log = Logger.getLogger(TesterImpl.class.getName());
 
     /**
@@ -66,7 +63,7 @@ public class TestRunner {
 
         initializeLogger();
 
-        while (times < 3 && boot == null) {
+        while (times < 5 && boot == null) {
             try {
                 registry = LocateRegistry.getRegistry();
                 boot = (Bootstrapper) registry.lookup("Bootstrapper");
@@ -80,13 +77,14 @@ public class TestRunner {
             } catch (AccessException ex) {
             } catch (RemoteException ex) {
             }
-            if (boot == null)  {
-            	try {
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-				}
-            }
             times++;
+            if (boot == null) {
+                try {
+                    Thread.sleep(300*times);
+                } catch (InterruptedException e) {
+                }
+            }
+            
         }
 
         if (boot == null) {
@@ -97,19 +95,19 @@ public class TestRunner {
         try {
             GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
             if (centralized) {
-                log.info("Coordinator found, using the centralized architecture.");
+                log.fine("Coordinator found, using the centralized architecture.");
                 TesterImpl tester = new TesterImpl(boot, globals, defaults);
                 UnicastRemoteObject.exportObject(tester);
-                
+
                 tester.setCoordinator((Coordinator) boot);
-                
+
                 tester.registerTestCase(testcase);
                 tester.start();
                 tester.run();
 
             } else {
-                log.info("Bootstrapper found, using the distributed architecture.");
-                DistributedTesterImpl tester = new DistributedTesterImpl(testcase,boot, globals, defaults);
+                log.fine("Bootstrapper found, using the distributed architecture.");
+                DistributedTesterImpl tester = new DistributedTesterImpl(testcase, boot, globals, defaults);
                 UnicastRemoteObject.exportObject(tester);
                 tester.register();
                 //tester.registerTestCase(testcase);
@@ -120,10 +118,10 @@ public class TestRunner {
 
     }
 
-	private void initializeLogger() {
-		FileHandler handler;
-		try {
-                    Level level = defaults.getLogLevel();
+    private void initializeLogger() {
+        FileHandler handler;
+        try {
+            Level level = defaults.getLogLevel();
             handler = new FileHandler("tester.log");
             handler.setFormatter(new LogFormat());
             handler.setLevel(level);
@@ -140,7 +138,7 @@ public class TestRunner {
         } catch (SecurityException ex) {
             log.log(Level.SEVERE, null, ex);
         }
-	}
+    }
 
     /**
      * In the main method, we get the only argument corresponding to class name of

@@ -24,13 +24,5 @@ public interface Bootstrapper extends Remote {
 	 */
 	public int register(Tester t) throws RemoteException;
 
-
-	/**
-	 * Return true if id follow to Bootstrapper
-	 * @param id
-	 * @return
-	 * @throws RemoteException
-	 */
-	public boolean isRoot(int id) throws RemoteException;
 }
 

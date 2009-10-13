@@ -29,32 +29,8 @@ public abstract class TestCaseImpl implements TestCase {
 	/**
 	 * Set the <i>tester</i> in centralized architecture executing the <i>test</i>
 	 * 
-	 * @param ti the <i>tester</> instance 
-	 *
-	@Deprecated
-	public void setTester(TesterImpl ti) {
-		tester = ti;
-		try {
-			id = ti.getPeerName();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
-	
-	/**
-	 * Define the <i>tester</i> in distributed architecture executing 
-	 * the <i>test</i>.
-	 * 
-	 * @param tt the <i>tester</> instance 
-	 *
-	@Deprecated
-	public void setTester(TreeTesterImpl tt) {	
-		tester = tt;		
-		id = tt.getID();		
-	}*/
-	
-	
+	 * @param t the <i>tester</> instance 
+	 */
 	public void setTester(Tester t) {
 		tester = t;
 		try {
@@ -70,7 +46,7 @@ public abstract class TestCaseImpl implements TestCase {
 	 * 
 	 * @return the id of the <i>tester</i> executing the <i>test</i>
 	 */
-	public int getPeerId() {
+	public int getId() {
 		return id;
 	}
 
@@ -79,7 +55,8 @@ public abstract class TestCaseImpl implements TestCase {
 	 * 
 	 * @return the id of the <i>tester</i> executing the <i>test</i>
 	 * @throws RemoteException because the method is distant 
-	 */		
+	 */
+	@Deprecated
 	public int getPeerName() throws RemoteException  {
 		return id;
 	}

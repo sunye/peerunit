@@ -16,7 +16,7 @@ import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
-import fr.inria.peerunit.parser.ExecutorImpl;
+import fr.inria.peerunit.base.TestCaseWrapper;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.Oracle;
 import fr.inria.peerunit.test.oracle.Verdicts;
@@ -40,9 +40,8 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     private transient Coordinator coord;
     private transient Bootstrapper bootstrapper;
     private transient boolean stop = false;
-    private transient Thread timeoutThread;
-    private transient Thread invokationThread;
-    private transient ExecutorImpl executor;
+
+    private transient TestCaseWrapper executor;
     private Verdicts v = Verdicts.PASS;
     private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
     private transient TesterUtil defaults = TesterUtil.instance;
@@ -60,7 +59,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         bootstrapper = boot;
 
         this.setId(bootstrapper.register(this));
-        executor = new ExecutorImpl(this, LOG);
+        executor = new TestCaseWrapper(this, LOG);
     }
 
     public TesterImpl(Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
@@ -72,7 +71,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     	super(gv);
     	defaults = tu;
     	this.setId(i);
-        executor = new ExecutorImpl(this, LOG);
+        executor = new TestCaseWrapper(this, LOG);
     }
 
     public void setCoordinator(Coordinator c) {
@@ -95,9 +94,12 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @throws InterruptedException
      */
     public void run() {
+        assert coord != null : "Null coordinator";
         LOG.entering("TesterImpl", "run()");
-    	assert coord != null : "Null coordinator";
-    	
+
+        Thread timeoutThread;
+        Thread invokationThread;
+
         while (!stop) {
             MethodDescription md = null;
             try {
@@ -112,13 +114,10 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                     }
                 }
             } catch (InterruptedException e) {
-                for (StackTraceElement each : e.getStackTrace()) {
-                    LOG.severe(each.toString());
-                }
-
+                LOG.log(Level.SEVERE,null,e);
             }
         }
-        LOG.info("Stopping Tester ");
+        LOG.fine("Stopping Tester ");
         try {
             coord.quit(this, v);
         } catch (RemoteException e) {
@@ -210,7 +209,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                 //error=true;
             }
             executionQueue.clear();
-            LOG.info(String.format("Local verdict to tester %d is %s",id, v));
+            LOG.fine(String.format("Local verdict to tester %d is %s",id, v));
             //coord.quit(this,error,v);
             coord.quit(this, v);
         } catch (RemoteException e) {
@@ -260,12 +259,19 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                 LOG.log(Level.WARNING, " Executed in " + md.getName());
                 executionInterrupt();
             } else {
-                LOG.log(Level.INFO, "Tester ["+id+"] executed method: " + md.getName());
+                LOG.fine("Tester ["+id+"] executed method: " + md.getName());
                 executionOk(md);
             }
         }
     }
 
+
+    public void cleanUp() {
+        LOG.fine("Tester cleaning up.");
+        globals = null;
+        bootstrapper = null;
+        coord = null;
+    }
 
     /**
      * @author Eduardo Almeida.

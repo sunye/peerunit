@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.btreeStrategy.ConcreteBtreeStrategy;
-import fr.inria.peerunit.btreeStrategy.ConcreteONSTreeStrategy;
 import fr.inria.peerunit.btreeStrategy.TreeStrategy;
 import fr.inria.peerunit.util.TesterUtil;
 
@@ -28,12 +27,7 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
 
     public BootstrapperImpl(TesterUtil tu) {
         defaults = tu;
-
-        if (defaults.getTreeStrategy() == 2) {
-            context = new ConcreteONSTreeStrategy();
-        } else {
-            context = new ConcreteBtreeStrategy(defaults);
-        }
+        context = new ConcreteBtreeStrategy(defaults);
     }
 
     public void run() {
@@ -46,7 +40,7 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
             context.buildTree();
             context.setCommunication();
             context.startRoot();
-            
+            //context.cleanUp();
             log.info("[Bootstrapper] Finished !");
             
         } catch (RemoteException ex) {
@@ -68,18 +62,6 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
     public int getRegistered() {
         log.entering("BootstrapperImpl", "getRegistered()");
         return context.getRegistered();
-    }
-
-    /**
-     * Return true if id follow to Bootstrapper
-     * @param id
-     * @return
-     * @throws RemoteException
-     */
-    public boolean isRoot(int id) throws RemoteException {
-        log.entering("BootstrapperImpl", "isRoot(int)");
-
-        return context.getNode(null).isRoot();
     }
 
 }

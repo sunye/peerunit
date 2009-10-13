@@ -94,9 +94,15 @@ public class CoordinatorRunner {
             boot.start();
             boot.join();
             log.info("Bootstrap thread finished");
-
+            registry.unbind("Bootstrapper");
+            //UnicastRemoteObject.unexportObject(bootstrapper, true);
         }
+        registry.unbind("Globals");
+        //UnicastRemoteObject.unexportObject(globals, true);
+        //UnicastRemoteObject.unexportObject(registry, true);
 
+        Thread.sleep(3000);
+        System.exit(0);
     }
 
     /**

@@ -20,7 +20,7 @@ public abstract class AbstractTester implements Tester {
     private static final Logger log = Logger.getLogger(AbstractTester.class.getName());
 
     protected int id;
-    private transient GlobalVariables globals;
+    protected transient GlobalVariables globals;
 
     /**
      * No arguments constructor.

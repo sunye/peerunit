@@ -4,7 +4,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import fr.inria.peerunit.parser.MethodDescription;
-import java.util.List;
 
 /**
  * This interface represent a <i>tester/i>. A <i>tester</i> is a component who control a peer 

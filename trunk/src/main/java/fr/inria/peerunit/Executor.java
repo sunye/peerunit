@@ -10,7 +10,7 @@ import fr.inria.peerunit.parser.MethodDescription;
  * <i>test case actions</i>. 
  * 
  * @author Eduardo Almeida
- * @author Aboubakar Koïta 
+ * @author Aboubakar Koita
  * @version 1.0
  * @since 1.0
  * @see fr.inria.peerunit.btree.parser

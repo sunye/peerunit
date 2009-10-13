@@ -229,7 +229,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     public void waitForTesterRegistration() throws InterruptedException {
         assert status == STARTING : "Trying to register while not starting";
 
-        log.info("Waiting for registration. Expecting " + expectedTesters + " testers.");
+        log.fine("Waiting for registration. Expecting " + expectedTesters + " testers.");
         while (registeredTesters.size() < expectedTesters.intValue()) {
             synchronized (registeredTesters) {
                 registeredTesters.wait();
@@ -245,7 +245,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     private void waitForExecutionFinished() throws InterruptedException {
         assert status == RUNNING : "Trying to finish method while not running";
 
-        log.info("Waiting for the end of the execution.");
+        log.fine("Waiting for the end of the execution.");
         while (runningTesters.intValue() > 0) {
             synchronized (runningTesters) {
                 runningTesters.wait();
@@ -277,7 +277,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      * Clears references to testers.
      */
     public void cleanUp() {
-        log.info("Cleaning up.");
+        log.fine("Coordinator cleaning up.");
         testerMap.clear();
         runningTesters.set(0);
         registeredTesters.clear();
