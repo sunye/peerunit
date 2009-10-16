@@ -1,7 +1,7 @@
 /*
     This file is part of PeerUnit.
 
-    Foobar is free software: you can redistribute it and/or modify
+    PeerUnit is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,16 +29,16 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.GlobalVariables;
-import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
-import fr.inria.peerunit.base.Result;
+import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.rmi.coord.Chronometer;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
-import fr.inria.peerunit.test.oracle.Verdicts;
+import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
+import java.io.IOException;
+import java.util.logging.FileHandler;
 
 /**
  * The DistributedTester is both, a Tester and a Coordinator.
@@ -145,14 +144,11 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
      * @see fr.inria.peerunit.Tester#execute(fr.inria.peerunit.parser.MethodDescription)
      */
     public void execute(MethodDescription md) throws RemoteException {
-
+        LOG.entering("DistributedTester","Execute", md);
         try {
             coordinator.execute(md);
-
-            // TODO retrieve information about method execution,
-            // before sending a OK to parent !
-
-            parent.methodExecutionFinished(null);
+            ResultSet result = coordinator.getResultFor(md);
+            parent.methodExecutionFinished(result);
         } catch (InterruptedException e) {
             LOG.log(Level.SEVERE, null, e);
         }
@@ -161,7 +157,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     /**
      * @see fr.inria.peerunit.Coordinator#methodExecutionFinished(Tester, fr.inria.peerunit.MessageType)
      */
-    public void methodExecutionFinished(Result result) throws RemoteException {
+    public void methodExecutionFinished(ResultSet result) throws RemoteException {
         assert coordinator != null : "Null Coordinator";
 
         coordinator.methodExecutionFinished(result);
@@ -170,12 +166,12 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     /** 
      * @see fr.inria.peerunit.Coordinator#quit(fr.inria.peerunit.Tester, fr.inria.peerunit.test.oracle.Verdicts)
      */
-    public void quit(Tester t, Verdicts v) throws RemoteException {
+    public void quit(Tester t) throws RemoteException {
         assert coordinator != null : "Null Coordinator";
 
         LOG.entering(null, null);
-        LOG.fine(String.format("Tester %s leaving with verdict %s", t, v));
-        coordinator.quit(t, v);
+        LOG.fine(String.format("Tester %s is leaving.", t));
+        coordinator.quit(t);
     }
 
     /**
@@ -206,6 +202,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     public void start() throws RemoteException {
         LOG.entering("DistributedTester", "start()");
 
+        this.initializeLogger();
         (new Thread(new DistributedTesterThread())).start();
 
         LOG.exiting("DistributedTester", "start()");
@@ -221,9 +218,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
 
     private void registerWithParent() throws RemoteException {
         assert parent != null : "Trying to register with a null parent";
-
-        // NB: KeySets are not serializable.
-        List<MethodDescription> methods = new ArrayList<MethodDescription>(coordinator.getTesterMap().keySet());
+        Collection<MethodDescription> methods = coordinator.getSchedule().methods();
         parent.registerMethods(this, methods);
     }
 
@@ -243,6 +238,25 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
             LOG.log(Level.SEVERE, null, ex);
         }
     }
+
+    private void initializeLogger() {
+        FileHandler handler;
+        try {
+            Level level = defaults.getLogLevel();
+            handler = new FileHandler(String.format("Tester%d.log",id));
+            handler.setFormatter(new LogFormat());
+            handler.setLevel(level);
+
+            LOG.addHandler(handler);
+            LOG.setLevel(defaults.getLogLevel());
+
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+    }
+
 
     class DistributedTesterThread implements Runnable {
 
@@ -271,20 +285,19 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
 
                 if (parent == null) {
                     LOG.fine(String.format("DistributedTester %d is root", id));
-                    Chronometer chrono = new Chronometer();
                     LOG.fine("ROOT: will start the execution.");
-                    coordinator.testcaseExecution(chrono);
+                    coordinator.testcaseExecution();
                     LOG.fine("ROOT: execution finished, waiting for testers to quit.");
                     coordinator.waitAllTestersToQuit();
                     LOG.fine("ROOT: all testers quit, calculating verdict.");
-                    coordinator.calculateVerdict(chrono);
+                    coordinator.printVerdict();
 
                 } else {
                     LOG.fine(String.format("DistributedTester %d will register with parent", id));
                     registerWithParent();
                     coordinator.waitAllTestersToQuit();
                     LOG.fine(String.format("DistributedTester %d will now quit", id));
-                    parent.quit(DistributedTesterImpl.this, Verdicts.PASS);
+                    parent.quit(DistributedTesterImpl.this);
                 }
 
                 LOG.fine("Waiting for tester thread");

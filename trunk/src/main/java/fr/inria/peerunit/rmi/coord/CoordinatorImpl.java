@@ -1,7 +1,7 @@
 /*
     This file is part of PeerUnit.
 
-    Foobar is free software: you can redistribute it and/or modify
+    PeerUnit is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -21,26 +21,19 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.Coordinator;
-import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.Bootstrapper;
-import fr.inria.peerunit.base.Result;
 import fr.inria.peerunit.base.ResultSet;
+import fr.inria.peerunit.base.Schedule;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
-import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -49,6 +42,8 @@ import fr.inria.peerunit.util.TesterUtil;
  */
 public class CoordinatorImpl implements Coordinator, Bootstrapper,
         Runnable, Serializable {
+    
+    private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
 
     private static final long serialVersionUID = 1L;
     private static final int STARTING = 0;
@@ -58,7 +53,12 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 
     private int status = STARTING;
 
-    private Map<MethodDescription, Set<Tester>> testerMap = Collections.synchronizedMap(new TreeMap<MethodDescription, Set<Tester>>());
+    /**
+     * Schedule: Methods X set of Testers
+     */
+    private Schedule schedule = new Schedule();
+
+
     final private List<Tester> registeredTesters;
     /**
      * Number of expected testers.
@@ -68,17 +68,13 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      * Number of testers running the current method (test step).
      */
     final private AtomicInteger runningTesters;
-    private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
-    /**
-     * Global verdict, calculated once the test case is executed.
-     */
-    private GlobalVerdict verdict;
     /**
      * Pool of threads. Used to dispatch actions to testers.
      */
     private ExecutorService executor;
 
-    private ResultSet resultSet = new ResultSet();
+    private GlobalVerdict verdict;
+
 
     /**
      * @param i Number of expected testers. The Coordinator will wait for
@@ -89,8 +85,8 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
         expectedTesters = new AtomicInteger(testerNbr);
         runningTesters = new AtomicInteger(0);
         registeredTesters = Collections.synchronizedList(new ArrayList<Tester>(testerNbr));
-        verdict = new GlobalVerdict(relaxIndex);
         executor = Executors.newFixedThreadPool(testerNbr > 10 ? 10 : testerNbr);
+        verdict = new GlobalVerdict(relaxIndex);
     }
 
     public CoordinatorImpl(TesterUtil tu) {
@@ -118,10 +114,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
         }
 
         for (MethodDescription m : list) {
-            if (!testerMap.containsKey(m)) {
-                testerMap.put(m, Collections.synchronizedSet(new HashSet<Tester>()));
-            }
-            testerMap.get(m).add(t);
+            schedule.put(m, t);
         }
         registeredTesters.add(t);
         synchronized (registeredTesters) {
@@ -130,14 +123,12 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     }
 
     public void run() {
-        Chronometer chrono = new Chronometer();
         try {
             waitForTesterRegistration();
-            testcaseExecution(chrono);
+            testcaseExecution();
             waitAllTestersToQuit();
-            calculateVerdict(chrono);
+            printVerdict();
             cleanUp();
-
         } catch (InterruptedException ie) {
             log.warning(ie.getMessage());
         }
@@ -148,13 +139,8 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      * for a test case.
      * @param chrono
      */
-    public void calculateVerdict(Chronometer chrono) {
-
-        for (Map.Entry<String, ExecutionTime> entry : chrono.getExecutionTime()) {
-            log.log(Level.INFO, "Method " + entry.getKey() + " executed in " + entry.getValue());
-        }
-        log.info("Test Verdict: " + verdict);
-
+    public void printVerdict() {
+        System.out.println(verdict);
     }
 
     /**
@@ -163,19 +149,16 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      * @param chrono
      * @throws InterruptedException
      */
-    public void testcaseExecution(Chronometer chrono) throws InterruptedException {
+    public void testcaseExecution() throws InterruptedException {
         assert (status == IDLE) : "Trying to execute test case while not idle";
 
         log.entering("CoordinatorImpl", "testCaseExecution()");
-        log.finer(String.format("RegistredMethods: %d", testerMap.size()));
+        log.finer(String.format("RegistredMethods: %d", schedule.size()));
 
-        for (MethodDescription each : testerMap.keySet()) {
-            chrono.start(each.getName());
+        for (MethodDescription each : schedule.methods()) {
             execute(each);
-            chrono.stop(each.getName());
-            log.finest("Method " + each + " executed in " + chrono.getTime(each.getName()) + " msec");
         }
-        //this.waitAllTestersToQuit();
+        
         assert (status = LEAVING) == LEAVING;
     }
 
@@ -191,16 +174,26 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
         assert md != null : "Null MethodDescription";
 
         log.entering("CoordinatorImpl", "execute()",md);
-        Set<Tester> testers = testerMap.get(md);
-        log.finest("Method " + md + " will be executed by " + testers.size() + " testers");
+        ResultSet result = new ResultSet(md);
+        verdict.putResult(md, result);
+        result.start();
 
+        Collection<Tester> testers = schedule.testersFor(md);
+        log.finest("Method " + md + " will be executed by " + testers.size() + " testers");
         runningTesters.set(testers.size());
         for (Tester each : testers) {
             log.finest("Dispatching " + md + " to tester " + each);
             executor.submit(new MethodExecute(each, md));
         }
         waitForExecutionFinished();
+        result.stop();
+        log.finest("Method " + md + " executed in " + result.getDelay() + " msec");
     }
+
+    public ResultSet getResultFor(MethodDescription md) {
+        return verdict.getResultFor(md);
+    }
+
 
     /*
      * (non-Javadoc)
@@ -211,24 +204,28 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     public synchronized int register(Tester t) throws RemoteException {
         log.entering("CoordinatorIml", "register(Tester)");
         int id = runningTesters.getAndIncrement();
-        log.info("New Registered Tester: " + id + " new client " + t);
+        log.fine("New Registered Tester: " + id + " new client " + t);
         return id;
     }
 
-    public synchronized void methodExecutionFinished(Result result) throws RemoteException {
-        assert status == RUNNING : "Trying to finish before execution";
+    public synchronized void methodExecutionFinished(ResultSet rs) throws RemoteException {
+//        assert status == RUNNING : "Trying to finish before execution";
+        assert rs.getMethodDescription() != null;
+        assert verdict.containsMethod(rs.getMethodDescription()) : "Execution finished for an unknwon method";
 
-        //resultSet.add(result);
+        ResultSet result = verdict.getResultFor(rs.getMethodDescription());
+        result.add(rs);
         runningTesters.decrementAndGet();
+
         synchronized (runningTesters) {
             runningTesters.notifyAll();
         }
     }
 
-    public synchronized void quit(Tester t, Verdicts localVerdict) throws RemoteException {
+    public synchronized void quit(Tester t) throws RemoteException {
         //assert status == LEAVING : "Trying to quit during execution";
-        log.fine(String.format("Tester %s leaving with verdict %s",t,localVerdict));
-        verdict.addLocalVerdict(localVerdict);
+        log.fine(String.format("Tester %s is leaving.",t));
+        
         synchronized (registeredTesters) {
             registeredTesters.remove(t);
             registeredTesters.notifyAll();
@@ -238,12 +235,8 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     /**
      * @return A read-only map of (Methods X Testers).
      */
-    public Map<MethodDescription, Set<Tester>> getTesterMap() {
-        return Collections.unmodifiableMap(this.testerMap);
-    }
-
-    public ResultSet getResultSet() {
-        return resultSet;
+    public Schedule getSchedule() {
+        return schedule;
     }
 
     /**
@@ -301,7 +294,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      */
     public void cleanUp() {
         log.fine("Coordinator cleaning up.");
-        testerMap.clear();
+        schedule.clear();
         runningTesters.set(0);
         registeredTesters.clear();
         executor.shutdown();

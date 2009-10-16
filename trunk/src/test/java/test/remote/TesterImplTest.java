@@ -1,7 +1,7 @@
 /*
     This file is part of PeerUnit.
 
-    Foobar is free software: you can redistribute it and/or modify
+    PeerUnit is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -100,12 +100,12 @@ public class TesterImplTest {
         MethodDescription md = new MethodDescription("first", "action1", 1,
                 "Test", 1000);
 
-        assertEquals(3, coord.getTesterMap().size());
+        assertEquals(3, coord.getSchedule().size());
 
-        assertTrue(coord.getTesterMap().containsKey(md));
-        assertTrue(coord.getTesterMap().get(md).contains(tester0));
-        assertTrue(coord.getTesterMap().get(md).contains(tester1));
-        assertTrue(coord.getTesterMap().get(md).contains(tester2));
+        assertTrue(coord.getSchedule().containsMethod(md));
+        assertTrue(coord.getSchedule().testersFor(md).contains(tester0));
+        assertTrue(coord.getSchedule().testersFor(md).contains(tester1));
+        assertTrue(coord.getSchedule().testersFor(md).contains(tester2));
 
     }
 
@@ -127,7 +127,7 @@ public class TesterImplTest {
             }
             Thread.sleep(1200);
             Thread.yield();
-            tester.executionInterrupt();
+            tester.quit();
             assertEquals("ok", System.getProperty("executed"));
         } catch (RemoteException e) {
             fail("RemoteException");

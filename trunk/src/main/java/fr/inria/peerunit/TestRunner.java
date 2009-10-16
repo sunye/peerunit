@@ -1,7 +1,7 @@
 /*
     This file is part of PeerUnit.
 
-    Foobar is free software: you can redistribute it and/or modify
+    PeerUnit is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -34,6 +34,7 @@ import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
+import java.util.logging.Formatter;
 
 /**
  * A <i>test</i> on a peer is launched by a instance of the <tt>TestRunner</tt> class. Its role consists
@@ -74,7 +75,7 @@ public class TestRunner {
         int times = 0;
         boolean centralized = true;
 
-        initializeLogger();
+        this.initializeLogger();
 
         while (times < 5 && boot == null) {
             try {
@@ -132,22 +133,13 @@ public class TestRunner {
     }
 
     private void initializeLogger() {
-        FileHandler handler;
         try {
             Level level = defaults.getLogLevel();
-            handler = new FileHandler("tester.log");
-            handler.setFormatter(new LogFormat());
-            handler.setLevel(level);
-
-            log.addHandler(handler);
-            log.setLevel(defaults.getLogLevel());
-            Logger.getLogger("").addHandler(handler);
-            //Logger.getLogger("").setLevel(defaults.getLogLevel());
+            Formatter formatter = new LogFormat();
             Logger.getLogger("fr.inria").setLevel(level);
             Logger.getLogger("").getHandlers()[0].setLevel(level);
+            Logger.getLogger("").getHandlers()[0].setFormatter(formatter);
 
-        } catch (IOException ex) {
-            log.log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
             log.log(Level.SEVERE, null, ex);
         }
