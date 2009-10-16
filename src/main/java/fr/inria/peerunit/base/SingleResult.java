@@ -1,7 +1,7 @@
 /*
     This file is part of PeerUnit.
 
-    Foobar is free software: you can redistribute it and/or modify
+    PeerUnit is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -17,19 +17,25 @@
 package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.test.oracle.Verdicts;
 import java.io.Serializable;
 
 /**
  *
  * @author sunye
  */
-public class Result implements Serializable {
+public class SingleResult implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private MethodDescription md;
     private int testerId;
     private long start;
     private long stop;
 
-    public Result(int id, MethodDescription md) {
+    private Verdicts verdict = Verdicts.PASS;
+
+    public SingleResult(int id, MethodDescription md) {
+        testerId = id;
         this.md = md;
     }
 
@@ -42,18 +48,36 @@ public class Result implements Serializable {
     }
 
     public void addError(Throwable t) {
-
+        verdict = Verdicts.ERROR;
     }
 
     public void addFailure(AssertionError ae) {
-        
+        verdict = Verdicts.FAIL;
     }
     
     public void addTimeout(InterruptedException ie) {
+        verdict = Verdicts.INCONCLUSIVE;
+    }
 
+    public long getDelay() {
+        return stop - start;
     }
     
     public MethodDescription getMethodDescription() {
         return md;
+    }
+
+    public int getTesterId() {
+        return testerId;
+    }
+    
+    public Verdicts getVerdict() {
+        return verdict;
+    }
+
+    public ResultSet asResultSet() {
+        ResultSet rs = new ResultSet((md));
+        rs.add(this);
+        return rs;
     }
 }

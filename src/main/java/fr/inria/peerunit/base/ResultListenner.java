@@ -1,7 +1,7 @@
 /*
     This file is part of PeerUnit.
 
-    Foobar is free software: you can redistribute it and/or modify
+    PeerUnit is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -14,18 +14,16 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.btree;
+package fr.inria.peerunit.base;
 
-public enum MessageType {
-	/**
-	 * OK = way up the tree
-	 */
-	OK, 
-	FAIL, 
-	
-	/**
-	 * EXECUTE is used to get way down the tree
-	 */
-	EXECUTE,
-	ERROR;
+import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.test.oracle.Verdicts;
+
+/**
+ *
+ * @author sunye
+ */
+public interface ResultListenner {
+
+    public void newResult(int TesterId, MethodDescription md, Verdicts verdict);
 }

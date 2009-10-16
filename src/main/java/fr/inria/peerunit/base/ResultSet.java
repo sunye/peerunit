@@ -1,7 +1,7 @@
 /*
     This file is part of PeerUnit.
 
-    Foobar is free software: you can redistribute it and/or modify
+    PeerUnit is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -18,10 +18,8 @@ package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.parser.MethodDescription;
 import java.io.Serializable;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -29,19 +27,86 @@ import java.util.Map;
  */
 public class ResultSet implements Serializable {
 
-    private Map<MethodDescription,List<Result>> results;
+    private static final long serialVersionUID = 1L;
 
-    public ResultSet () {
-        results = new Hashtable<MethodDescription, List<Result>>();
-    }
+    private List<SingleResult> results;
+
+    private final MethodDescription method;
+
+    private int errors = 0;
+    private int failures = 0;
+    private int inconclusives = 0;
+    private int passes = 0;
+
+    /**
+     * Accumulated value of local execution delay.
+     */
+    private long accumulatedDelay = 0;
+    private long start;
+    private long stop;
     
-    public void add(Result r) {
-        MethodDescription md = r.getMethodDescription();
-        
-        if (!results.containsKey(md)) {
-            results.put(md, new LinkedList<Result>());
-        }
-        results.get(md).add(r);
-        
+    public ResultSet (MethodDescription md) {
+        results = new LinkedList<SingleResult>();
+        method = md;
     }
+
+    public void add(ResultSet other) {
+        assert method.equals(other.method) : "Adding incompatible ResultSet";
+
+        errors += other.errors;
+        failures += other.failures;
+        inconclusives += other.inconclusives;
+        passes += other.passes;
+        accumulatedDelay += other.accumulatedDelay;
+
+        results.addAll(other.results);
+    }
+
+    public void add(SingleResult r) {
+        assert method.equals(r.getMethodDescription()) : "Adding incompatible SingleResult";
+
+        results.add(r);
+        accumulatedDelay += r.getDelay();
+        switch(r.getVerdict()) {
+            case PASS: 
+                passes++;
+                break;
+            case ERROR:
+                errors++;
+                break;
+            case FAIL:
+                failures++;
+                break;
+            case INCONCLUSIVE:
+                inconclusives++;
+                break;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Method %s. Pass: %d. Fails: %d. Erros: %d. Inconclusive: %d. Delay: %d msec. Average: %d msec.",
+                method.getName(), passes, failures, errors, inconclusives, getDelay(), accumulatedDelay/size());
+    }
+
+    public void start() {
+        start = System.currentTimeMillis();
+    }
+
+    public void stop() {
+        stop = System.currentTimeMillis();
+    }
+
+    public long getDelay() {
+        return stop - start;
+    }
+
+    public MethodDescription getMethodDescription() {
+        return method;
+    }
+
+    public int size() {
+        return results.size();
+    }
+
 }

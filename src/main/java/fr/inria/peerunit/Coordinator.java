@@ -1,7 +1,7 @@
 /*
     This file is part of PeerUnit.
 
-    Foobar is free software: you can redistribute it and/or modify
+    PeerUnit is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -16,13 +16,12 @@
  */
 package fr.inria.peerunit;
 
-import fr.inria.peerunit.base.Result;
+import fr.inria.peerunit.base.ResultSet;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
 
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.test.oracle.Verdicts;
 import java.rmi.Remote;
 
 public interface Coordinator extends Remote {
@@ -40,7 +39,7 @@ public interface Coordinator extends Remote {
 	public void registerMethods(Tester tester, Collection<MethodDescription> list)
 			throws RemoteException;
 
-	public void methodExecutionFinished(Result result)
+	public void methodExecutionFinished(ResultSet result)
 			throws RemoteException;
 
 	/**
@@ -50,6 +49,6 @@ public interface Coordinator extends Remote {
 	 * @param Verdict
 	 * 
 	 */
-	public void quit(Tester t, Verdicts v) throws RemoteException;
+	public void quit(Tester t) throws RemoteException;
 	
 }
