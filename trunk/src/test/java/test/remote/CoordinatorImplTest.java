@@ -34,12 +34,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import fr.inria.peerunit.MessageType;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.SingleResult;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
-import fr.inria.peerunit.test.oracle.Verdicts;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
