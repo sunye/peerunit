@@ -25,7 +25,7 @@ public class HTree<K,V> {
 
     private final int order;
 
-    private HNodeImpl<K,V> head;
+    private HNodeImpl head;
 
     private int size = 0;
 
@@ -48,7 +48,7 @@ public class HTree<K,V> {
      */
     public void put(K key, V value) {
         if (head == null) {
-            head = new HNodeImpl<K,V>(key, value);
+            head = new HNodeImpl(key, value);
         } else {
             head.put(key, value);
         }
@@ -73,13 +73,13 @@ public class HTree<K,V> {
         size = 0;
     }
 
-    class HNodeImpl<K,V> implements HNode<K,V> {
+    class HNodeImpl implements HNode<K,V> {
         private int position = 0;
 
         private K key;
         private V value;
-
-        private HNodeImpl<K,V>[] children = new HNodeImpl[order];
+        
+        private HNodeImpl[] children = (HNodeImpl[]) new HNode[order];
         
         public HNodeImpl(K k, V v) {
             key = k;
@@ -105,7 +105,7 @@ public class HTree<K,V> {
             while(i < children.length && children[i] != null ) {
                 i++;
             }
-            result = new HNode[i];
+            result =  (HNodeImpl[]) new HNode[i];
             System.arraycopy(children, 0, result, 0, i);
             return result;
         }
@@ -126,7 +126,7 @@ public class HTree<K,V> {
          */
         public void put(K k, V v) {
             if(children[position] == null) {
-                children[position] = new HNodeImpl<K,V>(k,v);
+                children[position] = new HNodeImpl(k,v);
             } else {
                 children[position].put(k,v);
             }

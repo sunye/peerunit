@@ -19,14 +19,13 @@ package fr.inria.peerunit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,7 +33,6 @@ import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
-import java.util.logging.Formatter;
 
 /**
  * A <i>test</i> on a peer is launched by a instance of the <tt>TestRunner</tt> class. Its role consists
