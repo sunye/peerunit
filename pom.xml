@@ -5,7 +5,7 @@
   <artifactId>PeerUnit</artifactId>
   <packaging>jar</packaging>
   <version>1.0-IVOIRE</version>
-  <name>PeerUnit</name>
+  <name>PeerUnit-Ivoire</name>
   <url>http://peerunit.gforge.inria.fr/</url>
 
 <properties>
@@ -13,7 +13,7 @@
   </properties>
 
   <build>
-    <plugins>	
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -38,7 +38,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>	
+      </plugin>
     </plugins>
   </build>
   <reporting>
@@ -61,7 +61,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
 	<configuration>
-	  <targetJdk>1.5</targetJdk>	
+	  <targetJdk>1.5</targetJdk>
 	  <rulesets>
 	    <ruleset>/rulesets/codesize.xml</ruleset>
 	  </rulesets>
@@ -79,7 +79,7 @@
 -->
 
 <!-- java.lang.OutOfMemoryError: Java heap space
-	
+
 		      <plugin>
 	        <groupId>org.codehaus.mojo</groupId>
 	        <artifactId>findbugs-maven-plugin</artifactId>
@@ -88,8 +88,8 @@
 -->
 	 </plugins>
   </reporting>
-  
-  
+
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -114,7 +114,7 @@
 	  <artifactId>OpenChord</artifactId>
 	  <version>1.0.5</version>
 	  <scope>compile</scope>
-	</dependency>    
+	</dependency>
 	<dependency>
 	  <groupId>org.mockito</groupId>
 	  <artifactId>mockito-all</artifactId>
@@ -140,6 +140,7 @@
          </roles>
          <organization>Universit� de Nantes</organization>
          <timezone>-1</timezone>
-       </developer>         
+       </developer>
    </developers>
 </project>
+
