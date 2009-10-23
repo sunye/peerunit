@@ -33,10 +33,12 @@ import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.base.SingleResult;
 import fr.inria.peerunit.base.TestCaseWrapper;
+import fr.inria.peerunit.exception.PeerUnitFailure;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.IOException;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.logging.FileHandler;
 
 /**
@@ -115,25 +117,23 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         LOG.entering("TesterImpl", "run()");
 
         Thread timeoutThread;
-        Thread invokationThread;
+        Thread invocationThread;
 
         while (!stop) {
             MethodDescription md = null;
             try {
                 md = executionQueue.poll(defaults.getWaitForMethod(), TimeUnit.MILLISECONDS);
                 if (md != null) {
-                    invokationThread = new Thread(new Invoke(md));
-                    invokationThread.start();
+                    invocationThread = new Thread(new Invoke(md));
+                    
                     if (md.getTimeout() > 0) {
-                        timeoutThread = new Thread(new Timeout(invokationThread,
-                                md.getTimeout()));
+                        timeoutThread = new Thread(new Timeout(invocationThread,md.getTimeout()));
                         timeoutThread.start();
                     }
+                    invocationThread.start();
                 }
             } catch (InterruptedException e) {
-                SingleResult r = new SingleResult(id, md);
-                r.addTimeout(e);
-                this.executionFinished(r.asResultSet());
+                LOG.log(Level.SEVERE,"TesterImpl:run() - InterruptedException", e);
             }
         }
         LOG.fine("Stopping Tester ");
@@ -241,10 +241,25 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         SingleResult result = new SingleResult(id, md);
         try {
             result.start();
-            testCase.invoke(md);   
-        } catch (AssertionError e) {
+            testCase.invoke(md);
+            if (Thread.interrupted()) {
+                result.addTimeout(null);
+                LOG.finest("Thread was interrupted.");
+            }
+        } catch (PeerUnitFailure e) {
+            LOG.finest("PeerUnitFailure");
             result.addFailure(e);
+        } catch (AssertionError e) {
+            LOG.finest("AssertionError");
+            result.addFailure(e);
+        }  catch (InterruptedException e) {
+            LOG.finest("InterruptedException");
+            result.addTimeout(e);
+        } catch (ClosedByInterruptException e) {
+            LOG.severe("ClosedByInterruptException");
+            result.addTimeout(null);
         } catch (Throwable e) {
+            LOG.finest("Throwable");
             result.addError(e);
         } finally {
             result.stop();

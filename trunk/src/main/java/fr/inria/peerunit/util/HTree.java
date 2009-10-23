@@ -16,6 +16,8 @@
  */
 package fr.inria.peerunit.util;
 
+import java.lang.reflect.Array;
+
 /**
  * The HTree is an hierarchical tree.
  *
@@ -78,8 +80,8 @@ public class HTree<K,V> {
 
         private K key;
         private V value;
-        
-        private HNodeImpl[] children = (HNodeImpl[]) new HNode[order];
+
+        private HNodeImpl[] children = (HNodeImpl[]) Array.newInstance(HNodeImpl.class, order);
         
         public HNodeImpl(K k, V v) {
             key = k;
@@ -105,7 +107,7 @@ public class HTree<K,V> {
             while(i < children.length && children[i] != null ) {
                 i++;
             }
-            result =  (HNodeImpl[]) new HNode[i];
+            result = (HNodeImpl[]) Array.newInstance(HNodeImpl.class, i);
             System.arraycopy(children, 0, result, 0, i);
             return result;
         }

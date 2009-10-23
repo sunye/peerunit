@@ -34,7 +34,7 @@ public @interface TestStep {
 	int place() default -1;
 	int from() default -1;
 	int to() default -1;
-	int timeout() default 1000;
+	int timeout() default -1;
 	boolean measure() default true;
 	int step();
 }
