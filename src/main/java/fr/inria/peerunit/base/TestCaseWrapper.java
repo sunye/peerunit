@@ -105,7 +105,7 @@ public class TestCaseWrapper {
             e.fillInStackTrace();
         } catch (InvocationTargetException e) {
             e.fillInStackTrace();
-            throw e;
+            throw e.getCause();
         } finally {
             remainingMethods.remove(md);
         }

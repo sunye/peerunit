@@ -16,6 +16,9 @@
  */
 package fr.inria.peerunit.rmi.tester;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * @author Eduardo Almeida.
  * @author sunye
@@ -26,7 +29,10 @@ package fr.inria.peerunit.rmi.tester;
  */
 public class Timeout implements Runnable {
 
+    private static Logger LOG = Logger.getLogger(Timeout.class.getName());
+
     private long timeout;
+
     private Thread thread;
 
     public Timeout(Thread t, long millis) {
@@ -43,13 +49,16 @@ public class Timeout implements Runnable {
      * @throws InterruptedException
      */
     public void run() {
+        LOG.finest("Entering Timeout thread");
         try {
             thread.join(timeout);
             if (thread.isAlive()) {
+                LOG.finest("I will interrupt execution thread");
                 thread.interrupt();
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, "TimeoutThread Interrupted Exception", e);
         }
     }
+
 }
