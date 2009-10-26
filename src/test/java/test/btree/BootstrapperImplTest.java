@@ -37,6 +37,7 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.BootstrapperImpl;
 import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
+import java.net.BindException;
 
 public class BootstrapperImplTest {
 
@@ -93,18 +94,15 @@ public class BootstrapperImplTest {
             tester.register();
 
             assertTrue(tester.getId() == 1);
-        } catch (AccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        }
+        catch (AccessException e) {
+            
         } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
         } catch (AlreadyBoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
         } catch (NotBoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
         }
 
     }

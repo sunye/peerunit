@@ -1,0 +1,127 @@
+Writing a Test Case
+
+	In PeerUnit, a test case is a class and test steps are methods of this class. 
+	
+	The test case class must specialize (inherit from) the <TestCaseImpl> class, in order to be identified as a test case:
+	
++---------------
+import fr.inria.peerunit.TestCaseImpl;
+import fr.inria.peerunit.parser.AfterClass;
+import fr.inria.peerunit.parser.TestStep;
+
+	public class MyTestCase extends TestCaseImpl {
+		// ...
+	} 
++---------------	
+	
+*Method annotations
+
+	There are three main annotations that can be used inside a test case. These annotations ensure that test steps are executed in the correct sequence:
+
+*----------------+-----------------------------------------------+
+| <<Annotation>> | <<Description>>                               |
+*----------------+-----------------------------------------------+
+| @AfterClass    | The method is executed before all test steps. |
+*----------------+-----------------------------------------------+
+| @BeforeClass   | The method is executed after all test steps.  |
+*----------------+-----------------------------------------------+
+| @TestStep      | The method is a test step.                    |
+*----------------+-----------------------------------------------+
+
+** @BeforeClass
+
+  The @BeforeClass annotation has the following attributes:
+
+*--------------*----------------------------------------------------------------------------------+
+| <<Attrbute>> | <<Description>>                                                                  |
+*--------------*----------------------------------------------------------------------------------+
+| place        | Integer, representing the tester ID where this method should execute.            |
+|			   | If a negative number is specified (-1), then all testers execute this method     |
+*--------------*----------------------------------------------------------------------------------+
+| timeout      | Integer, representing the method timeout, in milliseconds.                       |
+|              | If the execution time exceeds this timeout, an inconclusive verdict is assigned. |
+*--------------*----------------------------------------------------------------------------------+
+
+	The following method is the first method that is executed by all testers:
+
++-------------
+@BeforeClass(place=-1, timeout=100)
+public void start(){        
+	// Pseudocode to instantiate a peer (the system under test).
+	Peer peer = new Peer();
+}
++-------------
+
+** @AfterClass
+
+  The @AfterClass annotation has the following attributes:
+
+*--------------*----------------------------------------------------------------------------------+
+| <<Attrbute>> | <<Description>>                                                                  |
+*--------------*----------------------------------------------------------------------------------+
+| place        | Integer, representing the tester ID where this method should execute.            |
+|			   | If a negative number is specified (-1), then all testers execute this method     |
+*--------------*----------------------------------------------------------------------------------+
+| timeout      | Integer, representing the method timeout, in milliseconds.                       |
+|              | If the execution time exceeds this timeout, an inconclusive verdict is assigned. |
+*--------------*----------------------------------------------------------------------------------+
+
+   The following method is the first method that is executed by all testers:
+
++------------
+@AfterClass(place=-1,timeout=100)
+public void stop(){
+    peer.leave();
+}
++------------
+
+
+** @TestStep
+
+      The @AfterClass annotation has the following attributes:
+
+*--------------*----------------------------------------------------------------------------------+
+| <<Attrbute>> | <<Description>>                                                                  |
+*--------------*----------------------------------------------------------------------------------+
+| name         | String, the name of the test step        		     				              |
+*--------------*----------------------------------------------------------------------------------+
+| step         | Integer, used to order test steps.                                               |
+*--------------*----------------------------------------------------------------------------------+
+| place        | Integer, representing the tester ID where this method should execute.            |
+|			   | If a negative number is specified (-1), then all testers execute this method     |
+*--------------*----------------------------------------------------------------------------------+
+| timeout      | Integer, representing the method timeout, in milliseconds.                       |
+|              | If the execution time exceeds this timeout, an inconclusive verdict is assigned. |
+*--------------*----------------------------------------------------------------------------------+
+| from         | Integer, specifies the first tester of a range of testers.                       |
+*--------------*----------------------------------------------------------------------------------+
+| to           |  Integer, specifies the last tester of a range of testers.                       |
+*--------------*----------------------------------------------------------------------------------+
+
+	The following methods are examples of test steps:
+
++---------------
+@Test(place=-1, timeout=100, name = "action1", step = 1)
+public void join(){        
+    // Makes the peer join the system
+    peer.join();
+}
+
+@Test(place=0, timeout=100, name = "action2", step = 2)
+public void put(){        
+    // Tester 0 inserts some data
+    peer.put(expectedKey,expected);
+}     
+
+@Test(from=1, to=3, timeout=100, name = "action3", step = 3)
+public void retrieve(){
+    // Testers 1 to 3 retrieves the inserted data
+    actual = peer.get(expectedKey);        
+}
+
+@Test(from=1,to=3,timeout=100, name = "action4", step = 4)
+public void assertRetrieve(){
+    // Testers 1 to 3 compare the retrieved data with the expected one
+	assert expected.equals(actual);
+}
++------------------
