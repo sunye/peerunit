@@ -85,7 +85,7 @@ public class ResultSet implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Method %s. Pass: %d. Fails: %d. Erros: %d. Inconclusive: %d. Delay: %d msec. Average: %d msec.",
+        return String.format("Method %s. \t Pass: %d. Fails: %d. Erros: %d. Inconclusive: %d. Delay: %d msec. Average: %d msec.",
                 method.getName(), passes, failures, errors, inconclusives, getDelay(), accumulatedDelay/size());
     }
 
