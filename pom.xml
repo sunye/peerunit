@@ -8,6 +8,14 @@
     <version>1.0-SNAPSHOT</version>
     <name>PeerUnit</name>
     <url>http://peerunit.gforge.inria.fr/</url>
+	<licenses>
+    	<license>
+        	<name>GPL</name>
+        	<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+        	<distribution>repo</distribution>
+        	<comments>v2 or higher</comments>
+    	</license>
+	</licenses>
 
     <properties>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -151,6 +159,17 @@
             <email>eduardo.almeida@univ-nantes.fr</email>
             <roles>
                 <role>Project Manager</role>
+                <role>Architect</role>
+            </roles>
+            <organization>Université de Nantes</organization>
+            <timezone>-1</timezone>
+        </developer>
+        <developer>
+            <id>sunye</id>
+            <name>Gerson Sunyé</name>
+            <email>gerson.sunye@univ-nantes.fr</email>
+            <roles>
+                <role>Developer</role>
                 <role>Architect</role>
             </roles>
             <organization>Université de Nantes</organization>

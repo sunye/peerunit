@@ -114,7 +114,7 @@ public class TestCaseWrapper {
     }
 
     /**
-     * Verifies if the method is the last one to be executed by its annotation
+     * Verifies if no more methods remain.
      * 
      * @return true if the method is the last one to be executed
      */

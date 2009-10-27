@@ -12,19 +12,22 @@ import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.test.assertion.AssertionFailedError;
 import fr.inria.peerunit.util.TesterUtil;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
 /**
@@ -68,9 +71,6 @@ public class TestCaseWrapperTest {
 
     }
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
 
     @Before
     public void setUp() {
@@ -80,8 +80,11 @@ public class TestCaseWrapperTest {
     public void tearDown() {
     }
 
+     /**
+     * Test of validatePeerRange method, of class TestCaseWrapper.
+     */
     @Test
-    public void testValidate() {
+    public void testValidatePeerRange() {
         try {
             wrapper.validatePeerRange(0, -1);
             fail("Exception not catch");
@@ -111,17 +114,23 @@ public class TestCaseWrapperTest {
 
     }
 
+    /**
+     * Tests the TestCaseWrapper.register() method.
+     */
     @Test
     public void testRegister() {
         Method[] methods =  Data.class.getMethods();
         List<String> names = new ArrayList<String>(methods.length);
         List<MethodDescription> l = wrapper.register(fr.inria.peerunit.base.Data.class);
+
+        // Only 8 methods should be registered for tester 0
         assertTrue(l.size() == 8);
 
         for(Method each : methods) {
             names.add(each.getName());
         }
 
+        // All registered methods must belong to the test case.
         for (MethodDescription each : l) {
             assertTrue(names.contains(each.getName()));
         }
@@ -170,65 +179,92 @@ public class TestCaseWrapperTest {
         assertEquals(listMethodDesc.size(), valid);
     }
 
-
-
-
-    /**
-     * Test of validatePeerRange method, of class TestCaseWrapper.
-     */
-    @Test
-    public void testValidatePeerRange() {
-        System.out.println("validatePeerRange");
-        int from = 0;
-        int to = 0;
-        TestCaseWrapper instance = null;
-        boolean expResult = false;
-        boolean result = instance.validatePeerRange(from, to);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
     /**
      * Test of getMethod method, of class TestCaseWrapper.
      */
     @Test
     public void testGetMethod() {
-        System.out.println("getMethod");
-        MethodDescription md = null;
-        TestCaseWrapper instance = null;
-        Method expResult = null;
-        Method result = instance.getMethod(md);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        List<MethodDescription> listMethodDesc = wrapper.register(Data.class);
+        List<Method> methods =  java.util.Arrays.asList(Data.class.getMethods());
+
+        for (MethodDescription each : listMethodDesc) {
+            Method m = wrapper.getMethod(each);
+            assertTrue(methods.contains(m));
+        }
     }
 
     /**
      * Test of invoke method, of class TestCaseWrapper.
      */
     @Test
-    public void testInvoke() throws Exception {
-        System.out.println("invoke");
-        MethodDescription md = null;
-        TestCaseWrapper instance = null;
-        //instance.invoke(md);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testInvokeFailure() throws Exception {
+        wrapper.register(Sample.class);
+        MethodDescription md = new MethodDescription("failure","action2", 2, "TestStep", 1000);
+
+        assertNotNull(wrapper.getMethod(md));
+
+        try {
+            wrapper.invoke(md);
+            fail("Exception not thrown");
+        } catch (AssertionFailedError ex) {
+
+        } catch (Throwable t) {
+            fail("Wrong exception thrown");
+        }
     }
+    /**
+     * Test of invoke method, of class TestCaseWrapper.
+     */
+
+    @Test
+    public void testInvokeFailureBis() throws Exception {
+        wrapper.register(Sample.class);
+        MethodDescription md = new MethodDescription("failureBis","action3", 3, "TestStep", 1000);
+
+        assertNotNull(wrapper.getMethod(md));
+
+        try {
+            wrapper.invoke(md);
+            fail("Exception not thrown");
+        } catch (AssertionError ex) {
+
+        } catch (Throwable t) {
+            fail("Wrong exception thrown");
+        }
+    }
+
+     /**
+     * Test of invoke method, of class TestCaseWrapper.
+     */
+    @Test
+    public void testInvokePass() throws Exception {
+        wrapper.register(Sample.class);
+        MethodDescription md = new MethodDescription("first","action1", 1, "TestStep", 1000);
+        
+        assertNotNull(wrapper.getMethod(md));
+        try {
+            wrapper.invoke(md);
+            
+        } catch (Throwable t) {
+            fail("Exception thrown");
+        }
+    }
+
 
     /**
      * Test of isLastMethod method, of class TestCaseWrapper.
      */
     @Test
     public void testIsLastMethod() {
-        System.out.println("isLastMethod");
-        TestCaseWrapper instance = null;
-        boolean expResult = false;
-        boolean result = instance.isLastMethod();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        wrapper.register(Sample.class);
+
+        assertFalse(wrapper.isLastMethod());
+        for(MethodDescription each : wrapper.getMethods().keySet()) {
+            try {
+                wrapper.invoke(each);
+            } catch (Throwable ex) {}
+        }
+        assertTrue(wrapper.isLastMethod());
     }
 
     /**
@@ -236,14 +272,12 @@ public class TestCaseWrapperTest {
      */
     @Test
     public void testIsValid_AfterClass() {
-        System.out.println("isValid");
-        fr.inria.peerunit.parser.AfterClass a = null;
-        TestCaseWrapper instance = null;
-        boolean expResult = false;
-        boolean result = instance.isValid(a);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        fr.inria.peerunit.parser.AfterClass a = mock(fr.inria.peerunit.parser.AfterClass.class);
+        when(a.place()).thenReturn(-1);
+        when(a.from()).thenReturn(0);
+        when(a.to()).thenReturn(1);
+
+        assertTrue(wrapper.isValid(a));
     }
 
     /**
@@ -251,14 +285,12 @@ public class TestCaseWrapperTest {
      */
     @Test
     public void testIsValid_BeforeClass() {
-        System.out.println("isValid");
-        fr.inria.peerunit.parser.BeforeClass a = null;
-        TestCaseWrapper instance = null;
-        boolean expResult = false;
-        boolean result = instance.isValid(a);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        fr.inria.peerunit.parser.BeforeClass bc = mock(fr.inria.peerunit.parser.BeforeClass.class);
+        when(bc.place()).thenReturn(-1);
+        when(bc.from()).thenReturn(0);
+        when(bc.to()).thenReturn(1);
+
+        assertTrue(wrapper.isValid(bc));
     }
 
     /**
@@ -266,14 +298,12 @@ public class TestCaseWrapperTest {
      */
     @Test
     public void testIsValid_TestStep() {
-        System.out.println("isValid");
-        TestStep a = null;
-        TestCaseWrapper instance = null;
-        boolean expResult = false;
-        boolean result = instance.isValid(a);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        fr.inria.peerunit.parser.TestStep ts = mock(fr.inria.peerunit.parser.TestStep.class);
+        when(ts.place()).thenReturn(-1);
+        when(ts.from()).thenReturn(0);
+        when(ts.to()).thenReturn(1);
+
+        assertTrue(wrapper.isValid(ts));
     }
 
     /**
@@ -289,33 +319,4 @@ public class TestCaseWrapperTest {
         assertTrue(wrapper.shouldIExecute(id + 1, id - 2, id + 2));
         assertFalse(wrapper.shouldIExecute(id + 5, id + 2, id + 7));
     }
-
-    /**
-     * Test of getTestcase method, of class TestCaseWrapper.
-     */
-    @Test
-    public void testGetTestcase() {
-        System.out.println("getTestcase");
-        TestCaseWrapper instance = null;
-        TestCase expResult = null;
-        TestCase result = instance.getTestcase();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getMethods method, of class TestCaseWrapper.
-     */
-    @Test
-    public void testGetMethods() {
-        System.out.println("getMethods");
-        TestCaseWrapper instance = null;
-        Map expResult = null;
-        Map result = instance.getMethods();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
 }
