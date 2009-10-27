@@ -16,6 +16,7 @@
  */
 package test.remote;
 
+import fr.inria.peerunit.base.Sample;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package test.remote;
+package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
@@ -37,12 +37,12 @@ public class Sample extends TestCaseImpl {
 
 	
 	@TestStep(place = -1, timeout = 1000, name = "action2", step = 2)
-	public void error() {
+	public void failure() {
 		assertTrue(false);
 	}
 	
 	@TestStep(place = -1, timeout = 1000, name = "action3", step = 3)
-	public void assertionError() {
+	public void failureBis() {
 		assert false;
 	}	
 

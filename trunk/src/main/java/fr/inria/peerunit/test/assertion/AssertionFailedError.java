@@ -42,6 +42,12 @@ public class AssertionFailedError extends TestException {
 	 */
 	public AssertionFailedError(){}
 
+
+
+        public AssertionFailedError(String message) {
+            super(message);
+        }
+
 	/**
 	 * Constructs a assertion failed error.
 	 * 
