@@ -55,7 +55,7 @@ public class SingleResult implements Serializable {
         verdict = Verdicts.FAIL;
     }
     
-    public void addTimeout(InterruptedException ie) {
+    public void addInconclusive(Throwable t) {
         verdict = Verdicts.INCONCLUSIVE;
     }
 

@@ -16,7 +16,7 @@
  */
 package fr.inria.peerunit.test.assertion;
 
-import fr.inria.peerunit.exception.PeerUnitFailure;
+import fr.inria.peerunit.exception.TestException;
 
 /**
  * 
@@ -27,9 +27,12 @@ import fr.inria.peerunit.exception.PeerUnitFailure;
  * @see PeerUnitFailure
  *
  */
-public class AssertionFailedError extends PeerUnitFailure {
+public class AssertionFailedError extends TestException {
 	
 	private static final long serialVersionUID= 1L;
+	
+	private String expected;
+	private String actual;
 
 	/**
 	 * Constructs a assertion failed error.
@@ -46,7 +49,15 @@ public class AssertionFailedError extends PeerUnitFailure {
 	 * @since 1.0
 	 * @param message is the message corresponding to the error. 
 	 */
-	public AssertionFailedError(String message) {
+	public AssertionFailedError(String message, String expected, String actual) {
 		super(message);
+		this.expected = expected;
+		this.actual = actual;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Comparison Failure. expected: %s found: %s", expected, actual);
+	}
+
 }

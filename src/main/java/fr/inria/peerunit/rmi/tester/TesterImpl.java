@@ -33,8 +33,9 @@ import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.base.SingleResult;
 import fr.inria.peerunit.base.TestCaseWrapper;
-import fr.inria.peerunit.exception.PeerUnitFailure;
+import fr.inria.peerunit.exception.TestException;
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.test.assertion.InconclusiveFailure;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.IOException;
@@ -77,7 +78,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         bootstrapper = boot;
 
         this.setId(bootstrapper.register(this));
-        testCase = new TestCaseWrapper(this, LOG);
+        testCase = new TestCaseWrapper(this);
         this.initializeLogger();
     }
 
@@ -90,7 +91,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     	super(gv);
     	defaults = tu;
     	this.setId(i);
-        testCase = new TestCaseWrapper(this, LOG);
+        testCase = new TestCaseWrapper(this);
     }
 
     public void setCoordinator(Coordinator c) {
@@ -243,21 +244,24 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
             result.start();
             testCase.invoke(md);
             if (Thread.interrupted()) {
-                result.addTimeout(null);
+                result.addInconclusive(null);
                 LOG.finest("Thread was interrupted.");
             }
-        } catch (PeerUnitFailure e) {
-            LOG.finest("PeerUnitFailure");
+        } catch (InconclusiveFailure e) {
+        	LOG.finest("InconclusiveFailure");
+            result.addInconclusive(e);
+        } catch (TestException e) {
+            LOG.finest("TestException");
             result.addFailure(e);
         } catch (AssertionError e) {
             LOG.finest("AssertionError");
             result.addFailure(e);
         }  catch (InterruptedException e) {
             LOG.finest("InterruptedException");
-            result.addTimeout(e);
+            result.addInconclusive(e);
         } catch (ClosedByInterruptException e) {
             LOG.severe("ClosedByInterruptException");
-            result.addTimeout(null);
+            result.addInconclusive(null);
         } catch (Throwable e) {
             LOG.finest("Throwable");
             result.addError(e);
