@@ -37,7 +37,6 @@ import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.btree.BootstrapperImpl;
 import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
-import java.net.BindException;
 
 public class BootstrapperImplTest {
 

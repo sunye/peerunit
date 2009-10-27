@@ -16,7 +16,7 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.test.assertion;
 
-import fr.inria.peerunit.exception.PeerUnitFailure;
+import fr.inria.peerunit.exception.TestException;
 
 /**
  * 
@@ -25,7 +25,7 @@ import fr.inria.peerunit.exception.PeerUnitFailure;
  * @since 1.0
  *
  */
-public class InconclusiveFailure extends PeerUnitFailure {
+public class InconclusiveFailure extends TestException {
 
     private static final long serialVersionUID = 1L;
 

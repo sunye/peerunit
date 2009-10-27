@@ -109,4 +109,15 @@ public class ResultSet implements Serializable {
         return results.size();
     }
 
+    public int getErrors() {
+        return errors;
+    }
+
+    public int getfailures() {
+        return failures;
+    }
+
+    public int getInconclusives() {
+        return inconclusives;
+    }
 }

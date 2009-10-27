@@ -39,20 +39,22 @@ import java.util.logging.Logger;
  */
 public class TestCaseWrapper {
 
+    private static Logger LOG = Logger.getLogger(TestCaseWrapper.class.getName());
+
     private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
     private List<MethodDescription> remainingMethods;
     private TestCase testcase;
     private int testerId = -1;
     private Tester tester;
 
-    public TestCaseWrapper(Tester t, Logger l) {
+    public TestCaseWrapper(Tester t) {
         assert t != null ;
 
         this.tester = t;
         try {
             this.testerId = tester.getId();
         } catch (RemoteException ex) {
-            Logger.getLogger(TestCaseWrapper.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -180,16 +182,13 @@ public class TestCaseWrapper {
         AfterClass ac;
         methods.clear();
 
-
-
-
         try {
             testcase = c.newInstance();
             testcase.setTester(tester);
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, "Instantiation Exception", e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, "Illegal Access Exception", e);
         }
 
 
