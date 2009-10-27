@@ -45,7 +45,7 @@ public class ComparisonFailure extends PeerUnitFailure {
      * @param expected the expected string value
      * @param actual the actual string value
      */
-    public ComparisonFailure(String message, String expected, String actual) {
+    private ComparisonFailure(String message, String expected, String actual) {
         super(message);
         fExpected = expected;
         fActual = actual;
