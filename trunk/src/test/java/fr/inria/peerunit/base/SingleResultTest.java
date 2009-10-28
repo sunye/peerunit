@@ -5,23 +5,25 @@
 
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.test.oracle.Verdicts;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.test.oracle.Verdicts;
 
 /**
  *
  * @author sunye
  */
 public class SingleResultTest {
-    private MethodDescription md = new MethodDescription("n", "tc", 1, "a",0);
+    private MethodDescription md = new MethodDescription("n", 1 ,0);
 
     private SingleResult result = new SingleResult(1, md);
 
@@ -96,7 +98,7 @@ public class SingleResultTest {
      */
     @Test
     public void testGetMethodDescription() {
-        MethodDescription m = new MethodDescription("name", "testcase", 1, "annotation", 0);
+        MethodDescription m = new MethodDescription("name", 1, 0);
         SingleResult r = new SingleResult(1, m);
 
         assertEquals(m, r.getMethodDescription());

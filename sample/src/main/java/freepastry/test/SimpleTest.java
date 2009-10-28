@@ -19,9 +19,10 @@ import freepastry.Network;
 import freepastry.Peer;
 import freepastry.test.old.TestInsertLeaveB;
 
-public class SimpleTest extends TestCaseImpl{
+public class SimpleTest extends TestCaseImpl {
 	// logger from jdk
-	private static Logger log = Logger.getLogger(TestInsertLeaveB.class.getName());
+	private static Logger log = Logger.getLogger(TestInsertLeaveB.class
+			.getName());
 	private static SimpleTest test;
 	// Freepastry peer
 	Peer peer = new Peer();
@@ -29,28 +30,27 @@ public class SimpleTest extends TestCaseImpl{
 	/**
 	 * This method starts the test
 	 */
-	@BeforeClass(place=-1,timeout=100)
-	public void begin(){
+	@BeforeClass(range = "*", timeout = 100)
+	public void begin() {
 		log.info("Starting the test ");
 	}
 
-	@TestStep(place=-1,timeout=1000000, name = "action1", step = 1)
-	public void startingNetwork(){
+	@TestStep(range = "*", timeout = 1000000, order = 1)
+	public void startingNetwork() {
 		try {
 
 			log.info("Joining in first");
-			Network net= new Network();
-			Thread.sleep(this.getPeerName()*1000);
+			Network net = new Network();
+			Thread.sleep(this.getPeerName() * 1000);
 
-			if(!net.joinNetwork(peer, null,false, log)){
+			if (!net.joinNetwork(peer, null, false, log)) {
 				inconclusive("I couldn't join, sorry");
 			}
-			log.info("Getting bootstrapper "+net.getInetSocketAddress().toString());
-			log.info("Running on port "+peer.getPort());
+			log.info("Getting bootstrapper "
+					+ net.getInetSocketAddress().toString());
+			log.info("Running on port " + peer.getPort());
 			log.info("Time to bootstrap");
-		
-		
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -59,10 +59,10 @@ public class SimpleTest extends TestCaseImpl{
 	/**
 	 * Stabilize the network.
 	 */
-	@TestStep(place=-1,timeout=1000000, name = "action2", step = 0)
-	public void stabilize(){
+	@TestStep(range = "*", timeout = 1000000, order = 2)
+	public void stabilize() {
 		for (int i = 0; i < 4; i++) {
-			try{
+			try {
 				// Force the routing table update
 				peer.pingNodes();
 				Thread.sleep(16000);
@@ -71,22 +71,25 @@ public class SimpleTest extends TestCaseImpl{
 			}
 		}
 	}
+
 	/**
 	 * Put some data and store in test variables.
 	 */
-	@TestStep(place=0,timeout=1000000, name = "action3", step = 0)
-	public void put(){
-		for(int i=0; i < 2 ; i++){
+	@TestStep(range = "0", timeout = 1000000, order = 3)
+	public void put() {
+		for (int i = 0; i < 2; i++) {
 			// build the past content
 			final String s = "test" + peer.env.getRandomSource().nextInt();
-			final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+			final PastContent myContent = new MyPastContent(peer.localFactory
+					.buildId(s), s);
 			peer.insert(myContent);
 		}
 
 		// Wait until all the insert ends since it is asynchronous
-		while((peer.getFailedContent().size()+peer.getInsertedContent().size())<2){
-			log.info("Inserted so far : "+peer.getInsertedContent().size());
-			log.info("Failed so far : "+peer.getFailedContent().size());
+		while ((peer.getFailedContent().size() + peer.getInsertedContent()
+				.size()) < 2) {
+			log.info("Inserted so far : " + peer.getInsertedContent().size());
+			log.info("Failed so far : " + peer.getFailedContent().size());
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -94,30 +97,31 @@ public class SimpleTest extends TestCaseImpl{
 			}
 		}
 
-		List<PastContent> expecteds= new ArrayList<PastContent>();
+		List<PastContent> expecteds = new ArrayList<PastContent>();
 		for (PastContent content : peer.getInsertedContent()) {
-			log.info("Expected so far : "+content.toString());
+			log.info("Expected so far : " + content.toString());
 			expecteds.add(content);
 		}
 
 		// Use a test variable to store the expected data
 		test.put(1, expecteds);
 	}
+
 	/**
 	 * Get the data and the verdict.
 	 */
 	@SuppressWarnings("unchecked")
-	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
-	public void get(){
+	@TestStep(range = "*", timeout = 1000000, order = 4)
+	public void get() {
 		// Lookup
-		List<PastContent> expectedContent=(List<PastContent>)test.get(1);
+		List<PastContent> expectedContent = (List<PastContent>) test.get(1);
 		Id contentKey;
 
 		// Get the keys to lookup for data
 		for (PastContent key : expectedContent) {
-			contentKey=key.getId();
-			if(contentKey!=null){
-				log.info("Lookup Expected "+contentKey.toString());
+			contentKey = key.getId();
+			if (contentKey != null) {
+				log.info("Lookup Expected " + contentKey.toString());
 				peer.lookup(contentKey);
 			}
 		}
@@ -130,44 +134,44 @@ public class SimpleTest extends TestCaseImpl{
 		}
 
 		// A list to store the retrieved data
-		List<String> actuals= new ArrayList<String>();
+		List<String> actuals = new ArrayList<String>();
 		for (Object actual : peer.getResultSet()) {
-			if(actual!=null){
-				if(!actuals.contains(actual.toString())){
-					log.info("[Local verdict] Actual "+actual.toString());
+			if (actual != null) {
+				if (!actuals.contains(actual.toString())) {
+					log.info("[Local verdict] Actual " + actual.toString());
 					actuals.add(actual.toString());
 				}
 			}
 		}
 
 		// Generating the expecteds list
-		List<String> expecteds=new ArrayList<String>();
-		for(PastContent expected : expectedContent){
+		List<String> expecteds = new ArrayList<String>();
+		for (PastContent expected : expectedContent) {
 			expecteds.add(expected.toString());
 		}
 
 		// Assigning a verdict
-		log.info("[Local verdict] Waiting a Verdict. Found "+actuals.size()+" of "+expecteds.size());
-		Assert.assertListEquals("[Local verdict] Arrays ",expecteds, actuals);
+		log.info("[Local verdict] Waiting a Verdict. Found " + actuals.size()
+				+ " of " + expecteds.size());
+		Assert.assertListEquals("[Local verdict] Arrays ", expecteds, actuals);
 	}
 
-	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
-	public void getHandle(){
-		List<PastContent> cont=peer.getInsertedContent();
+	@TestStep(range = "*", timeout = 1000000, order = 5)
+	public void getHandle() {
+		List<PastContent> cont = peer.getInsertedContent();
 		PastContentHandle pch;
-		for(PastContent pc: cont){
-			pch=pc.getHandle(peer.getPast());
-			System.out.println("NodeHandle "+pch.getNodeHandle());
+		for (PastContent pc : cont) {
+			pch = pc.getHandle(peer.getPast());
+			System.out.println("NodeHandle " + pch.getNodeHandle());
 		}
 	}
-	
+
 	/**
 	 * This method finishes the test
-	 *
+	 * 
 	 */
-	@AfterClass(timeout=100,place=-1)
+	@AfterClass(timeout = 100, range = "*")
 	public void end() {
 		log.info("Peer bye bye");
 	}
 }
-

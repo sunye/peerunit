@@ -20,68 +20,66 @@ import freepastry.Peer;
 
 /**
  * Testing the recovery from peer isolation
- *
+ * 
  * @author almeida
- *
+ * 
  */
 public class TestPeerIsolation extends TestCaseImpl {
-	private static Logger log = Logger.getLogger(TestPeerIsolation.class.getName());
+	private static Logger log = Logger.getLogger(TestPeerIsolation.class
+			.getName());
 
-	//private static final int OBJECTS=TesterUtil.instance.getObjects();
+	// private static final int OBJECTS=TesterUtil.instance.getObjects();
 
-	Peer peer=new Peer();
+	Peer peer = new Peer();
 
-	int sleep=TesterUtil.instance.getSleep();
+	int sleep = TesterUtil.instance.getSleep();
 
-	boolean iAmBootsrapper=false;
+	boolean iAmBootsrapper = false;
 
-	List<Id> volatiles=new ArrayList<Id>();
+	List<Id> volatiles = new ArrayList<Id>();
 
-	@BeforeClass(place=-1,timeout=1000000)
-	public void bc(){
+	@BeforeClass(range = "*", timeout = 1000000)
+	public void bc() {
 		log.info("[PastryTest] Starting test peer  ");
 	}
 
-	@TestStep(place=-1,timeout=1000000, name = "action1", step = 1)
-	public void startingNetwork(){
+	@TestStep(range = "*", timeout = 1000000, order = 1)
+	public void startingNetwork() {
 		try {
 
 			log.info("Joining in first");
-			Network net= new Network();
-			Thread.sleep(this.getPeerName()*1000);
+			Network net = new Network();
+			Thread.sleep(this.getPeerName() * 1000);
 
-			if(!net.joinNetwork(peer, null,false, log)){
+			if (!net.joinNetwork(peer, null, false, log)) {
 				inconclusive("I couldn't join, sorry");
 			}
-			log.info("Getting bootstrapper "+net.getInetSocketAddress().toString());
-			log.info("Running on port "+peer.getPort());
+			log.info("Getting bootstrapper "
+					+ net.getInetSocketAddress().toString());
+			log.info("Running on port " + peer.getPort());
 			log.info("Time to bootstrap");
-		
-		
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-
-
-	@TestStep(name="action4",measure=true,step=0,timeout=10000000,place=0)
+	@TestStep(order = 4, timeout = 10000000, range = "0")
 	public void listingTheNeighbours() {
 		try {
 
 			// Letting the system to stabilize
-			while(peer.getRoutingTable().size()==0)
+			while (peer.getRoutingTable().size() == 0)
 				Thread.sleep(sleep);
-
 
 			this.put(1, peer.getRoutingTable());
 
-			log.info("My ID "+peer.getId().toString());
-			for(NodeHandle nd: peer.getRoutingTable()){
-				if(!peer.getId().toString().equalsIgnoreCase(nd.getNodeId().toString())){
+			log.info("My ID " + peer.getId().toString());
+			for (NodeHandle nd : peer.getRoutingTable()) {
+				if (!peer.getId().toString().equalsIgnoreCase(
+						nd.getNodeId().toString())) {
 					volatiles.add(nd.getNodeId());
-					log.info(" Successor to leave "+nd.getNodeId());
+					log.info(" Successor to leave " + nd.getNodeId());
 				}
 			}
 
@@ -91,17 +89,18 @@ public class TestPeerIsolation extends TestCaseImpl {
 	}
 
 	@SuppressWarnings("unchecked")
-	@TestStep(name="action5",measure=true,step=0,timeout=10000000,place=-1)
+	@TestStep(name = "action5",  order = 5, timeout = 10000000, range = "*")
 	public void testLeave() {
 		try {
 			// Waiting a while to get the global variable
 			Thread.sleep(2000);
 
-			if(this.getPeerName()!=0){
-				List<NodeHandle> actuals=(List<NodeHandle>)this.get(1);
+			if (this.getPeerName() != 0) {
+				List<NodeHandle> actuals = (List<NodeHandle>) this.get(1);
 
-				for(NodeHandle nd: actuals){
-					if(nd.getNodeId().toString().trim().equalsIgnoreCase(peer.getId().toString().trim())){
+				for (NodeHandle nd : actuals) {
+					if (nd.getNodeId().toString().trim().equalsIgnoreCase(
+							peer.getId().toString().trim())) {
 						log.info("Leaving early");
 						this.kill();
 					}
@@ -113,35 +112,38 @@ public class TestPeerIsolation extends TestCaseImpl {
 		}
 	}
 
-	@TestStep(place=-1,timeout=1000000, name = "action6", step = 0)
-	public void searchingNeighbour(){
+	@TestStep(range = "*", timeout = 1000000, order = 6)
+	public void searchingNeighbour() {
 		try {
-			if(this.getPeerName()==0){
+			if (this.getPeerName() == 0) {
 				List<NodeHandle> actuals;
 
-				//Iterations to find someone in the routing table
-				int timeToClean=0;
-				Id obj=null;
-				boolean tableUpdated=false;
+				// Iterations to find someone in the routing table
+				int timeToClean = 0;
+				Id obj = null;
+				boolean tableUpdated = false;
 
-				while(!tableUpdated &&	(timeToClean < TesterUtil.instance.getLoopToFail())){
-					log.info(" Let's verify the table"+timeToClean);
+				while (!tableUpdated
+						&& (timeToClean < TesterUtil.instance.getLoopToFail())) {
+					log.info(" Let's verify the table" + timeToClean);
 					try {
 						Thread.sleep(1000);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
-					actuals= peer.getRoutingTable();
+					actuals = peer.getRoutingTable();
 
-					for(NodeHandle nd: actuals){
-						obj=nd.getNodeId();
-						log.info(" Successor NodeId "+obj+" is volatile "+volatiles.contains(obj));
+					for (NodeHandle nd : actuals) {
+						obj = nd.getNodeId();
+						log.info(" Successor NodeId " + obj + " is volatile "
+								+ volatiles.contains(obj));
 
-						if((obj != peer.getId()) && (!volatiles.contains(obj))){
-							log.info(" Table was updated, verdict may be PASS ");
-							tableUpdated=true;
-							timeToClean=TesterUtil.instance.getLoopToFail();
+						if ((obj != peer.getId()) && (!volatiles.contains(obj))) {
+							log
+									.info(" Table was updated, verdict may be PASS ");
+							tableUpdated = true;
+							timeToClean = TesterUtil.instance.getLoopToFail();
 						}
 					}
 
@@ -149,7 +151,7 @@ public class TestPeerIsolation extends TestCaseImpl {
 					peer.pingNodes();
 					timeToClean++;
 				}
-				if(!tableUpdated){
+				if (!tableUpdated) {
 					log.info(" Did not find a sucessor ");
 					fail("Routing Table wasn't updated. Still finding all volatiles. Increase qty of loops.");
 				}
@@ -166,7 +168,7 @@ public class TestPeerIsolation extends TestCaseImpl {
 		}
 	}
 
-	@AfterClass(timeout=100000,place=-1)
+	@AfterClass(timeout = 100000, range = "*")
 	public void end() {
 		log.info("[PastryTest] Peer bye bye");
 	}

@@ -22,24 +22,24 @@ public class SimpleTest extends TestCaseImpl{
 	}
 
 
-	@TestStep(from=1,to=3,timeout=1000000, name = "action3", step = 1)
+	@TestStep(from=1,to=3,timeout=1000000, name = "action3", step = 2)
 	public void action3(){
 	
 	}
 
-	@TestStep(place=2,timeout=1000000, name = "action4", step = 1)
+	@TestStep(place=2,timeout=1000000, name = "action4", step = 3)
 	public void action4(){
 	
 	}
-	@TestStep(place=-1,timeout=1000000, name = "action5", step = 1)
+	@TestStep(place=-1,timeout=1000000, name = "action5", step = 4)
 	public void action5(){
 	
 	}
-	@TestStep(place=-1,timeout=1000000, name = "action6", step = 1)
+	@TestStep(place=-1,timeout=1000000, name = "action6", step = 5)
 	public void action6(){
 	
 	}
-	@TestStep(place=-1,timeout=1000000, name = "action7", step = 1)
+	@TestStep(place=-1,timeout=1000000, name = "action7", step = 6)
 	public void action7(){
 	
 	}

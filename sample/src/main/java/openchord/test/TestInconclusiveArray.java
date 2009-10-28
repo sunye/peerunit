@@ -1,7 +1,5 @@
 package openchord.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.assertArrayEquals;
-
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
@@ -53,7 +51,7 @@ public class TestInconclusiveArray  extends TestCaseImpl{
 				}
 
 				log.info("[TestInc] Will assert");
-				assertArrayEquals(testString,teste);
+//				assertArrayEquals(testString,teste);
 			}else log.info("[TestInc] Will continue");
 
 		} catch (RemoteException e) {

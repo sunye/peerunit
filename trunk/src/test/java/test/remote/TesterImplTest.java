@@ -16,7 +16,6 @@
  */
 package test.remote;
 
-import fr.inria.peerunit.base.Sample;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -27,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,6 +34,7 @@ import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.GlobalVariablesImpl;
 import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.base.Sample;
 import fr.inria.peerunit.base.TestCaseWrapper;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
@@ -48,7 +47,6 @@ public class TesterImplTest {
     private static CoordinatorImpl coord;
     private static GlobalVariables globals; 
     private static TesterImpl tester0, tester1, tester2;
-    private static Logger LOG = Logger.getLogger("test");
 
     @BeforeClass
     public static void inititalize() {
@@ -98,8 +96,7 @@ public class TesterImplTest {
 
     @Test
     public void testRegister() {
-        MethodDescription md = new MethodDescription("first", "action1", 1,
-                "Test", 1000);
+        MethodDescription md = new MethodDescription("first", 1, 1000); 
 
         assertEquals(3, coord.getSchedule().size());
 

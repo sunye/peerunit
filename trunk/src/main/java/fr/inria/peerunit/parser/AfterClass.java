@@ -28,8 +28,33 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface AfterClass {
+    /**
+     * Range of peers where the test step should be executed.
+     * 
+     * @return a String in the form: "*", "54" or "4-17".
+     */
+    String range() default "*";
+	
+    /**
+     * @deprecated  As of release 1.0, replaced by {@link #range()}
+     * @return
+     */
+    @Deprecated
 	int place() default -1;
-	int timeout() default 1000;
+	
+    /**
+     * @deprecated  As of release 1.0, replaced by {@link #range()}
+     * @return
+     */
+    @Deprecated
 	int from() default -1;
+	
+    /**
+     * @deprecated  As of release 1.0, replaced by {@link #range()}
+     * @return
+     */
+    @Deprecated
 	int to() default -1;
+	
+	int timeout() default -1;
 }
