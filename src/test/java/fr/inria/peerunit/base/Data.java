@@ -31,43 +31,43 @@ import fr.inria.peerunit.parser.TestStep;
  */
 public class Data extends TestCaseImpl {
 
-    @BeforeClass(place = -1, timeout = 100)
+    @BeforeClass(range = "*", timeout = 100)
     public void begin() {
     }
 
-    @TestStep(place = -1, timeout = 1000, name = "action1", step = 1)
+    @TestStep(range = "*", timeout = 1000, name = "action1", order = 1)
     public void startingNetwork() {
     }
 
-    @TestStep(place = -1, timeout = 1000000, name = "action1", step = 2)
+    @TestStep(range = "*", timeout = 1000000, order = 2)
     public void joinNet() {
     }
 
-    @TestStep(place = -1, timeout = 1000000, name = "action2", step = 0)
+    @TestStep(range = "*", timeout = 1000000, order = 3)
     public void stabilize() {
     }
 
-    @TestStep(place = -1, timeout = 1000000, name = "action3", step = 0)
+    @TestStep(range = "*", timeout = 1000000, order = 4)
     public void put() {
     }
 
-    @TestStep(place = -1, timeout = 1000000, name = "action4", step = 0)
+    @TestStep(range = "*", timeout = 1000000, order = 5)
     public void get() {
     }
 
-    @TestStep(place = 42, timeout = 1000000, name = "action4", step = 0)
+    @TestStep(range = "42", timeout = 1000000,  order = 6)
     public void notHere() {
     }
 
-    @TestStep(from = 10, to = 100, timeout = 1000000, name = "action4", step = 0)
+    @TestStep(range = "10-100", timeout = 1000000, order = 7)
     public void alsoNotHere() {
     }
 
-    @TestStep(from = 0, to = 100, timeout = 1000000, name = "action4", step = 0)
+    @TestStep(range = "0-100", timeout = 1000000, order = 8)
     public void here() {
     }
 
-    @AfterClass(timeout = 100, place = -1)
+    @AfterClass(timeout = 100, range = "*")
     public void end() {
     }
 

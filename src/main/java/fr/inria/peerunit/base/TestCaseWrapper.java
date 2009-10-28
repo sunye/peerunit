@@ -1,28 +1,21 @@
 /*
-    This file is part of PeerUnit.
+This file is part of PeerUnit.
 
-    PeerUnit is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+PeerUnit is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    PeerUnit is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+PeerUnit is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.TestCase;
-import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.exception.AnnotationFailure;
-import fr.inria.peerunit.parser.AfterClass;
-import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.parser.TestStep;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
@@ -33,6 +26,16 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.TestCase;
+import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.parser.AfterClass;
+import fr.inria.peerunit.parser.AfterClassMethod;
+import fr.inria.peerunit.parser.BeforeClass;
+import fr.inria.peerunit.parser.BeforeClassMethod;
+import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.parser.TestStep;
+import fr.inria.peerunit.parser.TestStepMethod;
+
 /**
  *
  * @author sunye
@@ -40,7 +43,6 @@ import java.util.logging.Logger;
 public class TestCaseWrapper {
 
     private static Logger LOG = Logger.getLogger(TestCaseWrapper.class.getName());
-
     private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
     private List<MethodDescription> remainingMethods;
     private TestCase testcase;
@@ -48,7 +50,7 @@ public class TestCaseWrapper {
     private Tester tester;
 
     public TestCaseWrapper(Tester t) {
-        assert t != null ;
+        assert t != null;
 
         this.tester = t;
         try {
@@ -59,29 +61,8 @@ public class TestCaseWrapper {
     }
 
     /**
-     * Verify a peer range (annotation)
-     *
-     * @param from : number of the first peer
-     * @param to : number of the last peer
-     * @return boolean :
-     */
-    public boolean validatePeerRange(int from, int to) {
-        if ((from > -1) && (to == -1)) {
-            throw new AnnotationFailure("Annotation FROM without TO");
-        } else if ((from == -1) && (to > -1)) {
-            throw new AnnotationFailure("Annotation TO without FROM");
-        } else if ((from < -1) || (to < -1)) {
-            throw new AnnotationFailure("Invalid value for FROM / TO");
-        } else if ((from >= to) && (from != -1)) {
-            throw new AnnotationFailure("The value of FROM must be smaller than TO");
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Get the method following methodDescription
-     * @param md Methode Description
+     * @param md Method Description
      * @return the method
      */
     public Method getMethod(MethodDescription md) {
@@ -123,53 +104,6 @@ public class TestCaseWrapper {
         return remainingMethods.isEmpty();
     }
 
-    /**
-     * Test if a AfterClass is valid and the ExecutorImpl must execute it.
-     * @param a AfterClass
-     * @return
-     */
-    public boolean isValid(AfterClass a) {
-        return (a != null) && shouldIExecute(a.place(), a.from(), a.to());
-    }
-
-    /**
-     *
-     * Test if a BeforeClass is valid and the ExecutorImpl must execute it.
-     * @param a BeforeClass
-     * @return
-     */
-    public boolean isValid(BeforeClass a) {
-        return (a != null) && shouldIExecute(a.place(), a.from(), a.to());
-    }
-
-    /**
-     *
-     * Test if a Test is valid and the ExecutorImpl must execute it.
-     * @param a Test
-     * @return
-     */
-    public boolean isValid(TestStep a) {
-        return (a != null) && shouldIExecute(a.place(), a.from(), a.to());
-    }
-
-    /** Verify if the tester must execute the method
-     * @param place
-     * @param from : number of the first tester
-     * @param to : number of the last tester
-     * @return
-     */
-    /**
-     * Verify if the tester must execute the method
-     * @param place
-     * @param from : number of the first tester
-     * @param to : number of the last tester
-     * @return
-     */
-    public boolean shouldIExecute(int place, int from, int to) {
-            assert testerId != -1 : "Tester not initialized";
-
-        return (place == testerId) || (place == -1 && from == -1 && to == -1) || ((from <= testerId) && (to >= testerId));
-    }
 
     /**
      * Parse the test case to extract the methods to be executed
@@ -177,11 +111,35 @@ public class TestCaseWrapper {
      * @return List of methods to be executed
      */
     public List<MethodDescription> register(Class<? extends TestCase> c) {
-        TestStep t;
-        BeforeClass bc;
-        AfterClass ac;
-        methods.clear();
 
+        ClassFilter filter = new ClassFilter(c);
+        methods.clear();
+        
+        //TestStep
+        for(TestStepMethod each : filter.stepMethods()) {
+            if (each.range().includes(testerId)) {
+                methods.put(new MethodDescription(each), each.method());
+            }
+        }
+
+        //AfterClass
+        //TODO: At most 1 AfterClass method.
+         for(AfterClassMethod each : filter.afterMethods()) {
+            if (each.range().includes(testerId)) {
+                methods.put(new MethodDescription(each), each.method());
+            }
+        }
+
+        //BeforeClass
+        //TODO: At most 1 AfterClass method.
+          for(BeforeClassMethod each : filter.beforeMethods()) {
+            if (each.range().includes(testerId)) {
+                methods.put(new MethodDescription(each), each.method());
+            }
+        }
+
+        
+        //TestCase instantiation
         try {
             testcase = c.newInstance();
             testcase.setTester(tester);
@@ -191,31 +149,9 @@ public class TestCaseWrapper {
             LOG.log(Level.SEVERE, "Illegal Access Exception", e);
         }
 
-
-        for (Method each : c.getMethods()) {
-            t = each.getAnnotation(TestStep.class);
-            if (this.isValid(t)) {
-                methods.put(new MethodDescription(each, t), each);
-            }
-        }
-        for (Method each : c.getMethods()) {
-            bc = each.getAnnotation(BeforeClass.class);
-            if (this.isValid(bc)) {
-                methods.put(new MethodDescription(each, bc), each);
-            }
-        }
-        for (Method each : c.getMethods()) {
-            ac = each.getAnnotation(AfterClass.class);
-            if (this.isValid(ac)) {
-                methods.put(new MethodDescription(each, ac), each);
-            }
-        }
-
-
         remainingMethods = new ArrayList<MethodDescription>(methods.keySet());
         return remainingMethods;
     }
-
 
     public TestCase getTestcase() {
         return testcase;
@@ -225,3 +161,39 @@ public class TestCaseWrapper {
         return methods;
     }
 }
+
+class ClassFilter {
+
+    private List<TestStepMethod> stepMethods = new ArrayList<TestStepMethod>();
+    private List<BeforeClassMethod> beforeMethods = new ArrayList<BeforeClassMethod>();
+    private List<AfterClassMethod> afterMethods = new ArrayList<AfterClassMethod>();
+
+    public ClassFilter(Class<?> c) {
+
+        Method[] methods = c.getMethods();
+        for (Method each : methods) {
+            if (each.isAnnotationPresent(TestStep.class)) {
+                stepMethods.add(new TestStepMethod(each));
+            } else if (each.isAnnotationPresent(BeforeClass.class)) {
+                beforeMethods.add(new BeforeClassMethod(each));
+            } else if (each.isAnnotationPresent(AfterClass.class)) {
+                afterMethods.add(new AfterClassMethod(each));
+            }
+        }
+    }
+
+    public List<TestStepMethod> stepMethods() {
+        return stepMethods;
+    }
+
+    public List<BeforeClassMethod> beforeMethods() {
+        return beforeMethods;
+    }
+
+    public List<AfterClassMethod> afterMethods() {
+        return afterMethods;
+    }
+
+}
+
+

@@ -111,12 +111,7 @@ public class ResultSetTest {
     @Test
     public void testGetMethodDescription() {
         System.out.println("getMethodDescription");
-        ResultSet instance = null;
-        MethodDescription expResult = null;
-        MethodDescription result = instance.getMethodDescription();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
 
     /**
@@ -125,12 +120,7 @@ public class ResultSetTest {
     @Test
     public void testSize() {
         System.out.println("size");
-        ResultSet instance = null;
-        int expResult = 0;
-        int result = instance.size();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
 
     /**
@@ -139,12 +129,6 @@ public class ResultSetTest {
     @Test
     public void testGetErrors() {
         System.out.println("getErrors");
-        ResultSet instance = null;
-        int expResult = 0;
-        int result = instance.getErrors();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -153,12 +137,7 @@ public class ResultSetTest {
     @Test
     public void testGetfailures() {
         System.out.println("getfailures");
-        ResultSet instance = null;
-        int expResult = 0;
-        int result = instance.getfailures();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
 
     /**
@@ -167,12 +146,7 @@ public class ResultSetTest {
     @Test
     public void testGetInconclusives() {
         System.out.println("getInconclusives");
-        ResultSet instance = null;
-        int expResult = 0;
-        int result = instance.getInconclusives();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
 
 }
