@@ -73,7 +73,7 @@ public class BootstrapperImplTest {
             for (int i = 0; i < 5; i++) {
                 DistributedTesterImpl tester = mock(DistributedTesterImpl.class);
                 id = bootstrapper.register(tester);
-                assertTrue(id == i + 1);
+                assertTrue(id == i);
             }
 
         } catch (RemoteException e) {

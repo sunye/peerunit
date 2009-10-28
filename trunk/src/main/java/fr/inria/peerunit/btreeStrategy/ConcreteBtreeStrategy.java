@@ -63,7 +63,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
     public int register(Tester tester) throws RemoteException {
         log.entering("ConcreteBtreeStrategy", "register(Tester)");
 
-        int id = testers.size() + 1;
+        int id = testers.size();
         testers.put(new Integer(id), tester);
         synchronized (testers) {
             testers.notifyAll();
