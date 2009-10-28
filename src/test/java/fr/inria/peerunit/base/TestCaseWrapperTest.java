@@ -6,8 +6,6 @@ package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.GlobalVariablesImpl;
-import fr.inria.peerunit.TestCase;
-import fr.inria.peerunit.exception.AnnotationFailure;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
@@ -18,12 +16,10 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
 /**
@@ -64,7 +60,6 @@ public class TestCaseWrapperTest {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -187,4 +182,17 @@ public class TestCaseWrapperTest {
         assertTrue(wrapper.isLastMethod());
     }
 
+    @Test
+    public void testSetId() {
+        wrapper.register(fr.inria.peerunit.base.Data.class);
+        Data d = (Data) wrapper.getTestcase();
+        assertTrue (d.getId() == 0) ;
+    }
+
+    @Test
+    public void testSetGlobals() {
+        wrapper.register(fr.inria.peerunit.base.Data.class);
+        Data d = (Data) wrapper.getTestcase();
+        assertTrue (d.getGlobals() == globals) ;
+    }
 }

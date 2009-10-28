@@ -16,10 +16,12 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.base;
 
+import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.TestCaseImpl;
-import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
+import fr.inria.peerunit.parser.SetGlobals;
+import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.parser.TestStep;
 
 /**
@@ -30,6 +32,10 @@ import fr.inria.peerunit.parser.TestStep;
  * This class is only used to test the class ParserImpl
  */
 public class Data extends TestCaseImpl {
+
+    private int id = -1;
+
+    private GlobalVariables globals;
 
     @BeforeClass(range = "*", timeout = 100)
     public void begin() {
@@ -71,8 +77,22 @@ public class Data extends TestCaseImpl {
     public void end() {
     }
 
-    @Override
-    public void setTester(Tester ti) {
-        // TODO Auto-generated method stub
+
+    @SetId
+    public void setId(int i) {
+        id = i;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    @SetGlobals
+    public void setGlobals(GlobalVariables gv) {
+        globals = gv;
+    }
+
+    public GlobalVariables getGlobals() {
+        return globals;
     }
 }

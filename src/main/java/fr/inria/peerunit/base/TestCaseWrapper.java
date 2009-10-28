@@ -16,6 +16,7 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.base;
 
+import fr.inria.peerunit.GlobalVariables;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
@@ -33,8 +34,11 @@ import fr.inria.peerunit.parser.AfterClassMethod;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.BeforeClassMethod;
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.parser.SetGlobals;
+import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.parser.TestStepMethod;
+import fr.inria.peerunit.rmi.tester.TesterImpl;
 
 /**
  *
@@ -47,17 +51,17 @@ public class TestCaseWrapper {
     private List<MethodDescription> remainingMethods;
     private TestCase testcase;
     private int testerId = -1;
-    private Tester tester;
+    private TesterImpl tester;
 
-    public TestCaseWrapper(Tester t) {
+    public TestCaseWrapper(TesterImpl t) {
         assert t != null;
 
         this.tester = t;
-        try {
+//        try {
             this.testerId = tester.getId();
-        } catch (RemoteException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
+//        } catch (RemoteException ex) {
+//            LOG.log(Level.SEVERE, null, ex);
+//        }
     }
 
     /**
@@ -104,7 +108,6 @@ public class TestCaseWrapper {
         return remainingMethods.isEmpty();
     }
 
-
     /**
      * Parse the test case to extract the methods to be executed
      * @param class
@@ -114,9 +117,9 @@ public class TestCaseWrapper {
 
         ClassFilter filter = new ClassFilter(c);
         methods.clear();
-        
+
         //TestStep
-        for(TestStepMethod each : filter.stepMethods()) {
+        for (TestStepMethod each : filter.stepMethods()) {
             if (each.range().includes(testerId)) {
                 methods.put(new MethodDescription(each), each.method());
             }
@@ -124,7 +127,7 @@ public class TestCaseWrapper {
 
         //AfterClass
         //TODO: At most 1 AfterClass method.
-         for(AfterClassMethod each : filter.afterMethods()) {
+        for (AfterClassMethod each : filter.afterMethods()) {
             if (each.range().includes(testerId)) {
                 methods.put(new MethodDescription(each), each.method());
             }
@@ -132,21 +135,33 @@ public class TestCaseWrapper {
 
         //BeforeClass
         //TODO: At most 1 AfterClass method.
-          for(BeforeClassMethod each : filter.beforeMethods()) {
+        for (BeforeClassMethod each : filter.beforeMethods()) {
             if (each.range().includes(testerId)) {
                 methods.put(new MethodDescription(each), each.method());
             }
         }
 
-        
+
         //TestCase instantiation
         try {
             testcase = c.newInstance();
             testcase.setTester(tester);
+            if (filter.setId() != null) {
+                filter.setId().invoke(testcase, testerId);
+            }
+
+            if (filter.setGlobals() != null) {
+                filter.setGlobals().invoke(testcase, tester.globalTable());
+            }
+
         } catch (InstantiationException e) {
             LOG.log(Level.SEVERE, "Instantiation Exception", e);
         } catch (IllegalAccessException e) {
             LOG.log(Level.SEVERE, "Illegal Access Exception", e);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(TestCaseWrapper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvocationTargetException ex) {
+            Logger.getLogger(TestCaseWrapper.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         remainingMethods = new ArrayList<MethodDescription>(methods.keySet());
@@ -167,6 +182,8 @@ class ClassFilter {
     private List<TestStepMethod> stepMethods = new ArrayList<TestStepMethod>();
     private List<BeforeClassMethod> beforeMethods = new ArrayList<BeforeClassMethod>();
     private List<AfterClassMethod> afterMethods = new ArrayList<AfterClassMethod>();
+    private Method setId;
+    private Method setGlobals;
 
     public ClassFilter(Class<?> c) {
 
@@ -178,6 +195,14 @@ class ClassFilter {
                 beforeMethods.add(new BeforeClassMethod(each));
             } else if (each.isAnnotationPresent(AfterClass.class)) {
                 afterMethods.add(new AfterClassMethod(each));
+            } else if (each.isAnnotationPresent(SetId.class) &&
+                    each.getParameterTypes().length == 1 &&
+                    each.getParameterTypes()[0] == int.class) {
+                setId = each;
+            } else if (each.isAnnotationPresent(SetGlobals.class) &&
+                    each.getParameterTypes().length == 1 &&
+                    each.getParameterTypes()[0] == GlobalVariables.class) {
+                setGlobals = each;
             }
         }
     }
@@ -194,6 +219,13 @@ class ClassFilter {
         return afterMethods;
     }
 
+    public Method setId() {
+        return setId;
+    }
+
+    public Method setGlobals() {
+        return setGlobals;
+    }
 }
 
 
