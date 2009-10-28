@@ -156,13 +156,13 @@
         <developer>
             <id>almeida</id>
             <name>Eduardo Cunha de Almeida</name>
-            <email>eduardo.almeida@univ-nantes.fr</email>
+            <email>eduardo@inf.ufpr.br</email>
             <roles>
                 <role>Project Manager</role>
                 <role>Architect</role>
             </roles>
-            <organization>Université de Nantes</organization>
-            <timezone>-1</timezone>
+            <organization>Universidade Federal do Paraná</organization>
+            <timezone>-3</timezone>
         </developer>
         <developer>
             <id>sunye</id>
@@ -173,7 +173,7 @@
                 <role>Architect</role>
             </roles>
             <organization>Université de Nantes</organization>
-            <timezone>-1</timezone>
+            <timezone>+1</timezone>
         </developer>
     </developers>
 </project>

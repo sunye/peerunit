@@ -66,7 +66,7 @@ public class TesterImplTest {
             new Thread(coord, "Coordinator").start();
             tester0 = new TesterImpl(coord, globals);
             tester0.setCoordinator(coord);
-            executor = new TestCaseWrapper((Tester) tester0);
+            executor = new TestCaseWrapper(tester0);
             tester1 = new TesterImpl(coord, globals);
             tester1.setCoordinator(coord);
             tester2 = new TesterImpl(coord, globals);
