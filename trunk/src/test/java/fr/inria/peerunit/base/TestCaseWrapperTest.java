@@ -9,7 +9,8 @@ import fr.inria.peerunit.GlobalVariablesImpl;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.test.assertion.AssertionFailedError;
+import fr.inria.peerunit.test.assertion.ComparisonFailure;
+import fr.inria.peerunit.test.assertion.Failure;
 import fr.inria.peerunit.util.TesterUtil;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
@@ -26,7 +27,6 @@ import static org.junit.Assert.*;
  *
  * @author sunye
  */
-@SuppressWarnings("unused")
 public class TestCaseWrapperTest {
 
     private static Data testcase;
@@ -121,7 +121,7 @@ public class TestCaseWrapperTest {
         try {
             wrapper.invoke(md);
             fail("Exception not thrown");
-        } catch (AssertionFailedError ex) {
+        } catch (Failure ex) {
 
         } catch (Throwable t) {
             fail("Wrong exception thrown");

@@ -128,4 +128,8 @@ public class MethodDescription implements Comparable<MethodDescription>,
     public int getTimeout() {
         return timeout;
     }
+
+    public int getOrder() {
+        return order;
+    }
 }
