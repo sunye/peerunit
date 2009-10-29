@@ -74,9 +74,9 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     private transient TesterImpl tester;
     private transient CoordinatorImpl coordinator;
     private transient TesterUtil defaults;
-    private transient Class<? extends TestCaseImpl> testCaseClass;
+    private transient Class<?> testCaseClass;
 
-    public DistributedTesterImpl(Class<? extends TestCaseImpl> klass, Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
+    public DistributedTesterImpl(Class<?> klass, Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
         super(gv);
         defaults = tu;
         bootstrapper = boot;

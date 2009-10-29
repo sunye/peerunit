@@ -80,8 +80,9 @@ public class ResultSetTest {
         SingleResult sr = new SingleResult(1, md);
         ResultSet rs = sr.asResultSet();
 
-        String expected = String.format("Method %s. \t Pass: %d. Fails: %d. Erros: %d. Inconclusive: %d. Delay: %d msec. Average: %d msec.",
-                "name", 1, 0, 0, 0, 0, 0);
+        String expected = String.format("Step: %d. Pass: %d. Fails: %d. Erros: %d. " +
+                "Inconclusive: %d.  Time elapsed: %d msec. Average: %d msec. \t Method: %s",
+                0, 1, 0, 0, 0, 0, 0, "name");
 
         assertEquals(rs.toString(), expected);
     }

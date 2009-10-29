@@ -19,7 +19,6 @@ package fr.inria.peerunit.base;
 import fr.inria.peerunit.GlobalVariables;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.TestCase;
-import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.AfterClassMethod;
 import fr.inria.peerunit.parser.BeforeClass;
@@ -49,7 +47,7 @@ public class TestCaseWrapper {
     private static Logger LOG = Logger.getLogger(TestCaseWrapper.class.getName());
     private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
     private List<MethodDescription> remainingMethods;
-    private TestCase testcase;
+    private Object testcase;
     private int testerId = -1;
     private TesterImpl tester;
 
@@ -58,7 +56,7 @@ public class TestCaseWrapper {
 
         this.tester = t;
 //        try {
-            this.testerId = tester.getId();
+        this.testerId = tester.getId();
 //        } catch (RemoteException ex) {
 //            LOG.log(Level.SEVERE, null, ex);
 //        }
@@ -113,9 +111,9 @@ public class TestCaseWrapper {
      * @param class
      * @return List of methods to be executed
      */
-    public List<MethodDescription> register(Class<? extends TestCase> c) {
+    public List<MethodDescription> register(Class<?> klass) {
 
-        ClassFilter filter = new ClassFilter(c);
+        ClassFilter filter = new ClassFilter(klass);
         methods.clear();
 
         //TestStep
@@ -141,11 +139,13 @@ public class TestCaseWrapper {
             }
         }
 
-
         //TestCase instantiation
         try {
-            testcase = c.newInstance();
-            testcase.setTester(tester);
+            testcase = klass.newInstance();
+            if (TestCase.class.isAssignableFrom(klass)) {
+                ((TestCase) testcase).setTester(tester);
+            }
+
             if (filter.setId() != null) {
                 filter.setId().invoke(testcase, testerId);
             }
@@ -159,16 +159,16 @@ public class TestCaseWrapper {
         } catch (IllegalAccessException e) {
             LOG.log(Level.SEVERE, "Illegal Access Exception", e);
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(TestCaseWrapper.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, "Illegal Argument Exception", ex);
         } catch (InvocationTargetException ex) {
-            Logger.getLogger(TestCaseWrapper.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, "Invocation Target Exception", ex);
         }
 
         remainingMethods = new ArrayList<MethodDescription>(methods.keySet());
         return remainingMethods;
     }
 
-    public TestCase getTestcase() {
+    public Object getTestcase() {
         return testcase;
     }
 

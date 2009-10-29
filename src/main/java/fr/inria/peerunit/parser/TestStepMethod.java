@@ -23,9 +23,17 @@ import java.lang.reflect.Method;
  * @author sunye
  */
 public class TestStepMethod extends TestMethod {
+
+    /**
+     *
+     */
     private int order;
 
-    public TestStepMethod (Method m) {
+    /**
+     *
+     * @param m
+     */
+    public TestStepMethod(final Method m) {
         TestStep ts = m.getAnnotation(fr.inria.peerunit.parser.TestStep.class);
         timeout = ts.timeout();
         order = ts.order() == -1 ? ts.step() : ts.order();
@@ -34,7 +42,11 @@ public class TestStepMethod extends TestMethod {
 
     }
 
-    public int order() {
+    /**
+     *
+     * @return
+     */
+    public final int order() {
         return order;
     }
 }

@@ -51,7 +51,7 @@ public class TestRunner {
      * The test case that will be excuted and those name was
      * passed at the command line.
      */
-    private Class<? extends TestCaseImpl> testcase;
+    private Class<?> testcase;
     private TesterUtil defaults;
     private Registry registry;
     private static final Logger log = Logger.getLogger(TesterImpl.class.getName());
@@ -62,7 +62,7 @@ public class TestRunner {
      *
      * @param klass the<tt>Class</tt> instance corresponding to the <i>test case</i> to execute
      */
-    public TestRunner(Class<? extends TestCaseImpl> klass, TesterUtil tu) {
+    public TestRunner(Class<?> klass, TesterUtil tu) {
 
         defaults = tu;
         testcase = klass;
@@ -160,7 +160,6 @@ public class TestRunner {
             String name = args[0];
             try {
                 Class<?> klass = Class.forName(name);
-                Class<? extends TestCaseImpl> tklass = klass.asSubclass(TestCaseImpl.class);
 
                 if (args.length > 1) {
                     filename = args[1];
@@ -174,7 +173,7 @@ public class TestRunner {
                     defaults = TesterUtil.instance;
                 }
 
-                new TestRunner(tklass, defaults);
+                new TestRunner(klass, defaults);
 
             } catch (FileNotFoundException e) {
                 System.err.println("Error: Unable to open properties file");

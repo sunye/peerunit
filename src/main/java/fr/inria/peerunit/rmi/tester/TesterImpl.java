@@ -65,7 +65,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
     private transient TesterUtil defaults = TesterUtil.instance;
 
-    private Class<? extends TestCaseImpl> testCaseClass;
+    private Class<?> testCaseClass;
 
     /**
      * Used to give the identifier of the tester.
@@ -153,7 +153,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @throws RemoteException
      * @throws SecurityException
      */
-    public void registerTestCase(Class<? extends TestCaseImpl> klass) {
+    public void registerTestCase(Class<?> klass) {
         LOG.entering("TesterImpl", "registerTestCase(CLass)");
         testCaseClass = klass;  
     }
