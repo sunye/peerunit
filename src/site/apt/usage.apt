@@ -2,14 +2,11 @@ Writing a Test Case
 
 	In PeerUnit, a test case is a class and test steps are methods of this class. 
 	
-	The test case class must specialize (inherit from) the <TestCaseImpl> class, in order to be identified as a test case:
-	
 +---------------
-import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
 
-	public class MyTestCase extends TestCaseImpl {
+	public class MyTestCase  {
 		// ...
 	} 
 +---------------	
@@ -35,8 +32,9 @@ import fr.inria.peerunit.parser.TestStep;
 *--------------*----------------------------------------------------------------------------------+
 | <<Attrbute>> | <<Description>>                                                                  |
 *--------------*----------------------------------------------------------------------------------+
-| place        | Integer, representing the tester ID where this method should execute.            |
-|			   | If a negative number is specified (-1), then all testers execute this method     |
+| range        | String, representing the tester ID where this method should execute.             |
+|			   | If an asterisk is specified ("*"), then all testers execute this method.         |
+|              | A range of testers may be specified, using a dash ("3-5") .                      |
 *--------------*----------------------------------------------------------------------------------+
 | timeout      | Integer, representing the method timeout, in milliseconds.                       |
 |              | If the execution time exceeds this timeout, an inconclusive verdict is assigned. |
@@ -45,7 +43,7 @@ import fr.inria.peerunit.parser.TestStep;
 	The following method is the first method that is executed by all testers:
 
 +-------------
-@BeforeClass(place=-1, timeout=100)
+@BeforeClass(range = "*", timeout = 100)
 public void start(){        
 	// Pseudocode to instantiate a peer (the system under test).
 	Peer peer = new Peer();
@@ -59,8 +57,9 @@ public void start(){
 *--------------*----------------------------------------------------------------------------------+
 | <<Attrbute>> | <<Description>>                                                                  |
 *--------------*----------------------------------------------------------------------------------+
-| place        | Integer, representing the tester ID where this method should execute.            |
-|			   | If a negative number is specified (-1), then all testers execute this method     |
+| range        | String, representing the tester ID where this method should execute.             |
+|			   | If an asterisk is specified ("*"), then all testers execute this method.         |
+|              | A range of testers may be specified, using a dash ("3-5") .                      |
 *--------------*----------------------------------------------------------------------------------+
 | timeout      | Integer, representing the method timeout, in milliseconds.                       |
 |              | If the execution time exceeds this timeout, an inconclusive verdict is assigned. |
@@ -69,7 +68,7 @@ public void start(){
    The following method is the first method that is executed by all testers:
 
 +------------
-@AfterClass(place=-1,timeout=100)
+@AfterClass(range = "*",timeout = 100)
 public void stop(){
     peer.leave();
 }
@@ -83,43 +82,38 @@ public void stop(){
 *--------------*----------------------------------------------------------------------------------+
 | <<Attrbute>> | <<Description>>                                                                  |
 *--------------*----------------------------------------------------------------------------------+
-| name         | String, the name of the test step        		     				              |
+| order        | Integer, used to order test steps.                                               |
 *--------------*----------------------------------------------------------------------------------+
-| step         | Integer, used to order test steps.                                               |
-*--------------*----------------------------------------------------------------------------------+
-| place        | Integer, representing the tester ID where this method should execute.            |
-|			   | If a negative number is specified (-1), then all testers execute this method     |
+| range        | String, representing the tester ID where this method should execute.             |
+|			   | If an asterisk is specified ("*"), then all testers execute this method.         |
+|              | A range of testers may be specified, using a dash ("3-5") .                      |
 *--------------*----------------------------------------------------------------------------------+
 | timeout      | Integer, representing the method timeout, in milliseconds.                       |
 |              | If the execution time exceeds this timeout, an inconclusive verdict is assigned. |
-*--------------*----------------------------------------------------------------------------------+
-| from         | Integer, specifies the first tester of a range of testers.                       |
-*--------------*----------------------------------------------------------------------------------+
-| to           |  Integer, specifies the last tester of a range of testers.                       |
 *--------------*----------------------------------------------------------------------------------+
 
 	The following methods are examples of test steps:
 
 +---------------
-@Test(place=-1, timeout=100, name = "action1", step = 1)
+@TestStep(range = "*", timeout = 100, order = 1)
 public void join(){        
     // Makes the peer join the system
     peer.join();
 }
 
-@Test(place=0, timeout=100, name = "action2", step = 2)
+@TestStep(range = "0", timeout = 100, order = 2)
 public void put(){        
     // Tester 0 inserts some data
     peer.put(expectedKey,expected);
 }     
 
-@Test(from=1, to=3, timeout=100, name = "action3", step = 3)
+@TestStep(range = "1-3", timeout = 100, order = 3)
 public void retrieve(){
     // Testers 1 to 3 retrieves the inserted data
     actual = peer.get(expectedKey);        
 }
 
-@Test(from=1,to=3,timeout=100, name = "action4", step = 4)
+@TestStep(range = "1-3", timeout = 100, order = 4)
 public void assertRetrieve(){
     // Testers 1 to 3 compare the retrieved data with the expected one
 	assert expected.equals(actual);
