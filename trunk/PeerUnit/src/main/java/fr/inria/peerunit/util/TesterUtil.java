@@ -16,6 +16,8 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.util;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -55,6 +57,11 @@ public class TesterUtil {
             InputStream is = this.getClass().getResourceAsStream("/peerunit.properties");
             defaults.load(is);
             props = new Properties(defaults);
+            if (new File("peerunit.properties").exists()) {
+                String filename = "peerunit.properties";
+                FileInputStream fs = new FileInputStream(filename);
+                props.load(fs);
+            }
         } catch (IOException e) {
             System.err.println("Could not find default properties' resource.");
             System.exit(1);
