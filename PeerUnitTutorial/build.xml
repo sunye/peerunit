@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+    Document   : build.xml
+    Created on : 23 septembre 2009, 15:43
+    Author     : sunye
+    Description:
+        Purpose of the document follows.
+-->
+
+<project name="tutorial" default="exec" basedir=".">
+
+    <property name="repository.dir" value="${user.home}/.m2/repository"/>
+    <property name="src.dir" value="${basedir}/src/main/java/" />
+    <property name="build.dir" value="${basedir}/target/classes/" />
+
+    <property name="peerunit.jar" value="${repository.dir}/fr/inria/peerunit/PeerUnit/1.0-SNAPSHOT/PeerUnit-1.0-SNAPSHOT.jar"/>
+    <property name="mockdht.jar" value="${repository.dir}/fr/inria/MockDHT/1.0-SNAPSHOT/MockDHT-1.0-SNAPSHOT.jar"/>
+
+    <path id="lib.jars">
+        <pathelement path="${mockdht.jar}" />
+        <pathelement path="${peerunit.jar}" />
+    </path>
+
+    <path id="compile.classpath">
+        <path refid="lib.jars" />
+    </path>
+    <path id="exec.classpath">
+        <path refid="lib.jars" />
+        <pathelement path="${build.dir}" />
+    </path>
+
+    <target name="compile">
+        <javac srcdir="${src.dir}"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" />
+    </target>
+
+    <target name="exec" depends="compile">
+        <parallel>
+            <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
+                <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+
+          </parallel>
+    </target>
+
+    <target name="testArray" depends="compile">
+        <parallel>
+            <!--
+            <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
+            -->
+            <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
+                <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
+                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>
+
+          </parallel>
+    </target>
+
+</project>
