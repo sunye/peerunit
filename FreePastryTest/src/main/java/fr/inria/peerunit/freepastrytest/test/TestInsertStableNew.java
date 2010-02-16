@@ -25,7 +25,7 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
     private static Logger log = Logger.getLogger(TestInsertStableNew.class.getName());
     private List<String> expecteds = new ArrayList<String>();
 
-    @TestStep(range = "*", timeout = 10000, order = 1)
+    @TestStep(range = "*", timeout = 100000, order = 1)
     public void startingNetwork() throws RemoteException, InterruptedException {
 
         if (this.getPeerName() == 0) {
@@ -45,7 +45,7 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
 
     }
 
-    @TestStep(range = "*", timeout = 10000, order = 2)
+    @TestStep(range = "*", timeout = 100000, order = 2)
     public void joiningNet() throws RemoteException, InterruptedException {
 
 
