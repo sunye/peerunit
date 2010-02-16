@@ -13,7 +13,7 @@ public class Registry_RMI implements Registry {
 
 	@Override
 	public void bind(String name, Remote object) throws Exception {
-		this.reg.bind(name, object);		
+		this.reg.rebind(name, object);		
 	}
 
 	@Override
