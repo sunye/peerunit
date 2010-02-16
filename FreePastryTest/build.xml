@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+    Document   : build.xml
+    Created on : 23 septembre 2009, 15:43
+    Author     : sunye
+    Description:
+        Purpose of the document follows.
+-->
+
+<project name="FreePastryTest" default="exec" basedir=".">
+
+    <property name="test.jar" value="${basedir}/target/FreePastryTest-1.0-SNAPSHOT-jar-with-dependencies.jar"/>
+    <property name="testcase.class" value="fr.inria.peerunit.freepastrytest.test.SimpleTest"/>
+    <property name="tester.class" value="fr.inria.peerunit.TestRunner"/>
+    <property name="coordinator.class" value="fr.inria.peerunit.CoordinatorRunner"/>
+
+    <path id="exec.classpath">
+        <pathelement path="${test.jar}" />
+    </path>
+
+    <target name="exec">
+        <parallel>
+            <java classname="fr.inria.peerunit.freepastrytest.Bootstrap" classpathref="exec.classpath" fork="true"/>
+            <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+        </parallel>
+    </target>
+
+    <target name="tester.execute">
+        <java classname="${tester.class}" classpathref="exec.classpath" fork="true">
+            <arg value="${testcase.class}"/>
+            <assertions>
+                <enable/>
+            </assertions>
+        </java>
+    </target>
+
+</project>
