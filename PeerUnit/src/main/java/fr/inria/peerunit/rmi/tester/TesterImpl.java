@@ -1,18 +1,18 @@
 /*
-    This file is part of PeerUnit.
+This file is part of PeerUnit.
 
-    PeerUnit is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+PeerUnit is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    PeerUnit is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+PeerUnit is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.rmi.tester;
 
@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.Coordinator;
-import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.base.ResultSet;
@@ -36,15 +35,13 @@ import fr.inria.peerunit.base.TestCaseWrapper;
 import fr.inria.peerunit.exception.TestException;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.assertion.InconclusiveFailure;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
-import java.io.IOException;
 import java.nio.channels.ClosedByInterruptException;
-import java.util.logging.FileHandler;
 
 /**
  * @author Eduardo Almeida
  * @author Jeremy Masson
+ * @author sunye
  * @version 1.0
  * @since 1.0
  * @see fr.inria.peerUnit.Tester
@@ -60,11 +57,9 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     private transient Coordinator coord;
     private transient Bootstrapper bootstrapper;
     private transient boolean stop = false;
-
     private transient TestCaseWrapper testCase;
     private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
-    private transient TesterUtil defaults = TesterUtil.instance;
-
+    
     private Class<?> testCaseClass;
 
     /**
@@ -86,24 +81,23 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         this(boot, gv);
         defaults = tu;
     }
-    
+
     protected TesterImpl(GlobalVariables gv, int i, TesterUtil tu) {
-    	super(gv);
-    	defaults = tu;
-    	this.setId(i);
+        super(gv);
+        defaults = tu;
+        this.setId(i);
         testCase = new TestCaseWrapper(this);
     }
 
     public void setCoordinator(Coordinator c) {
         LOG.entering("TesterImpl", "setCoordinator");
-    	assert c != null : "Null coordinator";
-    	this.coord = c;
+        assert c != null : "Null coordinator";
+        this.coord = c;
     }
-
 
     public void start() throws RemoteException {
         LOG.entering("TesterImpl", "start()");
-    	assert coord != null : "Null coordinator";
+        assert coord != null : "Null coordinator";
 
         coord.registerMethods(this, testCase.register(testCaseClass));
     }
@@ -126,22 +120,22 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                 md = executionQueue.poll(defaults.getWaitForMethod(), TimeUnit.MILLISECONDS);
                 if (md != null) {
                     invocationThread = new Thread(new Invoke(md));
-                    
+
                     if (md.getTimeout() > 0) {
-                        timeoutThread = new Thread(new Timeout(invocationThread,md.getTimeout()));
+                        timeoutThread = new Thread(new Timeout(invocationThread, md.getTimeout()));
                         timeoutThread.start();
                     }
                     invocationThread.start();
                 }
             } catch (InterruptedException e) {
-                LOG.log(Level.SEVERE,"TesterImpl:run() - InterruptedException", e);
+                LOG.log(Level.SEVERE, "TesterImpl:run() - InterruptedException", e);
             }
         }
         LOG.fine("Stopping Tester ");
         try {
             coord.quit(this);
         } catch (RemoteException e) {
-            LOG.log(Level.SEVERE,"Error calling Coordinator.quit()",e);
+            LOG.log(Level.SEVERE, "Error calling Coordinator.quit()", e);
         }
     }
 
@@ -155,7 +149,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      */
     public void registerTestCase(Class<?> klass) {
         LOG.entering("TesterImpl", "registerTestCase(CLass)");
-        testCaseClass = klass;  
+        testCaseClass = klass;
     }
 
     /**
@@ -198,10 +192,10 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      *  @param methodAnnotation the method which was executed
      */
     private void executionFinished(ResultSet r) {
-    	assert coord != null : "Null coordinator";
+        assert coord != null : "Null coordinator";
 
         try {
-            coord.methodExecutionFinished(r);            
+            coord.methodExecutionFinished(r);
             if (testCase.isLastMethod()) {
                 LOG.log(Level.FINEST, "Test Case finished");
                 quit();
@@ -219,18 +213,17 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      *  Cleans the action list and asks coordinator to quit.
      */
     public void quit() {
-    	assert coord != null : "Null coordinator";
-    	
+        assert coord != null : "Null coordinator";
+
         try {
             executionQueue.clear();
             coord.quit(this);
         } catch (RemoteException e) {
-            LOG.log(Level.SEVERE,"Remote error during quit().", e);
+            LOG.log(Level.SEVERE, "Remote error during quit().", e);
         } finally {
             stop = true;
         }
     }
-
 
     /**
      *  Used to invoke an action
@@ -248,31 +241,30 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
                 LOG.finest("Thread was interrupted.");
             }
         } catch (InconclusiveFailure e) {
-        	LOG.finest("InconclusiveFailure");
+            LOG.log(Level.WARNING, "InconclusiveFailure", e);
             result.addInconclusive(e);
         } catch (TestException e) {
-            LOG.finest("TestException");
+            LOG.log(Level.WARNING, "TestException", e);
             result.addFailure(e);
         } catch (AssertionError e) {
-            LOG.finest("AssertionError");
+            LOG.log(Level.WARNING, "AssertionError", e);
             result.addFailure(e);
-        }  catch (InterruptedException e) {
-            LOG.finest("InterruptedException");
+        } catch (InterruptedException e) {
+            LOG.log(Level.WARNING, "InterruptedException", e);
             result.addInconclusive(e);
         } catch (ClosedByInterruptException e) {
-            LOG.severe("ClosedByInterruptException");
+            LOG.log(Level.WARNING, "ClosedByInterruptException", e);
             result.addInconclusive(null);
         } catch (Throwable e) {
-            LOG.finest("Throwable");
+            LOG.log(Level.WARNING, "Throwable", e);
             result.addError(e);
         } finally {
             result.stop();
         }
-        
-        LOG.log(Level.FINEST, "Tester ["+id+"] Executed " + md);
+
+        LOG.log(Level.FINEST, "Tester [" + id + "] Executed " + md);
         this.executionFinished(result.asResultSet());
     }
-
 
     public void cleanUp() {
         LOG.fine("Tester cleaning up.");
@@ -281,23 +273,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         coord = null;
     }
 
-    private void initializeLogger() {
-        FileHandler handler;
-        try {
-            Level level = defaults.getLogLevel();
-            handler = new FileHandler(String.format("Tester%d.log",id));
-            handler.setFormatter(new LogFormat());
-            handler.setLevel(level);
 
-            LOG.addHandler(handler);
-            LOG.setLevel(defaults.getLogLevel());
-
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
-    }
 
     /**
      * @author Eduardo Almeida.
@@ -317,5 +293,4 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
             invoke(md);
         }
     }
-
 }

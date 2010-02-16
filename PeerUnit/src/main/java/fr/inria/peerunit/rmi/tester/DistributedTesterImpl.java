@@ -239,24 +239,6 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
         }
     }
 
-    private void initializeLogger() {
-        FileHandler handler;
-        try {
-            Level level = defaults.getLogLevel();
-            handler = new FileHandler(String.format("Tester%d.log",id));
-            handler.setFormatter(new LogFormat());
-            handler.setLevel(level);
-
-            LOG.addHandler(handler);
-            LOG.setLevel(defaults.getLogLevel());
-
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
-    }
-
 
     class DistributedTesterThread implements Runnable {
 

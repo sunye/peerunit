@@ -18,8 +18,13 @@ package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.util.TesterUtil;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -28,11 +33,12 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractTester implements Tester {
 
-    private static final Logger log = Logger.getLogger(AbstractTester.class.getName());
+    private static final Logger LOG = Logger.getLogger(AbstractTester.class.getName());
 
     protected int id;
     protected transient GlobalVariables globals;
-
+    protected transient TesterUtil defaults = TesterUtil.instance;
+    
     /**
      * No arguments constructor.
      * Needed for serialization/deserialization of subclasses.
@@ -49,13 +55,13 @@ public abstract class AbstractTester implements Tester {
      * @return the tester's id
      */
     public int getId() {
-        log.entering("AbstractTester", "getId()");
+        LOG.entering("AbstractTester", "getId()");
 
         return this.id;
     }
 
     public void setId(int i) {
-        log.entering("AbstractTester", "setId(int)");
+        LOG.entering("AbstractTester", "setId(int)");
 
        this.id =i;
     }
@@ -101,5 +107,25 @@ public abstract class AbstractTester implements Tester {
 
     protected final GlobalVariables globalTable() {
         return globals;
+    }
+
+    protected void initializeLogger() {
+        FileHandler handler;
+        try {
+            Level level = defaults.getLogLevel();
+            handler = new FileHandler(String.format("Tester%d.log", id));
+            handler.setFormatter(new LogFormat());
+            handler.setLevel(level);
+
+            Logger.getLogger("").addHandler(handler);
+            //LOG.addHandler(handler);
+            //LOG.setLevel(defaults.getLogLevel());
+            Logger.getLogger("fr.inria").setLevel(level);
+            Logger.getLogger("").getHandlers()[0].setLevel(level);
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 }
