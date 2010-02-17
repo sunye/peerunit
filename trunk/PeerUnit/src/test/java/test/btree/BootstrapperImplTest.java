@@ -20,9 +20,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-import java.rmi.AccessException;
-import java.rmi.AlreadyBoundException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -82,27 +79,15 @@ public class BootstrapperImplTest {
     }
 
     @Test
-    public void testRemoteRegister() {
-        try {
-            Registry registry = LocateRegistry.createRegistry(1099);
-            Bootstrapper stub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
-            registry.bind("BootTest", stub);
-
-            Bootstrapper remoteBoot = (Bootstrapper) registry.lookup("BootTest");
-            DistributedTesterImpl tester = new DistributedTesterImpl(TestCaseImpl.class, remoteBoot, null, defaults);
-            tester.register();
-
-            assertTrue(tester.getId() == 0);
-        } catch (AccessException e) {
-            fail(e.getMessage());
-        } catch (RemoteException e) {
-            fail(e.getMessage());
-        } catch (AlreadyBoundException e) {
-            fail(e.getMessage());
-        } catch (NotBoundException e) {
-            fail(e.getMessage());
-        }
-
+    public void testRemoteRegister() throws Exception {
+        Registry registry;
+        registry = LocateRegistry.createRegistry(2099);
+        Bootstrapper stub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
+        registry.bind("BootTest", stub);
+        Bootstrapper remoteBoot = (Bootstrapper) registry.lookup("BootTest");
+        DistributedTesterImpl tester = new DistributedTesterImpl(TestCaseImpl.class, remoteBoot, null, defaults);
+        tester.register();
+        assertTrue(tester.getId() == 0);
     }
 
     @Test

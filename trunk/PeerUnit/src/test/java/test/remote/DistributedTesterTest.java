@@ -35,7 +35,7 @@ public class DistributedTesterTest {
     public void testSerialization() {
         Registry registry;
         try {
-            registry = LocateRegistry.createRegistry(1099);
+            registry = LocateRegistry.createRegistry(3099);
             DistributedTesterImpl dt = new DistributedTesterImpl(null, null, null, TesterUtil.instance);
             Tester stub = (Tester) UnicastRemoteObject.exportObject(dt, 0);
             registry.bind("DT", stub);
