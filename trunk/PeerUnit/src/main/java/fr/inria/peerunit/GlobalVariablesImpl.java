@@ -23,10 +23,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 
  * @author Veronique Pelleau
+ * @author sunye
  * @version 1.0
  * @since 1.0
  */
 public class GlobalVariablesImpl implements GlobalVariables {
+
+        private static final long serialVersionUID = 2L;
+
+
 	/**
 	 * Caching global variables
 	 */
