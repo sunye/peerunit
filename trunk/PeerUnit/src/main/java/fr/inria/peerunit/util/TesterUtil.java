@@ -51,16 +51,17 @@ public class TesterUtil {
     final public static TesterUtil instance = new TesterUtil();
 
     private TesterUtil() {
-
         try {
             Properties defaults = new Properties();
             InputStream is = this.getClass().getResourceAsStream("/peerunit.properties");
             defaults.load(is);
+            is.close();
             props = new Properties(defaults);
             if (new File("peerunit.properties").exists()) {
                 String filename = "peerunit.properties";
                 FileInputStream fs = new FileInputStream(filename);
                 props.load(fs);
+                fs.close();
             }
         } catch (IOException e) {
             System.err.println("Could not find default properties' resource.");
