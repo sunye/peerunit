@@ -1,18 +1,18 @@
 /*
-    This file is part of PeerUnit.
+This file is part of PeerUnit.
 
-    PeerUnit is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+PeerUnit is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    PeerUnit is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+PeerUnit is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit;
 
@@ -41,13 +41,9 @@ import fr.inria.peerunit.util.TesterUtil;
  */
 public class CoordinatorRunner {
 
-    private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
-    private Coordinator stub;
-    private CoordinatorImpl cii;
-    private GlobalVariablesImpl globals;
-    private GlobalVariables globalsStub;
-    private BootstrapperImpl bootstrapper;
+    private static final Logger LOG = Logger.getLogger(CoordinatorImpl.class.getName());
     private TesterUtil defaults;
+    private Registry registry;
 
     /**
      * @param defaults
@@ -55,9 +51,10 @@ public class CoordinatorRunner {
     public CoordinatorRunner(TesterUtil tu) {
         defaults = tu;
         try {
+            this.initializeRegistry();
             this.initializeLogger();
         } catch (IOException ex) {
-            log.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
 
     }
@@ -77,45 +74,76 @@ public class CoordinatorRunner {
         Logger.getLogger("").getHandlers()[0].setLevel(l);
     }
 
-    private void start() throws RemoteException, AlreadyBoundException, InterruptedException, NotBoundException {
-        log.entering("CoordinatorRunner", "start()");
+    private void initializeRegistry() throws RemoteException {
+        try {
+            registry = LocateRegistry.createRegistry(1099);
+        } catch (RemoteException e) {
+            registry = LocateRegistry.getRegistry();
+        }
+        assert registry != null;
+    }
 
-        // Bind the remote object's stub in the registry
-        Registry registry = LocateRegistry.createRegistry(1099);
-        globals = new GlobalVariablesImpl();
-        globalsStub = (GlobalVariables) UnicastRemoteObject.exportObject(globals, 0);
-        registry.bind("Globals", globalsStub);
+    private void start() throws RemoteException, AlreadyBoundException, InterruptedException, NotBoundException {
+
+        LOG.entering("CoordinatorRunner", "start()");
+        this.bindGlobals();
 
         if (defaults.getCoordinationType() == 0) {
-            log.info("Using the centralized architecture");
-            cii = new CoordinatorImpl(defaults);
-            stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
-            log.info("New Coordinator address is : " + defaults.getServerAddr());
-            registry.bind("Coordinator", stub);
-
-            Thread coordination = new Thread(cii, "Coordinator");
-            coordination.start();
-            coordination.join();
-            log.info("Coordination thread finished");
-            registry.unbind("Coordinator");
+            this.startCoordinator();
         } else {
-            log.info("Using the distributed architecture");
-            bootstrapper = new BootstrapperImpl(defaults);
-            Bootstrapper bootStub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
-            registry.bind("Bootstrapper", bootStub);
-            Thread boot = new Thread(bootstrapper, "Bootstrapper");
-            boot.start();
-            boot.join();
-            log.info("Bootstrap thread finished");
-            registry.unbind("Bootstrapper");
-            //UnicastRemoteObject.unexportObject(bootstrapper, true);
+            this.startBootstrapper();
         }
-        registry.unbind("Globals");
-        //UnicastRemoteObject.unexportObject(globals, true);
-        //UnicastRemoteObject.unexportObject(registry, true);
-
+        this.cleanAndUnbind();
         Thread.sleep(3000);
         System.exit(0);
+    }
+
+    public void startCoordinator() throws RemoteException, AlreadyBoundException, InterruptedException {
+        LOG.info("Using the centralized architecture");
+        CoordinatorImpl cii = new CoordinatorImpl(defaults);
+        Coordinator stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
+        LOG.info("New Coordinator address is : " + defaults.getServerAddr());
+        registry.bind("Coordinator", stub);
+
+        Thread coordination = new Thread(cii, "Coordinator");
+        coordination.start();
+        coordination.join();
+        LOG.info("Coordination thread finished");
+    }
+
+    public void startBootstrapper() throws RemoteException, AlreadyBoundException, InterruptedException {
+        LOG.info("Using the distributed architecture");
+        BootstrapperImpl bootstrapper = new BootstrapperImpl(defaults);
+        Bootstrapper bootStub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
+        registry.bind("Bootstrapper", bootStub);
+        Thread boot = new Thread(bootstrapper, "Bootstrapper");
+        boot.start();
+        boot.join();
+        LOG.info("Bootstrap thread finished");
+    }
+
+    /**
+     *  Bind the remote object's stub in the registry
+     *
+     * @throws RemoteException
+     * @throws AlreadyBoundException
+     */
+    public void bindGlobals() throws RemoteException, AlreadyBoundException {
+        assert registry != null;
+
+        GlobalVariablesImpl globals = new GlobalVariablesImpl();
+        GlobalVariables globalsStub = (GlobalVariables) UnicastRemoteObject.exportObject(globals);
+        registry.bind("Globals", globalsStub);
+    }
+
+    public void cleanAndUnbind() throws RemoteException {
+        try {
+            registry.unbind("Bootstrapper");
+            registry.unbind("Coordinator");
+            registry.unbind("Globals");
+        } catch (NotBoundException e) {
+            // Do nothing
+        } 
     }
 
     /**
@@ -141,15 +169,16 @@ public class CoordinatorRunner {
             cr.start();
 
         } catch (RemoteException ex) {
-            log.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         } catch (AlreadyBoundException ex) {
-            log.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
-            log.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         } catch (NotBoundException ex) {
-            log.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         } catch (FileNotFoundException e) {
             System.err.println("Error: Unable to open properties file");
+        } finally {
             System.exit(1);
         }
 
