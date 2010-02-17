@@ -41,12 +41,12 @@
                         <goals>
                             <goal>rmic</goal>
                         </goals>
-                        <configuration>
-                            <verbose>true</verbose>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <verbose>false</verbose>
+                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                </configuration>
             </plugin>
         </plugins>
     </build>
