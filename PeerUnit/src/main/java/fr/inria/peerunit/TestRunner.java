@@ -74,10 +74,14 @@ public class TestRunner {
         boolean centralized = true;
 
         this.initializeLogger();
+        try {
+            registry = LocateRegistry.getRegistry();
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
 
         while (times < 5 && boot == null) {
             try {
-                registry = LocateRegistry.getRegistry();
                 boot = (Bootstrapper) registry.lookup("Bootstrapper");
                 centralized = false;
 
