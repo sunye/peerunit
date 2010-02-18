@@ -24,7 +24,7 @@ public class TestNewJoin extends AbstractFreePastryTest {
     private List<Id> firstSuccessors = new ArrayList<Id>();
 
     @TestStep(range = "*", timeout = 10000, order = 2)
-    public void startingHalfNet() throws InterruptedException {
+    public void startingHalfNet() throws Exception {
 
 
         if (this.getPeerName() % 2 != 0) {
@@ -59,7 +59,7 @@ public class TestNewJoin extends AbstractFreePastryTest {
     }
 
     @TestStep(range = "*", timeout = 10000, order = 5)
-    public void startingOtherHalfNet() throws InterruptedException {
+    public void startingOtherHalfNet() throws Exception {
 
 
 

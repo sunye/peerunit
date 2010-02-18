@@ -31,49 +31,33 @@ public class Network {
         }
     }
 
-    public boolean joinNetwork(Peer peer, InetSocketAddress bootaddress, boolean createNetwork, Logger log) {
+    public boolean joinNetwork(Peer peer, InetSocketAddress bootaddress, boolean createNetwork, Logger log) throws UnknownHostException, InterruptedException, IOException {
         bootadd = bootaddress;
         Environment env = new Environment();
 
         // the port to use locally
-        //int bindport = port.getPort();
-        int bootport = TesterUtil.instance.getBootstrapPort();
+        int bootport = defaults.getBootstrapPort();
 
         // build the bootaddress from the command line args
-        InetAddress bootIP = null;
-        try {
-            bootIP = InetAddress.getByName(defaults.getBootstrap());
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        InetAddress bootIP = InetAddress.getLocalHost();
+
+        //bootIP = InetAddress.getByName(defaults.getBootstrap());
 
         if (bootadd == null) {
             bootadd = new InetSocketAddress(bootIP, bootport);
         }
 
         boolean joined = false;
-        try {
 
-            int usedPort = 0;
-            if (createNetwork) {
-                usedPort = bootport;
-            } else {
-                FreeLocalPort port = new FreeLocalPort();
-                usedPort = port.getPort();
-            }
-
-            if (!peer.join(usedPort, bootadd, env, log, createNetwork)) {
-                joined = false;
-            } else {
-                joined = true;
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        int usedPort = 0;
+        if (createNetwork) {
+            usedPort = bootport;
+        } else {
+            FreeLocalPort port = new FreeLocalPort();
+            usedPort = port.getPort();
         }
+
+        joined = peer.join(usedPort, bootadd, env, log, createNetwork);
         return joined;
     }
 

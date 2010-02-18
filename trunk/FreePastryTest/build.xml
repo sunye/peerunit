@@ -21,7 +21,9 @@
 
     <target name="exec">
         <parallel>
+			<!--
             <java classname="fr.inria.peerunit.freepastrytest.Bootstrap" classpathref="exec.classpath" fork="true"/>
+			-->
             <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
             <antcall  target="tester.execute"/>
             <antcall  target="tester.execute"/>

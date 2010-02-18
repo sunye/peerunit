@@ -38,6 +38,15 @@ import java.io.FileInputStream;
 
 public class Peer implements Application {
 
+    /**
+     * FIXME: Attributes should not be public
+     */
+    public PastryIdFactory localFactory;
+    /**
+     * FIXME: Attributes should not be public
+     */
+    public Environment env;
+
     private NodeIdFactory nidFactory;
     // construct the PastryNodeFactory, this is how we use rice.pastry.socket
     private PastryNodeFactory factory;
@@ -45,9 +54,7 @@ public class Peer implements Application {
     private NodeHandle bootHandle;
     // construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
     private PastryNode node;
-    public Environment env;
     private Past app;
-    public PastryIdFactory localFactory;
     private static Logger log;
     private List<Object> resultSet = new ArrayList<Object>();
     private List<Id> nullResult = new ArrayList<Id>();

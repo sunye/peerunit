@@ -60,7 +60,7 @@ public class TestInsertJoin extends AbstractFreePastryTest {
     }
 
     @TestStep(range = "*", timeout = 10000, order = 2)
-    public void startingInitNet() throws InterruptedException, RemoteException {
+    public void startingInitNet() throws Exception {
         if (!chosenOne(this.getPeerName())) {
             log.info("Joining in first");
             Network net = new Network();
@@ -136,7 +136,7 @@ public class TestInsertJoin extends AbstractFreePastryTest {
     }
 
     @TestStep(range = "*", timeout = 10000, order = 6)
-    public void startingOtherHalfNet() throws InterruptedException, RemoteException {
+    public void startingOtherHalfNet() throws Exception {
 
 
         Thread.sleep(sleep);

@@ -4,7 +4,11 @@
  */
 package fr.inria.peerunit.freepastrytest.test;
 
+import static fr.inria.peerunit.test.assertion.Assert.*;
+
 import fr.inria.peerunit.GlobalVariables;
+import fr.inria.peerunit.freepastrytest.BootException;
+import fr.inria.peerunit.freepastrytest.Network;
 import fr.inria.peerunit.freepastrytest.Peer;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.SetGlobals;
@@ -13,6 +17,8 @@ import fr.inria.peerunit.util.TesterUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -23,16 +29,14 @@ import java.util.logging.Logger;
  */
 public class AbstractFreePastryTest {
 
-    private static Logger log = Logger.getLogger(AbstractFreePastryTest.class.getName());
-
+    private static Logger LOG = Logger.getLogger(AbstractFreePastryTest.class.getName());
     private int id;
-    private GlobalVariables globals;
+    private static GlobalVariables globals;
     protected TesterUtil defaults;
     protected int size;
     protected int sleep;
     protected int churnPercentage;
     protected int OBJECTS;
-
     protected Peer peer = new Peer();
 
     @BeforeClass(range = "*", timeout = 1000000)
@@ -48,7 +52,7 @@ public class AbstractFreePastryTest {
         sleep = defaults.getSleep();
         churnPercentage = defaults.getChurnPercentage();
         OBJECTS = defaults.getObjects();
-        log.info("Starting test DHT ");
+        LOG.info("Starting test DHT ");
     }
 
     @SetId
@@ -86,16 +90,36 @@ public class AbstractFreePastryTest {
         return id;
     }
 
-    protected Map<Integer,Object> getCollection() throws RemoteException {
+    protected Map<Integer, Object> getCollection() throws RemoteException {
         return globals.getCollection();
     }
 
+    /**
+     * @author sunye
+     * FIXME: Implement kill()
+     */
     protected void kill() {
-        
     }
 
+    /**
+     * @author sunye
+     * FIXME: Implement clear()
+     */
     protected void clear() {
-        
     }
 
+    protected void bootstrap() throws UnknownHostException,
+            InterruptedException, IOException {
+        //Peer peer = new Peer();
+        Network net = new Network();
+        if (!net.joinNetwork(peer, null, true, LOG)) {
+            inconclusive("Can't bootstrap");
+        }
+        this.put(-1, net.getInetSocketAddress());
+        LOG.info(String.format("Net created at: %s", net.getInetSocketAddress()));
+
+        while (!peer.isReady()) {
+            Thread.sleep(1000);
+        }
+    }
 }

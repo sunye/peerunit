@@ -26,7 +26,7 @@ public class TestPeerIsolation extends AbstractFreePastryTest {
     private List<Id> volatiles = new ArrayList<Id>();
 
     @TestStep(range = "*", timeout = 10000, order = 1)
-    public void startingNetwork() throws InterruptedException {
+    public void startingNetwork() throws Exception {
 
 
         log.info("Joining in first");

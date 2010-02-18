@@ -29,7 +29,7 @@ public class TestInsertLeaveNew extends AbstractFreePastryTest {
     private List<PastContent> keySet;
 
     @TestStep(range = "*", timeout = 10000, order = 1)
-    public void startingNetwork() throws InterruptedException, RemoteException {
+    public void startingNetwork() throws Exception {
 
 
         if (this.getPeerName() == 0) {
@@ -78,7 +78,7 @@ public class TestInsertLeaveNew extends AbstractFreePastryTest {
     }
 
     @TestStep(range = "*", timeout = 10000, order = 3)
-    public void startingInitNet() throws InterruptedException, RemoteException {
+    public void startingInitNet() throws Exception {
 
 
         // Wait a while due to the bootstrapper performance
