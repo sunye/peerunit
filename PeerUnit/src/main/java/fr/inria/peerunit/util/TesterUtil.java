@@ -354,5 +354,21 @@ public class TesterUtil {
 
         return this.getProperty("tester.hostfile");
     }
+
+    /**
+     * This method return the Tester's Bootstrap addresses.
+     *
+     * @return 	 the port for the rmi registry
+     */
+    public int getRegistryPort() {
+        int port;
+        try {
+            port = Integer.parseInt(this.getProperty("registry.port"));
+        } catch (NumberFormatException e) {
+            port = 1099;
+        }
+
+        return port;
+    }
 }
 

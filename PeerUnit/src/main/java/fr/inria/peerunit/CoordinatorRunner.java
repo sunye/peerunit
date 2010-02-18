@@ -41,7 +41,10 @@ import fr.inria.peerunit.util.TesterUtil;
  */
 public class CoordinatorRunner {
 
-    private static final Logger LOG = Logger.getLogger(CoordinatorImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(CoordinatorRunner.class.getName());
+
+    private static final GlobalVariablesImpl globals = new GlobalVariablesImpl();
+
     private TesterUtil defaults;
     private Registry registry;
 
@@ -68,17 +71,18 @@ public class CoordinatorRunner {
         FileHandler handler = new FileHandler("coordination.log");
         handler.setFormatter(new LogFormat());
         handler.setLevel(l);
-        Logger.getLogger("").addHandler(handler);
-        //Logger.getLogger("").setLevel(defaults.getLogLevel());
-        Logger.getLogger("fr.inria").setLevel(l);
-        Logger.getLogger("").getHandlers()[0].setLevel(l);
+
+        Logger myLogger = Logger.getLogger("fr.inria");
+        myLogger.setUseParentHandlers(false);
+        myLogger.addHandler(handler);
+        myLogger.setLevel(l);
     }
 
     private void initializeRegistry() throws RemoteException {
         try {
-            registry = LocateRegistry.createRegistry(1099);
+            registry = LocateRegistry.createRegistry(defaults.getRegistryPort());
         } catch (RemoteException e) {
-            registry = LocateRegistry.getRegistry();
+            registry = LocateRegistry.getRegistry(defaults.getRegistryPort());
         }
         assert registry != null;
     }
@@ -93,6 +97,7 @@ public class CoordinatorRunner {
         } else {
             this.startBootstrapper();
         }
+
         this.cleanAndUnbind();
         Thread.sleep(3000);
         System.exit(0);
@@ -131,7 +136,6 @@ public class CoordinatorRunner {
     public void bindGlobals() throws RemoteException, AlreadyBoundException {
         assert registry != null;
 
-        GlobalVariablesImpl globals = new GlobalVariablesImpl();
         GlobalVariables globalsStub = (GlobalVariables) UnicastRemoteObject.exportObject(globals);
         registry.bind("Globals", globalsStub);
     }
@@ -170,12 +174,16 @@ public class CoordinatorRunner {
 
         } catch (RemoteException ex) {
             LOG.log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } catch (AlreadyBoundException ex) {
             LOG.log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } catch (InterruptedException ex) {
             LOG.log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } catch (NotBoundException ex) {
             LOG.log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } catch (FileNotFoundException e) {
             System.err.println("Error: Unable to open properties file");
         } finally {

@@ -134,7 +134,8 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
     }
 
     public void startRoot() throws RemoteException {
-        testers.head().value().start();
+        Tester root = testers.head().value();
+        root.start();
     }
 
     public void cleanUp() {

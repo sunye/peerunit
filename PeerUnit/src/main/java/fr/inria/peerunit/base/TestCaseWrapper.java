@@ -88,6 +88,7 @@ public class TestCaseWrapper {
             m.invoke(testcase, (Object[]) null);
         } catch (IllegalAccessException e) {
             e.fillInStackTrace();
+            throw e.getCause();
         } catch (InvocationTargetException e) {
             e.fillInStackTrace();
             throw e.getCause();

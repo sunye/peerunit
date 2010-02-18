@@ -43,7 +43,7 @@ import fr.inria.peerunit.util.TesterUtil;
 public class CoordinatorImpl implements Coordinator, Bootstrapper,
         Runnable, Serializable {
     
-    private static final Logger log = Logger.getLogger(CoordinatorImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(CoordinatorImpl.class.getName());
 
     private static final long serialVersionUID = 1L;
     private static final int STARTING = 0;
@@ -105,11 +105,11 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
             throws RemoteException {
 
         assert status == STARTING : "Trying to register while not starting";
-        log.entering("CoordinatorImpl", "registerMethods(Tester, Collection)");
+        LOG.entering("CoordinatorImpl", "registerMethods(Tester, Collection)");
 
 
         if (registeredTesters.size() >= expectedTesters.intValue()) {
-            log.warning("More registrations than expected");
+            LOG.warning("More registrations than expected");
             return;
         }
 
@@ -130,7 +130,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
             printVerdict();
             cleanUp();
         } catch (InterruptedException ie) {
-            log.warning(ie.getMessage());
+            LOG.warning(ie.getMessage());
         }
     }
 
@@ -152,8 +152,8 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     public void testcaseExecution() throws InterruptedException {
         assert (status == IDLE) : "Trying to execute test case while not idle";
 
-        log.entering("CoordinatorImpl", "testCaseExecution()");
-        log.finer(String.format("RegistredMethods: %d", schedule.size()));
+        LOG.entering("CoordinatorImpl", "testCaseExecution()");
+        LOG.finer(String.format("RegistredMethods: %d", schedule.size()));
 
         for (MethodDescription each : schedule.methods()) {
             execute(each);
@@ -173,21 +173,23 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
         assert (status = RUNNING) == RUNNING;
         assert md != null : "Null MethodDescription";
 
-        log.entering("CoordinatorImpl", "execute()",md);
+        LOG.entering("CoordinatorImpl", "execute()",md);
         ResultSet result = new ResultSet(md);
         verdict.putResult(md, result);
         result.start();
 
         Collection<Tester> testers = schedule.testersFor(md);
-        log.finest("Method " + md + " will be executed by " + testers.size() + " testers");
+        String message = String.format("Method %s will be executed by %d testers", md, testers.size());
+        LOG.fine(message);
+        System.out.println(message);
         runningTesters.set(testers.size());
         for (Tester each : testers) {
-            log.finest("Dispatching " + md + " to tester " + each);
+            LOG.finest("Dispatching " + md + " to tester " + each);
             executor.submit(new MethodExecute(each, md));
         }
         waitForExecutionFinished();
         result.stop();
-        log.finest("Method " + md + " executed in " + result.getDelay() + " msec");
+        LOG.finest("Method " + md + " executed in " + result.getDelay() + " msec");
     }
 
     public ResultSet getResultFor(MethodDescription md) {
@@ -202,9 +204,9 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
      * java.util.concurrent to handle the semaphore concurrency access
      */
     public synchronized int register(Tester t) throws RemoteException {
-        log.entering("CoordinatorIml", "register(Tester)");
+        LOG.entering("CoordinatorIml", "register(Tester)");
         int id = runningTesters.getAndIncrement();
-        log.fine("New Registered Tester: " + id + " new client " + t);
+        LOG.fine("New Registered Tester: " + id + " new client " + t);
         return id;
     }
 
@@ -224,7 +226,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
 
     public synchronized void quit(Tester t) throws RemoteException {
         //assert status == LEAVING : "Trying to quit during execution";
-        log.fine(String.format("Tester %s is leaving.",t));
+        LOG.fine(String.format("Tester %s is leaving.",t));
         
         synchronized (registeredTesters) {
             registeredTesters.remove(t);
@@ -245,7 +247,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     public void waitForTesterRegistration() throws InterruptedException {
         assert status == STARTING : "Trying to register while not starting";
 
-        log.fine("Waiting for registration. Expecting " + expectedTesters + " testers.");
+        LOG.fine("Waiting for registration. Expecting " + expectedTesters + " testers.");
         while (registeredTesters.size() < expectedTesters.intValue()) {
             synchronized (registeredTesters) {
                 registeredTesters.wait();
@@ -261,7 +263,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     private void waitForExecutionFinished() throws InterruptedException {
         assert status == RUNNING : "Trying to finish method while not running";
 
-        log.fine("Waiting for the end of the execution.");
+        LOG.fine("Waiting for the end of the execution.");
         while (runningTesters.intValue() > 0) {
             synchronized (runningTesters) {
                 runningTesters.wait();
@@ -279,21 +281,21 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     public void waitAllTestersToQuit() throws InterruptedException {
         //assert status == LEAVING : "Trying to quit before time";
 
-        log.fine("Waiting all testers to quit.");
+        LOG.fine("Waiting all testers to quit.");
         while (registeredTesters.size() > 0) {
             synchronized (registeredTesters) {
                 registeredTesters.wait();
             }
-            log.fine(String.format("Waiting for %d testers to quit.", registeredTesters.size()));
+            LOG.fine(String.format("Waiting for %d testers to quit.", registeredTesters.size()));
         }
-        log.fine("All testers quit.");
+        LOG.fine("All testers quit.");
     }
 
     /**
      * Clears references to testers.
      */
     public void cleanUp() {
-        log.fine("Coordinator cleaning up.");
+        LOG.fine("Coordinator cleaning up.");
         schedule.clear();
         runningTesters.set(0);
         registeredTesters.clear();

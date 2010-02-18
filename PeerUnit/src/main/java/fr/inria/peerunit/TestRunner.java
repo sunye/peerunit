@@ -54,7 +54,7 @@ public class TestRunner {
     private Class<?> testcase;
     private TesterUtil defaults;
     private Registry registry;
-    private static final Logger log = Logger.getLogger(TesterImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(TestRunner.class.getName());
 
     /**
      * Launch the right implementation of <i>tester</i> passing it as argument the <tt>Class</tt>
@@ -73,12 +73,19 @@ public class TestRunner {
         int times = 0;
         boolean centralized = true;
 
-        this.initializeLogger();
+        //this.initializeLogger();
         try {
-            registry = LocateRegistry.getRegistry();
+            registry = LocateRegistry.getRegistry(defaults.getRegistryPort());
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
+
+        /**
+        try {
+            registry = LocateRegistry.getRegistry(defaults.getRegistryPort());
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }*/
 
         while (times < 5 && boot == null) {
             try {
@@ -104,14 +111,14 @@ public class TestRunner {
         }
 
         if (boot == null) {
-            log.severe("Unable to bind");
+            LOG.severe("Unable to bind");
             System.exit(1);
         }
 
         try {
             GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
             if (centralized) {
-                log.fine("Coordinator found, using the centralized architecture.");
+                LOG.fine("Coordinator found, using the centralized architecture.");
                 TesterImpl tester = new TesterImpl(boot, globals, defaults);
                 UnicastRemoteObject.exportObject(tester);
 
@@ -122,7 +129,7 @@ public class TestRunner {
                 tester.run();
 
             } else {
-                log.fine("Bootstrapper found, using the distributed architecture.");
+                LOG.fine("Bootstrapper found, using the distributed architecture.");
                 DistributedTesterImpl tester = new DistributedTesterImpl(testcase, boot, globals, defaults);
                 UnicastRemoteObject.exportObject(tester);
                 tester.register();
@@ -130,10 +137,13 @@ public class TestRunner {
                 //tester.run();
             }
         } catch (Exception e) {
+            e.printStackTrace(System.err);
+        } finally {
+            System.exit(0);
         }
 
     }
-
+/*
     private void initializeLogger() {
         try {
             Level level = defaults.getLogLevel();
@@ -143,10 +153,10 @@ public class TestRunner {
             Logger.getLogger("").getHandlers()[0].setFormatter(formatter);
 
         } catch (SecurityException ex) {
-            log.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
-
+*/
     /**
      * In the main method, we get the only argument corresponding to class name of
      * <i>test case</i> to perform. We load the <tt>Class</tt> corresponding and we

@@ -42,7 +42,7 @@ public class GlobalVariablesTest {
 
     @Before
     public void setUp() throws RemoteException, NotBoundException {
-        registry = LocateRegistry.getRegistry();
+        registry = LocateRegistry.getRegistry(TesterUtil.instance.getRegistryPort());
         globals = (GlobalVariables) registry.lookup("Globals");
     }
 
