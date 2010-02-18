@@ -33,7 +33,7 @@ public class TestInsertJoinLeaveNew extends AbstractFreePastryTest {
     private List<PastContent> keySet;
 
     @TestStep(range = "0", timeout = 10000, order = 1)
-    public void startingNetwork() throws InterruptedException, RemoteException {
+    public void startingNetwork() throws Exception {
 
         Thread.sleep(2000);
         if (super.getPeerName() == 0) {
@@ -87,7 +87,7 @@ public class TestInsertJoinLeaveNew extends AbstractFreePastryTest {
     }
 
     @TestStep(range = "*", timeout = 10000, order = 3)
-    public void startingInitNet() throws InterruptedException, RemoteException {
+    public void startingInitNet() throws Exception {
 
         if (!chosenOne(super.getPeerName()).equalsIgnoreCase("join") && (super.getPeerName() != 0)) {
             log.info("Joining before volatility");
@@ -172,7 +172,7 @@ public class TestInsertJoinLeaveNew extends AbstractFreePastryTest {
     }
 
     @TestStep(range = "*", timeout = 10000, order = 6)
-    public void volatility() throws InterruptedException, RemoteException {
+    public void volatility() throws Exception {
 
 
         Thread.sleep(sleep);

@@ -3,6 +3,7 @@ package fr.inria.peerunit.freepastrytest.test;
 import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
 
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,28 +26,15 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
     private static Logger log = Logger.getLogger(TestInsertStableNew.class.getName());
     private List<String> expecteds = new ArrayList<String>();
 
-    @TestStep(range = "*", timeout = 100000, order = 1)
-    public void startingNetwork() throws RemoteException, InterruptedException {
 
-        if (this.getPeerName() == 0) {
-            Network net = new Network();
-            if (!net.joinNetwork(peer, null, true, log)) {
-                inconclusive("I couldn't become a boostrapper, sorry");
-            }
-
-            this.put(-1, net.getInetSocketAddress());
-            log.info("Net created");
-
-            while (!peer.isReady()) {
-                Thread.sleep(16000);
-            }
-        }
+    @TestStep(range = "0", timeout = 100000, order = 1)
+    public void startingNetwork() throws Exception {
+        this.bootstrap();
         Thread.sleep(sleep);
-
     }
 
     @TestStep(range = "*", timeout = 100000, order = 2)
-    public void joiningNet() throws RemoteException, InterruptedException {
+    public void joiningNet() throws Exception {
 
 
         // Wait a while due to the bootstrapper performance
@@ -73,7 +61,7 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
     /**
      * Stabilize the network.
      */
-    @TestStep(range = "*", timeout = 10000, order = 3)
+    @TestStep(range = "*", timeout = 100000, order = 3)
     public void stabilize() throws InterruptedException {
         for (int i = 0; i < 4; i++) {
 
@@ -109,7 +97,7 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
 
     }
 
-    @TestStep(range = "*", timeout = 10000, order = 5)
+    @TestStep(range = "*", timeout = 30000, order = 5)
     public void testRetrieve() throws RemoteException, InterruptedException {
         // Get inserted data
         List<PastContent> cached = (List<PastContent>) this.get(0);
