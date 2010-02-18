@@ -58,7 +58,6 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
             context.startRoot();
             //context.cleanUp();
             log.info("[Bootstrapper] Finished !");
-            
         } catch (RemoteException ex) {
             log.log(Level.SEVERE, "Remote exception", ex);
         } catch (InterruptedException ex) {

@@ -1,18 +1,18 @@
 /*
-    This file is part of PeerUnit.
+This file is part of PeerUnit.
 
-    PeerUnit is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+PeerUnit is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    PeerUnit is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+PeerUnit is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.rmi.tester;
 
@@ -29,16 +29,12 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.Coordinator;
 import fr.inria.peerunit.GlobalVariables;
-import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
-import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
-import java.io.IOException;
-import java.util.logging.FileHandler;
 
 /**
  * The DistributedTester is both, a Tester and a Coordinator.
@@ -73,7 +69,6 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     private transient Bootstrapper bootstrapper;
     private transient TesterImpl tester;
     private transient CoordinatorImpl coordinator;
-    private transient TesterUtil defaults;
     private transient Class<?> testCaseClass;
 
     public DistributedTesterImpl(Class<?> klass, Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
@@ -144,7 +139,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
      * @see fr.inria.peerunit.Tester#execute(fr.inria.peerunit.parser.MethodDescription)
      */
     public void execute(MethodDescription md) throws RemoteException {
-        LOG.entering("DistributedTester","Execute", md);
+        LOG.entering("DistributedTester", "Execute", md);
         try {
             coordinator.execute(md);
             ResultSet result = coordinator.getResultFor(md);
@@ -201,13 +196,10 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
      */
     public void start() throws RemoteException {
         LOG.entering("DistributedTester", "start()");
-
         this.initializeLogger();
-        (new Thread(new DistributedTesterThread())).start();
-
+        Thread root = new Thread(new DistributedTesterThread());
+        root.start();
         LOG.exiting("DistributedTester", "start()");
-
-
     }
 
     private void createLocalTester() {
@@ -239,7 +231,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
         }
     }
 
-
+    
     class DistributedTesterThread implements Runnable {
 
         public void run() {
@@ -266,7 +258,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
                 LOG.fine("Registration finished");
 
                 if (parent == null) {
-                    LOG.fine(String.format("DistributedTester %d is root", id));
+                    LOG.fine(String.format("I am root (DistributedTester %d)", id));
                     LOG.fine("ROOT: will start the execution.");
                     coordinator.testcaseExecution();
                     LOG.fine("ROOT: execution finished, waiting for testers to quit.");
@@ -288,11 +280,13 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
                 cleanUp();
 
                 System.exit(0);
-                
+
             } catch (RemoteException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
+            } finally {
+                System.exit(1);
             }
 
 

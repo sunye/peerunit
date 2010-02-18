@@ -72,7 +72,7 @@ public abstract class AbstractTester implements Tester {
 
     @Override
     public String toString() {
-        return "Tester: " + id;
+        return String.format("Tester: %d", id);
     }
 
     /*
@@ -117,11 +117,10 @@ public abstract class AbstractTester implements Tester {
             handler.setFormatter(new LogFormat());
             handler.setLevel(level);
 
-            Logger.getLogger("").addHandler(handler);
-            //LOG.addHandler(handler);
-            //LOG.setLevel(defaults.getLogLevel());
-            Logger.getLogger("fr.inria").setLevel(level);
-            Logger.getLogger("").getHandlers()[0].setLevel(level);
+            Logger myLogger = Logger.getLogger("fr.inria");
+            myLogger.setUseParentHandlers(false);
+            myLogger.addHandler(handler);
+            myLogger.setLevel(level);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {

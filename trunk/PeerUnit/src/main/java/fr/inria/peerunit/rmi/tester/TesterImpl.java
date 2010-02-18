@@ -36,6 +36,8 @@ import fr.inria.peerunit.exception.TestException;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.test.assertion.InconclusiveFailure;
 import fr.inria.peerunit.util.TesterUtil;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.channels.ClosedByInterruptException;
 
 /**
@@ -136,7 +138,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
             coord.quit(this);
         } catch (RemoteException e) {
             LOG.log(Level.SEVERE, "Error calling Coordinator.quit()", e);
-        }
+        } 
     }
 
     /**
@@ -160,7 +162,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      */
     public synchronized void execute(MethodDescription md)
             throws RemoteException {
-        LOG.log(Level.FINEST, "Starting TesterImpl::execute(MethodDescription) with: " + md);
+        LOG.log(Level.FINE, "Starting TesterImpl::execute(MethodDescription) with: " + md);
 
         try {
             executionQueue.put(md);
@@ -256,7 +258,11 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
             LOG.log(Level.WARNING, "ClosedByInterruptException", e);
             result.addInconclusive(null);
         } catch (Throwable e) {
-            LOG.log(Level.WARNING, "Throwable", e);
+            StringWriter writer = new StringWriter();
+            PrintWriter pw = new PrintWriter(writer);
+            e.printStackTrace(pw);
+            pw.flush();writer.flush();
+            LOG.log(Level.WARNING, writer.toString());
             result.addError(e);
         } finally {
             result.stop();
