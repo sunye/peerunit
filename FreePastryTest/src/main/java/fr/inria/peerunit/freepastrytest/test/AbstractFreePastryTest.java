@@ -95,14 +95,14 @@ public class AbstractFreePastryTest {
     }
 
     /**
-     * @author sunye
+     * 
      * FIXME: Implement kill()
      */
     protected void kill() {
     }
 
     /**
-     * @author sunye
+     * 
      * FIXME: Implement clear()
      */
     protected void clear() {
