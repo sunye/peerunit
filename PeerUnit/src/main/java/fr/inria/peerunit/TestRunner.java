@@ -73,7 +73,7 @@ public class TestRunner {
         int times = 0;
         boolean centralized = true;
 
-        //this.initializeLogger();
+        this.initializeLogger();
         try {
             registry = LocateRegistry.getRegistry(defaults.getRegistryPort());
         } catch (RemoteException ex) {
@@ -127,23 +127,20 @@ public class TestRunner {
                 tester.registerTestCase(testcase);
                 tester.start();
                 tester.run();
+                System.exit(0);
 
             } else {
                 LOG.fine("Bootstrapper found, using the distributed architecture.");
                 DistributedTesterImpl tester = new DistributedTesterImpl(testcase, boot, globals, defaults);
                 UnicastRemoteObject.exportObject(tester);
                 tester.register();
-                //tester.registerTestCase(testcase);
-                //tester.run();
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
-        } finally {
-            System.exit(0);
-        }
+        } 
 
     }
-/*
+
     private void initializeLogger() {
         try {
             Level level = defaults.getLogLevel();
@@ -156,7 +153,7 @@ public class TestRunner {
             LOG.log(Level.SEVERE, null, ex);
         }
     }
-*/
+
     /**
      * In the main method, we get the only argument corresponding to class name of
      * <i>test case</i> to perform. We load the <tt>Class</tt> corresponding and we

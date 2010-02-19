@@ -65,6 +65,8 @@ public class LogFormat extends Formatter {
         buf.append(delimiter);
         buf.append(rec.getLevel());
         buf.append(delimiter);
+        buf.append(rec.getSourceClassName());
+        buf.append(delimiter);
         buf.append(rec.getSourceMethodName());
         buf.append(delimiter);
         buf.append(formatMessage(rec));

@@ -90,6 +90,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
 
         try {
             this.setId(bootstrapper.register(this));
+            this.initializeLogger();
 
         } catch (RemoteException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -196,7 +197,6 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
      */
     public void start() throws RemoteException {
         LOG.entering("DistributedTester", "start()");
-        this.initializeLogger();
         Thread root = new Thread(new DistributedTesterThread());
         root.start();
         LOG.exiting("DistributedTester", "start()");
@@ -265,6 +265,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
                     coordinator.waitAllTestersToQuit();
                     LOG.fine("ROOT: all testers quit, calculating verdict.");
                     coordinator.printVerdict();
+                    bootstrapper.quit();
 
                 } else {
                     LOG.fine(String.format("DistributedTester %d will register with parent", id));

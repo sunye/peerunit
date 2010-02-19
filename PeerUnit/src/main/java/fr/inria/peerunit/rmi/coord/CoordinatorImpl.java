@@ -181,7 +181,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
         Collection<Tester> testers = schedule.testersFor(md);
         String message = String.format("Method %s will be executed by %d testers", md, testers.size());
         LOG.fine(message);
-        System.out.println(message);
+        //System.out.println(message);
         runningTesters.set(testers.size());
         for (Tester each : testers) {
             LOG.finest("Dispatching " + md + " to tester " + each);
@@ -308,6 +308,10 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     }
 
     public boolean isRoot(int id) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    public void quit() throws RemoteException {
+        throw new UnsupportedOperationException("Not supported.");
     }
 }
