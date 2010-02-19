@@ -26,6 +26,7 @@ import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.btreeStrategy.ConcreteBtreeStrategy;
 import fr.inria.peerunit.btreeStrategy.TreeStrategy;
 import fr.inria.peerunit.util.TesterUtil;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 
@@ -40,6 +41,7 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
     private static final Logger log = Logger.getLogger(BootstrapperImpl.class.getName());
     private TreeStrategy context;
     private TesterUtil defaults;
+    private final AtomicBoolean shouldILeave = new AtomicBoolean(false);
 
     public BootstrapperImpl(TesterUtil tu) {
         defaults = tu;
@@ -56,10 +58,14 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
             context.buildTree();
             context.setCommunication();
             context.startRoot();
-            //context.cleanUp();
+
+            log.fine("Waiting fot testers to terminate");
+            this.waitForTesterTermination();
+            context.cleanUp();
             log.info("[Bootstrapper] Finished !");
         } catch (RemoteException ex) {
             log.log(Level.SEVERE, "Remote exception", ex);
+            ex.printStackTrace();
         } catch (InterruptedException ex) {
             log.log(Level.SEVERE,"Wait interrupted" , ex);
         }
@@ -77,6 +83,26 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
     public int getRegistered() {
         log.entering("BootstrapperImpl", "getRegistered()");
         return context.getRegistered();
+    }
+
+    
+    private void waitForTesterTermination() throws InterruptedException {
+         log.entering("BootstrapperImpl", "waitForTesterTermination()");
+       while (! shouldILeave.get()) {
+            synchronized(shouldILeave) {
+                shouldILeave.wait();
+                }
+        }
+        log.exiting("BootstrapperImpl", "waitForTesterTermination()");
+    }
+
+    public void quit() throws RemoteException {
+        log.entering("BootstrapperImpl", "quit()");
+        synchronized(shouldILeave) {
+            shouldILeave.set(true);
+            shouldILeave.notifyAll();
+        }
+        log.exiting("BootstrapperImpl", "quit()");
     }
 
 }

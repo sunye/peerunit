@@ -34,5 +34,12 @@ public interface Bootstrapper extends Remote {
      * @throws java.rmi.RemoteException When a communication error occurs.
      */
     int register(Tester t) throws RemoteException;
+
+    /**
+     * Makes the boostrapper leave the system.
+     *
+     * @throws RemoteException
+     */
+    void quit() throws RemoteException;
 }
 

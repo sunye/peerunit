@@ -46,7 +46,7 @@ public class CoordinatorRunner {
     private static final GlobalVariablesImpl globals = new GlobalVariablesImpl();
 
     private TesterUtil defaults;
-    private Registry registry;
+    private static Registry registry;
 
     /**
      * @param defaults
@@ -87,7 +87,8 @@ public class CoordinatorRunner {
         assert registry != null;
     }
 
-    private void start() throws RemoteException, AlreadyBoundException, InterruptedException, NotBoundException {
+    private void start() throws RemoteException, AlreadyBoundException,
+            InterruptedException, NotBoundException {
 
         LOG.entering("CoordinatorRunner", "start()");
         this.bindGlobals();
@@ -99,7 +100,7 @@ public class CoordinatorRunner {
         }
 
         this.cleanAndUnbind();
-        Thread.sleep(3000);
+        //Thread.sleep(3000);
         System.exit(0);
     }
 
