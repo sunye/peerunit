@@ -46,4 +46,12 @@
         </java>
     </target>
 
+    <target name="clear">
+        <delete verbose="true">
+            <dirset dir="." includes="storage*/*"/>
+            <fileset dir="." includes="*.log"/>
+        </delete>
+    </target>
+
+
 </project>
