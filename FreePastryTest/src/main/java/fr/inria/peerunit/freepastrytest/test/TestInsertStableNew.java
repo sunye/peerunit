@@ -3,10 +3,10 @@ package fr.inria.peerunit.freepastrytest.test;
 import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
 
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import rice.p2p.past.PastContent;
@@ -15,6 +15,7 @@ import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.test.assertion.Assert;
 import fr.inria.peerunit.freepastrytest.Network;
+import java.util.HashSet;
 
 /**
  * Test Insert and retrieve on a stable system
@@ -25,7 +26,6 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
 
     private static Logger log = Logger.getLogger(TestInsertStableNew.class.getName());
     private List<String> expecteds = new ArrayList<String>();
-
 
     @TestStep(range = "0", timeout = 100000, order = 1)
     public void startingNetwork() throws Exception {
@@ -50,25 +50,22 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
             if (!net.joinNetwork(peer, bootaddress, false, log)) {
                 inconclusive("I couldn't join, sorry");
             }
-
+            
             log.info("Running on port " + peer.getPort());
             log.info("Time to bootstrap");
-
         }
-
     }
 
     /**
      * Stabilize the network.
+     * Forces the routing table update
+     *
      */
     @TestStep(range = "*", timeout = 100000, order = 3)
     public void stabilize() throws InterruptedException {
         for (int i = 0; i < 4; i++) {
-
-            // Force the routing table update
             peer.pingNodes();
-            Thread.sleep(16000);
-
+            Thread.sleep(sleep);
         }
     }
 
@@ -97,7 +94,7 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
 
     }
 
-    @TestStep(range = "*", timeout = 30000, order = 5)
+    //@TestStep(range = "*", timeout = 30000, order = 6)
     public void testRetrieve() throws RemoteException, InterruptedException {
         // Get inserted data
         List<PastContent> cached = (List<PastContent>) this.get(0);
@@ -138,6 +135,51 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
         }
         log.info("Waiting a Verdict. Found " + actuals.size() + " of " + expecteds.size());
         Assert.assertListEquals("[Local verdict] ", expecteds, actuals);
+
+    }
+
+    @TestStep(range = "*", timeout = 30000, order = 5)
+    public void testRetrieveBis() throws RemoteException, InterruptedException {
+        List<PastContent> contents = new ArrayList<PastContent>(OBJECTS);
+        contents.addAll((List<PastContent>) this.get(0));
+        
+        // Lookup for data
+
+        //Thread.sleep(16000);
+
+        Set<PastContent> retrieved = new HashSet<PastContent>();
+
+        int times = 0;
+        while (times < defaults.getLoopToFail() && retrieved.size() < OBJECTS) {
+            for (PastContent p : contents) {
+                peer.lookup(p.getId());
+            }
+            Thread.sleep(sleep);
+            for (Object actual : peer.getResultSet()) {
+                if (actual != null) {
+                    retrieved.add((PastContent) actual);
+                }
+            }
+            peer.pingNodes();
+            times++;
+        }
+
+        log.info("Waiting a Verdict. Found " + retrieved.size() + " of " + OBJECTS) ;
+
+        List<String> expected, found;
+        expected = new ArrayList<String>(OBJECTS);
+        found = new ArrayList<String>(OBJECTS);
+
+        for (PastContent each: contents) {
+            expected.add(each.toString());
+        }
+
+        for (PastContent each: retrieved) {
+            found.add(each.toString());
+        }
+
+        assert found.containsAll(expected);
+
 
     }
 
