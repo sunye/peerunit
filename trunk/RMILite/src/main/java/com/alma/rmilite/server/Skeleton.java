@@ -1,10 +1,10 @@
 package com.alma.rmilite.server;
 
+import java.io.IOException;
+
 public interface Skeleton {
 
-	public void open();
-	
-	public boolean close();
+	public boolean close() throws IOException;
 	
 	public int getPort();
 }

@@ -1,5 +1,6 @@
 package com.alma.rmilite.server;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.util.Map;
 
@@ -7,27 +8,22 @@ public class RemoteObjectProvider_Socket implements RemoteObjectProvider, Skelet
 	
 	private Map<Remote, Skeleton> skeletons;
 
-	private void putSkeleton(Remote obj, Skeleton skel) {
-		skel.open();		
-		this.skeletons.put(obj, skel);
-	}
-	
 	@Override
-	public Remote exportObject(Remote object) {
+	public Remote exportObject(Remote object) throws IOException {
 		Skeleton skel = SkeletonFactory.createSkeleton(object);
-		this.putSkeleton(object, skel);
+		this.skeletons.put(object, skel);
 		return object;
 	}
 
 	@Override
-	public Remote exportObject(Remote object, int port) {
+	public Remote exportObject(Remote object, int port) throws IOException {
 		Skeleton skel = SkeletonFactory.createSkeleton(port, object);
-		this.putSkeleton(object, skel);
+		this.skeletons.put(object, skel);
 		return object;
 	}
 
 	@Override
-	public boolean unexportObject(Remote object) {
+	public boolean unexportObject(Remote object) throws IOException {
 		Skeleton skel = this.skeletons.remove(object);
 		return skel.close();
 	}
