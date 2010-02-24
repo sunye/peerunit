@@ -1,11 +1,15 @@
 package com.alma.rmilite.client;
 
 import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
 
 public class StubFactory {
 
 	public static Object createStub(String host, int port, Class<?> anInterface) {
-		Stub s = new Stub(host, port);
-		return Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{anInterface}, s);		
+		return createStub(new InetSocketAddress(host, port), anInterface);
+	}
+	
+	public static Object createStub(InetSocketAddress reference, Class<?> anInterface) {
+		return Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{anInterface}, new Stub(reference));		
 	}
 }
