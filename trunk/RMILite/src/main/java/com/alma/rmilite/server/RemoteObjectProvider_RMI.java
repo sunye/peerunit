@@ -7,11 +7,6 @@ import java.rmi.server.UnicastRemoteObject;
 public class RemoteObjectProvider_RMI implements RemoteObjectProvider {
 
 	@Override
-	public Remote exportObject(Remote object) throws RemoteException {
-		return UnicastRemoteObject.exportObject(object);
-	}
-
-	@Override
 	public Remote exportObject(Remote object, int port) throws RemoteException {
 		return UnicastRemoteObject.exportObject(object, port);
 	}

@@ -1,14 +1,14 @@
 package com.alma.rmilite.client;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.rmi.RemoteException;
 
 import com.alma.rmilite.RemoteMethodResult;
-import com.alma.rmilite.RemoteMethod;
+import com.alma.rmilite.RemoteMethodImpl;
+import com.alma.rmilite.io.RemoteProxy;
+import com.alma.rmilite.io.IOManager;
 
 public class Stub implements InvocationHandler {
 
@@ -20,20 +20,20 @@ public class Stub implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		Socket skel = new Socket(this.reference.getAddress(), this.reference.getPort());		
+		RemoteProxy skeleton = IOManager.instance.getRemoteProxy(this.reference);		
 
-		ObjectOutputStream out = new ObjectOutputStream(skel.getOutputStream());
-		out.writeUnshared(new RemoteMethod(method, args));
-		out.flush();
+		skeleton.sendObject(new RemoteMethodImpl(method, args));
 		
-		ObjectInputStream in = new ObjectInputStream(skel.getInputStream());
-		RemoteMethodResult remoteMethodResult = (RemoteMethodResult) in.readUnshared();
+		Object result = skeleton.recieveObject();
 		
-		skel.close();
+		skeleton.close();
 		
-		if (remoteMethodResult.isException()) {
-			throw (Throwable) remoteMethodResult.getObject();
-		} 
-		return remoteMethodResult.getObject();
+		if (result instanceof Exception) {
+			throw (Exception) result;
+		} else if (result instanceof RemoteMethodResult) {
+			return ((RemoteMethodResult) result).getObject();
+		} else {
+			throw new RemoteException("Invalid data !");
+		}
 	}
 }
