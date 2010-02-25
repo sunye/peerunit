@@ -7,11 +7,11 @@ public class NamingServer_Socket implements NamingServer {
 
 	@Override
 	public Registry createRegistry(int port) throws Exception {
-		return (Registry) RemoteObjectProvider.instance.exportObject(new Registry_Socket());
+		return (Registry) RemoteObjectProvider.instance.exportObject(new Registry_Socket(), port);
 	}
 
 	@Override
 	public Registry getRegistry(String host, int port) throws Exception {
-		return (Registry) StubFactory.createStub(host, port, Registry.class);
+		return (Registry) StubFactory.createRegistryStub(host, port);
 	}
 }

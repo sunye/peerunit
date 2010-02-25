@@ -1,6 +1,7 @@
 package com.alma.rmilite.server;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -25,18 +26,22 @@ public class SkeletonImpl implements Skeleton {
 			try {
 				ObjectInputStream in = new ObjectInputStream(this.client.getInputStream());
 				RemoteMethod remoteMethod = (RemoteMethod) in.readUnshared();
-				in.close();
 				
 				RemoteMethodResult remoteMethodResult = new RemoteMethodResult(remoteMethod.getMethod());
 				try {
 					remoteMethodResult.setResult(SkeletonImpl.this.execute(remoteMethod), false);
+				} catch (UnexportedException t) {
+					t.printStackTrace();
+				} catch (NotSerializableException t) {
+					t.printStackTrace();
 				} catch (Throwable t) {
 					remoteMethodResult.setResult(t, true);
 				}
 				
 				ObjectOutputStream out = new ObjectOutputStream(this.client.getOutputStream());
 				out.writeUnshared(remoteMethodResult);
-				out.close();
+				out.flush();
+
 				this.client.close();
 			} catch (IOException i) {
 				i.printStackTrace();
@@ -44,6 +49,10 @@ public class SkeletonImpl implements Skeleton {
 				c.printStackTrace();
 			} catch (UnexportedException u) {
 				u.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
 			}
 		}
 	}

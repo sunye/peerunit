@@ -8,8 +8,9 @@ public interface Registry extends Remote {
 	 * register a object in the registry
 	 * @param name an identifier, should be unique on the registry
 	 * @param object the object that will be available given the identifier
+	 * @param type TODO
 	 */
-	public void bind(String name, Remote object) throws Exception;
+	public void bind(String name, Remote object, Class<? extends Remote> type) throws Exception;
 	
 	/**
 	 * unregister an object. if a lookup is done after unbounding, no object
