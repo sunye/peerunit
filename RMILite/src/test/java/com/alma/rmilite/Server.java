@@ -9,7 +9,7 @@ public class Server {
 	public static void main(String[] args) throws Exception {	
 		RemoteObject ro1 = new RemoteObjectImpl();
 		RemoteObjectProvider remoteObjectProvider = RemoteObjectProvider.instance;
-		remoteObjectProvider.exportObject(ro1);
+		remoteObjectProvider.exportObject(ro1,0);
 		
 		NamingServer namingServer = NamingServer.instance;
 		Registry registry = namingServer.createRegistry(1099);
