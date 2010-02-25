@@ -47,18 +47,17 @@ public class RemoteMethodImpl implements Serializable, RemoteMethod {
 	
 	public Object invoke(Object object) throws SecurityException, NoSuchMethodException, NotSerializableException, IllegalArgumentException, UnexportedException, IllegalAccessException, InvocationTargetException {
 		Method method = this.serializableMethod.getMethod();
+		this.args2stubs(method.getParameterTypes());
+
 		RemoteMethodResultImpl remoteMethodResult = new RemoteMethodResultImpl(method);
-		this.args2stubs();
-		
 		remoteMethodResult.setResult(method.invoke(object, this.args));
 
 		return remoteMethodResult;
 	}
 	
-	private void args2stubs() throws SecurityException, NoSuchMethodException {
+	private void args2stubs(Class<?>[] argTypes) throws SecurityException, NoSuchMethodException {
 		if (args != null) {
-			Class<?>[] argTypes = this.serializableMethod.getMethod().getParameterTypes();
-			for (int i=0; i<0; i++) {
+			for (int i=0; i<args.length; i++) {
 				if (Remote.class.isAssignableFrom(argTypes[i])) {
 					this.args[i] = StubFactory.createStub((InetSocketAddress) this.args[i], argTypes[i]);
 				}

@@ -26,19 +26,21 @@ public class RemoteMethodResultImpl implements Serializable, RemoteMethodResult 
 	}
 	
 	public void setResult(Object result) throws NotSerializableException, UnexportedException {
-		RemoteObjectManager manager = (RemoteObjectManager) RemoteObjectProvider.instance;
-		
-		if (result instanceof Remote) {
-			Remote remoteResult = (Remote) result;
-			if (manager.isExported(remoteResult)) {
-				this.result = new InetSocketAddress(manager.getPort(remoteResult));
+		if (result != null) {
+			RemoteObjectManager manager = (RemoteObjectManager) RemoteObjectProvider.instance;
+			
+			if (result instanceof Remote) {
+				Remote remoteResult = (Remote) result;
+				if (manager.isExported(remoteResult)) {
+					this.result = new InetSocketAddress(manager.getPort(remoteResult));
+				} else {
+					throw new UnexportedException("Unexported result");
+				}
+			} else if (!(result instanceof Serializable)) {
+				throw new NotSerializableException("Not serializable result");
 			} else {
-				throw new UnexportedException("Unexported result");
+				this.result = result;
 			}
-		} else if (!(result instanceof Serializable)) {
-			throw new NotSerializableException("Not serializable result");
-		} else {
-			this.result = result;
 		}
 	}
 	
