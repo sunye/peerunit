@@ -11,16 +11,25 @@ public class Registry_RMI implements Registry {
 		this.reg = reg;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.registry.Registry#bind(java.lang.String, java.rmi.Remote, java.lang.Class)
+	 */
 	@Override
 	public void bind(String name, Remote object, Class<? extends Remote> type) throws Exception {
 		this.reg.rebind(name, object);		
 	}
 
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.registry.Registry#lookup(java.lang.String)
+	 */
 	@Override
 	public Remote lookup(String name) throws Exception {
 		return this.reg.lookup(name);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.registry.Registry#unbind(java.lang.String)
+	 */
 	@Override
 	public void unbind(String name) throws Exception {
 		this.reg.unbind(name);
