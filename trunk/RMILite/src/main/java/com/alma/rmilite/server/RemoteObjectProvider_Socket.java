@@ -2,12 +2,17 @@ package com.alma.rmilite.server;
 
 import java.io.IOException;
 import java.rmi.Remote;
+import java.util.HashMap;
 import java.util.Map;
 
 public class RemoteObjectProvider_Socket implements RemoteObjectProvider, SkeletonProvider {
 	
 	private Map<Remote, Skeleton> skeletons;
 
+	public RemoteObjectProvider_Socket() {
+		this.skeletons = new HashMap<Remote, Skeleton>();
+	}
+	
 	@Override
 	public Remote exportObject(Remote object) throws IOException {
 		Skeleton skel = SkeletonFactory.createSkeleton(object);

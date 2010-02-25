@@ -34,7 +34,7 @@ public class RemoteMethodResult implements Serializable {
 			this.result = result;
 		} else if (result instanceof Remote) {
 			Remote remoteResult = (Remote) result;
-			if ( skeletonProvider.isExported(remoteResult)) {
+			if (skeletonProvider.isExported(remoteResult)) {
 				this.result = new InetSocketAddress(skeletonProvider.getPort(remoteResult));
 			} else {
 				throw new UnexportedException("Unexported result");
@@ -57,8 +57,8 @@ public class RemoteMethodResult implements Serializable {
 	 * @return the object the network layer brougth us
 	 */
 	public Object getObject() {
-		if (Remote.class.isAssignableFrom(this.resultClass)) {
-			this.result = StubFactory.createStub((InetSocketAddress) this.result, this.resultClass);
+		if (!this.exception && Remote.class.isAssignableFrom(this.resultClass)) {
+			this.result = StubFactory.createStub((InetSocketAddress) this.result, RemoteObject.class);
 		}
 		return this.result;
 	}

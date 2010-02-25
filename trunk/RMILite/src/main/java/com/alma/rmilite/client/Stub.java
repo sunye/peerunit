@@ -24,16 +24,16 @@ public class Stub implements InvocationHandler {
 
 		ObjectOutputStream out = new ObjectOutputStream(skel.getOutputStream());
 		out.writeUnshared(new RemoteMethod(method, args));
-		out.close();
+		out.flush();
 		
 		ObjectInputStream in = new ObjectInputStream(skel.getInputStream());
-		RemoteMethodResult callResult = (RemoteMethodResult) in.readUnshared();
-		in.close();
+		RemoteMethodResult remoteMethodResult = (RemoteMethodResult) in.readUnshared();
+		
 		skel.close();
 		
-		if (callResult.isException()) {
-			throw (Throwable) callResult.getObject();
+		if (remoteMethodResult.isException()) {
+			throw (Throwable) remoteMethodResult.getObject();
 		} 
-		return callResult.getObject();
+		return remoteMethodResult.getObject();
 	}
 }
