@@ -3,9 +3,9 @@ package com.alma.rmilite.server;
 import java.rmi.Remote;
 
 /**
- * A RemoteObjectProvider class defines a non-replicated remote object whose
- * references are valid only while the server process is alive. A
- * RemoteObjectProvider class provides support for point-to-point active object
+ * The RemoteObjectProvider instance defines a non-replicated remote object whose
+ * references are valid only while the server process is alive. The
+ * RemoteObjectProvider instance provides support for point-to-point active object
  * references (invocations, parameters, and results) using TCP streams.<br/>
  * <br/>
  * The implementation class of a remote object must then assume the

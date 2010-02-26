@@ -2,12 +2,16 @@ package com.alma.rmilite.server;
 
 import java.rmi.Remote;
 
+import com.alma.rmilite.RemoteMethod;
+import com.alma.rmilite.RemoteMethodResult;
+import com.alma.rmilite.io.IOManager;
 import com.alma.rmilite.io.RemoteProxy;
 
 /**
- * A RemoteObjectManager provides methods for {@link RemoteMethod} and
- * {@link RemoteMethodResult} objects.
+ * The RemoteObjectManager instance provides methods for {@link RemoteMethod},
+ * {@link RemoteMethodResult} and {@link IOManager} objects.
  * 
+ * @see IOManager
  * @see RemoteMethod
  * @see RemoteMethodResult
  */
@@ -33,12 +37,13 @@ public interface RemoteObjectManager {
 	public int getPort(Remote object);
 
 	/**
-	 * Executes a call {@code remoteProxy} on the specified {@code port}
+	 *  Links a remote stub with a remote object (identified the port of the serverSockect).
 	 * 
 	 * @param port
 	 *            - the port to export the remote object on
 	 * @param remoteProxy
-	 *            - the call
+	 *            - Calls from the remote stub
+	 * @see RemoteProxy
 	 */
 	public void remoteProcedureCall(int port, RemoteProxy remoteProxy);
 }
