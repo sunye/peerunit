@@ -1,7 +1,7 @@
 package com.alma.rmilite.registry;
 
 /**
- * NamingServer is used to obtain a reference to a bootstrap remote object
+ * The NamingServer instance is used to obtain a reference to a bootstrap remote object
  * {@link Registry} on a particular host (including the local host), or to create a
  * remote object registry that accepts calls on a specific port.
  * 

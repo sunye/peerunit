@@ -12,6 +12,8 @@ import com.alma.rmilite.io.IOManager;
 
 /**
  * Each stub instance has an associated {@link InvocationHandler}.
+ * 
+ * @see InvocationHandler
  */
 public class Stub implements InvocationHandler {
 
@@ -41,7 +43,7 @@ public class Stub implements InvocationHandler {
 		skeleton.sendObject(new RemoteMethodImpl(method, args));
 
 		/* Receive the result of the method */
-		Object result = skeleton.recieveObject();
+		Object result = skeleton.receiveObject();
 
 		/* Close the connection */
 		skeleton.close();

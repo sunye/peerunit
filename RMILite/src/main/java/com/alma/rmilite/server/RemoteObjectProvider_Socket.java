@@ -84,7 +84,7 @@ public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
 			try {
 				/* Receive the distant call from the stub */
 				RemoteMethod remoteMethod = (RemoteMethod) remoteProxy
-						.recieveObject();
+						.receiveObject();
 
 				/* Execute the call */
 				result = this.execute(port, remoteMethod);
