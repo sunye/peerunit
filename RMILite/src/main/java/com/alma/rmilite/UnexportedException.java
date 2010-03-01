@@ -7,7 +7,7 @@ public class UnexportedException extends Exception {
 	public UnexportedException() {
 		super();
 	}
-	
+
 	public UnexportedException(String s) {
 		super(s);
 	}

@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 
+import com.alma.rmilite.RemoteMethodFactory;
 import com.alma.rmilite.RemoteMethodResult;
-import com.alma.rmilite.RemoteMethodImpl;
 import com.alma.rmilite.io.RemoteProxy;
 import com.alma.rmilite.io.IOManager;
 
@@ -40,7 +40,7 @@ public class Stub implements InvocationHandler {
 				.getRemoteProxy(this.reference);
 
 		/* Send method and arguments */
-		skeleton.sendObject(new RemoteMethodImpl(method, args));
+		skeleton.sendObject(RemoteMethodFactory.createRemoteMethod(method, args));
 
 		/* Receive the result of the method */
 		Object result = skeleton.receiveObject();
@@ -57,5 +57,13 @@ public class Stub implements InvocationHandler {
 		} else {
 			throw new RemoteException("Invalid data !");
 		}
+	}
+
+	/**
+	 * Returns the host and the port of the remote object
+	 * @return the reference
+	 */
+	public InetSocketAddress getReference() {
+		return reference;
 	}
 }

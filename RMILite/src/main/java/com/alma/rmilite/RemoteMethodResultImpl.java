@@ -10,46 +10,59 @@ import com.alma.rmilite.client.StubFactory;
 import com.alma.rmilite.server.RemoteObjectProvider;
 import com.alma.rmilite.server.RemoteObjectManager;
 
-/** The result of an operation called on a server<br />
- * It is sent back by the server to the Client<br />
- * It can be created by a client as a result of a method invocation
- */
-public class RemoteMethodResultImpl implements Serializable, RemoteMethodResult {
+public class RemoteMethodResultImpl implements RemoteMethodResult {
 
 	private static final long serialVersionUID = 1950048720714271916L;
-	
+
 	private Object result;
 	private Class<?> resultClass;
-	
-	public RemoteMethodResultImpl(Method method) {	
+
+	public RemoteMethodResultImpl(Method method, Object result)
+			throws UnexportedException, NotSerializableException {
 		this.resultClass = method.getReturnType();
+		this.result = result;
+		
+		/* Serializes remote result. */
+		this.result2ref();
 	}
 	
-	public void setResult(Object result) throws NotSerializableException, UnexportedException {
-		if (result != null) {
+	/**
+	 * Serializes remote result.<br/>
+	 * <br/>
+	 * Transforms a remote result in reference.
+	 * 
+	 * @throws UnexportedException
+	 * @throws NotSerializableException
+	 */
+	private void result2ref() throws UnexportedException, NotSerializableException {
+		if (result != null) { // if the method doesn't return void
 			RemoteObjectManager manager = (RemoteObjectManager) RemoteObjectProvider.instance;
-			
-			if (result instanceof Remote) {
+
+			if (result instanceof Remote) { // if the result is a remote object
 				Remote remoteResult = (Remote) result;
-				if (manager.isExported(remoteResult)) {
-					this.result = new InetSocketAddress(manager.getPort(remoteResult));
+				if (StubFactory.isStub(remoteResult)) { // if the remote result is already a stub
+					this.result = StubFactory.getStubReference(remoteResult);
+				} else if (manager.isExported(remoteResult)) { // else if the remote result is exported
+					this.result = new InetSocketAddress(manager
+							.getPort(remoteResult)); // creates a reference
 				} else {
 					throw new UnexportedException("Unexported result");
 				}
 			} else if (!(result instanceof Serializable)) {
 				throw new NotSerializableException("Not serializable result");
-			} else {
-				this.result = result;
 			}
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.alma.rmilite.RemoteMethod#getObject()
 	 */
 	public Object getObject() {
-		if (Remote.class.isAssignableFrom(this.resultClass)) {
-			this.result = StubFactory.createStub((InetSocketAddress) this.result, RemoteObject.class);
+		if (Remote.class.isAssignableFrom(this.resultClass)) { // if the result is a remote object
+			this.result = StubFactory.createStub(
+					(InetSocketAddress) this.result, RemoteObject.class); // returns a stub
 		}
 		return this.result;
 	}

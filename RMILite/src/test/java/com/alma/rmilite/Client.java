@@ -33,6 +33,8 @@ public class Client {
 		System.out.println(ro3.getNb());
 
 		ro3.incNb();
-		System.out.println(ro3.getNb()); // 4		
+		System.out.println(ro3.getNb()); // 4	
+		
+		remoteObjectProvider.unexportObject(ro2); // throw an exception, only indicates socket is closed 
 	}
 }

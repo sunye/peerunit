@@ -1,9 +1,15 @@
 package com.alma.rmilite;
 
-public interface RemoteMethodResult {
+import java.io.Serializable;
+
+/**
+ * Contains a serializable result of a remote method.
+ */
+public interface RemoteMethodResult extends Serializable {
 
 	/**
-	 * @return the object the network layer brougth us
+	 * Returns the result of a remote method invocation.
+	 * @return the result
 	 */
 	public Object getObject();
 }
