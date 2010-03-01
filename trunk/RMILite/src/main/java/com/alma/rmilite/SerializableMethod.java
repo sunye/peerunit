@@ -3,21 +3,21 @@ package com.alma.rmilite;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-public class SerializableMethod implements Serializable {
-	
-	private static final long serialVersionUID = -6596635905397715978L;
-	
-	private Class<?> classe;
-	private String name;
-	private Class<?>[] parameterTypes;
-	
-	public SerializableMethod(Method method) {
-		this.classe = method.getDeclaringClass();
-		this.name = method.getName();
-		this.parameterTypes = method.getParameterTypes();
-	}
+/**
+ * Serialises and identifies a specific method.<br/>
+ * <br/>
+ * Used by a {@link RemoteMethod} instance because the original class {@link Method} isn't serializable.
+ * 
+ * @see RemoteMethod
+ */
+public interface SerializableMethod extends Serializable {
 
-	public Method getMethod() throws SecurityException, NoSuchMethodException {
-		return this.classe.getMethod(name, parameterTypes);
-	}
+	/**
+	 * Deserializes the method.
+	 * @return a {@link Method} instance.
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 */
+	public Method getMethod() throws SecurityException, NoSuchMethodException;
+
 }

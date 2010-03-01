@@ -102,7 +102,7 @@ public class IOManager_IO implements IOManager {
 	@Override
 	public int open(int port) throws IOException {
 		ServerSocket ss = new ServerSocket(port);
-		this.serverSockets.put(port, ss);
+		this.serverSockets.put(ss.getLocalPort(), ss);
 		new Thread(new ServerProxy(ss)).start();
 		return ss.getLocalPort();
 	}
