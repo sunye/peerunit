@@ -13,7 +13,7 @@
 
 	<scm>
     <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/trunk</connection>
-    <developerConnection>scm:svn:https://scm.gforge.inria.fr/svn/peerunit/trunk</developerConnection>
+    <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/trunk</developerConnection>
     <url>https://gforge.inria.fr/plugins/scmsvn/viewcvs.php/trunk/?root=peerunit</url>
   </scm>
   
