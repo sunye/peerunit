@@ -42,6 +42,7 @@ public class StubFactory {
 	 */
 	public static Remote createStub(InetSocketAddress reference,
 			Class<?>[] interfaces) {
+		/* Adds StubMarker */
 		Class<?>[] allInterfaces = new Class<?>[interfaces.length +1];
 		System.arraycopy(interfaces, 0, allInterfaces, 0, interfaces.length);
 		allInterfaces[interfaces.length] = StubMarker.class;
