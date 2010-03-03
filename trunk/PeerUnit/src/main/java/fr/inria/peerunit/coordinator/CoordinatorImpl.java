@@ -28,12 +28,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.base.ResultSet;
-import fr.inria.peerunit.base.Schedule;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
-import fr.inria.peerunit.rmi.coord.MethodExecute;
-import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.tester.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 

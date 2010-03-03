@@ -16,8 +16,8 @@
  */
 package fr.inria.peerunit.base;
 
+import fr.inria.peerunit.coordinator.Verdicts;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.test.oracle.Verdicts;
 import java.io.Serializable;
 
 /**
