@@ -16,6 +16,8 @@
  */
 package fr.inria.peerunit;
 
+import fr.inria.peerunit.tester.Tester;
+
 /**
  * The <i>test cases</i> interface. This interface must be implemented by the 
  * testing engineer  wants to write a <i>test case</i>, it allow to access the 

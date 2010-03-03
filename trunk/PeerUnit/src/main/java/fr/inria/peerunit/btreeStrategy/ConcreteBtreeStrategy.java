@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.Coordinator;
-import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.remote.Coordinator;
+import fr.inria.peerunit.tester.Tester;
 import fr.inria.peerunit.util.HNode;
 import fr.inria.peerunit.util.HTree;
 import fr.inria.peerunit.util.TesterUtil;

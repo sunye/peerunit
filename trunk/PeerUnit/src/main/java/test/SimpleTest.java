@@ -18,10 +18,10 @@ package test;
 
 
 import fr.inria.peerunit.TestCaseImpl;
-import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
+import fr.inria.peerunit.tester.Tester;
 
 public class SimpleTest extends TestCaseImpl{	
 	

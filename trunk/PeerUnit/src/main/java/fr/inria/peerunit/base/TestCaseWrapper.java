@@ -16,7 +16,6 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.GlobalVariables;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -36,6 +35,7 @@ import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.parser.TestStepMethod;
+import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 
 /**

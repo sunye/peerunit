@@ -32,6 +32,9 @@ import java.util.logging.Logger;
 
 import fr.inria.peerunit.btree.BootstrapperImpl;
 import fr.inria.peerunit.coordinator.CoordinatorImpl;
+import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.remote.Coordinator;
+import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 

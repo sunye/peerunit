@@ -29,6 +29,9 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.remote.Coordinator;
+import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
 import fr.inria.peerunit.rmi.tester.TesterImpl;
 import fr.inria.peerunit.util.LogFormat;

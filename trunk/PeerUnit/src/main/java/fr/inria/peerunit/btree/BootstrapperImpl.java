@@ -21,10 +21,10 @@ import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.Bootstrapper;
-import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.btreeStrategy.ConcreteBtreeStrategy;
 import fr.inria.peerunit.btreeStrategy.TreeStrategy;
+import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.tester.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
 

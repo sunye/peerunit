@@ -19,6 +19,8 @@ package fr.inria.peerunit;
 import java.rmi.RemoteException;
 import java.util.Map;
 
+import fr.inria.peerunit.tester.Tester;
+
 
 /**
  * An abstract implementation of <tt>TestCase</tt> interface. This class make available

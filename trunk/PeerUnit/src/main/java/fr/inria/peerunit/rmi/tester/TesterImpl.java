@@ -24,17 +24,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.Bootstrapper;
-import fr.inria.peerunit.GlobalVariables;
-import fr.inria.peerunit.Coordinator;
-import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.base.SingleResult;
 import fr.inria.peerunit.base.TestCaseWrapper;
 import fr.inria.peerunit.exception.TestException;
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.remote.Coordinator;
+import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.test.assertion.InconclusiveFailure;
+import fr.inria.peerunit.tester.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -46,10 +46,10 @@ import java.nio.channels.ClosedByInterruptException;
  * @author sunye
  * @version 1.0
  * @since 1.0
- * @see fr.inria.peerUnit.Tester
+ * @see fr.inria.peerunit.tester.peerUnit.Tester
  * @see fr.inria.peerunit.VolatileTester
- * @see fr.inria.peerunit.StorageTester
- * @see fr.inria.peerunit.Coordinator
+ * @see fr.inria.peerunit.remote.StorageTester
+ * @see fr.inria.peerunit.remote.Coordinator
  * @see java.util.concurrent.BlockingQueue<Object>
  */
 public class TesterImpl extends AbstractTester implements Tester, Serializable, Runnable {
