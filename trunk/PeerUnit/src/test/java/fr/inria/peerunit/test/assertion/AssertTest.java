@@ -11,6 +11,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import fr.inria.peerunit.tester.Assert;
+import fr.inria.peerunit.tester.ComparisonFailure;
+import fr.inria.peerunit.tester.Failure;
+import fr.inria.peerunit.tester.InconclusiveFailure;
 import static org.junit.Assert.*;
 
 /**

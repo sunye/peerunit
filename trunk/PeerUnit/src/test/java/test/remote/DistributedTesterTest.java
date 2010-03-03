@@ -25,8 +25,8 @@ import java.rmi.server.UnicastRemoteObject;
 import org.junit.Test;
 
 
-import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
+import fr.inria.peerunit.distributed.DistributedTesterImpl;
+import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class DistributedTesterTest {

@@ -30,15 +30,15 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import fr.inria.peerunit.Bootstrapper;
-import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.GlobalVariablesImpl;
-import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.Sample;
-import fr.inria.peerunit.base.TestCaseWrapper;
-import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.common.MethodDescription;
+import fr.inria.peerunit.coordinator.CoordinatorImpl;
+import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.remote.GlobalVariables;
+import fr.inria.peerunit.remote.Tester;
+import fr.inria.peerunit.tester.TestCaseWrapper;
+import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class TesterImplTest {

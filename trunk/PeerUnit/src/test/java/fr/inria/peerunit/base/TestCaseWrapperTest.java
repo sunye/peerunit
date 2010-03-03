@@ -4,13 +4,14 @@
  */
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.GlobalVariablesImpl;
-import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
-import fr.inria.peerunit.test.assertion.ComparisonFailure;
-import fr.inria.peerunit.test.assertion.Failure;
+import fr.inria.peerunit.common.MethodDescription;
+import fr.inria.peerunit.coordinator.CoordinatorImpl;
+import fr.inria.peerunit.remote.GlobalVariables;
+import fr.inria.peerunit.tester.ComparisonFailure;
+import fr.inria.peerunit.tester.Failure;
+import fr.inria.peerunit.tester.TestCaseWrapper;
+import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;

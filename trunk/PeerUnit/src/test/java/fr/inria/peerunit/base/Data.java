@@ -16,13 +16,13 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.parser.TestStep;
+import fr.inria.peerunit.remote.GlobalVariables;
 
 /**
  * @author sunye

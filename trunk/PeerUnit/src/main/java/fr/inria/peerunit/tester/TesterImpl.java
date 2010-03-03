@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.base.SingleResult;
 import fr.inria.peerunit.common.MethodDescription;

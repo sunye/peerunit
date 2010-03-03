@@ -5,7 +5,8 @@
 
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.common.MethodDescription;
+
 import org.junit.Test;
 import org.junit.Before;
 import static org.mockito.Mockito.*;

@@ -29,10 +29,10 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.TestCaseImpl;
-import fr.inria.peerunit.btree.BootstrapperImpl;
-import fr.inria.peerunit.rmi.tester.DistributedTesterImpl;
+import fr.inria.peerunit.bootstrapper.BootstrapperImpl;
+import fr.inria.peerunit.distributed.DistributedTesterImpl;
+import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class BootstrapperImplTest {
