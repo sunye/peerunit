@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 
 import com.alma.rmilite.server.RemoteObjectProvider;
 
-public class RemoteObjectImpl implements RemoteObject {
+public class RemoteObjectTestImpl implements RemoteObjectTest {
 		
 	public int nb = -1;
 
@@ -20,14 +20,14 @@ public class RemoteObjectImpl implements RemoteObject {
 	}
 
 	@Override
-	public void setNb(RemoteObject nb) throws RemoteException {
+	public void setNb(RemoteObjectTest nb) throws RemoteException {
 		this.nb = nb.getNb();
 		
 	}
 
 	@Override
-	public RemoteObject add2Nb(RemoteObject nb1, int nb2) {
-		RemoteObject newNb = new RemoteObjectImpl();
+	public RemoteObjectTest add2Nb(RemoteObjectTest nb1, int nb2) {
+		RemoteObjectTest newNb = new RemoteObjectTestImpl();
 		RemoteObjectProvider remoteObjectProvider = RemoteObjectProvider.instance;
 		try {
 			remoteObjectProvider.exportObject(newNb,0);
