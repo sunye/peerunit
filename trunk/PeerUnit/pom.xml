@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.inria.peerunit</groupId>
     <artifactId>PeerUnit</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <name>PeerUnit</name>
     <url>http://peerunit.gforge.inria.fr/</url>
@@ -142,8 +142,8 @@
     </developers>
 
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/maven/components/releases/PeerUnit-1.0</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/components/releases/PeerUnit-1.0</developerConnection>
-    <url>scm:svn:https://svn.apache.org/repos/asf/maven/components/releases/PeerUnit-1.0</url>
+    <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</connection>
+    <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</developerConnection>
+    <url>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</url>
   </scm>
 </project>
