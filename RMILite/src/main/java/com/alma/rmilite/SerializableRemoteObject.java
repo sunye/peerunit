@@ -6,7 +6,7 @@ import java.rmi.Remote;
 import com.alma.rmilite.client.Stub;
 
 /**
- * Serializes and identifies a specific remote object.<br/>
+ * Serializes a specific remote object and provides his {@link Stub}.<br/>
  *
  */
 public interface SerializableRemoteObject extends Serializable {
