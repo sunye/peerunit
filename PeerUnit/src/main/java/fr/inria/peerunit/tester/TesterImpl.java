@@ -81,7 +81,7 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
         defaults = tu;
     }
 
-    protected TesterImpl(GlobalVariables gv, int i, TesterUtil tu) {
+    public TesterImpl(GlobalVariables gv, int i, TesterUtil tu) {
         super(gv);
         defaults = tu;
         this.setId(i);
