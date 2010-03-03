@@ -69,6 +69,14 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
+               </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <tagBase>https://svn.apache.org/repos/asf/maven/components/releases</tagBase>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -99,7 +107,6 @@
                 <configuration>
                     <configLocation>config/sun_checks.xml</configLocation>
                 </configuration>
-
             </plugin>
 
             <plugin>
@@ -127,6 +134,12 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>1.7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>5.8</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
