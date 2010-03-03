@@ -14,10 +14,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.test.oracle;
+package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.parser.MethodDescription;
+
 import java.util.Collections;
 import java.util.TreeMap;
 import java.util.Map;

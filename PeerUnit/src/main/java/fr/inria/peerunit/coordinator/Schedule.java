@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.inria.peerunit.base;
+package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.tester.Tester;
