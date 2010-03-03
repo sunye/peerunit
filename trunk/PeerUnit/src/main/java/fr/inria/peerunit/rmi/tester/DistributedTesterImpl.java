@@ -33,7 +33,8 @@ import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.tester.Tester;
+import fr.inria.peerunit.remote.Tester;
+import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -126,7 +127,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     }
 
     /** 
-     * @see fr.inria.peerunit.remote.Coordinator#registerMethods(fr.inria.peerunit.tester.Tester, java.util.List)
+     * @see fr.inria.peerunit.remote.Coordinator#registerMethods(fr.inria.peerunit.remote.Tester, java.util.List)
      */
     public void registerMethods(Tester tester, Collection<MethodDescription> list) throws RemoteException {
         assert testers.contains(tester);
@@ -137,7 +138,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
 
     /**
      * @throws InterruptedException
-     * @see fr.inria.peerunit.tester.Tester#execute(fr.inria.peerunit.parser.MethodDescription)
+     * @see fr.inria.peerunit.remote.Tester#execute(fr.inria.peerunit.parser.MethodDescription)
      */
     public void execute(MethodDescription md) throws RemoteException {
         LOG.entering("DistributedTester", "Execute", md);
@@ -160,7 +161,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     }
 
     /** 
-     * @see fr.inria.peerunit.remote.Coordinator#quit(fr.inria.peerunit.tester.Tester, fr.inria.peerunit.test.oracle.Verdicts)
+     * @see fr.inria.peerunit.remote.Coordinator#quit(fr.inria.peerunit.remote.Tester, fr.inria.peerunit.test.oracle.Verdicts)
      */
     public void quit(Tester t) throws RemoteException {
         assert coordinator != null : "Null Coordinator";
@@ -171,7 +172,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     }
 
     /**
-     * @see fr.inria.peerunit.tester.Tester#kill()
+     * @see fr.inria.peerunit.remote.Tester#kill()
      */
     public void kill() throws RemoteException {
         for (Tester each : testers) {
@@ -180,7 +181,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     }
 
     /**
-     * @see fr.inria.peerunit.tester.Tester#setCoordinator(fr.inria.peerunit.remote.Coordinator)
+     * @see fr.inria.peerunit.remote.Tester#setCoordinator(fr.inria.peerunit.remote.Coordinator)
      */
     public void setCoordinator(Coordinator coord) {
         LOG.entering("DistributedTesterImpl", "setCoordinator(Coordinator)");

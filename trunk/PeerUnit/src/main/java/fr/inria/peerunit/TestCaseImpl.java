@@ -19,7 +19,7 @@ package fr.inria.peerunit;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import fr.inria.peerunit.tester.Tester;
+import fr.inria.peerunit.remote.Tester;
 
 
 /**

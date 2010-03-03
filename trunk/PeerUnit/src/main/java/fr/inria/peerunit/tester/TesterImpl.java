@@ -14,7 +14,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.rmi.tester;
+package fr.inria.peerunit.tester;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -33,8 +33,8 @@ import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
+import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.test.assertion.InconclusiveFailure;
-import fr.inria.peerunit.tester.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -46,7 +46,7 @@ import java.nio.channels.ClosedByInterruptException;
  * @author sunye
  * @version 1.0
  * @since 1.0
- * @see fr.inria.peerunit.tester.peerUnit.Tester
+ * @see fr.inria.peerunit.remote.peerUnit.Tester
  * @see fr.inria.peerunit.VolatileTester
  * @see fr.inria.peerunit.remote.StorageTester
  * @see fr.inria.peerunit.remote.Coordinator

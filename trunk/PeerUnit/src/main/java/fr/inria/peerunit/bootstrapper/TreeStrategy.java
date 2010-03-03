@@ -14,11 +14,11 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.btreeStrategy;
+package fr.inria.peerunit.bootstrapper;
 
 import java.rmi.RemoteException;
 
-import fr.inria.peerunit.tester.Tester;
+import fr.inria.peerunit.remote.Tester;
 
 /**
  * The classes that implement a concrete strategy should implement this The

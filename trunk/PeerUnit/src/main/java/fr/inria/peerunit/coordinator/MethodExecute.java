@@ -18,7 +18,7 @@ package fr.inria.peerunit.coordinator;
 
 import java.rmi.RemoteException;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.tester.Tester;
+import fr.inria.peerunit.remote.Tester;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * @version 1.0
  * @since 1.0
  * @see java.lang.Runnable
- * @see fr.inria.peerunit.tester.Tester
+ * @see fr.inria.peerunit.remote.Tester
  * @see fr.inria.peerunit.parser.MethodDescription
  */
 public class MethodExecute implements Runnable {

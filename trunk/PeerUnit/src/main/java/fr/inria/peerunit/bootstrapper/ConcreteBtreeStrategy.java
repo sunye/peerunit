@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.btreeStrategy;
+package fr.inria.peerunit.bootstrapper;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.remote.Coordinator;
-import fr.inria.peerunit.tester.Tester;
+import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.HNode;
 import fr.inria.peerunit.util.HTree;
 import fr.inria.peerunit.util.TesterUtil;
