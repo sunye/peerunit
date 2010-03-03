@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.rmi.coord;
+package fr.inria.peerunit.coordinator;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -33,6 +33,7 @@ import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.base.Schedule;
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.rmi.coord.MethodExecute;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
 import fr.inria.peerunit.util.TesterUtil;
 
