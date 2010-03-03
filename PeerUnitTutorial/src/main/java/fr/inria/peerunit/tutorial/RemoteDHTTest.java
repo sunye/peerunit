@@ -23,7 +23,7 @@ public class RemoteDHTTest {
     public void startDHT() throws RemoteException {
         MockDHT dht = new MockDHT();
         RemoteDHT stub = (RemoteDHT) UnicastRemoteObject.exportObject(dht, 0);
-        Registry registry = LocateRegistry.getRegistry();
+        Registry registry = LocateRegistry.createRegistry(1099);
         registry.rebind("DHTService", stub);
     }
 

@@ -9,81 +9,35 @@
 -->
 
 <project name="tutorial" default="exec" basedir=".">
-
-    <property name="repository.dir" value="${user.home}/.m2/repository"/>
-    <property name="src.dir" value="${basedir}/src/main/java/" />
-    <property name="build.dir" value="${basedir}/target/classes/" />
-
-    <property name="peerunit.jar" value="${repository.dir}/fr/inria/peerunit/PeerUnit/1.0-SNAPSHOT/PeerUnit-1.0-SNAPSHOT.jar"/>
-    <property name="mockdht.jar" value="${repository.dir}/fr/inria/MockDHT/1.0-SNAPSHOT/MockDHT-1.0-SNAPSHOT.jar"/>
-
-    <path id="lib.jars">
-        <pathelement path="${mockdht.jar}" />
-        <pathelement path="${peerunit.jar}" />
-    </path>
-
-    <path id="compile.classpath">
-        <path refid="lib.jars" />
-    </path>
+    
+    <property name="test.jar" value="${basedir}/target/PeerUnitTutorial-1.0-SNAPSHOT.jar"/>
+    <property name="testcase.class" value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
+    <property name="tester.class" value="fr.inria.peerunit.TestRunner"/>
+    <property name="coordinator.class" value="fr.inria.peerunit.CoordinatorRunner"/>
+    
     <path id="exec.classpath">
-        <path refid="lib.jars" />
-        <pathelement path="${build.dir}" />
+        <pathelement path="${test.jar}" />
     </path>
 
-    <target name="compile">
-        <javac srcdir="${src.dir}"  destdir="${build.dir}" debug="on" classpathref="compile.classpath" />
-    </target>
-
-    <target name="exec" depends="compile">
+    <target name="exec">
         <parallel>
+            <!--
+                <java classname="fr.inria.peerunit.freepastrytest.Bootstrap" classpathref="exec.classpath" fork="true"/>
+            -->
             <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
-                <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.RemoteDHTTest"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-
-          </parallel>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+        </parallel>
     </target>
 
-    <target name="testArray" depends="compile">
+    <target name="testArray">
         <parallel>
             <!--
             <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
@@ -134,5 +88,12 @@
 
           </parallel>
     </target>
-
+    <target name="tester.execute">
+        <java classname="${tester.class}" classpathref="exec.classpath" fork="true">
+            <arg value="${testcase.class}"/>
+            <assertions>
+                <enable/>
+            </assertions>
+        </java>
+    </target>
 </project>
