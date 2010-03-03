@@ -32,8 +32,8 @@ import fr.inria.peerunit.GlobalVariables;
 import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.base.ResultSet;
+import fr.inria.peerunit.coordinator.CoordinatorImpl;
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**

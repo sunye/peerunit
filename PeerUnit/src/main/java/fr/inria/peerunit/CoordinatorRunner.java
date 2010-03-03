@@ -31,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.btree.BootstrapperImpl;
-import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
+import fr.inria.peerunit.coordinator.CoordinatorImpl;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 
