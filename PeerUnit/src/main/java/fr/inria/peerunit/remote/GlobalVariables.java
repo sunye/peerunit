@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit;
+package fr.inria.peerunit.remote;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

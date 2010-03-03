@@ -18,7 +18,7 @@ package fr.inria.peerunit.btreeStrategy;
 
 import java.rmi.RemoteException;
 
-import fr.inria.peerunit.Tester;
+import fr.inria.peerunit.tester.Tester;
 
 /**
  * The classes that implement a concrete strategy should implement this The

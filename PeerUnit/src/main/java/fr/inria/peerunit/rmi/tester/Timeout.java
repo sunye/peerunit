@@ -45,7 +45,7 @@ public class Timeout implements Runnable {
      *
      * @param t the tester which will be registered
      * @param list the MethodDescription list
-     * @see fr.inria.peerunit.Coordinator#register(fr.inria.peerunit.Tester,fr.inria.peerunit.parser.MethodDescription)
+     * @see fr.inria.peerunit.remote.Coordinator#register(fr.inria.peerunit.Tester,fr.inria.peerunit.parser.MethodDescription)
      * @throws InterruptedException
      */
     public void run() {

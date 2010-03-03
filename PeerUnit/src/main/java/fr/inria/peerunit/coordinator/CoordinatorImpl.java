@@ -27,14 +27,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.Coordinator;
-import fr.inria.peerunit.Tester;
-import fr.inria.peerunit.Bootstrapper;
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.base.Schedule;
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.rmi.coord.MethodExecute;
 import fr.inria.peerunit.test.oracle.GlobalVerdict;
+import fr.inria.peerunit.tester.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -99,7 +99,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     }
 
     /**
-     * @see fr.inria.peerunit.Coordinator#registerMethods(fr.inria.peerunit.Tester,
+     * @see fr.inria.peerunit.remote.Coordinator#registerMethods(fr.inria.peerunit.tester.Tester,
      *      java.util.List)
      */
     public synchronized void registerMethods(Tester t, Collection<MethodDescription> list)

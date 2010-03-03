@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit;
+package fr.inria.peerunit.remote;
 
 import fr.inria.peerunit.base.ResultSet;
 import java.rmi.RemoteException;
@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 
 import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.tester.Tester;
+
 import java.rmi.Remote;
 
 public interface Coordinator extends Remote {

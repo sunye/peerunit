@@ -14,10 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit;
+package fr.inria.peerunit.remote;
 
 import java.rmi.RemoteException;
 import java.util.Map;
+
+import fr.inria.peerunit.tester.Tester;
 /**
  * This interface contains some methods for the stocking and the retrieval of
  * testing global variables who can't be known before runtime.
