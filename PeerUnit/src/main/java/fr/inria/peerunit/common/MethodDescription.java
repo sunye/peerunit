@@ -18,9 +18,9 @@ package fr.inria.peerunit.common;
 
 import java.io.Serializable;
 
-import fr.inria.peerunit.parser.AfterClassMethod;
-import fr.inria.peerunit.parser.BeforeClassMethod;
-import fr.inria.peerunit.parser.TestStepMethod;
+import fr.inria.peerunit.tester.AfterClassMethod;
+import fr.inria.peerunit.tester.BeforeClassMethod;
+import fr.inria.peerunit.tester.TestStepMethod;
 
 /**
  * @author sunye

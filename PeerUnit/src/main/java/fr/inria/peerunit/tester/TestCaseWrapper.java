@@ -28,13 +28,10 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.TestCase;
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.parser.AfterClass;
-import fr.inria.peerunit.parser.AfterClassMethod;
 import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.BeforeClassMethod;
 import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.parser.TestStepMethod;
 import fr.inria.peerunit.remote.GlobalVariables;
 
 /**

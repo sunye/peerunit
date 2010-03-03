@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package fr.inria.peerunit.parser;
+package fr.inria.peerunit.tester;
 
 import fr.inria.peerunit.base.Range;
 import java.lang.reflect.Method;
