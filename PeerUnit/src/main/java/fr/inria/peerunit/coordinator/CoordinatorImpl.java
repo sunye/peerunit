@@ -31,7 +31,7 @@ import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
-import fr.inria.peerunit.tester.Tester;
+import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -96,7 +96,7 @@ public class CoordinatorImpl implements Coordinator, Bootstrapper,
     }
 
     /**
-     * @see fr.inria.peerunit.remote.Coordinator#registerMethods(fr.inria.peerunit.tester.Tester,
+     * @see fr.inria.peerunit.remote.Coordinator#registerMethods(fr.inria.peerunit.remote.Tester,
      *      java.util.List)
      */
     public synchronized void registerMethods(Tester t, Collection<MethodDescription> list)

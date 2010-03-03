@@ -14,17 +14,15 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.btree;
+package fr.inria.peerunit.bootstrapper;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.btreeStrategy.ConcreteBtreeStrategy;
-import fr.inria.peerunit.btreeStrategy.TreeStrategy;
 import fr.inria.peerunit.remote.Bootstrapper;
-import fr.inria.peerunit.tester.Tester;
+import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
 

@@ -17,7 +17,7 @@
 package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.tester.Tester;
+import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.IOException;

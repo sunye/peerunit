@@ -36,7 +36,7 @@ import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.parser.TestStepMethod;
 import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.rmi.tester.TesterImpl;
+import fr.inria.peerunit.tester.TesterImpl;
 
 /**
  *

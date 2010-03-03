@@ -14,14 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.tester;
+package fr.inria.peerunit.remote;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.remote.Coordinator;
-import fr.inria.peerunit.remote.StorageTester;
 
 /**
  * This interface represent a <i>tester/i>. A <i>tester</i> is a component who control a peer 
@@ -30,7 +28,7 @@ import fr.inria.peerunit.remote.StorageTester;
  * @author Aboubakar Koita
  * @version 1.0
  * @since 1.0 
- * @see fr.inria.peerunit.rmi.tester.TesterImpl
+ * @see fr.inria.peerunit.tester.TesterImpl
  * @see fr.inria.peerunit.tree.TreeTesterImpl 
  */
 public interface Tester extends Remote, StorageTester {

@@ -30,7 +30,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.btree.BootstrapperImpl;
+import fr.inria.peerunit.bootstrapper.BootstrapperImpl;
 import fr.inria.peerunit.coordinator.CoordinatorImpl;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;

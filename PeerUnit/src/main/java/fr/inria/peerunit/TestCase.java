@@ -16,7 +16,7 @@
  */
 package fr.inria.peerunit;
 
-import fr.inria.peerunit.tester.Tester;
+import fr.inria.peerunit.remote.Tester;
 
 /**
  * The <i>test cases</i> interface. This interface must be implemented by the 

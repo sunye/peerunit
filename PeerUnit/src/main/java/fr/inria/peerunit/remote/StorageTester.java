@@ -19,7 +19,6 @@ package fr.inria.peerunit.remote;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import fr.inria.peerunit.tester.Tester;
 /**
  * This interface contains some methods for the stocking and the retrieval of
  * testing global variables who can't be known before runtime.
@@ -29,7 +28,7 @@ import fr.inria.peerunit.tester.Tester;
  * @version 1.0
  * @since 1.0
  * @see fr.inria.peerunit.VolatileTester
- * @see fr.inria.peerunit.rmi.tester.TesterImpl
+ * @see fr.inria.peerunit.tester.TesterImpl
  * @see Tester
  */
 
