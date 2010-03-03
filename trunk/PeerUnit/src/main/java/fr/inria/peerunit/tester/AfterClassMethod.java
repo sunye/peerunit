@@ -3,18 +3,20 @@
  * and open the template in the editor.
  */
 
-package fr.inria.peerunit.parser;
+package fr.inria.peerunit.tester;
 
 import java.lang.reflect.Method;
+
+import fr.inria.peerunit.parser.AfterClass;
 
 /**
  *
  * @author sunye
  */
-public class BeforeClassMethod extends TestMethod {
-    
-    public  BeforeClassMethod(Method m) {
-        BeforeClass ac = m.getAnnotation(BeforeClass.class);
+public class AfterClassMethod extends TestMethod {
+
+    public  AfterClassMethod(Method m) {
+        AfterClass ac = m.getAnnotation(AfterClass.class);
         timeout = ac.timeout();
         method = m;
         range = this.newRange(ac.place(), ac.from(), ac.to(), ac.range());
