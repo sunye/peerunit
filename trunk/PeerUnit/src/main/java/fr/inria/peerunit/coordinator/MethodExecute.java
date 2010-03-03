@@ -17,7 +17,8 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.coordinator;
 
 import java.rmi.RemoteException;
-import fr.inria.peerunit.parser.MethodDescription;
+
+import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.remote.Tester;
 
 import java.util.logging.Level;
@@ -29,7 +30,7 @@ import java.util.logging.Logger;
  * @since 1.0
  * @see java.lang.Runnable
  * @see fr.inria.peerunit.remote.Tester
- * @see fr.inria.peerunit.parser.MethodDescription
+ * @see fr.inria.peerunit.common.MethodDescription
  */
 public class MethodExecute implements Runnable {
 

@@ -4,7 +4,7 @@
  */
 package fr.inria.peerunit.coordinator;
 
-import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.remote.Tester;
 
 import java.util.ArrayList;

@@ -3,9 +3,8 @@
  * and open the template in the editor.
  */
 
-package fr.inria.peerunit.test.assertion;
+package fr.inria.peerunit.tester;
 
-import fr.inria.peerunit.exception.TestException;
 
 /**
  *

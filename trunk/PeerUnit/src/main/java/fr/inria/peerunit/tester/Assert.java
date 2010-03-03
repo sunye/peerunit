@@ -14,7 +14,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.test.assertion;
+package fr.inria.peerunit.tester;
 
 import java.util.List;
 

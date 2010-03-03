@@ -17,11 +17,12 @@
 package fr.inria.peerunit.remote;
 
 import fr.inria.peerunit.base.ResultSet;
+import fr.inria.peerunit.common.MethodDescription;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
 
-import fr.inria.peerunit.parser.MethodDescription;
 
 import java.rmi.Remote;
 

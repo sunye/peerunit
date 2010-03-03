@@ -28,8 +28,8 @@ import java.util.logging.Logger;
 
 import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.base.ResultSet;
+import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.CoordinatorImpl;
-import fr.inria.peerunit.parser.MethodDescription;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
@@ -138,7 +138,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
 
     /**
      * @throws InterruptedException
-     * @see fr.inria.peerunit.remote.Tester#execute(fr.inria.peerunit.parser.MethodDescription)
+     * @see fr.inria.peerunit.remote.Tester#execute(fr.inria.peerunit.common.MethodDescription)
      */
     public void execute(MethodDescription md) throws RemoteException {
         LOG.entering("DistributedTester", "Execute", md);

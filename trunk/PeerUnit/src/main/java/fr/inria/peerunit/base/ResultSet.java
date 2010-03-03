@@ -16,7 +16,8 @@
  */
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.common.MethodDescription;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
