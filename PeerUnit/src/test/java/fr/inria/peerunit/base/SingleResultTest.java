@@ -15,8 +15,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.test.oracle.Verdicts;
+import fr.inria.peerunit.common.MethodDescription;
+import fr.inria.peerunit.coordinator.Verdicts;
 
 /**
  *

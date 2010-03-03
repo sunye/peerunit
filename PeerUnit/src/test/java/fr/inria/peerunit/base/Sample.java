@@ -17,9 +17,9 @@
 package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.TestCaseImpl;
-import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.parser.TestStep;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import fr.inria.peerunit.remote.Tester;
+import static fr.inria.peerunit.tester.Assert.*;
 
 /**
  * @author sunye

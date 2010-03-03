@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.base.AbstractTester;
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.CoordinatorImpl;
@@ -34,6 +33,7 @@ import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.remote.Tester;
+import fr.inria.peerunit.tester.AbstractTester;
 import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
 

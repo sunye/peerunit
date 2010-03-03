@@ -34,10 +34,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import fr.inria.peerunit.Tester;
 import fr.inria.peerunit.base.SingleResult;
-import fr.inria.peerunit.parser.MethodDescription;
-import fr.inria.peerunit.rmi.coord.CoordinatorImpl;
+import fr.inria.peerunit.common.MethodDescription;
+import fr.inria.peerunit.coordinator.CoordinatorImpl;
+import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -69,7 +69,7 @@ public class CoordinatorImplTest {
     }
 
     /**
-     * Test method for {@link fr.inria.peerunit.rmi.coord.CoordinatorImpl#CoordinatorImpl(int)}.
+     * Test method for {@link fr.inria.peerunit.coordinator.CoordinatorImpl#CoordinatorImpl(int)}.
      */
     @Test
     public void testCoordinatorImplInt() {

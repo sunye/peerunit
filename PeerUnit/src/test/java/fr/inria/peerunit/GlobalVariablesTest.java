@@ -4,6 +4,7 @@
  */
 package fr.inria.peerunit;
 
+import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.util.TesterUtil;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
