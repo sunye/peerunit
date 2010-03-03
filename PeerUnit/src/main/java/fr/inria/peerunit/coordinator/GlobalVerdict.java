@@ -17,7 +17,7 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
-import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.common.MethodDescription;
 
 import java.util.Collections;
 import java.util.TreeMap;

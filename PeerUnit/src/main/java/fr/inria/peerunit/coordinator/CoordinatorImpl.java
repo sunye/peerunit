@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.base.ResultSet;
-import fr.inria.peerunit.parser.MethodDescription;
+import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.Tester;

@@ -14,9 +14,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.inria.peerunit.parser;
+package fr.inria.peerunit.common;
 
 import java.io.Serializable;
+
+import fr.inria.peerunit.parser.AfterClassMethod;
+import fr.inria.peerunit.parser.BeforeClassMethod;
+import fr.inria.peerunit.parser.TestStepMethod;
 
 /**
  * @author sunye

@@ -1,4 +1,4 @@
-package fr.inria.peerunit.exception;
+package fr.inria.peerunit.tester;
 
 
 public abstract class TestException extends AssertionError {
