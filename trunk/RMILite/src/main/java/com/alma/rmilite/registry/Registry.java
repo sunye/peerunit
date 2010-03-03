@@ -19,18 +19,16 @@ public interface Registry extends Remote {
 
 	/**
 	 * Replaces the binding for the specified {@code name} in this registry with the
-	 * supplied remote {@code object} and his {@code type}. If there is an existing binding for
+	 * supplied remote {@code object}. If there is an existing binding for
 	 * the specified name, it is discarded.
 	 * 
 	 * @param name
 	 *            - the name to associate with the remote object
 	 * @param object
 	 *            - a remote object
-	 * @param type
-	 *            - interface implemented by <b>object</b>
 	 * @throws Exception
 	 */
-	public void bind(String name, Remote object, Class<? extends Remote> type)
+	public void bind(String name, Remote object)
 			throws Exception;
 
 	/**

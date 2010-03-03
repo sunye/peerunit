@@ -18,6 +18,6 @@ public class NamingServer_Socket implements NamingServer {
 	 */
 	@Override
 	public Registry getRegistry(String host, int port) throws Exception {
-		return (Registry) StubFactory.createRegistryStub(host, port);
+		return (Registry) StubFactory.createStub(host, port, new Class<?>[]{ Registry.class });
 	}
 }

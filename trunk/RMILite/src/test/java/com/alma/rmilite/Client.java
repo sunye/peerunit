@@ -7,13 +7,13 @@ import com.alma.rmilite.server.RemoteObjectProvider;
 public class Client {
 	
 	public static void main(String[] args) throws Exception {
-		RemoteObject ro1;
-		RemoteObject ro2 = new RemoteObjectImpl();
+		RemoteObjectTest ro1;
+		RemoteObjectTest ro2 = new RemoteObjectTestImpl();
 		ro2.setNb(1);
 		
 		NamingServer namingServer = NamingServer.instance;
 		Registry registry = namingServer.getRegistry("127.0.0.1", 1099);
-		ro1 = (RemoteObject) registry.lookup("ro1");
+		ro1 = (RemoteObjectTest) registry.lookup("ro1");
 		
 		RemoteObjectProvider remoteObjectProvider = RemoteObjectProvider.instance;
 		remoteObjectProvider.exportObject(ro2,0);
@@ -29,7 +29,7 @@ public class Client {
 		ro1.incNb();
 		System.out.println(ro1.getNb()); // 2
 		
-		RemoteObject ro3 = ro1.add2Nb(ro2, 0); //3
+		RemoteObjectTest ro3 = ro1.add2Nb(ro2, 0); //3
 		System.out.println(ro3.getNb());
 
 		ro3.incNb();

@@ -4,13 +4,10 @@ import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
 import java.rmi.Remote;
 
 import com.alma.rmilite.client.Stub;
 import com.alma.rmilite.client.StubFactory;
-import com.alma.rmilite.server.RemoteObjectProvider;
-import com.alma.rmilite.server.RemoteObjectManager;
 
 public class RemoteMethodImpl implements RemoteMethod {
 
@@ -39,8 +36,6 @@ public class RemoteMethodImpl implements RemoteMethod {
 	private void args2refs() throws UnexportedException,
 			NotSerializableException {
 		if (args != null) { // method without argument
-			RemoteObjectManager manager = (RemoteObjectManager) RemoteObjectProvider.instance;
-
 			for (int i = 0; i < this.args.length; i++) {
 				if (this.args[i] instanceof Remote) { // if the argument is a
 														// remote object
@@ -49,14 +44,8 @@ public class RemoteMethodImpl implements RemoteMethod {
 															// argument is
 															// already a stub
 						args[i] = StubFactory.getStubReference(remoteArg);
-					} else if (manager.isExported(remoteArg)) { // else if the
-																// remote
-																// argument is
-																// exported
-						args[i] = new InetSocketAddress(manager
-								.getPort(remoteArg)); // creates a reference
-					} else {
-						throw new UnexportedException("Unexported argument");
+					} else { // else the remote argument is serialized
+						args[i] = RemoteMethodFactory.createSerializableRemoteObject(remoteArg);
 					}
 				} else if (!(args[i] instanceof Serializable)) {
 					throw new NotSerializableException(
@@ -103,8 +92,8 @@ public class RemoteMethodImpl implements RemoteMethod {
 																	// is a
 																	// remote
 																	// object
-					this.args[i] = StubFactory.createStub(
-							(InetSocketAddress) this.args[i], argTypes[i]);
+					/* Deserializes the remote object */
+					this.args[i] = ((SerializableRemoteObject) args[i]).getObject(); // returns a stub
 				}
 			}
 		}

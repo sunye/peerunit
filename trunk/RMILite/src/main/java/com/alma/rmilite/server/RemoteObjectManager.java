@@ -4,6 +4,7 @@ import java.rmi.Remote;
 
 import com.alma.rmilite.RemoteMethod;
 import com.alma.rmilite.RemoteMethodResult;
+import com.alma.rmilite.UnexportedException;
 import com.alma.rmilite.io.IOManager;
 import com.alma.rmilite.io.RemoteProxy;
 
@@ -34,7 +35,7 @@ public interface RemoteObjectManager {
 	 *            - the remote object
 	 * @return the port
 	 */
-	public int getPort(Remote object);
+	public int getPort(Remote object) throws UnexportedException;
 
 	/**
 	 *  Links a remote stub with a remote object (identified the port of the serverSockect).

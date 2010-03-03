@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 /**
- * Serialises and identifies a specific method.<br/>
+ * Serializes and identifies a specific method.<br/>
  * <br/>
- * Used by a {@link RemoteMethod} instance because the original class {@link Method} isn't serializable.
+ * Used by a {@link RemoteMethod} instance because the original class
+ * {@link Method} isn't serializable.
  * 
  * @see RemoteMethod
  */
@@ -14,6 +15,7 @@ public interface SerializableMethod extends Serializable {
 
 	/**
 	 * Deserializes the method.
+	 * 
 	 * @return a {@link Method} instance.
 	 * @throws SecurityException
 	 * @throws NoSuchMethodException

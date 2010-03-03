@@ -5,8 +5,6 @@ import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.rmi.Remote;
 
-import com.alma.rmilite.registry.Registry;
-
 /**
  * StubFactory provides static methods for creating dynamic proxy/{@link Stub}
  * classes and instances who implement the specified interfaces.
@@ -22,13 +20,13 @@ public class StubFactory {
 	 * 
 	 * @param host - the host for the remote object
 	 * @param port - the port on which the remote object accepts requests
-	 * @param anInterface
+	 * @param interfaces
 	 *            - interface implemented by the remote object
 	 * @return a stub
 	 * @see Stub
 	 */
-	public static Object createStub(String host, int port, Class<?> anInterface) {
-		return createStub(new InetSocketAddress(host, port), anInterface);
+	public static Remote createStub(String host, int port, Class<?>[] interfaces) {
+		return createStub(new InetSocketAddress(host, port), interfaces);
 	}
 
 	/**
@@ -37,31 +35,18 @@ public class StubFactory {
 	 * the remote object (referenced by {@code reference}).
 	 * 
 	 * @param reference - the host and the port on whiches the remote object accepts requests
-	 * @param anInterface
+	 * @param interfaces
 	 *            - interface implemented by the remote object
 	 * @return a stub
 	 * @see Stub
 	 */
-	public static Object createStub(InetSocketAddress reference,
-			Class<?> anInterface) {
-		return Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
-				new Class[] { anInterface, StubMarker.class }, new Stub(reference));
-	}
-
-	/**
-	 * Returns a specific stub for {@link Registry}.<br/>
-	 * The {@link InvocationHandler} is an instance of {@link RegistryStub}
-	 * linked to the remote registry (referenced by {@code host} and {@code port}).
-	 * 
-	 * @param host - the host for the remote object
-	 * @param port - the port on which the remote object accepts requests
-	 * @return a stub
-	 * @see Stub
-	 */
-	public static Object createRegistryStub(String host, int port) {
-		return Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
-				new Class[] { Registry.class, StubMarker.class }, new RegistryStub(
-						new InetSocketAddress(host, port)));
+	public static Remote createStub(InetSocketAddress reference,
+			Class<?>[] interfaces) {
+		Class<?>[] allInterfaces = new Class<?>[interfaces.length +1];
+		System.arraycopy(interfaces, 0, allInterfaces, 0, interfaces.length);
+		allInterfaces[interfaces.length] = StubMarker.class;
+		return (Remote) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
+				allInterfaces, new Stub(reference));
 	}
 	
 	/**

@@ -12,10 +12,10 @@ public class Registry_RMI implements Registry {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.alma.rmilite.registry.Registry#bind(java.lang.String, java.rmi.Remote, java.lang.Class)
+	 * @see com.alma.rmilite.registry.Registry#bind(java.lang.String, java.rmi.Remote)
 	 */
 	@Override
-	public void bind(String name, Remote object, Class<? extends Remote> type) throws Exception {
+	public void bind(String name, Remote object) throws Exception {
 		this.reg.rebind(name, object);		
 	}
 
