@@ -37,41 +37,34 @@ import fr.inria.peerunit.util.TesterUtil;
  * @author sunye
  *
  */
-public class CoordinatorImpl implements Runnable, Serializable {
+public class CoordinatorImpl implements Runnable {
 
     private static final Logger LOG = Logger.getLogger(CoordinatorImpl.class.getName());
     private static final long serialVersionUID = 1L;
-
     /**
      * Schedule: Methods X set of Testers
      */
     private Schedule schedule = new Schedule();
-
     /**
      * Testers registered to this coordinator
      */
     final private List<Tester> registeredTesters;
-
     /**
      * Number of expected testers.
      */
     final private AtomicInteger expectedTesters;
-
     /**
      * Number of testers running the current method (test step).
      */
     final private AtomicInteger runningTesters;
-
     /**
      * Pool of threads. Used to dispatch actions to testers.
      */
     private ExecutorService executor;
-
     /**
      * The global verdict for a test case.
      */
     private GlobalVerdict verdict;
-
     /**
      * The coordinator interface, RMI implementation.
      */
@@ -179,9 +172,6 @@ public class CoordinatorImpl implements Runnable, Serializable {
         return verdict.getResultFor(md);
     }
 
-
-
-
     /**
      * @return The schedule, a read-only map of (Methods X Testers).
      */
@@ -243,7 +233,7 @@ public class CoordinatorImpl implements Runnable, Serializable {
             LOG.fine(String.format("Waiting for %d testers to quit.", registeredTesters.size()));
         }
         LOG.fine("All testers quit.");
-        
+
     }
 
     /**
@@ -259,8 +249,8 @@ public class CoordinatorImpl implements Runnable, Serializable {
 
     @Override
     public String toString() {
-        return String.format("Coordinator(expected:%s,registered:%s,running:%s)", 
-                this.expectedTesters, new Integer(this.registeredTesters.size()),
+        return String.format("Coordinator(expected:%s,registered:%s,running:%s)",
+                this.expectedTesters, Integer.valueOf(this.registeredTesters.size()),
                 this.runningTesters);
     }
 
