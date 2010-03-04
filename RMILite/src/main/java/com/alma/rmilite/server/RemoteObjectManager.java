@@ -37,13 +37,11 @@ public interface RemoteObjectManager {
 
 	/**
 	 * Links a remote stub with a remote object (identified the port of the
-	 * serverSockect).
-	 * 
-	 * @param port
-	 *            - the port to export the remote object on
+	 * {@code remoteProxy}).
 	 * @param remoteProxy
 	 *            - Calls from the remote stub
+	 * 
 	 * @see RemoteProxy
 	 */
-	public void remoteProcedureCall(int port, RemoteProxy remoteProxy);
+	public void remoteProcedureCall(RemoteProxy remoteProxy);
 }

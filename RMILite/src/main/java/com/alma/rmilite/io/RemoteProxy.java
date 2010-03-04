@@ -38,4 +38,12 @@ public interface RemoteProxy {
 	 * @throws IOException
 	 */
 	public void close() throws IOException;
+	
+	
+	/**
+	 * Returns the local port to which this remote proxy is bound.
+	 * 
+	 * @return the port
+	 */
+	public int getLocalPort();
 }

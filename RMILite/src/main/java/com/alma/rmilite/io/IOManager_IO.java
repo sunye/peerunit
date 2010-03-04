@@ -50,8 +50,7 @@ public class IOManager_IO implements IOManager {
 							 * (identified the port of the serverSockect).
 							 */
 							((RemoteObjectManager) RemoteObjectProvider.instance)
-									.remoteProcedureCall(serverSocket
-											.getLocalPort(), stub);
+									.remoteProcedureCall(stub);
 						}
 					}).start();
 				} catch (IOException e1) {

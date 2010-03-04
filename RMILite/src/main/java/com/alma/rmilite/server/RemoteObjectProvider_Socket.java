@@ -78,7 +78,7 @@ public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
 	 * com.alma.rmilite.io.RemoteProxy)
 	 */
 	@Override
-	public void remoteProcedureCall(int port, RemoteProxy remoteProxy) {
+	public void remoteProcedureCall(RemoteProxy remoteProxy) {
 		try {
 			Object result;
 			try {
@@ -87,7 +87,7 @@ public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
 						.receiveObject();
 
 				/* Execute the call */
-				result = this.execute(port, remoteMethod);
+				result = this.execute(remoteProxy.getLocalPort(), remoteMethod);
 			} catch (ClassNotFoundException e) { // Unknown remote method
 				e.printStackTrace();
 				result = e;
