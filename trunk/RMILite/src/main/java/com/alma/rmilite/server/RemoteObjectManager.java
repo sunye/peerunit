@@ -2,19 +2,17 @@ package com.alma.rmilite.server;
 
 import java.rmi.Remote;
 
-import com.alma.rmilite.RemoteMethod;
-import com.alma.rmilite.RemoteMethodResult;
+import com.alma.rmilite.RemoteMethodFactory;
 import com.alma.rmilite.UnexportedException;
 import com.alma.rmilite.io.IOManager;
 import com.alma.rmilite.io.RemoteProxy;
 
 /**
- * The RemoteObjectManager instance provides methods for {@link RemoteMethod},
- * {@link RemoteMethodResult} and {@link IOManager} objects.
+ * The RemoteObjectManager instance provides methods for
+ * {@link RemoteMethodFactory} and {@link IOManager} objects.
  * 
  * @see IOManager
- * @see RemoteMethod
- * @see RemoteMethodResult
+ * @see RemoteMethodFactory
  */
 public interface RemoteObjectManager {
 
@@ -38,7 +36,8 @@ public interface RemoteObjectManager {
 	public int getPort(Remote object) throws UnexportedException;
 
 	/**
-	 *  Links a remote stub with a remote object (identified the port of the serverSockect).
+	 * Links a remote stub with a remote object (identified the port of the
+	 * serverSockect).
 	 * 
 	 * @param port
 	 *            - the port to export the remote object on
