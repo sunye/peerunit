@@ -22,7 +22,7 @@ package fr.inria.peerunit.base;
  */
 public abstract class Range {
 
-    public static Range ALL = new AllValues();
+    public final static Range ALL = new AllValues();
     private static String SEPARATOR = "-";
 
     public abstract boolean includes(int i);
