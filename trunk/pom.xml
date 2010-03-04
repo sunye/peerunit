@@ -8,6 +8,7 @@
 	
 	<properties>
    			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+            <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
 	<scm>
@@ -103,11 +104,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changelog-plugin</artifactId>
-				<configuration>
-					<type>range</type>
-					<range>20</range>
-					<headingDateFormat>d MMMM yyyy</headingDateFormat>
-				</configuration>
+                <configuration>
+                    <type>range</type>
+                    <range>30</range>
+                    <displayFileDetailUrl>https://gforge.inria.fr/plugins/scmsvn/viewcvs.php/%FILE%?root=peerunit</displayFileDetailUrl>
+                </configuration>
 			</plugin>
 			<plugin>
 	        <groupId>org.codehaus.mojo</groupId>

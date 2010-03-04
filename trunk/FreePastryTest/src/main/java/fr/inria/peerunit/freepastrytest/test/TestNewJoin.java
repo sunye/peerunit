@@ -1,7 +1,7 @@
 package fr.inria.peerunit.freepastrytest.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.fail;
-import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+import static fr.inria.peerunit.tester.Assert.fail;
+import static fr.inria.peerunit.tester.Assert.inconclusive;
 
 import java.util.ArrayList;
 import java.util.List;

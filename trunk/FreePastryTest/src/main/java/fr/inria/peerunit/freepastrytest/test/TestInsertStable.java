@@ -1,6 +1,6 @@
 package fr.inria.peerunit.freepastrytest.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+import static fr.inria.peerunit.tester.Assert.inconclusive;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -17,7 +17,7 @@ import rice.tutorial.past.MyPastContent;
 import fr.inria.peerunit.freepastrytest.util.FreeLocalPort;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.test.assertion.Assert;
+import fr.inria.peerunit.tester.Assert;
 
 /**
  * Test Insert and retrieve on a stable system

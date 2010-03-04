@@ -2,9 +2,11 @@ package fr.inria.peerunit.tutorial;
 
 import fr.inria.mockdht.MockDHT;
 import fr.inria.mockdht.RemoteDHT;
+import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.parser.AfterClass;
+import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.TestStep;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.tester.Assert.*;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -18,19 +20,20 @@ import java.rmi.server.UnicastRemoteObject;
 public class RemoteDHTTest {
 
     private RemoteDHT mock;
+    private GlobalVariables globals;
 
     @TestStep(range = "1", order = 1)
     public void startDHT() throws RemoteException {
         MockDHT dht = new MockDHT();
         RemoteDHT stub = (RemoteDHT) UnicastRemoteObject.exportObject(dht, 0);
-        Registry registry = LocateRegistry.createRegistry(1099);
+        Registry registry = LocateRegistry.createRegistry(1222);
         registry.rebind("DHTService", stub);
     }
 
     @TestStep(range = "*", order = 2, timeout = 40)
     public void lookupDHT() throws RemoteException, NotBoundException {
         Registry registry;
-        registry = LocateRegistry.getRegistry();
+        registry = LocateRegistry.getRegistry("127.0.0.1", 1222);
         mock = (RemoteDHT) registry.lookup("DHTService");
     }
 
@@ -67,7 +70,25 @@ public class RemoteDHTTest {
         Thread.sleep(2000);
     }
 
+    @TestStep(range = "0", order = 9, timeout = 1000)
+    public void setAGlobal() throws Exception {
+        globals.put(1, "Juste one value");
+    }   
+ 
+    @TestStep(range = "*", order = 10, timeout = 1000)
+    public void getAGlobal() throws Exception {
+        String response = (String) globals.get(1);
+        
+        assert response.equals("Juste one value");
+    } 
+    
+    
     @AfterClass
     public void end() {
+    }
+    
+    @SetGlobals
+    public void setGlobals(GlobalVariables gv) {
+        globals = gv;
     }
 }

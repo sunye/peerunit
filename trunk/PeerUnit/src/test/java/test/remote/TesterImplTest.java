@@ -64,13 +64,13 @@ public class TesterImplTest {
             coord = new CoordinatorImpl(defaults);
             globals = new GlobalVariablesImpl();
             new Thread(coord, "Coordinator").start();
-            tester0 = new TesterImpl(coord, globals);
-            tester0.setCoordinator(coord);
+            tester0 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
+            tester0.setCoordinator(coord.getRemoteCoordinator());
             executor = new TestCaseWrapper(tester0);
-            tester1 = new TesterImpl(coord, globals);
-            tester1.setCoordinator(coord);
-            tester2 = new TesterImpl(coord, globals);
-            tester2.setCoordinator(coord);
+            tester1 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
+            tester1.setCoordinator(coord.getRemoteCoordinator());
+            tester2 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
+            tester2.setCoordinator(coord.getRemoteCoordinator());
             tester0.registerTestCase(Sample.class);
             tester1.registerTestCase(Sample.class);
             tester2.registerTestCase(Sample.class);
@@ -112,7 +112,7 @@ public class TesterImplTest {
         try {
             Bootstrapper boot = mock(Bootstrapper.class);
             TesterImpl tester = new TesterImpl(boot, globals);
-            tester.setCoordinator(coord);
+            tester.setCoordinator(coord.getRemoteCoordinator());
             tester.registerTestCase(Sample.class);
 
             System.setProperty("executed", "nok");

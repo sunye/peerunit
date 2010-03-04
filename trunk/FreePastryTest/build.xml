@@ -47,9 +47,11 @@
     </target>
 
     <target name="clear">
-        <delete verbose="true">
-            <dirset dir="." includes="storage*/*"/>
-            <fileset dir="." includes="*.log"/>
+        <delete verbose="true" includeemptydirs="true">
+            <dirset dir="${basedir}">
+                <include name="*storage*"/>
+            </dirset>
+            <fileset dir="." includes="**/*.log"/>
         </delete>
     </target>
 
