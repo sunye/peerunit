@@ -51,4 +51,12 @@ public class RemoteProxy_IO implements RemoteProxy {
 	public void close() throws IOException {
 		this.socket.close();
 	}
+
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.io.RemoteProxy#getLocalPort()
+	 */
+	@Override
+	public int getLocalPort() {
+		return this.socket.getLocalPort();
+	}
 }
