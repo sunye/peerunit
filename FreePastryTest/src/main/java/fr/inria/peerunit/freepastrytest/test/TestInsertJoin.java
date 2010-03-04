@@ -1,6 +1,6 @@
 package fr.inria.peerunit.freepastrytest.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+import static fr.inria.peerunit.tester.Assert.inconclusive;
 
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;

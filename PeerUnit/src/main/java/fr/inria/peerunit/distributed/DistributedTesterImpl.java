@@ -132,7 +132,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     public void registerMethods(Tester tester, Collection<MethodDescription> list) throws RemoteException {
         assert testers.contains(tester);
 
-        coordinator.registerMethods(tester, list);
+        coordinator.getRemoteCoordinator().registerMethods(tester, list);
 
     }
 
@@ -157,7 +157,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     public void methodExecutionFinished(ResultSet result) throws RemoteException {
         assert coordinator != null : "Null Coordinator";
 
-        coordinator.methodExecutionFinished(result);
+        coordinator.getRemoteCoordinator().methodExecutionFinished(result);
     }
 
     /** 
@@ -168,7 +168,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
 
         LOG.entering(null, null);
         LOG.fine(String.format("Tester %s is leaving.", t));
-        coordinator.quit(t);
+        coordinator.getRemoteCoordinator().quit(t);
     }
 
     /**

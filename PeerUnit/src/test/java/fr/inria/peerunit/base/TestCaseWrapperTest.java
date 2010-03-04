@@ -54,8 +54,8 @@ public class TestCaseWrapperTest {
             coord = new CoordinatorImpl(defaults);
             globals = new GlobalVariablesImpl();
             new Thread(coord, "Coordinator").start();
-            tester = new TesterImpl(coord, globals);
-            tester.setCoordinator(coord);
+            tester = new TesterImpl(coord.getRemoteBootstrapper(), globals);
+            tester.setCoordinator(coord.getRemoteCoordinator());
             wrapper = new TestCaseWrapper(tester);
 
         } catch (RemoteException e) {

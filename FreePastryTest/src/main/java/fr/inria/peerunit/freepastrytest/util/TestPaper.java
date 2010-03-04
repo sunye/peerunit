@@ -1,6 +1,6 @@
 package fr.inria.peerunit.freepastrytest.util;
 
-import static fr.inria.peerunit.test.assertion.Assert.assertEquals;
+import static fr.inria.peerunit.tester.Assert.assertEquals;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;

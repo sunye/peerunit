@@ -88,17 +88,17 @@ public class CoordinatorImplTest {
 
         coordination.start();
         try {
-            coord.registerMethods(tester, methods);
+            coord.getRemoteCoordinator().registerMethods(tester, methods);
             for (MethodDescription each : methods) {
                 assertTrue(coord.getSchedule().containsMethod(each));
             }
             for (MethodDescription each : methods) {
                 Thread.sleep(100);
                 SingleResult result = new SingleResult(tester.getId(), each);
-                coord.methodExecutionFinished(result.asResultSet());
+                coord.getRemoteCoordinator().methodExecutionFinished(result.asResultSet());
             }
             Thread.sleep(1000);
-            coord.quit(tester);
+            coord.getRemoteCoordinator().quit(tester);
             coordination.join();
             System.out.println(coord);
 
@@ -129,17 +129,17 @@ public class CoordinatorImplTest {
             Tester[] testers = new Tester[size];
             for (int i = 0; i < testers.length; i++) {
                 testers[i] = mock(Tester.class);
-                coord.registerMethods(testers[i], methods);
+                coord.getRemoteCoordinator().registerMethods(testers[i], methods);
             }
             for (MethodDescription each : methods) {
                 Thread.sleep(100 + size / 10);
                 for (int j = 0; j < testers.length; j++) {
-                    coord.methodExecutionFinished((new SingleResult(testers[j].getId(), each)).asResultSet());
+                    coord.getRemoteCoordinator().methodExecutionFinished((new SingleResult(testers[j].getId(), each)).asResultSet());
                 }
             }
             Thread.sleep(100 + size / 10);
             for (int i = 0; i < testers.length; i++) {
-                coord.quit(testers[i]);
+                coord.getRemoteCoordinator().quit(testers[i]);
             }
 
             coordination.join(10000);

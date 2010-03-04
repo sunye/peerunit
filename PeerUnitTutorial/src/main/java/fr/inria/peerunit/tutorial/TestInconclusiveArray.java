@@ -2,13 +2,12 @@ package fr.inria.peerunit.tutorial;
 
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.parser.TestStep;
 import java.util.Arrays;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.tester.Assert.*;
 
 public class TestInconclusiveArray  {
 

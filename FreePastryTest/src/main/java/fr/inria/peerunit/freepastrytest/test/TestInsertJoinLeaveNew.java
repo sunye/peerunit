@@ -18,7 +18,7 @@ import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.freepastrytest.Network;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.tester.Assert.*;
 
 /**
  * Test Insert/Retrieve in a Shrinking System

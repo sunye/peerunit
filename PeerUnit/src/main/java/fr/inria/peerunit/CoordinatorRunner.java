@@ -110,7 +110,7 @@ public class CoordinatorRunner {
     public void startCoordinator() throws RemoteException, AlreadyBoundException, InterruptedException {
         LOG.info("Using the centralized architecture");
         CoordinatorImpl cii = new CoordinatorImpl(defaults);
-        Coordinator stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
+        Coordinator stub = (Coordinator) UnicastRemoteObject.exportObject(cii.getRemoteCoordinator(), 0);
         LOG.info("New Coordinator address is : " + defaults.getServerAddr());
         registry.bind("Coordinator", stub);
 

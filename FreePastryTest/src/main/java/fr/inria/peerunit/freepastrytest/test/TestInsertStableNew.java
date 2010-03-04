@@ -1,6 +1,6 @@
 package fr.inria.peerunit.freepastrytest.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+import static fr.inria.peerunit.tester.Assert.inconclusive;
 
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
@@ -13,7 +13,7 @@ import rice.p2p.past.PastContent;
 import rice.tutorial.past.MyPastContent;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.test.assertion.Assert;
+import fr.inria.peerunit.tester.Assert;
 import fr.inria.peerunit.freepastrytest.Network;
 import java.util.HashSet;
 
@@ -140,13 +140,9 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
 
     @TestStep(range = "*", timeout = 30000, order = 5)
     public void testRetrieveBis() throws RemoteException, InterruptedException {
+
         List<PastContent> contents = new ArrayList<PastContent>(OBJECTS);
         contents.addAll((List<PastContent>) this.get(0));
-        
-        // Lookup for data
-
-        //Thread.sleep(16000);
-
         Set<PastContent> retrieved = new HashSet<PastContent>();
 
         int times = 0;

@@ -4,7 +4,7 @@
  */
 package fr.inria.peerunit.freepastrytest.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+import static fr.inria.peerunit.tester.Assert.inconclusive;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +16,7 @@ import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.GlobalVariables;
+import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.freepastrytest.Network;
 import fr.inria.peerunit.freepastrytest.Peer;
 import fr.inria.peerunit.parser.BeforeClass;

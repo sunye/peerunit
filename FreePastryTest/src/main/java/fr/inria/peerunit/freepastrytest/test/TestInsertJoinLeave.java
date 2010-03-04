@@ -20,9 +20,9 @@ import rice.tutorial.past.MyPastContent;
 import fr.inria.peerunit.freepastrytest.util.FreeLocalPort;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.test.assertion.Assert;
+import fr.inria.peerunit.tester.Assert;
 import fr.inria.peerunit.util.TesterUtil;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.tester.Assert.*;
 
 /**
  * Test Insert/Retrieve in a Shrinking System
