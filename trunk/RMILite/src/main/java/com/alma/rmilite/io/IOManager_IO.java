@@ -3,6 +3,7 @@ package com.alma.rmilite.io;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +12,30 @@ import com.alma.rmilite.server.RemoteObjectManager;
 
 public class IOManager_IO implements IOManager {
 
+	/**
+	 * This thread execute the remote call.
+	 */
+	private class RunnableCall implements Runnable {
+		
+		private RemoteProxy stub;
+		
+		private RunnableCall(Socket call) {
+			this.stub = new RemoteProxy_IO(call);
+		}
+
+		@Override
+		public void run() {
+			/*
+			 * We link the remote stub with the remote object
+			 * (identified the port of the serverSockect).
+			 */
+			((RemoteObjectManager) RemoteObjectProvider.instance)
+					.remoteProcedureCall(stub);			
+		}
+	}
+	
+	
+	
 	/**
 	 * Each {@link ServerSocket} is associated with a thread.
 	 * 
@@ -32,30 +57,17 @@ public class IOManager_IO implements IOManager {
 		@Override
 		public void run() {
 			while (!serverSocket.isClosed()) {
+				/*
+				 * Listens for a connection to be made to this socket and
+				 * accepts it.
+				 * 
+				 * A new connection is encapsulated in a new RemoteProxy.
+				 */
 				try {
-					/*
-					 * Listens for a connection to be made to this socket and
-					 * accepts it.
-					 * 
-					 * A new connection is encapsulated in a new RemoteProxy.
-					 */
-					final RemoteProxy stub = new RemoteProxy_IO(serverSocket
-							.accept());
-
-					new Thread(new Runnable() {
-						@Override
-						public void run() {
-							/*
-							 * We link the remote stub with the remote object
-							 * (identified the port of the serverSockect).
-							 */
-							((RemoteObjectManager) RemoteObjectProvider.instance)
-									.remoteProcedureCall(stub);
-						}
-					}).start();
-				} catch (IOException e1) {
+					new Thread(new RunnableCall(serverSocket.accept())).start();
+				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 		}
