@@ -17,9 +17,14 @@
 package fr.inria.peerunit.rmi.tester;
 
 import java.io.Serializable;
-import java.rmi.NoSuchObjectException;
+
+
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import com.alma.rmilite.server.RemoteObjectProvider;
+//import java.rmi.server.UnicastRemoteObject;
+import com.alma.rmilite.UnexportedException;
+//import java.rmi.NoSuchObjectException;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -233,8 +238,9 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
             bootstrapper = null;
             globals = null;
             parent = null;
-            UnicastRemoteObject.unexportObject(this, true);
-        } catch (NoSuchObjectException ex) {
+            RemoteObjectProvider.instance.unexportObject(this);
+            //UnicastRemoteObject.unexportObject(this, true);
+        } catch (UnexportedException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
     }

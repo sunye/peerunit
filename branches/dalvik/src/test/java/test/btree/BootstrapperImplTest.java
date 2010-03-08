@@ -20,13 +20,23 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-import java.rmi.AccessException;
-import java.rmi.AlreadyBoundException;
-import java.rmi.NotBoundException;
+
+import com.alma.rmilite.UnexportedException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+//import java.rmi.AccessException;
+//import java.rmi.AlreadyBoundException;
+//import java.rmi.NotBoundException;
+//import java.rmi.RemoteException;
+
+import com.alma.rmilite.registry.NamingServer;
+//import java.rmi.registry.LocateRegistry;
+import com.alma.rmilite.registry.Registry;
+//import java.rmi.registry.Registry;
+import com.alma.rmilite.server.RemoteObjectProvider;
+import fr.inria.peerunit.GlobalVariables;
+//import java.rmi.server.UnicastRemoteObject;
+
+
 import java.util.Properties;
 
 import org.junit.Before;
@@ -84,8 +94,10 @@ public class BootstrapperImplTest {
     @Test
     public void testRemoteRegister() {
         try {
-            Registry registry = LocateRegistry.createRegistry(1099);
-            Bootstrapper stub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
+        	Registry registry = NamingServer.instance.createRegistry(1099);
+            //Registry registry = LocateRegistry.createRegistry(1099);
+        	Bootstrapper stub = (Bootstrapper) RemoteObjectProvider.instance.exportObject(bootstrapper, 0);
+            //Bootstrapper stub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
             registry.bind("BootTest", stub);
 
             Bootstrapper remoteBoot = (Bootstrapper) registry.lookup("BootTest");
@@ -93,15 +105,11 @@ public class BootstrapperImplTest {
             tester.register();
 
             assertTrue(tester.getId() == 0);
-        } catch (AccessException e) {
+        } catch (UnexportedException e) {
             fail(e.getMessage());
         } catch (RemoteException e) {
             fail(e.getMessage());
-        } catch (AlreadyBoundException e) {
-            fail(e.getMessage());
-        } catch (NotBoundException e) {
-            fail(e.getMessage());
-        }
+        } 
 
     }
 
