@@ -1,4 +1,4 @@
-package com.alma.rmilite.registry.tests;
+package com.alma.rmilite.registry;
 
 import org.junit.Before;
 
