@@ -1,4 +1,4 @@
-package com.alma.rmilite.registry.tests;
+package com.alma.rmilite.registry;
 
 import java.rmi.Remote;
 
@@ -48,10 +48,14 @@ public abstract class AbstractNamingServerTest extends TestCase {
 	public void testRegistry() {
 		try {
 			registry = namingServer.createRegistry(8080);
-			assertNotNull(registry);
 		} catch (Exception e) {
-			assertTrue(false);
+			try {
+				registry = namingServer.createRegistry(8081);
+			} catch (Exception e1) {
+				fail("unable to create a registry");
+			}
 		}
+		assertNotNull(registry);
 	}
 
 	/**
