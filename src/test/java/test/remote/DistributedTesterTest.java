@@ -16,11 +16,18 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package test.remote;
 
-import java.rmi.AlreadyBoundException;
+import com.alma.rmilite.UnexportedException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+//import java.rmi.AlreadyBoundException;
+//import java.rmi.RemoteException;
+
+import com.alma.rmilite.registry.NamingServer;
+//import java.rmi.registry.LocateRegistry;
+import com.alma.rmilite.registry.Registry;
+//import java.rmi.registry.Registry;
+import com.alma.rmilite.server.RemoteObjectProvider;
+import fr.inria.peerunit.GlobalVariables;
+//import java.rmi.server.UnicastRemoteObject;
 
 import org.junit.Test;
 
@@ -35,12 +42,14 @@ public class DistributedTesterTest {
     public void testSerialization() {
         Registry registry;
         try {
-            registry = LocateRegistry.createRegistry(1099);
+        	registry = NamingServer.instance.createRegistry(1099);
+            //registry = LocateRegistry.createRegistry(1099);
             DistributedTesterImpl dt = new DistributedTesterImpl(null, null, null, TesterUtil.instance);
-            Tester stub = (Tester) UnicastRemoteObject.exportObject(dt, 0);
+            Tester stub = (Tester) RemoteObjectProvider.instance.exportObject(dt, 0);
+            //Tester stub = (Tester) UnicastRemoteObject.exportObject(dt, 0);
             registry.bind("DT", stub);
         } catch (RemoteException e) {
-        } catch (AlreadyBoundException e) {
+        } catch (UnexportedException e) {
         }
 
     }
