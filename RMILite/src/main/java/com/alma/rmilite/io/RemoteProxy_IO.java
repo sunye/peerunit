@@ -10,7 +10,7 @@ public class RemoteProxy_IO implements RemoteProxy {
 
 	private Socket socket;
 
-	public RemoteProxy_IO(Socket reference) throws IOException {
+	public RemoteProxy_IO(Socket reference) {
 		this.socket = reference;
 	}
 
