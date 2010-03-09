@@ -4,6 +4,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+import com.alma.rmilite.io.IOManager;
+
 public class RemoteObjectProvider_RMI implements RemoteObjectProvider {
 
 	/*
@@ -30,4 +32,17 @@ public class RemoteObjectProvider_RMI implements RemoteObjectProvider {
 		return UnicastRemoteObject.unexportObject(object, true);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.server.RemoteObjectProvider#setIOManager(com.alma.rmilite.io.IOManager)
+	 */
+	@Override
+	public void setIOManager(IOManager ioManager) {}
+
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.server.RemoteObjectProvider#getIOManager()
+	 */
+	@Override
+	public IOManager getIOManager() {
+		return null;
+	}
 }

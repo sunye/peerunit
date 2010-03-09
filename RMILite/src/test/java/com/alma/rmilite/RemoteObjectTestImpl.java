@@ -28,7 +28,11 @@ public class RemoteObjectTestImpl implements RemoteObjectTest {
 	@Override
 	public RemoteObjectTest add2Nb(RemoteObjectTest nb1, int nb2) {
 		RemoteObjectTest newNb = new RemoteObjectTestImpl();
-		RemoteObjectProvider remoteObjectProvider = RemoteObjectProvider.instance;
+		
+		//XXX CHEAT = ON
+		RemoteObjectProvider remoteObjectProvider = ServerManager.remoteObjectProvider;
+		//XXX CHEAT = OFF
+		
 		try {
 			remoteObjectProvider.exportObject(newNb,0);
 		} catch (Exception e) {

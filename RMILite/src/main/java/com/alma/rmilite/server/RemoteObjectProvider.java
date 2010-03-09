@@ -2,6 +2,9 @@ package com.alma.rmilite.server;
 
 import java.rmi.Remote;
 
+import com.alma.rmilite.client.StubFactory;
+import com.alma.rmilite.io.IOManager;
+
 /**
  * The RemoteObjectProvider instance defines a non-replicated remote object whose
  * references are valid only while the server process is alive. The
@@ -14,12 +17,6 @@ import java.rmi.Remote;
  * appropriately for remote objects.
  */
 public interface RemoteObjectProvider {
-
-	/**
-	 * We want the RemoteObjectProvider to be instantiated only once, so it uses
-	 * singleton pattern.
-	 */
-	public static final RemoteObjectProvider instance = new RemoteObjectProvider_Socket();
 
 	/**
 	 * Exports the remote {@code object} to make it available to receive
@@ -47,4 +44,16 @@ public interface RemoteObjectProvider {
 	 * @throws Exception
 	 */
 	public boolean unexportObject(Remote object) throws Exception;
+
+	/**
+	 * Sets the {@link IOManager}, it's the same instance as {@link StubFactory}.
+	 * @param ioManager - the IOManager
+	 */
+	public void setIOManager(IOManager ioManager);
+	
+	/**
+	 * Gets the used instance of {@link IOManager}.
+	 * @return this instance
+	 */
+	public IOManager getIOManager();
 }

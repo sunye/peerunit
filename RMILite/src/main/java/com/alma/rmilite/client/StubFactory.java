@@ -5,6 +5,9 @@ import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.rmi.Remote;
 
+import com.alma.rmilite.io.IOManager;
+import com.alma.rmilite.server.RemoteObjectProvider;
+
 /**
  * StubFactory provides static methods for creating dynamic proxy/{@link Stub}
  * classes and instances who implement the specified interfaces.
@@ -12,6 +15,11 @@ import java.rmi.Remote;
  * @see Proxy
  */
 public class StubFactory {
+	
+	/**
+	 * The {@link IOManager}, it's the same instance used by the {@link RemoteObjectProvider};
+	 */
+	public static IOManager ioManager;
 
 	/**
 	 * Returns a stub for the specified interface.<br/>
@@ -47,7 +55,7 @@ public class StubFactory {
 		System.arraycopy(interfaces, 0, allInterfaces, 0, interfaces.length);
 		allInterfaces[interfaces.length] = StubMarker.class;
 		return (Remote) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(),
-				allInterfaces, new Stub(reference));
+				allInterfaces, new Stub(reference, ioManager));
 	}
 	
 	/**

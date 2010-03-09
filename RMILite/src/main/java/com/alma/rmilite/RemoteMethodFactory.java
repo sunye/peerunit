@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.rmi.Remote;
 
+import com.alma.rmilite.io.IOManager;
 import com.alma.rmilite.server.RemoteObjectManager;
-import com.alma.rmilite.server.RemoteObjectProvider;
 
 /**
  * Provides {@link RemoteMethod}, {@link RemoteMethodResult} and {@link SerializableRemoteObject}
@@ -19,6 +19,11 @@ import com.alma.rmilite.server.RemoteObjectProvider;
  * @see SerializableRemoteObject
  */
 public class RemoteMethodFactory {
+	
+	/**
+	 * The {@link RemoteObjectManager}, it's the same instance used by the {@link IOManager};
+	 */
+	public static RemoteObjectManager remoteObjectManager;
 
 	/**
 	 * Returns a serializable {@link RemoteMethod} object, included serializable arguments.
@@ -54,10 +59,12 @@ public class RemoteMethodFactory {
 	 * @return the serializable remote object
 	 * @throws UnexportedException
 	 */
-	static public SerializableRemoteObject createSerializableRemoteObject(Remote object) throws UnexportedException {
-		RemoteObjectManager manager = (RemoteObjectManager) RemoteObjectProvider.instance;
-		if (manager.isExported(object)) { // if the remote object is exported
-			return new SerializableRemoteObjectImpl(object, new InetSocketAddress(manager.getPort(object)));
+	static public SerializableRemoteObject createSerializableRemoteObject(
+			Remote object) throws UnexportedException {
+		if (remoteObjectManager.isExported(object)) { // if the remote object is
+														// exported
+			return new SerializableRemoteObjectImpl(object,
+					new InetSocketAddress(remoteObjectManager.getPort(object)));
 		} else {
 			throw new UnexportedException("Unexported argument");
 		}

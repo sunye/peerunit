@@ -14,10 +14,28 @@ public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
 
 	private Map<Integer, Remote> port2object;
 	private Map<Remote, Integer> object2port;
+	
+	private IOManager ioManager;
 
 	public RemoteObjectProvider_Socket() {
 		this.port2object = new HashMap<Integer, Remote>();
 		this.object2port = new HashMap<Remote, Integer>();
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.server.RemoteObjectProvider#setIOManager(com.alma.rmilite.io.IOManager)
+	 */
+	@Override
+	public void setIOManager(IOManager ioManager) {
+		this.ioManager = ioManager;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.server.RemoteObjectProvider#getIOManager()
+	 */
+	@Override
+	public IOManager getIOManager() {
+		return this.ioManager;
 	}
 
 	/*
@@ -29,7 +47,7 @@ public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
 	 */
 	@Override
 	public Remote exportObject(Remote object, int port) throws IOException {
-		int realPort = IOManager.instance.open(port);
+		int realPort = ioManager.open(port);
 		this.port2object.put(realPort, object);
 		this.object2port.put(object, realPort);
 		return object;
@@ -45,7 +63,7 @@ public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
 	@Override
 	public boolean unexportObject(Remote object) throws IOException {
 		int port = this.object2port.remove(object);
-		IOManager.instance.close(port);
+		ioManager.close(port);
 		this.port2object.remove(port);
 		return true;
 	}
