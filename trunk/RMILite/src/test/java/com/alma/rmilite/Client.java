@@ -11,11 +11,11 @@ public class Client {
 		RemoteObjectTest ro2 = new RemoteObjectTestImpl();
 		ro2.setNb(1);
 		
-		NamingServer namingServer = NamingServer.instance;
+		NamingServer namingServer = ClientManager.namingServer;
 		Registry registry = namingServer.getRegistry("127.0.0.1", 1099);
 		ro1 = (RemoteObjectTest) registry.lookup("ro1");
 		
-		RemoteObjectProvider remoteObjectProvider = RemoteObjectProvider.instance;
+		RemoteObjectProvider remoteObjectProvider = ClientManager.remoteObjectProvider;
 		remoteObjectProvider.exportObject(ro2,0);
 		
 		System.out.println(ro1.getNb()); // -1

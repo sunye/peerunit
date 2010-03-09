@@ -1,5 +1,7 @@
 package com.alma.rmilite.registry;
 
+import com.alma.rmilite.server.RemoteObjectProvider;
+
 /**
  * The NamingServer instance is used to obtain a reference to a bootstrap remote object
  * {@link Registry} on a particular host (including the local host), or to create a
@@ -8,12 +10,6 @@ package com.alma.rmilite.registry;
  * @see Registry
  */
 public interface NamingServer {
-
-	/**
-	 * We want the NamingServer to be instantiated only once, so it uses
-	 * singleton pattern.
-	 */
-	public static final NamingServer instance = new NamingServer_Socket();
 
 	/**
 	 * Creates and exports a {@code Registry} on the local host that accepts requests on the specified port.
@@ -31,4 +27,16 @@ public interface NamingServer {
 	 * @throws Exception
 	 */
 	public Registry getRegistry(String host, int port) throws Exception;
+	
+	/**
+	 * Sets the {@link RemoteObjectProvider}.
+	 * @param rop - the RemoteObjectProvider.
+	 */
+	public void setRemoteObjectProvider(RemoteObjectProvider rop);
+	
+	/**
+	 * Gets the {@link RemoteObjectProvider}.
+	 * @return the used RemoteObjectProvider
+	 */
+	public RemoteObjectProvider getRemoteObjectProvider();
 }

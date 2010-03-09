@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alma.rmilite.server.RemoteObjectProvider;
 import com.alma.rmilite.server.RemoteObjectManager;
 
 public class IOManager_IO implements IOManager {
@@ -29,8 +28,7 @@ public class IOManager_IO implements IOManager {
 			 * We link the remote stub with the remote object
 			 * (identified the port of the serverSockect).
 			 */
-			((RemoteObjectManager) RemoteObjectProvider.instance)
-					.remoteProcedureCall(stub);			
+			IOManager_IO.this.remoteObjectManager.remoteProcedureCall(stub);			
 		}
 	}
 	
@@ -71,7 +69,9 @@ public class IOManager_IO implements IOManager {
 		}
 	}
 
-	public Map<Integer, ServerSocket> serverSockets;
+	private Map<Integer, ServerSocket> serverSockets;
+	
+	private RemoteObjectManager remoteObjectManager;
 
 	public IOManager_IO() {
 		this.serverSockets = new HashMap<Integer, ServerSocket>();
@@ -114,5 +114,21 @@ public class IOManager_IO implements IOManager {
 		this.serverSockets.put(ss.getLocalPort(), ss);
 		new Thread(new ServerProxy(ss)).start();
 		return ss.getLocalPort();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.io.IOManager#setRemoteObjectManager(com.alma.rmilite.server.RemoteObjectManager)
+	 */
+	@Override
+	public void setRemoteObjectManager(RemoteObjectManager rom) {
+		this.remoteObjectManager = rom;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.alma.rmilite.io.IOManager#getRemoteObjectManager()
+	 */
+	@Override
+	public RemoteObjectManager getRemoteObjectManager() {
+		return this.remoteObjectManager;
 	}
 }
