@@ -58,7 +58,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <verbose>false</verbose>
+                    <verbose>true</verbose>
                     <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                 </configuration>
             </plugin>
@@ -75,6 +75,25 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <configuration>
+                    <instrumentation>
+                        <excludes>
+                            <exclude>fr/inria/**/*Stub.class</exclude>
+                        </excludes>
+                    </instrumentation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
         </plugins>
     </build>
 
@@ -115,6 +134,13 @@
                 <artifactId>taglist-maven-plugin</artifactId>
                 <version>2.4</version>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+            
 
         </plugins>
     </reporting>
