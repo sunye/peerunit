@@ -5,6 +5,29 @@
     <artifactId>PeerUnitProject</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
+
+    <repositories>
+               <repository>
+           <id>sourceforge</id>
+             <url>http://oss.sonatype.org/content/groups/sourceforge/</url>
+           <releases>
+             <enabled>true</enabled>
+           </releases>
+           <snapshots>
+             <enabled>true</enabled>
+           </snapshots>
+       </repository>
+                 <repository>
+           <id>ibiblio</id>
+             <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
+           <releases>
+             <enabled>true</enabled>
+           </releases>
+           <snapshots>
+             <enabled>true</enabled>
+           </snapshots>
+       </repository>
+    </repositories>
 	
 	<properties>
    			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,6 +45,13 @@
     <url>http://gforge.inria.fr/tracker/?group_id=1070</url>
   </issueManagement>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+
+      </plugins>
+    </pluginManagement>
+    </build>
 
 
   <mailingLists>

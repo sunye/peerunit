@@ -61,7 +61,7 @@ public class TesterImplTest {
         properties.setProperty("tester.waitForMethod", "500");
         try {
             TesterUtil defaults = new TesterUtil(properties);
-            coord = new CoordinatorImpl(defaults);
+            coord = new CoordinatorImpl(3, 100);
             globals = new GlobalVariablesImpl();
             new Thread(coord, "Coordinator").start();
             tester0 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
@@ -74,12 +74,12 @@ public class TesterImplTest {
             tester0.registerTestCase(Sample.class);
             tester1.registerTestCase(Sample.class);
             tester2.registerTestCase(Sample.class);
-
+            Thread.yield();
 
             tester0.start();
             tester1.start();
             tester2.start();
-            Thread.yield();
+            
             coord.waitForTesterRegistration();
            
             //new Thread(tester0, "Tester 0").start();

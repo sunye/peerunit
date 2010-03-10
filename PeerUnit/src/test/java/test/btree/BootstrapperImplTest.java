@@ -37,6 +37,8 @@ import fr.inria.peerunit.util.TesterUtil;
 
 public class BootstrapperImplTest {
 
+    private final static int REGISTRY_PORT = 1100;
+
     private BootstrapperImpl bootstrapper;
     private Properties properties;
     private TesterUtil defaults;
@@ -81,7 +83,7 @@ public class BootstrapperImplTest {
     @Test
     public void testRemoteRegister() throws Exception {
         Registry registry;
-        registry = LocateRegistry.createRegistry(2099);
+        registry = LocateRegistry.createRegistry(REGISTRY_PORT);
         Bootstrapper stub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
         registry.bind("BootTest", stub);
         Bootstrapper remoteBoot = (Bootstrapper) registry.lookup("BootTest");
