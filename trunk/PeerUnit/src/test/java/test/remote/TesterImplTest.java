@@ -49,7 +49,7 @@ public class TesterImplTest {
     private static TesterImpl tester0, tester1, tester2;
 
     @BeforeClass
-    public static void inititalize() {
+    public static void inititalize() throws InterruptedException {
         Properties properties = new Properties();
 
         properties.setProperty("tester.peers", "3");
@@ -75,9 +75,13 @@ public class TesterImplTest {
             tester1.registerTestCase(Sample.class);
             tester2.registerTestCase(Sample.class);
 
+
             tester0.start();
             tester1.start();
             tester2.start();
+            Thread.yield();
+            coord.waitForTesterRegistration();
+           
             //new Thread(tester0, "Tester 0").start();
         } catch (RemoteException e) {
             e.printStackTrace();
