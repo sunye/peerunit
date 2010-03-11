@@ -77,10 +77,13 @@ public class ClientAndServerTest {
 	@Test( dataProvider = "elementsToSend" )
 	public void testTransmition( Collection<Serializable> toSend ) {
 
+		nb_received= 0;
+		
 		for( Serializable s : toSend ) {
 			client.send( s );
 		}
 		client.close();
+		
 		while( nb_received < toSend.size() ) {
 			Thread.yield();
 		}

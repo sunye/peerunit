@@ -23,7 +23,7 @@ public class EncoderDecoderTest {
 	@Test(dataProvider = "ObjectsToSend")
 	public void decodEncodeBasic(Serializable toSend) {
 		byte[] encoded = encoder.encode(toSend);
-		List<Object> received = decoder.decode(encoded, encoded.length);
+		List<Object> received = decoder.decode(encoded, encoded.length-1);
 		// printByteArray( encoded );
 		// System.out.println();
 		assert (received.get(0).equals(toSend));
@@ -35,7 +35,7 @@ public class EncoderDecoderTest {
 		List<Object> received = new ArrayList<Object>();
 		int chunk_size = 5;
 		for(byte[] buff : explode(encoded, chunk_size)) {
-			received.addAll(decoder.decode(buff, buff.length));
+			received.addAll(decoder.decode(buff, buff.length-1));
 		}
 		assert (received.get(0).equals(toSend));
 	}
@@ -46,7 +46,7 @@ public class EncoderDecoderTest {
 		int receivedObjs = 0;
 		for(Serializable s : datas) {
 			byte[] encoded = encoder.encode( s );
-			List<Object> decoded = decoder.decode( encoded, encoded.length);
+			List<Object> decoded = decoder.decode( encoded, encoded.length-1);
 			receivedObjs+=decoded.size();
 		}
 		assert(receivedObjs == datas.length);
@@ -87,7 +87,7 @@ public class EncoderDecoderTest {
 	public void testMultipleSends(List<Serializable> list) {
 		for (Serializable toSend : list) {
 			byte[] encoded = encoder.encode(toSend);
-			List<Object> received = decoder.decode(encoded, encoded.length);
+			List<Object> received = decoder.decode(encoded, encoded.length-1);
 			// printByteArray( encoded );
 			// System.out.println();
 			// System.out.println("sent : "+toSend+" ; received : "+received);

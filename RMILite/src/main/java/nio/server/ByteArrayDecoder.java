@@ -16,6 +16,7 @@ public abstract class ByteArrayDecoder extends Decoder implements ByteArrayHandl
 
 	@Override
 	public void flush() {
+		requireHeader();
 	}
 
 	@Override

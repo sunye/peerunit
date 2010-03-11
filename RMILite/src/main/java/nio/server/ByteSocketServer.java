@@ -145,6 +145,7 @@ public abstract class ByteSocketServer implements Server {
 		try {
 			int res;
 			do {
+				bytebuffer.clear();
 				res = sc.read( bytebuffer );
 				if( res > 0 ) {
 					datahandler.handle( bytearray , res);

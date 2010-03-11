@@ -1,9 +1,16 @@
 package nio.server;
 
+/**
+ * interface of items that are supposed to handles byte arrays incoming by a
+ * socket
+ * 
+ * @author E06A193P
+ * 
+ */
 public interface ByteArrayHandler {
 
 	/**
-	 * Handles an array of bytes that has been received on the socket<br />
+	 * Handles arrays of bytes incoming<br />
 	 * This may memorize it for further use, decode it now or later, delegate
 	 * it, etc.<br />
 	 * this method is the heart of the decoding procedure<br />
