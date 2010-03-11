@@ -9,13 +9,13 @@ import com.alma.rmilite.server.RemoteObjectManager;
  * Allows to send and receive serializable objects between proxys. A proxy is a
  * {@link Stub} or skeleton.
  * 
- * @see Strub
+ * @see Stub
  * @see RemoteObjectManager
  */
 public interface RemoteProxy {
 
 	/**
-	 * Sends a serializable object to the remote proxy.
+	 * Sends a serializable object to an other remote proxy.
 	 * 
 	 * @param object
 	 *            - serializable object
@@ -24,7 +24,7 @@ public interface RemoteProxy {
 	public void sendObject(Object object) throws IOException;
 
 	/**
-	 * Receives a serializable object from the remote proxy.
+	 * Receives a serializable object from an other remote proxy.
 	 * 
 	 * @return serializable object
 	 * @throws IOException
