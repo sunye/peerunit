@@ -78,7 +78,7 @@ public abstract class AbstractRemoteTest extends TestCase {
 	
 			ro1 = (RemoteObjectTest) registry.lookup("ro1");
 			
-			RemoteObjectProvider remoteObjectProvider = RemoteObjectProvider.instance;
+			// RemoteObjectProvider remoteObjectProvider = RemoteObjectProvider.instance;
 			remoteObjectProvider.exportObject(ro2,0);
 			
 			System.out.println(ro1.getNb()); // -1
