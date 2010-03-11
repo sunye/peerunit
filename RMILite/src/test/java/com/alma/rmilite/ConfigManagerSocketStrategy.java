@@ -10,9 +10,12 @@ import com.alma.rmilite.server.RemoteObjectProvider_Socket;
 /**
  * Initializes the system.
  */
-public class ClientManager {
-	
-	static {
+public class ConfigManagerSocketStrategy implements ConfigManagerStrategy {
+
+	public RemoteObjectProvider remoteObjectProvider;
+	public NamingServer namingServer;
+
+	public ConfigManagerSocketStrategy() {
 		/* Initialization */
 		IOManager_IO io = new IOManager_IO();
 		NamingServer_Socket ns = new NamingServer_Socket();
@@ -28,6 +31,13 @@ public class ClientManager {
 		namingServer = ns;
 	}
 	
-	public static RemoteObjectProvider remoteObjectProvider;
-	public static NamingServer namingServer;
+
+	public RemoteObjectProvider getRemoteObjectProvider() {
+		return remoteObjectProvider;
+	}
+
+	public NamingServer getNamingServer() {
+		return namingServer;
+	}
+	
 }

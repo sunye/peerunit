@@ -7,15 +7,16 @@ import com.alma.rmilite.server.RemoteObjectProvider;
 public class Client {
 	
 	public static void main(String[] args) throws Exception {
+		/*
 		RemoteObjectTest ro1;
 		RemoteObjectTest ro2 = new RemoteObjectTestImpl();
 		ro2.setNb(1);
 		
-		NamingServer namingServer = ClientManager.namingServer;
+		NamingServer namingServer = ConfigManagerSocketStrategy.namingServer;
 		Registry registry = namingServer.getRegistry("127.0.0.1", 1099);
 		ro1 = (RemoteObjectTest) registry.lookup("ro1");
 		
-		RemoteObjectProvider remoteObjectProvider = ClientManager.remoteObjectProvider;
+		RemoteObjectProvider remoteObjectProvider = ConfigManagerSocketStrategy.remoteObjectProvider;
 		remoteObjectProvider.exportObject(ro2,0);
 		
 		System.out.println(ro1.getNb()); // -1
@@ -35,6 +36,7 @@ public class Client {
 		ro3.incNb();
 		System.out.println(ro3.getNb()); // 4	
 		
-		remoteObjectProvider.unexportObject(ro2); // throw an exception, only indicates socket is closed 
+		remoteObjectProvider.unexportObject(ro2); // throw an exception, only indicates socket is closed
+		*/ 
 	}
 }
