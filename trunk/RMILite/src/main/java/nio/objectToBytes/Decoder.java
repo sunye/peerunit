@@ -113,7 +113,6 @@ public class Decoder {
 		receivedSize = 0;
 		expectedSize = decodeSize( header );
 		receivedBytes = new byte[expectedSize];
-
 	}
 
 	/** decode a array of bytes as a int */
