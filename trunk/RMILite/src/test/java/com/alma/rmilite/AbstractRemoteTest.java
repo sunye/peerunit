@@ -1,7 +1,5 @@
 package com.alma.rmilite;
 
-import java.rmi.RemoteException;
-
 import junit.framework.TestCase;
 
 import org.junit.Before;
@@ -14,52 +12,71 @@ import com.alma.rmilite.server.RemoteObjectProvider;
 
 public abstract class AbstractRemoteTest extends TestCase {
 
+	private static ConfigManagerStrategy configManagerStrategy = null;
+
 	private static RemoteObjectProvider remoteObjectProvider;
 	private static NamingServer namingServer;
+	private static Thread server;
 	
-	protected static void setRemoteObjectProvider(
-			RemoteObjectProvider remoteObjectProvider) {
-		AbstractRemoteTest.remoteObjectProvider = remoteObjectProvider;
-	}
-
-	protected static void setNamingServer(NamingServer namingServer) {
-		AbstractRemoteTest.namingServer = namingServer;
+	protected static void setConfigManagerStrategy (
+			ConfigManagerStrategy aConfigManagerStrategy) {
+		configManagerStrategy = aConfigManagerStrategy;
 	}
 	
 	@Before
 	public void setUp() {
+		assertNotNull(configManagerStrategy);
+		
+		remoteObjectProvider = configManagerStrategy.getRemoteObjectProvider();
+		namingServer = configManagerStrategy.getNamingServer();
+		
 		assertNotNull(remoteObjectProvider);
 		assertNotNull(namingServer);
 	}
 	
-	@Test
-	public void testExportObject() {
-		Registry registry = null;
-		try {
-			registry = namingServer.createRegistry(1099);
-		} catch (Exception e) {
+	/*
+	 * A server
+	 */
+	private class RunnableServer implements Runnable {
+		
+		private Registry registry;
+		private RemoteObjectTest ro;
+		
+		public RunnableServer() {
 			try {
-				registry = namingServer.createRegistry(1101);
-			} catch (Exception e1) {
+				registry = namingServer.createRegistry(1099);
+			} catch (Exception e) {
+				try {
+					registry = namingServer.createRegistry(1101);
+				} catch (Exception e1) {
+					fail("Unable to create registry");
+				}
+			}
+		}
+		
+		public void run() {
+			try {
+				ro = new RemoteObjectTestImpl();
+				try {
+					remoteObjectProvider.exportObject(ro,0);
+					try {
+						registry.bind("ro1", ro);
+					} catch (Exception e) {
+						fail("Unable to bind object");
+					}
+				} catch (Exception e) {
+					fail("Unable to export object");
+				}
+			} catch (Exception e) {
 				fail("Unable to create registry");
 			}
 		}
-			
-		try {
-			RemoteObjectTest ro1 = new RemoteObjectTestImpl();
-			try {
-				remoteObjectProvider.exportObject(ro1,0);
-				try {
-					registry.bind("ro1", ro1);					
-				} catch (Exception e) {
-					fail("Unable to bind object");
-				}
-			} catch (Exception e) {
-				fail("Unable to export object");
-			}			
-		} catch (Exception e) {
-			fail("Unable to create registry");
-		}
+	}
+	
+	@Test
+	public void testExportObject() {
+		server = new Thread(new RunnableServer());		
+		server.start();
 	}
 	
 	@Test
@@ -108,5 +125,6 @@ public abstract class AbstractRemoteTest extends TestCase {
 		} catch (Exception e) {
 			fail();
 		}
-	}	
+	}
+	
 }
