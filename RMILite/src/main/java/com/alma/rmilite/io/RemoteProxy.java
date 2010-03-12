@@ -1,13 +1,14 @@
 package com.alma.rmilite.io;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import com.alma.rmilite.client.Stub;
 import com.alma.rmilite.server.RemoteObjectManager;
 
 /**
- * Allows to send and receive serializable objects between proxys. A proxy is a
- * {@link Stub} or skeleton.
+ * Allows to send and receive {@link Serializable} objects between proxys. A
+ * proxy is a {@link Stub} or skeleton.
  * 
  * @see Stub
  * @see RemoteObjectManager
@@ -38,8 +39,7 @@ public interface RemoteProxy {
 	 * @throws IOException
 	 */
 	public void close() throws IOException;
-	
-	
+
 	/**
 	 * Returns the local port to which this remote proxy is bound.
 	 * 
