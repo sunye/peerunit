@@ -1,8 +1,8 @@
 package com.alma.rmilite;
 
-import com.alma.rmilite.registry.NamingServer;
-import com.alma.rmilite.registry.Registry;
-import com.alma.rmilite.server.RemoteObjectProvider;
+//import com.alma.rmilite.registry.NamingServer;
+//import com.alma.rmilite.registry.Registry;
+//import com.alma.rmilite.server.RemoteObjectProvider;
 
 public class Client {
 	
