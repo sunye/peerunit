@@ -8,24 +8,24 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import nio.Server;
 
 
 public abstract class ByteSocketServer implements Server {
 
-	protected int portToListen;
+	protected Set<Integer> portsToListen = new HashSet<Integer>();
 
 	/**
 	 * create a server. This may be started by calling the {@link #run()} method
-	 * @param port
-	 *          the port this server should listen to.
 	 */
 	public ByteSocketServer( int port ) {
-		this.portToListen = port;
 	}
 
 	/** number of threads used to handle incoming data */
@@ -193,5 +193,29 @@ public abstract class ByteSocketServer implements Server {
 	 * @return a {@link ByteArrayHandler} implementing decoding of bytes array
 	 */
 	protected abstract ByteArrayHandler createHandler(SocketChannel socket);
+
+	@Override
+	public void closePort(int port) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Collection<Integer> getListenedPort() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isListeningToPort(int port) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean listenPort(int port) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
 
 }

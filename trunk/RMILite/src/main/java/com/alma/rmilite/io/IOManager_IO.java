@@ -15,9 +15,9 @@ public class IOManager_IO implements IOManager {
 	 * This thread execute the remote call.
 	 */
 	private class RunnableCall implements Runnable {
-		
+
 		private RemoteProxy stub;
-		
+
 		private RunnableCall(Socket call) {
 			this.stub = new RemoteProxy_IO(call);
 		}
@@ -25,13 +25,13 @@ public class IOManager_IO implements IOManager {
 		@Override
 		public void run() {
 			/*
-			 * We link the remote stub with the remote object
-			 * (identified the port of the serverSockect).
+			 * We link the remote stub with the remote object (identified the
+			 * port of the serverSockect).
 			 */
-			IOManager_IO.this.remoteObjectManager.remoteProcedureCall(stub);			
+			remoteObjectManager.remoteProcedureCall(stub);
 		}
 	}
-	
+
 	/**
 	 * Each {@link ServerSocket} is associated with a thread.
 	 * 
@@ -70,7 +70,7 @@ public class IOManager_IO implements IOManager {
 	}
 
 	private Map<Integer, ServerSocket> serverSockets;
-	
+
 	private RemoteObjectManager remoteObjectManager;
 
 	public IOManager_IO() {
@@ -116,15 +116,21 @@ public class IOManager_IO implements IOManager {
 		return ss.getLocalPort();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.alma.rmilite.io.IOManager#setRemoteObjectManager(com.alma.rmilite.server.RemoteObjectManager)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.alma.rmilite.io.IOManager#setRemoteObjectManager(com.alma.rmilite
+	 * .server.RemoteObjectManager)
 	 */
 	@Override
 	public void setRemoteObjectManager(RemoteObjectManager rom) {
 		this.remoteObjectManager = rom;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.alma.rmilite.io.IOManager#getRemoteObjectManager()
 	 */
 	@Override

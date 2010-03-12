@@ -11,9 +11,10 @@ import com.alma.rmilite.io.IOManager;
 import com.alma.rmilite.io.RemoteProxy;
 
 /**
- * Each stub instance has an associated {@link InvocationHandler}.
- * 
- * @see InvocationHandler
+ * <p>
+ * A stub is a {@link InvocationHandler} that references an object on the
+ * network. It delegates incoming method calls to the object referenced.
+ * </p>
  */
 public class Stub implements InvocationHandler {
 
@@ -41,7 +42,8 @@ public class Stub implements InvocationHandler {
 		RemoteProxy skeleton = this.ioManager.getRemoteProxy(this.reference);
 
 		/* Send method and arguments */
-		skeleton.sendObject(RemoteMethodFactory.createRemoteMethod(method, args));
+		skeleton.sendObject(RemoteMethodFactory
+				.createRemoteMethod(method, args));
 
 		/* Receive the result of the method */
 		Object result = skeleton.receiveObject();
@@ -52,7 +54,7 @@ public class Stub implements InvocationHandler {
 		/* Process the result */
 		if (result instanceof Exception) {
 			throw (Exception) result; // an exception occurs during the
-									  // execution of the remote method
+			// execution of the remote method
 		} else if (result instanceof RemoteMethodResult) {
 			return ((RemoteMethodResult) result).getObject();
 		} else {
@@ -62,6 +64,7 @@ public class Stub implements InvocationHandler {
 
 	/**
 	 * Returns the host and the port of the remote object
+	 * 
 	 * @return the reference
 	 */
 	public InetSocketAddress getReference() {
