@@ -6,7 +6,7 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Map;
 
-import nio.server.ByteSocketServer;
+import nio.server.ANioServer;
 
 import com.alma.rmilite.io.IOManager;
 import com.alma.rmilite.io.RemoteProxy;
@@ -14,11 +14,11 @@ import com.alma.rmilite.server.RemoteObjectManager;
 
 public class IOManager_nio implements IOManager {
 
-	protected Map<Integer, ByteSocketServer> listeningservers = new HashMap<Integer, ByteSocketServer>();
+	protected Map<Integer, ANioServer> listeningservers = new HashMap<Integer, ANioServer>();
 
 	@Override
 	public void close( int port ) throws IOException {
-		ByteSocketServer bss = listeningservers.get( port );
+		ANioServer bss = listeningservers.get( port );
 		if( bss != null ) bss.stop();
 	}
 

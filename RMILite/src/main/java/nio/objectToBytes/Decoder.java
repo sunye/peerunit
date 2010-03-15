@@ -1,11 +1,13 @@
 package nio.objectToBytes;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Decode a byte of array encoded via {@link Encoder}
+ * @author E06A193P
+ */
 public class Decoder {
 
 	protected void requireHeader() {
@@ -30,8 +32,8 @@ public class Decoder {
 	 *          is considered as being of this size.
 	 * @return a list of objects decoded
 	 */
-	public List<Object> decode( byte[] buffer, int maxPos ) {
-		List<Object> ret = new ArrayList<Object>();
+	public List<Serializable> decode( byte[] buffer, int maxPos ) {
+		List<Serializable> ret = new ArrayList<Serializable>();
 		decode( buffer, 0, maxPos, ret );
 		return ret;
 	}
@@ -70,7 +72,7 @@ public class Decoder {
 	 *          the list to put objects decoded into.
 	 */
 	public void decode( byte[] buffer, int startPos, int endPos,
-			List<Object> receivingList ) {
+			List<Serializable> receivingList ) {
 		int bufferOffset = 0;
 
 		switch( state ) {
@@ -92,7 +94,7 @@ public class Decoder {
 			}
 		break;
 		case DATA:
-			assert(expectedSize != 0);//should never require a data of 0 length.
+			assert ( expectedSize != 0 );// should never require a data of 0 length.
 			for( ; receivedSize + bufferOffset < receivedBytes.length
 					&& bufferOffset + startPos <= endPos ; bufferOffset++ ) {
 				receivedBytes[ receivedSize + bufferOffset ] = buffer[ bufferOffset
@@ -130,11 +132,11 @@ public class Decoder {
 	 * @param list
 	 *          the list of object in which to add objects unserialized
 	 */
-	protected void dataReceived( List<Object> list ) {
+	protected void dataReceived( List<Serializable> list ) {
 		try {
 			ByteArrayInputStream bais = new ByteArrayInputStream( receivedBytes );
 			ObjectInputStream ois = new ObjectInputStream( bais );
-			Object decoded = ois.readObject();
+			Serializable decoded = (Serializable) ois.readObject();
 			list.add( decoded );
 			receivedBytes = null;
 		} catch( IOException e ) {
