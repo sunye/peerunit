@@ -1,27 +1,21 @@
 package nio;
 
+import static org.testng.Assert.*;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
-import nio.client.ByteSocketSender;
-import nio.server.ByteArrayDecoder;
-import nio.server.ByteArrayHandler;
-import nio.server.ByteSocketServer;
+import nio.client.NioByteArrayWriter;
+import nio.server.*;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 public class ClientAndServerTest {
 
-	protected Client client;
+	protected Writer client;
 	protected Server server;
 	protected ByteArrayHandler handler;
 	protected final static int listeningPort = 1112;
@@ -34,7 +28,7 @@ public class ClientAndServerTest {
 		nb_received = 0;
 		receivedObjects = new ArrayList<Object>();
 
-		server = new ByteSocketServer( listeningPort ) {
+		server = new ANioServer() {
 
 			@Override
 			protected ByteArrayHandler createHandler( SocketChannel socket ) {
@@ -43,11 +37,12 @@ public class ClientAndServerTest {
 		};
 
 		new Thread( server ).start();
+		server.listenToPort( listeningPort );
 
 		handler = new ByteArrayDecoder( null ) {
 
 			@Override
-			public void handleObject( Object o, SocketChannel sc ) {
+			public void handleObject( Serializable o, SocketChannel sc ) {
 				receivedObjects.add( o );
 				nb_received++ ;
 			}
@@ -57,7 +52,7 @@ public class ClientAndServerTest {
 		}
 		SocketChannel sc = SocketChannel.open();
 		sc.connect( new InetSocketAddress( "localhost", listeningPort ) );
-		client = new ByteSocketSender( sc );
+		client = new NioByteArrayWriter( sc );
 	}
 
 	@AfterMethod
@@ -71,28 +66,27 @@ public class ClientAndServerTest {
 	@Test( dataProvider = "elementsToSend" )
 	public void testTransmition( Collection<Serializable> toSend ) {
 
-		nb_received= 0;
-		
+		nb_received = 0;
+
 		for( Serializable s : toSend ) {
 			client.send( s );
 		}
 		client.close();
-		
+
 		while( nb_received < toSend.size() ) {
 			Thread.yield();
 		}
-		assert ( receivedObjects.containsAll( toSend ) );
-		assert ( nb_received == toSend.size() );
+		assertTrue( receivedObjects.containsAll( toSend ) );
+		assertEquals( nb_received, toSend.size() );
 	}
 
 	@DataProvider( name = "elementsToSend" )
 	public Object[][] elementsToSend() {
 		// for each call, each argument, is an array of Serializable
-		return new Object[][] {
-				{ Arrays.asList( new Integer( 42 ) ) },
+		return new Object[][] { { Arrays.asList( new Integer( 42 ) ) },
 				{ Arrays.asList( "je", "tu", "il" ) },
 				// check that sending three times the same object
-				//is not considered as once by object
+				// is not considered as once by object
 				{ Arrays.asList( singleton, singleton, singleton ) } };
 	}
 
