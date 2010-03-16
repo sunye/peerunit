@@ -13,5 +13,5 @@ public interface RemoteObjectTest extends Remote {
 	
 	public void incNb()  throws RemoteException;
 	
-	public RemoteObjectTest add2Nb(RemoteObjectTest nb1, int nb2);
+	public RemoteObjectTest add2Nb(RemoteObjectTest nb1, int nb2) throws RemoteException;
 }

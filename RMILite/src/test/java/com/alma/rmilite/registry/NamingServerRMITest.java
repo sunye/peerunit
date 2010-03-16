@@ -2,7 +2,7 @@ package com.alma.rmilite.registry;
 
 import org.junit.Before;
 
-import com.alma.rmilite.registry.NamingServer_RMI;
+import com.alma.rmilite.ConfigManagerRMIStrategy;
 
 /**
  * This class use the {@link AbstractNamingServerTest} test
@@ -12,7 +12,8 @@ public class NamingServerRMITest extends AbstractNamingServerTest {
 	
 	@Before
 	public void testInit() {
-		setNamingServer(new NamingServer_RMI());
+		setConfigManagerStrategy(new ConfigManagerRMIStrategy());
+		setPort(8080);
 	}
 	
 }

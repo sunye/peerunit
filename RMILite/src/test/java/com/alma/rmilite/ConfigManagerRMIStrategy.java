@@ -7,13 +7,10 @@ import com.alma.rmilite.server.RemoteObjectProvider_RMI;
 
 public class ConfigManagerRMIStrategy implements ConfigManagerStrategy {
 
-	public RemoteObjectProvider remoteObjectProvider;
-	public NamingServer namingServer;
+	private static RemoteObjectProvider remoteObjectProvider = new RemoteObjectProvider_RMI();
+	private static NamingServer namingServer = new NamingServer_RMI();
 
-	public ConfigManagerRMIStrategy() {
-		namingServer = new NamingServer_RMI();
-		remoteObjectProvider = new RemoteObjectProvider_RMI();
-	}
+	public ConfigManagerRMIStrategy() {}
 	
 
 	public RemoteObjectProvider getRemoteObjectProvider() {
