@@ -12,23 +12,26 @@ import com.alma.rmilite.server.RemoteObjectProvider_Socket;
  */
 public class ConfigManagerSocketStrategy implements ConfigManagerStrategy {
 
-	public RemoteObjectProvider remoteObjectProvider;
-	public NamingServer namingServer;
+	private static RemoteObjectProvider remoteObjectProvider;
+	private static NamingServer namingServer;
+	private static boolean constructed = false;
 
 	public ConfigManagerSocketStrategy() {
+		if (!constructed) {
 		/* Initialization */
-		IOManager_IO io = new IOManager_IO();
-		NamingServer_Socket ns = new NamingServer_Socket();
-		RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
-		
-		rop.setIOManager(io);
-		io.setRemoteObjectManager(rop);
-		ns.setRemoteObjectProvider(rop);		
-		RemoteMethodFactory.remoteObjectManager = rop;
-		StubFactory.ioManager = io;
-		
-		remoteObjectProvider = rop;
-		namingServer = ns;
+			IOManager_IO io = new IOManager_IO();
+			NamingServer_Socket ns = new NamingServer_Socket();
+			RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
+			
+			rop.setIOManager(io);
+			io.setRemoteObjectManager(rop);
+			ns.setRemoteObjectProvider(rop);		
+			RemoteMethodFactory.remoteObjectManager = rop;
+			StubFactory.ioManager = io;
+			
+			remoteObjectProvider = rop;
+			namingServer = ns;
+		}
 	}
 	
 

@@ -26,11 +26,11 @@ public class RemoteObjectTestImpl implements RemoteObjectTest {
 	}
 
 	@Override
-	public RemoteObjectTest add2Nb(RemoteObjectTest nb1, int nb2) {
+	public RemoteObjectTest add2Nb(RemoteObjectTest nb1, int nb2) throws RemoteException {
 		RemoteObjectTest newNb = new RemoteObjectTestImpl();
 		
 		//XXX CHEAT = ON
-		RemoteObjectProvider remoteObjectProvider = ServerManager.remoteObjectProvider;
+		RemoteObjectProvider remoteObjectProvider = new ConfigManagerSocketStrategy().getRemoteObjectProvider();
 		//XXX CHEAT = OFF
 		
 		try {

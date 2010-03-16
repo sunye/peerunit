@@ -6,8 +6,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import com.alma.rmilite.registry.NamingServer;
-import com.alma.rmilite.registry.Registry;
+import com.alma.rmilite.ConfigManagerStrategy;
 
 /**
  * JUnit test to check registries methods. In this classes, all the
@@ -22,9 +21,10 @@ public abstract class AbstractNamingServerTest extends TestCase {
 	private class MyRemoteClass implements Remote {
 		public int signature = 123456;
 	};
-	
-	private static NamingServer namingServer;
+
+	private static ConfigManagerStrategy configManagerStrategy;
 	private static Registry registry;
+	private static int port;
 	
 	/**
 	 * A arbitrary ID, used as an id to store a MyRemoteClass instance
@@ -37,8 +37,14 @@ public abstract class AbstractNamingServerTest extends TestCase {
 	 * or Sockets before the test runs
 	 * @param aNamingServer the naming server that will be used in the whole test
 	 */
-	protected static void setNamingServer(NamingServer aNamingServer) {
-		namingServer = aNamingServer;
+	public static void setConfigManagerStrategy(
+			ConfigManagerStrategy configManagerStrategy) {
+		AbstractNamingServerTest.configManagerStrategy = configManagerStrategy;
+	}
+
+	
+	protected static void setPort(int aPort) {
+		port = aPort;
 	}
 	
 	/**
@@ -47,11 +53,13 @@ public abstract class AbstractNamingServerTest extends TestCase {
 	@Test
 	public void testRegistry() {
 		try {
-			registry = namingServer.createRegistry(8080);
+			registry = configManagerStrategy.getNamingServer().createRegistry(port);
 		} catch (Exception e) {
 			try {
-				registry = namingServer.createRegistry(8081);
+				port += 1;
+				registry = configManagerStrategy.getNamingServer().createRegistry(port);
 			} catch (Exception e1) {
+				e1.printStackTrace();
 				fail("unable to create a registry");
 			}
 		}
@@ -109,4 +117,17 @@ public abstract class AbstractNamingServerTest extends TestCase {
 			assertTrue(true);
 		}	
 	}
+	/*
+	
+	@After
+	public void tearDown() {
+		try {
+			UnicastRemoteObject.unexportObject(registry, true);
+		} catch (NoSuchObjectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	*/
 }
