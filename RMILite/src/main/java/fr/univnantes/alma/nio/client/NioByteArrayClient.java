@@ -3,99 +3,110 @@ package fr.univnantes.alma.nio.client;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
-import java.util.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import fr.univnantes.alma.nio.Client;
 import fr.univnantes.alma.nio.objectToBytes.Decoder;
 
-
 /**
- * Connect to a distant socket via fr.univnantes.alma.nio, and then handle sending and receiving
- * data via a specific protocol handled by {@link Decoder} and {@link Encoder}<br />
+ * Connect to a distant socket via fr.univnantes.alma.nio, and then handle
+ * sending and receiving data via a specific protocol handled by {@link Decoder}
+ * and {@link Encoder}<br />
  * <ul>
  * <li>The sending part is inherited from the {@link NioByteArrayWriter}</li>
  * <li>The receiving part is blocking and doesn't use a thread.</li>
  * </ul>
+ * 
  * @author E06A193P
  */
 public class NioByteArrayClient extends NioByteArrayWriter implements Client {
 
-	public NioByteArrayClient( String remoteAdress, int remotePort )
-			throws IOException {
-		super( remoteAdress, remotePort );
-		this.sel = Selector.open();
-		sc.register( sel, SelectionKey.OP_READ );
-	}
+    public NioByteArrayClient(String remoteAdress, int remotePort)
+	    throws IOException {
+	super(remoteAdress, remotePort);
+	this.sel = Selector.open();
+	sc.register(sel, SelectionKey.OP_READ);
+    }
 
-	Selector sel;
+    public NioByteArrayClient(SocketChannel socket) throws IOException {
+	super(socket);
+	this.sel = Selector.open();
+	sc.register(sel, SelectionKey.OP_READ);
+    }
 
-	/** LinkedList of items, because we will remove them one at a time */
-	protected List<Serializable> yetReceived = new LinkedList<Serializable>();
+    Selector sel;
 
-	protected Decoder decoder = new Decoder();
+    /** LinkedList of items, because we will remove them one at a time */
+    protected List<Serializable> yetReceived = new LinkedList<Serializable>();
 
-	@Override
-	public Serializable receive() {
-		return receive( -1 );
-	}
+    protected Decoder decoder = new Decoder();
 
-	@Override
-	public Serializable receive( int timeoutMilli ) {
-		long maxTime = System.currentTimeMillis() + timeoutMilli;
-		while( yetReceived.isEmpty()
-				&& ( timeoutMilli < 0 || System.currentTimeMillis() < maxTime ) ) {
-			try {
-				if( timeoutMilli > -1 ) {
-					sel.select( maxTime - System.currentTimeMillis() );
-				} else {
-					sel.select();
-				}
-				for( SelectionKey sk : sel.selectedKeys() ) {
-					if( sk.isReadable() ) {
-						handleIncommingReadable( sk );
-					}
-				}
-			} catch( IOException e ) {
-				e.printStackTrace();
-				return null;
-			}
+    @Override
+    public Serializable receive() {
+	return receive(-1);
+    }
+
+    @Override
+    public Serializable receive(int timeoutMilli) {
+	long maxTime = System.currentTimeMillis() + timeoutMilli;
+	while (yetReceived.isEmpty()
+		&& (timeoutMilli < 0 || System.currentTimeMillis() < maxTime)) {
+	    try {
+		if (timeoutMilli > -1) {
+		    sel.select(maxTime - System.currentTimeMillis());
+		} else {
+		    sel.select();
 		}
-		Iterator<Serializable> it = yetReceived.iterator();
-		Serializable ret = it.next();
-		it.remove();
-		return ret;
+		for (SelectionKey sk : sel.selectedKeys()) {
+		    if (sk.isReadable()) {
+			handleIncommingReadable(sk);
+		    }
+		}
+	    } catch (IOException e) {
+		e.printStackTrace();
+		return null;
+	    }
 	}
+	Iterator<Serializable> it = yetReceived.iterator();
+	Serializable ret = it.next();
+	it.remove();
+	return ret;
+    }
 
-	// XXX copied from ByteSocketServer with few modifications
-	public static final int buff_size = 1024;
+    // XXX copied from ByteSocketServer with few modifications
+    public static final int buff_size = 1024;
 
-	/** the array of bytes backing {@link #bytebuffer} */
-	protected final byte[] bytearray = new byte[buff_size];
+    /** the array of bytes backing {@link #bytebuffer} */
+    protected final byte[] bytearray = new byte[buff_size];
 
-	/**
-	 * a buffer wrapped on {@link #bytearray}. Buffering incomming bytes on a
-	 * socket
-	 */
-	protected final ByteBuffer bytebuffer = ByteBuffer.wrap( bytearray );
+    /**
+     * a buffer wrapped on {@link #bytearray}. Buffering incomming bytes on a
+     * socket
+     */
+    protected final ByteBuffer bytebuffer = ByteBuffer.wrap(bytearray);
 
-	protected void handleIncommingReadable( SelectionKey key ) {
-		SocketChannel sc = (SocketChannel) key.channel();
+    protected void handleIncommingReadable(SelectionKey key) {
+	SocketChannel sc = (SocketChannel) key.channel();
+	bytebuffer.clear();
+	try {
+	    int res;
+	    do {
 		bytebuffer.clear();
-		try {
-			int res;
-			do {
-				bytebuffer.clear();
-				res = sc.read( bytebuffer );
-				if( res > 0 ) {
-					yetReceived.addAll( decoder.decode( bytearray, res - 1 ) );
-				} else if( res < 0 ) {
-					key.channel().close();
-				}
-			} while( res > 0 && yetReceived.isEmpty() );
-		} catch( IOException e ) {
-			e.printStackTrace();
+		res = sc.read(bytebuffer);
+		if (res > 0) {
+		    yetReceived.addAll(decoder.decode(bytearray, res - 1));
+		} else if (res < 0) {
+		    key.channel().close();
 		}
+	    } while (res > 0 && yetReceived.isEmpty());
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
+    }
 
 }
