@@ -30,7 +30,6 @@ public class IOManager_nioTest {
 			assert ( port > lastPort );
 			assert ( port != forbiddenPort );
 			lastPort = port;
-			System.out.println( port );
 			ServerSocketChannel sc = openListeningPort( port );
 			opened[ nbPortOpen ] = sc;
 		}
@@ -55,7 +54,6 @@ public class IOManager_nioTest {
 			ret.register( sel, SelectionKey.OP_ACCEPT );
 			return ret;
 		} catch( IOException e ) {
-			e.printStackTrace();
 			return null;
 		}
 		

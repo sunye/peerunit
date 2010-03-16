@@ -67,8 +67,6 @@ public class IOManager_nio implements IOManager {
 						"localhost", lastAvailablePort ) );
 				sc.close();
 			} catch( IOException ioe ) {//nothing listens at this port
-				ioe.printStackTrace();
-				System.out.println("port : "+lastAvailablePort);
 				return lastAvailablePort;
 			}
 		}
