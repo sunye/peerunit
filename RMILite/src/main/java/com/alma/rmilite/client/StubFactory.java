@@ -5,7 +5,7 @@ import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.rmi.Remote;
 
-import com.alma.rmilite.io.IOManager;
+import com.alma.rmilite.ioLayer.Manager;
 import com.alma.rmilite.server.RemoteObjectProvider;
 
 /**
@@ -17,9 +17,9 @@ import com.alma.rmilite.server.RemoteObjectProvider;
 public class StubFactory {
 	
 	/**
-	 * The {@link IOManager}, it's the same instance used by the {@link RemoteObjectProvider};
+	 * The {@link Manager}, it's the same instance used by the {@link RemoteObjectProvider};
 	 */
-	public static IOManager ioManager;
+	public static Manager ioManager;
 
 	/**
 	 * Returns a stub for the specified interface.<br/>

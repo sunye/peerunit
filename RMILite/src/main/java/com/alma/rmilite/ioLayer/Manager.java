@@ -1,4 +1,4 @@
-package com.alma.rmilite.io;
+package com.alma.rmilite.ioLayer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,7 +14,7 @@ import com.alma.rmilite.server.RemoteObjectManager;
  * @see RemoteProxy
  * @see RemoteObjectManager
  */
-public interface IOManager {
+public interface Manager {
 
 	/**
 	 * Returns the specified RemoteProxy {@code reference}.

@@ -3,7 +3,7 @@ package com.alma.rmilite.server;
 import java.rmi.Remote;
 
 import com.alma.rmilite.client.StubFactory;
-import com.alma.rmilite.io.IOManager;
+import com.alma.rmilite.ioLayer.Manager;
 
 /**
  * The RemoteObjectProvider instance defines a non-replicated remote object whose
@@ -46,14 +46,14 @@ public interface RemoteObjectProvider {
 	public boolean unexportObject(Remote object) throws Exception;
 
 	/**
-	 * Sets the {@link IOManager}, it's the same instance as {@link StubFactory}.
+	 * Sets the {@link Manager}, it's the same instance as {@link StubFactory}.
 	 * @param ioManager - the IOManager
 	 */
-	public void setIOManager(IOManager ioManager);
+	public void setIOManager(Manager ioManager);
 	
 	/**
-	 * Gets the used instance of {@link IOManager}.
+	 * Gets the used instance of {@link Manager}.
 	 * @return this instance
 	 */
-	public IOManager getIOManager();
+	public Manager getIOManager();
 }

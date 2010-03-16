@@ -1,11 +1,11 @@
 /**
  * 
  */
-package com.alma.rmilite.io.nioManager;
+package com.alma.rmilite.ioLayer.nioManager;
 
 import java.io.IOException;
 
-import com.alma.rmilite.io.RemoteProxy;
+import com.alma.rmilite.ioLayer.RemoteProxy;
 
 /**
  * @author E06A193P

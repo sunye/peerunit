@@ -7,8 +7,8 @@ import java.rmi.RemoteException;
 
 import com.alma.rmilite.RemoteMethodFactory;
 import com.alma.rmilite.RemoteMethodResult;
-import com.alma.rmilite.io.IOManager;
-import com.alma.rmilite.io.RemoteProxy;
+import com.alma.rmilite.ioLayer.Manager;
+import com.alma.rmilite.ioLayer.RemoteProxy;
 
 /**
  * <p>
@@ -22,9 +22,9 @@ public class Stub implements InvocationHandler {
 	 * Reference to the remote object.
 	 */
 	private InetSocketAddress reference;
-	private IOManager ioManager;
+	private Manager ioManager;
 
-	public Stub(InetSocketAddress adress, IOManager ioManager) {
+	public Stub(InetSocketAddress adress, Manager ioManager) {
 		this.reference = adress;
 		this.ioManager = ioManager;
 	}

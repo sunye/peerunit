@@ -1,4 +1,4 @@
-package com.alma.rmilite.io;
+package com.alma.rmilite.ioLayer.ioManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -7,9 +7,11 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alma.rmilite.ioLayer.Manager;
+import com.alma.rmilite.ioLayer.RemoteProxy;
 import com.alma.rmilite.server.RemoteObjectManager;
 
-public class IOManager_IO implements IOManager {
+public class IOManager_IO implements Manager {
 
 	/**
 	 * This thread execute the remote call.

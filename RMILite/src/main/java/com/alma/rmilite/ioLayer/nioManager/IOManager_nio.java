@@ -1,4 +1,4 @@
-package com.alma.rmilite.io.nioManager;
+package com.alma.rmilite.ioLayer.nioManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -8,11 +8,11 @@ import java.util.Map;
 
 import nio.server.ANioServer;
 
-import com.alma.rmilite.io.IOManager;
-import com.alma.rmilite.io.RemoteProxy;
+import com.alma.rmilite.ioLayer.Manager;
+import com.alma.rmilite.ioLayer.RemoteProxy;
 import com.alma.rmilite.server.RemoteObjectManager;
 
-public class IOManager_nio implements IOManager {
+public class IOManager_nio implements Manager {
 
 	protected Map<Integer, ANioServer> listeningservers = new HashMap<Integer, ANioServer>();
 
