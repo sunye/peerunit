@@ -1,4 +1,4 @@
-package com.alma.rmilite.io.nioManager;
+package com.alma.rmilite.ioLayer.nioManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -9,6 +9,8 @@ import java.nio.channels.ServerSocketChannel;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import com.alma.rmilite.ioLayer.nioManager.IOManager_nio;
 
 public class IOManager_nioTest {
 

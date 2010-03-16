@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.rmi.Remote;
 
-import com.alma.rmilite.io.IOManager;
+import com.alma.rmilite.ioLayer.Manager;
 import com.alma.rmilite.server.RemoteObjectManager;
 
 /**
@@ -21,7 +21,7 @@ import com.alma.rmilite.server.RemoteObjectManager;
 public class RemoteMethodFactory {
 	
 	/**
-	 * The {@link RemoteObjectManager}, it's the same instance used by the {@link IOManager};
+	 * The {@link RemoteObjectManager}, it's the same instance used by the {@link Manager};
 	 */
 	public static RemoteObjectManager remoteObjectManager;
 

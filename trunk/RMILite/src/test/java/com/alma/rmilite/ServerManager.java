@@ -1,7 +1,7 @@
 package com.alma.rmilite;
 
 import com.alma.rmilite.client.StubFactory;
-import com.alma.rmilite.io.IOManager_IO;
+import com.alma.rmilite.ioLayer.ioManager.IOManager_IO;
 import com.alma.rmilite.registry.NamingServer;
 import com.alma.rmilite.registry.NamingServer_Socket;
 import com.alma.rmilite.server.RemoteObjectProvider;

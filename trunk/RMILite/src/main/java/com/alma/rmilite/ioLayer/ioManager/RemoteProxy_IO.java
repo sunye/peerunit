@@ -1,10 +1,12 @@
-package com.alma.rmilite.io;
+package com.alma.rmilite.ioLayer.ioManager;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+
+import com.alma.rmilite.ioLayer.RemoteProxy;
 
 public class RemoteProxy_IO implements RemoteProxy {
 
