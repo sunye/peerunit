@@ -1,9 +1,7 @@
 package fr.univnantes.alma.rmilite.ioLayer.ioManager;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +14,7 @@ public class Manager_IO implements Manager {
     /**
      * This thread execute the remote call.
      */
-    private class RunnableCall implements Runnable {
+    protected class RunnableCall implements Runnable {
 
 	private final RemoteProxy stub;
 
@@ -39,7 +37,7 @@ public class Manager_IO implements Manager {
      * 
      * @see Runnable
      */
-    private class ServerProxy implements Runnable {
+    protected class ServerProxy implements Runnable {
 
 	private final ServerSocket serverSocket;
 
@@ -71,31 +69,20 @@ public class Manager_IO implements Manager {
 	}
     }
 
-    private final Map<Integer, ServerSocket> serverSockets;
+    protected Map<Integer, ServerSocket> serverSockets;
 
-    private RemoteObjectManager remoteObjectManager;
+    protected RemoteObjectManager remoteObjectManager;
 
     public Manager_IO() {
 	this.serverSockets = new HashMap<Integer, ServerSocket>();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @seefr.univnantes.alma.rmilite.io.IOManager#getRemoteProxy(java.net.
-     * InetSocketAddress)
-     */
     @Override
     public RemoteProxy getRemoteProxy(InetSocketAddress reference)
 	    throws IOException {
 	return new RemoteProxy_IO(reference);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see fr.univnantes.alma.rmilite.io.IOManager#close(int)
-     */
     @Override
     public void close(int port) throws IOException {
 	ServerSocket serverSocket = this.serverSockets.remove(port);
@@ -105,11 +92,6 @@ public class Manager_IO implements Manager {
 	serverSocket.close();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see fr.univnantes.alma.rmilite.io.IOManager#open(int)
-     */
     @Override
     public int open(int port) throws IOException {
 	ServerSocket ss = new ServerSocket(port);
@@ -118,23 +100,11 @@ public class Manager_IO implements Manager {
 	return ss.getLocalPort();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * fr.univnantes.alma.rmilite.io.IOManager#setRemoteObjectManager(fr.univnantes
-     * .alma.rmilite .server.RemoteObjectManager)
-     */
     @Override
     public void setRemoteObjectManager(RemoteObjectManager rom) {
 	this.remoteObjectManager = rom;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see fr.univnantes.alma.rmilite.io.IOManager#getRemoteObjectManager()
-     */
     @Override
     public RemoteObjectManager getRemoteObjectManager() {
 	return this.remoteObjectManager;
