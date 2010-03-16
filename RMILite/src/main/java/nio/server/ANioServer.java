@@ -12,7 +12,8 @@ import nio.Server;
  * This implementation of {@link Server} requires to be started in a different
  * Thread.<br />
  * It relies on the java.nio socket implementation, wich aims at using few
- * threads for listening to a socket
+ * threads for listening to a socket<br />
+ * //TODO use a statemachine pattern
  * @author E06A193P
  */
 public abstract class ANioServer implements Server {
@@ -82,11 +83,13 @@ public abstract class ANioServer implements Server {
 		isRunning = false;
 	}
 
-	public void start() {
+	@Override
+	public boolean start() {
 		new Thread( this ).start();
 		while( !isRunning() ) {
 			Thread.yield();
 		}
+		return true;
 	}
 
 	/** close sockets and selector */
@@ -216,17 +219,17 @@ public abstract class ANioServer implements Server {
 	}
 
 	@Override
-	public Collection<Integer> getListenedPort() {
+	public Collection<Integer> getOpenedPort() {
 		return portsListened.keySet();
 	}
 
 	@Override
-	public boolean isListeningToPort( int port ) {
+	public boolean isPortOpened( int port ) {
 		return portsListened.containsKey( port );
 	}
 
 	@Override
-	public boolean listenToPort( int port ) {
+	public boolean openPort( int port ) {
 		if( portsListened.containsKey( port ) || !isRunning ) {
 			return true;
 		}

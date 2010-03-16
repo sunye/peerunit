@@ -16,7 +16,7 @@ public interface Server extends Runnable {
 	 * @return true if the server is now listening to the given port. It may have
 	 *         been listening to this port before we calle that method
 	 */
-	public boolean listenToPort( int port );
+	public boolean openPort( int port );
 
 	/**
 	 * Close the port if it was listened to by this server<br />
@@ -32,12 +32,12 @@ public interface Server extends Runnable {
 	 *          the number of the port we want to know if we are listening to
 	 * @return is the server handling incoming connections to the port?
 	 */
-	public boolean isListeningToPort( int port );
+	public boolean isPortOpened( int port );
 
 	/**
 	 * @return the set of ports' number which are listened to by the server
 	 */
-	public Collection<Integer> getListenedPort();
+	public Collection<Integer> getOpenedPort();
 
 	/**
 	 * Set the number of threads this server should use to process incoming data
@@ -56,4 +56,10 @@ public interface Server extends Runnable {
 	/** is the server listening to sockets or manipulating data ? */
 	public boolean isRunning();
 
+	/**
+	 * start a thread making the server listen to incoming connections.
+	 * @return true if the server has been started, false if it was already
+	 *         started or may not be started
+	 */
+	public boolean start();
 }

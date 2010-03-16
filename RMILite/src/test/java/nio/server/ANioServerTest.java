@@ -34,7 +34,7 @@ public class ANioServerTest {
 			e.printStackTrace();
 		}
 		assertTrue( bss.isRunning() );
-		assertTrue( bss.listenToPort( port ) );
+		assertTrue( bss.openPort( port ) );
 		bss.stop();
 		assertFalse( bss.isRunning() );
 
@@ -74,7 +74,7 @@ public class ANioServerTest {
 		new Thread( bss ).start();
 		Thread.sleep( waintingmilli );
 		assertTrue( bss.isRunning() );
-		bss.listenToPort( port );
+		bss.openPort( port );
 		SocketChannel sc1, sc2;
 		sc1 = SocketChannel.open( new InetSocketAddress( "localhost", port ) );
 		sc1.close();
@@ -119,8 +119,8 @@ public class ANioServerTest {
 			}
 		};
 		bss.start();
-		bss.listenToPort( 1050 );
-		bss.listenToPort( 1051 );
+		bss.openPort( 1050 );
+		bss.openPort( 1051 );
 		SocketChannel sc1, sc2;
 		sc1 = SocketChannel.open( new InetSocketAddress( "localhost", 1050 ) );
 		sc2 = SocketChannel.open( new InetSocketAddress( "localhost", 1051 ) );

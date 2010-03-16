@@ -4,7 +4,6 @@ import static org.testng.Assert.*;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 
@@ -13,7 +12,11 @@ import nio.server.*;
 
 import org.testng.annotations.*;
 
-public class ClientAndServerTest {
+/**
+ * Check if the server handles an incoming connection
+ * @author E06A193P
+ */
+public class ClientAndServerConnection {
 
 	protected Writer client;
 	protected Server server;
@@ -37,7 +40,7 @@ public class ClientAndServerTest {
 		};
 
 		new Thread( server ).start();
-		server.listenToPort( listeningPort );
+		server.openPort( listeningPort );
 
 		handler = new ByteArrayDecoder( null ) {
 
@@ -50,9 +53,7 @@ public class ClientAndServerTest {
 		while( !server.isRunning() ) {
 			Thread.yield();
 		}
-		SocketChannel sc = SocketChannel.open();
-		sc.connect( new InetSocketAddress( "localhost", listeningPort ) );
-		client = new NioByteArrayWriter( sc );
+		client = new NioByteArrayWriter( "localhost", listeningPort );
 	}
 
 	@AfterMethod
