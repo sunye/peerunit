@@ -11,49 +11,47 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.*;
 
-import fr.univnantes.alma.nio.client.NioByteArrayWriter;
-
 public class NioByteArrayWriterTest_mockSock {
 
-	protected NioByteArrayWriter toTest;
-	protected SocketChannel sock;
+    protected NioByteArrayWriter toTest;
+    protected SocketChannel sock;
 
-	@BeforeMethod
-	public void setUp() throws IOException {
-		sock = mock( SocketChannel.class );
-		toTest = new NioByteArrayWriter( sock );
-	}
+    @BeforeMethod
+    public void setUp() throws IOException {
+	sock = mock(SocketChannel.class);
+	toTest = new NioByteArrayWriter(sock);
+    }
 
-	@DataProvider( name = "encodingvalues" )
-	public Object[][] encodingValues() {
-		return new Object[][] {
-				{ new Integer( 25 ), ByteBuffer.wrap( new byte[] { 0, 0, 0, 25 } ) },
-				{ new Integer( 1024 ), ByteBuffer.wrap( new byte[] { 0, 0, 4, 0 } ) } };
-	}
+    @DataProvider(name = "encodingvalues")
+    public Object[][] encodingValues() {
+	return new Object[][] {
+		{ new Integer(25), ByteBuffer.wrap(new byte[] { 0, 0, 0, 25 }) },
+		{ new Integer(1024), ByteBuffer.wrap(new byte[] { 0, 0, 4, 0 }) } };
+    }
 
-	@Test( dataProvider = "byteBuffersToSend" )
-	public void send( final ByteBuffer toSend ) throws IOException {
-		Answer<Integer> mockWrite = new Answer<Integer>() {
+    @Test(dataProvider = "byteBuffersToSend")
+    public void send(final ByteBuffer toSend) throws IOException {
+	Answer<Integer> mockWrite = new Answer<Integer>() {
 
-			@Override
-			public Integer answer( InvocationOnMock invocation ) throws Throwable {
-				ByteBuffer buff = (ByteBuffer) invocation.getArguments()[ 0 ];
-				return new Integer( buff.remaining() );
-			}
+	    @Override
+	    public Integer answer(InvocationOnMock invocation) throws Throwable {
+		ByteBuffer buff = (ByteBuffer) invocation.getArguments()[0];
+		return new Integer(buff.remaining());
+	    }
 
-		};
-		when( sock.write( (ByteBuffer) any() ) ).thenAnswer( mockWrite );
+	};
+	when(sock.write((ByteBuffer) any())).thenAnswer(mockWrite);
 
-		toTest.send( new Integer( 25 ) );
+	toTest.send(new Integer(25));
 
-		verify( sock, times( 1 ) ).write( (ByteBuffer) any() );
-	}
+	verify(sock, times(1)).write((ByteBuffer) any());
+    }
 
-	@DataProvider( name = "byteBuffersToSend" )
-	public Object[][] byteBuffersToSend() {
-		return new Object[][] { { ByteBuffer.wrap( new byte[] { 0, 1, 2 } ) },
-				{ ByteBuffer.wrap( new byte[] { 0 } ) },
-				{ ByteBuffer.wrap( new byte[] { 0, 1, 2, 3, 4, 5 } ) } };
-	}
+    @DataProvider(name = "byteBuffersToSend")
+    public Object[][] byteBuffersToSend() {
+	return new Object[][] { { ByteBuffer.wrap(new byte[] { 0, 1, 2 }) },
+		{ ByteBuffer.wrap(new byte[] { 0 }) },
+		{ ByteBuffer.wrap(new byte[] { 0, 1, 2, 3, 4, 5 }) } };
+    }
 
 }

@@ -3,12 +3,8 @@ package fr.univnantes.alma.nio.client;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.nio.channels.*;
+import java.util.*;
 
 import fr.univnantes.alma.nio.Client;
 import fr.univnantes.alma.nio.objectToBytes.Decoder;
@@ -22,7 +18,7 @@ import fr.univnantes.alma.nio.objectToBytes.Decoder;
  * <li>The receiving part is blocking and doesn't use a thread.</li>
  * </ul>
  * 
- * @author E06A193P
+ * @author Guillaume Le Louët
  */
 public class NioByteArrayClient extends NioByteArrayWriter implements Client {
 

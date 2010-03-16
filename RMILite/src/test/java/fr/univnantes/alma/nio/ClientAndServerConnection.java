@@ -7,93 +7,91 @@ import java.io.Serializable;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 
-
 import org.testng.annotations.*;
 
-import fr.univnantes.alma.nio.Server;
-import fr.univnantes.alma.nio.Writer;
 import fr.univnantes.alma.nio.client.NioByteArrayWriter;
 import fr.univnantes.alma.nio.server.*;
 
 /**
  * Check if the server handles an incoming connection
+ * 
  * @author E06A193P
  */
 public class ClientAndServerConnection {
 
-	protected Writer client;
-	protected Server server;
-	protected ByteArrayHandler handler;
-	protected final static int listeningPort = 1112;
-	protected List<Object> receivedObjects;
-	protected int nb_received = 0;
+    protected Writer client;
+    protected Server server;
+    protected ByteArrayHandler handler;
+    protected final static int listeningPort = 1112;
+    protected List<Object> receivedObjects;
+    protected int nb_received = 0;
 
-	@BeforeMethod
-	public void setUp() throws IOException {
+    @BeforeMethod
+    public void setUp() throws IOException {
 
-		nb_received = 0;
-		receivedObjects = new ArrayList<Object>();
+	nb_received = 0;
+	receivedObjects = new ArrayList<Object>();
 
-		server = new ANioServer() {
+	server = new ANioServer() {
 
-			@Override
-			protected ByteArrayHandler createHandler( SocketChannel socket ) {
-				return handler;
-			}
-		};
+	    @Override
+	    protected ByteArrayHandler createHandler(SocketChannel socket) {
+		return handler;
+	    }
+	};
 
-		new Thread( server ).start();
-		server.openPort( listeningPort );
+	new Thread(server).start();
+	server.openPort(listeningPort);
 
-		handler = new ByteArrayDecoder( null ) {
+	handler = new ByteArrayDecoder(null) {
 
-			@Override
-			public void handleObject( Serializable o, SocketChannel sc ) {
-				receivedObjects.add( o );
-				nb_received++ ;
-			}
-		};
-		while( !server.isRunning() ) {
-			Thread.yield();
-		}
-		client = new NioByteArrayWriter( "localhost", listeningPort );
+	    @Override
+	    public void handleObject(Serializable o, SocketChannel sc) {
+		receivedObjects.add(o);
+		nb_received++;
+	    }
+	};
+	while (!server.isRunning()) {
+	    Thread.yield();
 	}
+	client = new NioByteArrayWriter("localhost", listeningPort);
+    }
 
-	@AfterMethod
-	public void tearDown() {
-		server.stop();
-		while( server.isRunning() ) {
-			Thread.yield();
-		}
+    @AfterMethod
+    public void tearDown() {
+	server.stop();
+	while (server.isRunning()) {
+	    Thread.yield();
 	}
+    }
 
-	@Test( dataProvider = "elementsToSend" )
-	public void testTransmition( Collection<Serializable> toSend ) {
+    @Test(dataProvider = "elementsToSend")
+    public void testTransmition(Collection<Serializable> toSend) {
 
-		nb_received = 0;
+	nb_received = 0;
 
-		for( Serializable s : toSend ) {
-			client.send( s );
-		}
-		client.close();
-
-		while( nb_received < toSend.size() ) {
-			Thread.yield();
-		}
-		assertTrue( receivedObjects.containsAll( toSend ) );
-		assertEquals( nb_received, toSend.size() );
+	for (Serializable s : toSend) {
+	    client.send(s);
 	}
+	client.close();
 
-	@DataProvider( name = "elementsToSend" )
-	public Object[][] elementsToSend() {
-		// for each call, each argument, is an array of Serializable
-		return new Object[][] { { Arrays.asList( new Integer( 42 ) ) },
-				{ Arrays.asList( "je", "tu", "il" ) },
-				// check that sending three times the same object
-				// is not considered as once by object
-				{ Arrays.asList( singleton, singleton, singleton ) } };
+	while (nb_received < toSend.size()) {
+	    Thread.yield();
 	}
+	assertTrue(receivedObjects.containsAll(toSend));
+	assertEquals(nb_received, toSend.size());
+    }
 
-	protected final String singleton = "single";
+    @DataProvider(name = "elementsToSend")
+    public Object[][] elementsToSend() {
+	// for each call, each argument, is an array of Serializable
+	return new Object[][] { { Arrays.asList(new Integer(42)) },
+		{ Arrays.asList("je", "tu", "il") },
+		// check that sending three times the same object
+		// is not considered as once by object
+		{ Arrays.asList(singleton, singleton, singleton) } };
+    }
+
+    protected final String singleton = "single";
 
 }

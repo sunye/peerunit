@@ -4,37 +4,46 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
-import fr.univnantes.alma.nio.Server;
 import fr.univnantes.alma.rmilite.ioLayer.Manager;
 import fr.univnantes.alma.rmilite.ioLayer.RemoteProxy;
 import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 
+/**
+ * A manager that handles incoming data on several ports with a
+ * {@link NioByteArrayDispatcherServer}.<br />
+ * I allows to send data and received data back with a {@link RemoteProxy_nio}.
+ * 
+ * @author Guillaume Le Louët
+ */
 public class Manager_nio implements Manager {
 
-    Server server;// TODO construct this
+    protected NioByteArrayDispatcherServer server;
 
-    @Override
+    {
+	server = new NioByteArrayDispatcherServer();
+	// we need to start the server as soon as the manager is
+	// started, even if we don't listen to any port yet.
+	server.start();
+    }
+
     public void close(int port) throws IOException {
 	server.closePort(port);
     }
 
-    protected RemoteObjectManager remoteobjectmanager;
-
     @Override
     public RemoteObjectManager getRemoteObjectManager() {
-	return remoteobjectmanager;
+	return server.getRemoteObjectManager();
     }
 
     @Override
     public void setRemoteObjectManager(RemoteObjectManager rom) {
-	this.remoteobjectmanager = rom;
+	server.setRemoteObjectManager(rom);
     }
 
     @Override
     public RemoteProxy getRemoteProxy(InetSocketAddress reference)
 	    throws IOException {
-	// TODO Auto-generated method stub
-	return null;
+	return new RemoteProxy_nio(reference);
     }
 
     @Override
@@ -42,10 +51,9 @@ public class Manager_nio implements Manager {
 	if (port == 0) {
 	    port = detectAvailablePort();
 	}
-	if (port == 0) {
-	    return 0;
+	if (port != 0) {
+	    server.openPort(port);
 	}
-	server.openPort(port);
 	return port;
     }
 
