@@ -16,10 +16,11 @@ import org.testng.annotations.*;
  * Test if a couple client/server works well:
  * <ol>
  * <li>start the server</li>
- * <li></li>
- * <li></li>
- * <li></li>
+ * <li>send Integer to the server</li>
+ * <li>receive answer</li>
+ * <li>check if answer is correct</li>
  * </ol>
+ * The server will received and send back Integers.
  * @author E06A193P
  */
 public class ClientAndServerExchanges {
@@ -31,17 +32,23 @@ public class ClientAndServerExchanges {
 	@BeforeMethod
 	public void setUp() {
 
+		/**
+		 * this server handles incoming Integer by sending back the number of
+		 * elements it already received from that connection+1
+		 */
 		serverToTest = new nio.server.ANioServer() {
 
 			@Override
 			protected ByteArrayHandler createHandler( SocketChannel socket ) {
 				return new ByteArrayDecoder( socket ) {
 
+					protected int received = 0;
+
 					@Override
 					public void handleObject( Serializable o, SocketChannel sc ) {
-						Integer i = (Integer) o;
+						received++ ;
 						try {
-							new NioByteArrayWriter( sc ).send( i + 1 );
+							new NioByteArrayWriter( sc ).send( (Integer) o + received );
 						} catch( IOException e ) {
 							e.printStackTrace();
 						}
@@ -73,13 +80,17 @@ public class ClientAndServerExchanges {
 				port_server ), cl4 = new NioByteArrayClient( "localhost", port_server );
 
 		Assert.assertEquals( sendOnClient( 1, cl1 ), 2 );
-		cl1.close();
 		Assert.assertEquals( sendOnClient( 2, cl2 ), 3 );
 		Assert.assertEquals( sendOnClient( 4, cl3 ), 5 );
+		Assert.assertEquals( sendOnClient( 2, cl2 ), 4 );// sent+2 because we sent 2
+		// objects
 		cl2.close();
 		Assert.assertEquals( sendOnClient( -1, cl4 ), 0 );
 		cl3.close();
 		cl4.close();
+		Assert.assertEquals( sendOnClient( 5, cl1 ), 7 );
+		Assert.assertEquals( sendOnClient( 5, cl1 ), 8 );
+		cl1.close();
 	}
 
 	public int sendOnClient( int data, Client client ) {
