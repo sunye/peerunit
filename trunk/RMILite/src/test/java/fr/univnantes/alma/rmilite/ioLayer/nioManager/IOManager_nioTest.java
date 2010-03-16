@@ -10,15 +10,15 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import fr.univnantes.alma.rmilite.ioLayer.nioManager.IOManager_nio;
+import fr.univnantes.alma.rmilite.ioLayer.nioManager.Manager_nio;
 
 public class IOManager_nioTest {
 
-	protected IOManager_nio toTest;
+	protected Manager_nio toTest;
 
 	@BeforeMethod
 	public void setUp() {
-		toTest = new IOManager_nio();
+		toTest = new Manager_nio();
 	}
 
 	@Test( dataProvider = "portsToOpen" )

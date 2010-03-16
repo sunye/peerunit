@@ -15,35 +15,35 @@ import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
  */
 public interface RemoteProxy {
 
-	/**
-	 * Sends a serializable object to an other remote proxy.
-	 * 
-	 * @param object
-	 *            - serializable object
-	 * @throws IOException
-	 */
-	public void sendObject(Object object) throws IOException;
+    /**
+     * Sends a {@link Serializable} object to an other remote proxy.
+     * 
+     * @param object
+     *            - serializable object
+     * @throws IOException
+     */
+    public void sendObject(Object object) throws IOException;
 
-	/**
-	 * Receives a serializable object from an other remote proxy.
-	 * 
-	 * @return serializable object
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
-	public Object receiveObject() throws IOException, ClassNotFoundException;
+    /**
+     * Receives a serializable object from an other remote proxy.
+     * 
+     * @return serializable object
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public Object receiveObject() throws IOException, ClassNotFoundException;
 
-	/**
-	 * Closes the connection with the remote proxy.
-	 * 
-	 * @throws IOException
-	 */
-	public void close() throws IOException;
+    /**
+     * Closes the connection with the remote proxy.
+     * 
+     * @throws IOException
+     */
+    public void close() throws IOException;
 
-	/**
-	 * Returns the local port to which this remote proxy is bound.
-	 * 
-	 * @return the port
-	 */
-	public int getLocalPort();
+    /**
+     * Returns the local port to which this remote proxy is bound.
+     * 
+     * @return the port
+     */
+    public int getLocalPort();
 }

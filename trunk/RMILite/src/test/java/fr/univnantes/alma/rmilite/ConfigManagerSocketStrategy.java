@@ -2,7 +2,7 @@ package fr.univnantes.alma.rmilite;
 
 import fr.univnantes.alma.rmilite.RemoteMethodFactory;
 import fr.univnantes.alma.rmilite.client.StubFactory;
-import fr.univnantes.alma.rmilite.ioLayer.ioManager.IOManager_IO;
+import fr.univnantes.alma.rmilite.ioLayer.ioManager.Manager_IO;
 import fr.univnantes.alma.rmilite.registry.NamingServer;
 import fr.univnantes.alma.rmilite.registry.NamingServer_Socket;
 import fr.univnantes.alma.rmilite.server.RemoteObjectProvider;
@@ -20,7 +20,7 @@ public class ConfigManagerSocketStrategy implements ConfigManagerStrategy {
     public ConfigManagerSocketStrategy() {
 	if (!constructed) {
 	    /* Initialization */
-	    IOManager_IO io = new IOManager_IO();
+	    Manager_IO io = new Manager_IO();
 	    NamingServer_Socket ns = new NamingServer_Socket();
 	    RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
 
