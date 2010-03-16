@@ -12,35 +12,34 @@ import com.alma.rmilite.server.RemoteObjectProvider_Socket;
  */
 public class ConfigManagerSocketStrategy implements ConfigManagerStrategy {
 
-	private static RemoteObjectProvider remoteObjectProvider;
-	private static NamingServer namingServer;
-	private static boolean constructed = false;
+    private static RemoteObjectProvider remoteObjectProvider;
+    private static NamingServer namingServer;
+    private static boolean constructed = false;
 
-	public ConfigManagerSocketStrategy() {
-		if (!constructed) {
-		/* Initialization */
-			IOManager_IO io = new IOManager_IO();
-			NamingServer_Socket ns = new NamingServer_Socket();
-			RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
-			
-			rop.setIOManager(io);
-			io.setRemoteObjectManager(rop);
-			ns.setRemoteObjectProvider(rop);		
-			RemoteMethodFactory.remoteObjectManager = rop;
-			StubFactory.ioManager = io;
-			
-			remoteObjectProvider = rop;
-			namingServer = ns;
-		}
-	}
-	
+    public ConfigManagerSocketStrategy() {
+	if (!constructed) {
+	    /* Initialization */
+	    IOManager_IO io = new IOManager_IO();
+	    NamingServer_Socket ns = new NamingServer_Socket();
+	    RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
 
-	public RemoteObjectProvider getRemoteObjectProvider() {
-		return remoteObjectProvider;
-	}
+	    rop.setIOManager(io);
+	    io.setRemoteObjectManager(rop);
+	    ns.setRemoteObjectProvider(rop);
+	    RemoteMethodFactory.remoteObjectManager = rop;
+	    StubFactory.ioManager = io;
 
-	public NamingServer getNamingServer() {
-		return namingServer;
+	    remoteObjectProvider = rop;
+	    namingServer = ns;
 	}
-	
+    }
+
+    public RemoteObjectProvider getRemoteObjectProvider() {
+	return remoteObjectProvider;
+    }
+
+    public NamingServer getNamingServer() {
+	return namingServer;
+    }
+
 }
