@@ -33,6 +33,7 @@ public class NioByteArrayWriter implements Writer {
 
 		SocketChannel sc = SocketChannel.open();
 		sc.connect( new InetSocketAddress( remoteAdress, remotePort ) );
+		sc.configureBlocking( false );
 		return sc;
 	}
 

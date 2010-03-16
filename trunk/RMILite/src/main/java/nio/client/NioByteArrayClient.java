@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
 
-import nio.Reader;
+import nio.Client;
 import nio.objectToBytes.Decoder;
 
 /**
@@ -18,7 +18,7 @@ import nio.objectToBytes.Decoder;
  * </ul>
  * @author E06A193P
  */
-public class NioByteArrayClient extends NioByteArrayWriter implements Reader {
+public class NioByteArrayClient extends NioByteArrayWriter implements Client {
 
 	public NioByteArrayClient( String remoteAdress, int remotePort )
 			throws IOException {
