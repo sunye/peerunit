@@ -1,7 +1,6 @@
 package fr.univnantes.alma.nio.server;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
@@ -13,111 +12,115 @@ import fr.univnantes.alma.nio.Server;
  * Thread.<br />
  * It relies on the java.nio socket implementation, wich aims at using few
  * threads for listening to a socket<br />
- * //TODO use a statemachine pattern
+ * //TODO use a state machine pattern
  * 
  * @author Guillaume Le Louët
  */
 public abstract class ANioServer implements Server {
 
-    /** the map of the port we listen to and the socket opened for those ports */
-    protected Map<Integer, ServerSocketChannel> portsListened = Collections
-	    .synchronizedMap(new HashMap<Integer, ServerSocketChannel>());
+    protected Object StateLock = new Object();
 
-    /** the lock to modify the ports listened */
-    protected Object selectorLock = new Object();
-
-    /** number of threads used to handle incoming data */
-    protected int nbThreads = 5;
+    protected ServerState state = ServerState.stopped;
 
     @Override
     public void setNbThreads(int nbThreads) {
-	// TODO
-	this.nbThreads = nbThreads;
-	if (this.nbThreads < 1) {
-	    this.nbThreads = 1;
+	synchronized (StateLock) {
+	    state.setNbThreads(this, nbThreads);
 	}
     }
 
     @Override
     public int getNbThreads() {
-	return nbThreads;
+	synchronized (StateLock) {
+	    return state.getNbThreads(this);
+	}
     }
+
+    @Override
+    public void stop() {
+	synchronized (StateLock) {
+	    state.stop(this);
+	}
+    }
+
+    @Override
+    public boolean start() {
+	synchronized (StateLock) {
+	    return state.start(this);
+	}
+    }
+
+    @Override
+    public boolean isRunning() {
+	synchronized (StateLock) {
+	    return state.isRunning(this);
+	}
+    }
+
+    @Override
+    public void closePort(int port) {
+	synchronized (StateLock) {
+	    state.closePort(this, port);
+	}
+    }
+
+    @Override
+    public Collection<Integer> getOpenedPort() {
+	synchronized (StateLock) {
+	    return state.getOpenedPort(this);
+	}
+    }
+
+    @Override
+    public boolean isPortOpened(int port) {
+	synchronized (StateLock) {
+	    return state.isPortOpened(this, port);
+	}
+    }
+
+    @Override
+    public boolean openPort(int port) {
+	synchronized (StateLock) {
+	    return state.openPort(this, port);
+	}
+    }
+
+    /** the map of the port we listen to and the socket opened for those ports */
+    protected Map<Integer, ServerSocketChannel> portsListened = Collections
+	    .synchronizedMap(new HashMap<Integer, ServerSocketChannel>());
+
+    /** number of threads used to handle incoming data */
+    protected int nbThreads = 5;
+
+    /** the lock to modify the ports listened */
+    protected Object selectorLock = new Object();
 
     protected Selector sel;
 
     /** is the server supposed to stop as soon as possible ? */
     protected boolean hasToStop = false;
 
-    @Override
-    public void stop() {
-	hasToStop = true;
-	if (sel != null) {
-	    sel.wakeup();
-	}
-	while (isRunning()) {
-	    Thread.yield();
-	}
-    }
-
-    /** is the server listening on his socket ? */
-    protected boolean isRunning = false;
-
-    @Override
-    public boolean isRunning() {
-	return this.isRunning;
-    }
-
     /** start retrieving data from the socket */
+    @Override
     public void run() {
-	if (isRunning()) {
-	    return;
-	}
 	hasToStop = false;
 	try {
 	    sel = Selector.open();
-	    isRunning = true;
-	    startHandlingDatas();
+	    state = ServerState.started;
+	    startHandlingData();
 	} catch (IOException ioe) {
 	    ioe.printStackTrace();
 	}
 	closeSockets();
-	isRunning = false;
+	state = ServerState.stopped;
     }
 
-    @Override
-    public boolean start() {
-	new Thread(this).start();
-	while (!isRunning()) {
-	    Thread.yield();
-	}
-	return true;
-    }
-
-    /** close sockets and selector */
-    protected void closeSockets() {
-	try {
-	    sel.close();
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
-	for (Integer port : portsListened.keySet()) {
-	    ServerSocketChannel ssc = portsListened.get(port);
-	    try {
-		ssc.close();
-	    } catch (IOException e) {
-		e.printStackTrace();
-	    }
-	    portsListened.remove(port);
-	}
-    }
-
-    protected void startHandlingDatas() {
+    protected void startHandlingData() {
 	while (!hasToStop) {
 	    try {
+		// we may need the selector to wait before we actually ask
+		// him to select, in case we wanted to listen to another thread.
 		synchronized (selectorLock) {
-		    // we may need the selector to wait before we actually ask
-		    // him to
-		    // select
 		}
 		sel.select();
 		for (SelectionKey key : sel.selectedKeys()) {
@@ -193,6 +196,24 @@ public abstract class ANioServer implements Server {
 	}
     }
 
+    /** close sockets and selector */
+    protected void closeSockets() {
+	try {
+	    sel.close();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+	for (Integer port : portsListened.keySet()) {
+	    ServerSocketChannel ssc = portsListened.get(port);
+	    try {
+		ssc.close();
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
+	    portsListened.remove(port);
+	}
+    }
+
     /**
      * create appropriate decoder from bytes arrays.
      * <p>
@@ -210,56 +231,5 @@ public abstract class ANioServer implements Server {
      *            the socket providing the connection to handle
      */
     protected abstract ByteArrayHandler createHandler(SocketChannel socket);
-
-    @Override
-    public void closePort(int port) {
-	ServerSocketChannel ssc = portsListened.get(port);
-	if (ssc == null) {
-	    return;
-	}
-	try {
-	    ssc.close();
-	} catch (IOException e) {
-	}
-	portsListened.remove(port);
-    }
-
-    @Override
-    public Collection<Integer> getOpenedPort() {
-	return portsListened.keySet();
-    }
-
-    @Override
-    public boolean isPortOpened(int port) {
-	return portsListened.containsKey(port);
-    }
-
-    @Override
-    public boolean openPort(int port) {
-	if (portsListened.containsKey(port) || !isRunning) {
-	    return true;
-	}
-	try {
-	    ServerSocketChannel channel = ServerSocketChannel.open();
-	    channel.configureBlocking(false);
-	    channel.socket().bind(new InetSocketAddress(port));
-	    // if the selector is selecting, meaning waiting for incoming data
-	    // on
-	    // selected sockets, then sel.register() is blocked until something
-	    // is
-	    // sent to a socket. Thus, we need to prevent sel from re-selecting,
-	    // and
-	    // then wake up sel to stop its current selecting.
-	    synchronized (selectorLock) {
-		sel.wakeup();
-		channel.register(sel, SelectionKey.OP_ACCEPT);
-	    }
-	    portsListened.put(port, channel);
-	    return true;
-	} catch (IOException e) {
-	    e.printStackTrace();
-	    return false;
-	}
-    }
 
 }
