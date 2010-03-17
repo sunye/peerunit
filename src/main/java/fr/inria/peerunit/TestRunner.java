@@ -20,19 +20,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import com.alma.rmilite.UnexportedException;
+import fr.univnantes.alma.rmilite.UnexportedException;
 import java.rmi.RemoteException;
 
 //import java.rmi.AccessException;
 //import java.rmi.NotBoundException;
 
 
-import com.alma.rmilite.registry.NamingServer;
+import fr.univnantes.alma.rmilite.registry.NamingServer_Socket;
 //import java.rmi.registry.LocateRegistry;
-import com.alma.rmilite.registry.Registry;
+import fr.univnantes.alma.rmilite.registry.Registry;
 //import java.rmi.registry.Registry;
-import com.alma.rmilite.server.RemoteObjectProvider;
+//import fr.univnantes.alma.rmilite.server.RemoteObjectProvider;
 //import java.rmi.server.UnicastRemoteObject;
+import fr.univnantes.alma.rmilite.server.RemoteObjectProvider_Socket;
 
 
 import java.util.logging.Formatter;
@@ -72,7 +73,7 @@ public class TestRunner {
      *
      * @param klass the<tt>Class</tt> instance corresponding to the <i>test case</i> to execute
      */
-    public TestRunner(Class<?> klass, TesterUtil tu) {
+    public TestRunner(Class<?> klass, TesterUtil tu) throws Exception {
 
         defaults = tu;
         testcase = klass;
@@ -87,7 +88,8 @@ public class TestRunner {
 
         while (times < 5 && boot == null) {
             try {
-            	registry = NamingServer.instance.getRegistry("127.0.0.1",0);
+                NamingServer_Socket nameServer = new NamingServer_Socket();
+                registry = nameServer.getRegistry("127.0.0.1", 0);
                 //registry = LocateRegistry.getRegistry();
                 boot = (Bootstrapper) registry.lookup("Bootstrapper");
                 centralized = false;
@@ -116,10 +118,11 @@ public class TestRunner {
 
         try {
             GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
+            RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
             if (centralized) {
                 log.fine("Coordinator found, using the centralized architecture.");
                 TesterImpl tester = new TesterImpl(boot, globals, defaults);
-                RemoteObjectProvider.instance.exportObject(tester, 0);
+                rop.exportObject(tester, 0);
                 //UnicastRemoteObject.exportObject(tester);
 
                 tester.setCoordinator((Coordinator) boot);
@@ -131,7 +134,7 @@ public class TestRunner {
             } else {
                 log.fine("Bootstrapper found, using the distributed architecture.");
                 DistributedTesterImpl tester = new DistributedTesterImpl(testcase, boot, globals, defaults);
-                RemoteObjectProvider.instance.exportObject(tester, 0);
+                rop.exportObject(tester, 0);
                 //UnicastRemoteObject.exportObject(tester);
                 tester.register();
                 //tester.registerTestCase(testcase);
@@ -162,7 +165,7 @@ public class TestRunner {
      *
      * @param args The only argument should be a class name of <i>test case</i> to execute
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         TesterUtil defaults;
         String filename;
 

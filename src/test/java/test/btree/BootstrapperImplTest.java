@@ -21,18 +21,18 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 
-import com.alma.rmilite.UnexportedException;
+import fr.univnantes.alma.rmilite.UnexportedException;
 import java.rmi.RemoteException;
 //import java.rmi.AccessException;
 //import java.rmi.AlreadyBoundException;
 //import java.rmi.NotBoundException;
 //import java.rmi.RemoteException;
 
-import com.alma.rmilite.registry.NamingServer;
+import fr.univnantes.alma.rmilite.registry.NamingServer_Socket;
 //import java.rmi.registry.LocateRegistry;
-import com.alma.rmilite.registry.Registry;
+import fr.univnantes.alma.rmilite.registry.Registry;
 //import java.rmi.registry.Registry;
-import com.alma.rmilite.server.RemoteObjectProvider;
+import fr.univnantes.alma.rmilite.server.RemoteObjectProvider_Socket;
 import fr.inria.peerunit.GlobalVariables;
 //import java.rmi.server.UnicastRemoteObject;
 
@@ -92,11 +92,13 @@ public class BootstrapperImplTest {
     }
 
     @Test
-    public void testRemoteRegister() {
+    public void testRemoteRegister() throws Exception {
         try {
-        	Registry registry = NamingServer.instance.createRegistry(1099);
+            NamingServer_Socket nameServer = new NamingServer_Socket();
+        	Registry registry = nameServer.createRegistry(1099);
             //Registry registry = LocateRegistry.createRegistry(1099);
-        	Bootstrapper stub = (Bootstrapper) RemoteObjectProvider.instance.exportObject(bootstrapper, 0);
+                RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
+        	Bootstrapper stub = (Bootstrapper) rop.exportObject(bootstrapper, 0);
             //Bootstrapper stub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
             registry.bind("BootTest", stub);
 
