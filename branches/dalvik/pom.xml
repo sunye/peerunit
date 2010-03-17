@@ -4,7 +4,6 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.inria.peerunit</groupId>
     <artifactId>PeerUnit</artifactId>
-    <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>PeerUnit</name>
     <url>http://peerunit.gforge.inria.fr/</url>
@@ -116,6 +115,11 @@
             <classifier>jdk15</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+    	  <groupId>java.fr.univnantes.alma.rmilite</groupId>
+  		  <artifactId>RMILite</artifactId>
+    	  <version>0.0.1-SNAPSHOT</version>
+   	 	</dependency>
     </dependencies>
 
     <developers>

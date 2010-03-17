@@ -16,16 +16,16 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package test.remote;
 
-import com.alma.rmilite.UnexportedException;
+import fr.univnantes.alma.rmilite.UnexportedException;
 import java.rmi.RemoteException;
 //import java.rmi.AlreadyBoundException;
 //import java.rmi.RemoteException;
 
-import com.alma.rmilite.registry.NamingServer;
+import fr.univnantes.alma.rmilite.registry.NamingServer_Socket;
 //import java.rmi.registry.LocateRegistry;
-import com.alma.rmilite.registry.Registry;
+import fr.univnantes.alma.rmilite.registry.Registry;
 //import java.rmi.registry.Registry;
-import com.alma.rmilite.server.RemoteObjectProvider;
+import fr.univnantes.alma.rmilite.server.RemoteObjectProvider_Socket;
 import fr.inria.peerunit.GlobalVariables;
 //import java.rmi.server.UnicastRemoteObject;
 
@@ -39,13 +39,15 @@ import fr.inria.peerunit.util.TesterUtil;
 public class DistributedTesterTest {
 
     @Test
-    public void testSerialization() {
+    public void testSerialization() throws Exception {
         Registry registry;
         try {
-        	registry = NamingServer.instance.createRegistry(1099);
+            NamingServer_Socket nameServer = new NamingServer_Socket();
+        	registry = nameServer.createRegistry(1099);
             //registry = LocateRegistry.createRegistry(1099);
             DistributedTesterImpl dt = new DistributedTesterImpl(null, null, null, TesterUtil.instance);
-            Tester stub = (Tester) RemoteObjectProvider.instance.exportObject(dt, 0);
+            RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
+            Tester stub = (Tester) rop.exportObject(dt, 0);
             //Tester stub = (Tester) UnicastRemoteObject.exportObject(dt, 0);
             registry.bind("DT", stub);
         } catch (RemoteException e) {

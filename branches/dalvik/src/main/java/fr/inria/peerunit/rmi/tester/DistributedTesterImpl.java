@@ -20,9 +20,9 @@ import java.io.Serializable;
 
 
 import java.rmi.RemoteException;
-import com.alma.rmilite.server.RemoteObjectProvider;
+import fr.univnantes.alma.rmilite.server.RemoteObjectProvider_Socket;
 //import java.rmi.server.UnicastRemoteObject;
-import com.alma.rmilite.UnexportedException;
+import fr.univnantes.alma.rmilite.UnexportedException;
 //import java.rmi.NoSuchObjectException;
 
 import java.util.Collection;
@@ -227,9 +227,9 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
         parent.registerMethods(this, methods);
     }
 
-    private void cleanUp() {
+    private void cleanUp() throws IOException {
         LOG.fine(String.format("DistributedTester %d cleaning up.", id));
-        try {
+
             testers.clear();
             tester.cleanUp();
             tester = null;
@@ -238,11 +238,10 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
             bootstrapper = null;
             globals = null;
             parent = null;
-            RemoteObjectProvider.instance.unexportObject(this);
+            RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
+            rop.unexportObject(this);
             //UnicastRemoteObject.unexportObject(this, true);
-        } catch (UnexportedException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
+
     }
 
     private void initializeLogger() {
@@ -313,9 +312,9 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
 
                 System.exit(0);
                 
-            } catch (RemoteException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
+            } catch (IOException ex) {
+                Logger.getLogger(DistributedTesterImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }  catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
 
