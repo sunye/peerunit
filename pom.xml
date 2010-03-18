@@ -116,7 +116,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-    	  <groupId>java.fr.univnantes.alma.rmilite</groupId>
+    	  <groupId>fr.univnantes.alma.rmilite</groupId>
   		  <artifactId>RMILite</artifactId>
     	  <version>0.0.1-SNAPSHOT</version>
    	 	</dependency>
