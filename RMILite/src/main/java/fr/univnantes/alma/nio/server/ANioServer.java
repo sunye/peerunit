@@ -2,8 +2,17 @@ package fr.univnantes.alma.nio.server;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
-import java.util.*;
+import java.nio.channels.ClosedSelectorException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import fr.univnantes.alma.nio.Server;
 
@@ -92,6 +101,8 @@ public abstract class ANioServer implements Server {
     /** number of threads used to handle incoming data */
     protected int nbThreads = 5;
 
+    protected ExecutorService executor;
+
     /** the lock to modify the ports listened */
     protected Object selectorLock = new Object();
 
@@ -104,6 +115,7 @@ public abstract class ANioServer implements Server {
     @Override
     public void run() {
 	hasToStop = false;
+	executor = Executors.newFixedThreadPool(nbThreads);
 	try {
 	    sel = Selector.open();
 	    state = ServerState.started;
@@ -111,6 +123,7 @@ public abstract class ANioServer implements Server {
 	} catch (IOException ioe) {
 	    ioe.printStackTrace();
 	}
+	executor.shutdownNow();
 	closeSockets();
 	state = ServerState.stopped;
     }
@@ -211,6 +224,13 @@ public abstract class ANioServer implements Server {
 		e.printStackTrace();
 	    }
 	    portsListened.remove(port);
+	}
+	for (SocketChannel sc : handlers.keySet()) {
+	    try {
+		sc.close();
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
 	}
     }
 

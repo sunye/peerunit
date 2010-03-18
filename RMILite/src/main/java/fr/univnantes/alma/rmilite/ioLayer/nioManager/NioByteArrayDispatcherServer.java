@@ -6,7 +6,9 @@ import java.nio.channels.SocketChannel;
 
 import fr.univnantes.alma.nio.Server;
 import fr.univnantes.alma.nio.objectToBytes.Decoder;
-import fr.univnantes.alma.nio.server.*;
+import fr.univnantes.alma.nio.server.ANioServer;
+import fr.univnantes.alma.nio.server.ByteArrayDecoder;
+import fr.univnantes.alma.nio.server.ByteArrayHandler;
 import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 
 /**
@@ -20,7 +22,7 @@ public class NioByteArrayDispatcherServer extends ANioServer {
 
     @Override
     protected ByteArrayHandler createHandler(SocketChannel socket) {
-	return new ByteArrayDecoder(socket) {
+	return new ByteArrayDecoder(socket, executor) {
 
 	    @Override
 	    public void handleObject(Serializable o, SocketChannel sc) {

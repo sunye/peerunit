@@ -3,9 +3,12 @@ package fr.univnantes.alma.nio;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.Executors;
 
 import org.testng.Assert;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import fr.univnantes.alma.nio.client.NioByteArrayClient;
 import fr.univnantes.alma.nio.client.NioByteArrayWriter;
@@ -41,7 +44,8 @@ public class ClientAndServerExchanges {
 
 	    @Override
 	    protected ByteArrayHandler createHandler(SocketChannel socket) {
-		return new ByteArrayDecoder(socket) {
+		return new ByteArrayDecoder(socket, Executors
+			.newSingleThreadExecutor()) {
 
 		    protected int received = 0;
 
