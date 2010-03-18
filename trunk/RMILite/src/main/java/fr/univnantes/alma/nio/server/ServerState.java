@@ -45,7 +45,7 @@ abstract class ServerState {
     }
 
     public int getNbThreads(ANioServer server) {
-	return 0;
+	return server.nbThreads;
     }
 
     public static final ServerState stopped = new ServerState() {
@@ -57,6 +57,11 @@ abstract class ServerState {
 		Thread.yield();
 	    }
 	    return true;
+	}
+
+	@Override
+	public void setNbThreads(ANioServer server, int nbThreads) {
+	    server.nbThreads = nbThreads;
 	}
 
     };

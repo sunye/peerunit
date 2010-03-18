@@ -2,7 +2,9 @@ package fr.univnantes.alma.nio.server;
 
 import java.io.Serializable;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import fr.univnantes.alma.nio.objectToBytes.Decoder;
 
@@ -16,9 +18,10 @@ import fr.univnantes.alma.nio.objectToBytes.Decoder;
  * 
  */
 public abstract class ByteArrayDecoder extends Decoder implements
-	ByteArrayHandler {
+	ByteArrayHandler, Runnable {
 
     protected SocketChannel sc;
+    protected Executor executor;
 
     /**
      * creates with a channel
@@ -28,8 +31,9 @@ public abstract class ByteArrayDecoder extends Decoder implements
      *            need to. It can, too, be a way to retrieve the port of
      *            incoming data
      */
-    public ByteArrayDecoder(SocketChannel sc) {
+    public ByteArrayDecoder(SocketChannel sc, Executor executor) {
 	this.sc = sc;
+	this.executor = executor;
     }
 
     @Override
@@ -37,11 +41,41 @@ public abstract class ByteArrayDecoder extends Decoder implements
 	requireHeader();
     }
 
+    /** List of Objects decoded and to handle in a Thread ASAP */
+    List<Serializable> decoded = new ArrayList<Serializable>();
+
+    /** List of Objects that are being handled by a thread */
+    List<Serializable> decodingBackBuffer = new ArrayList<Serializable>();
+
+    /**
+     * the lock to prevent swapping {@link #decodingBackBuffer} and
+     * {@link #decoded} while one of them is in use.
+     */
+    Object decodingListsLock = new Object();
+
+    /** done by only one thread at a time (by the server's main thread) */
     @Override
     public void handle(byte[] array, int size) {
-	List<Serializable> decoded = decode(array, size - 1);
-	for (Serializable o : decoded) {
-	    handleObject(o, sc);
+	synchronized (decoded) {
+	    decoded.addAll(decode(array, size - 1));
+	    executor.execute(this);
+	}
+    }
+
+    @Override
+    public void run() {
+	synchronized (decodingListsLock) {
+
+	    synchronized (decoded) {
+		List<Serializable> ltmp = decoded;
+		decoded = decodingBackBuffer;
+		decodingBackBuffer = ltmp;
+		decoded.clear();
+	    }
+
+	    for (Serializable s : decodingBackBuffer) {
+		handleObject(s, sc);
+	    }
 	}
     }
 
