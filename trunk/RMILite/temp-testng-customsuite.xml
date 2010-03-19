@@ -1,8 +1,0 @@
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="RMILite peerunit sur gforge.inria.fr">
-  <test verbose="2" name="fr.univnantes.alma.nio.ClientAndServerExchanges" annotations="JDK">
-    <classes>
-      <class name="fr.univnantes.alma.nio.ClientAndServerExchanges"/>
-    </classes>
-  </test>
-</suite>

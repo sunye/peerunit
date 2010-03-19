@@ -3,9 +3,13 @@ package fr.univnantes.alma.nio.objectToBytes;
 import static org.testng.Assert.assertEquals;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import org.testng.annotations.*;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 public class EncoderDecoderTest {
 
