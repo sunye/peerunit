@@ -75,7 +75,8 @@ public class TestRunner {
 
         this.initializeLogger();
         try {
-            registry = LocateRegistry.getRegistry(defaults.getRegistryPort());
+            registry = LocateRegistry.getRegistry(defaults.getServerAddr(),
+                    defaults.getRegistryPort());
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
