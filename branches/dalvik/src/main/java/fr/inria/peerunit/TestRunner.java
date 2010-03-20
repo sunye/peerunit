@@ -23,17 +23,11 @@ import java.io.FileNotFoundException;
 import fr.univnantes.alma.rmilite.UnexportedException;
 import java.rmi.RemoteException;
 
-//import java.rmi.AccessException;
-//import java.rmi.NotBoundException;
+import fr.univnantes.alma.rmilite.ConfigManagerStrategy;
+import fr.univnantes.alma.rmilite.ConfigManagerRMIStrategy;
+//import fr.univnantes.alma.rmilite.ConfigManagerSocketStrategy;
 
-
-import fr.univnantes.alma.rmilite.registry.NamingServer_Socket;
-//import java.rmi.registry.LocateRegistry;
 import fr.univnantes.alma.rmilite.registry.Registry;
-//import java.rmi.registry.Registry;
-//import fr.univnantes.alma.rmilite.server.RemoteObjectProvider;
-//import java.rmi.server.UnicastRemoteObject;
-import fr.univnantes.alma.rmilite.server.RemoteObjectProvider_Socket;
 
 
 import java.util.logging.Formatter;
@@ -86,10 +80,11 @@ public class TestRunner {
 
         this.initializeLogger();
 
+        ConfigManagerStrategy cms = new ConfigManagerRMIStrategy();
+
         while (times < 5 && boot == null) {
             try {
-                NamingServer_Socket nameServer = new NamingServer_Socket();
-                registry = nameServer.getRegistry("127.0.0.1", 0);
+                registry = cms.getNamingServer().getRegistry("127.0.0.1", 0);
                 //registry = LocateRegistry.getRegistry();
                 boot = (Bootstrapper) registry.lookup("Bootstrapper");
                 centralized = false;
@@ -118,11 +113,10 @@ public class TestRunner {
 
         try {
             GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
-            RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
             if (centralized) {
                 log.fine("Coordinator found, using the centralized architecture.");
                 TesterImpl tester = new TesterImpl(boot, globals, defaults);
-                rop.exportObject(tester, 0);
+                cms.getRemoteObjectProvider().exportObject(tester, 0);
                 //UnicastRemoteObject.exportObject(tester);
 
                 tester.setCoordinator((Coordinator) boot);
@@ -134,7 +128,7 @@ public class TestRunner {
             } else {
                 log.fine("Bootstrapper found, using the distributed architecture.");
                 DistributedTesterImpl tester = new DistributedTesterImpl(testcase, boot, globals, defaults);
-                rop.exportObject(tester, 0);
+                cms.getRemoteObjectProvider().exportObject(tester, 0);
                 //UnicastRemoteObject.exportObject(tester);
                 tester.register();
                 //tester.registerTestCase(testcase);

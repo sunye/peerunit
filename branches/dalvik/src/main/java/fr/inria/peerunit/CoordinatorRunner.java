@@ -24,16 +24,11 @@ import java.io.IOException;
 import fr.univnantes.alma.rmilite.UnexportedException;
 import java.rmi.RemoteException;
 
-//import java.rmi.AlreadyBoundException;
-//import java.rmi.NotBoundException;
+import fr.univnantes.alma.rmilite.ConfigManagerStrategy;
+import fr.univnantes.alma.rmilite.ConfigManagerRMIStrategy;
+//import fr.univnantes.alma.rmilite.ConfigManagerSocketStrategy;
 
-import fr.univnantes.alma.rmilite.registry.NamingServer_Socket;
-//import java.rmi.registry.LocateRegistry;
 import fr.univnantes.alma.rmilite.registry.Registry;
-//import java.rmi.registry.Registry;
-//import fr.univnantes.alma.rmilite.server.RemoteObjectProvider;
-//import java.rmi.server.UnicastRemoteObject;
-import fr.univnantes.alma.rmilite.server.RemoteObjectProvider_Socket;
 
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -90,13 +85,12 @@ public class CoordinatorRunner {
         log.entering("CoordinatorRunner", "start()");
 
         // Bind the remote object's stub in the registry
-        NamingServer_Socket nameServer = new NamingServer_Socket();
-        Registry registry = nameServer.createRegistry(1099);
+        ConfigManagerStrategy cms = new ConfigManagerRMIStrategy();
+        Registry registry = cms.getNamingServer().createRegistry(1099);
         //Registry registry = LocateRegistry.createRegistry(1099);
         globals = new GlobalVariablesImpl();
 
-        RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
-        globalsStub = (GlobalVariables) rop.exportObject(globals, 0);
+        globalsStub = (GlobalVariables) cms.getRemoteObjectProvider().exportObject(globals, 0);
         //globalsStub = (GlobalVariables) UnicastRemoteObject.exportObject(globals, 0);
         registry.bind("Globals", globalsStub);
 
@@ -104,7 +98,7 @@ public class CoordinatorRunner {
             log.info("Using the centralized architecture");
             cii = new CoordinatorImpl(defaults);
             
-            stub = (Coordinator) rop.exportObject(cii, 0);
+            stub = (Coordinator) cms.getRemoteObjectProvider().exportObject(cii, 0);
             //stub = (Coordinator) UnicastRemoteObject.exportObject(cii, 0);
             log.info("New Coordinator address is : " + defaults.getServerAddr());
             registry.bind("Coordinator", stub);
@@ -118,7 +112,7 @@ public class CoordinatorRunner {
             log.info("Using the distributed architecture");
             bootstrapper = new BootstrapperImpl(defaults);
             
-            Bootstrapper bootStub = (Bootstrapper) rop.exportObject(bootstrapper, 0);
+            Bootstrapper bootStub = (Bootstrapper) cms.getRemoteObjectProvider().exportObject(bootstrapper, 0);
             //Bootstrapper bootStub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
             registry.bind("Bootstrapper", bootStub);
             Thread boot = new Thread(bootstrapper, "Bootstrapper");

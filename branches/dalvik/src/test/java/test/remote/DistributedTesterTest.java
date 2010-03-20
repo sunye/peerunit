@@ -18,16 +18,16 @@ package test.remote;
 
 import fr.univnantes.alma.rmilite.UnexportedException;
 import java.rmi.RemoteException;
-//import java.rmi.AlreadyBoundException;
-//import java.rmi.RemoteException;
 
-import fr.univnantes.alma.rmilite.registry.NamingServer_Socket;
-//import java.rmi.registry.LocateRegistry;
+import fr.univnantes.alma.rmilite.ConfigManagerStrategy;
+import fr.univnantes.alma.rmilite.ConfigManagerRMIStrategy;
+//import fr.univnantes.alma.rmilite.ConfigManagerSocketStrategy;
+
 import fr.univnantes.alma.rmilite.registry.Registry;
-//import java.rmi.registry.Registry;
-import fr.univnantes.alma.rmilite.server.RemoteObjectProvider_Socket;
+
+
+
 import fr.inria.peerunit.GlobalVariables;
-//import java.rmi.server.UnicastRemoteObject;
 
 import org.junit.Test;
 
@@ -42,12 +42,11 @@ public class DistributedTesterTest {
     public void testSerialization() throws Exception {
         Registry registry;
         try {
-            NamingServer_Socket nameServer = new NamingServer_Socket();
-        	registry = nameServer.createRegistry(1099);
+            ConfigManagerStrategy cms = new ConfigManagerRMIStrategy();
+            registry = cms.getNamingServer().createRegistry(1099);
             //registry = LocateRegistry.createRegistry(1099);
             DistributedTesterImpl dt = new DistributedTesterImpl(null, null, null, TesterUtil.instance);
-            RemoteObjectProvider_Socket rop = new RemoteObjectProvider_Socket();
-            Tester stub = (Tester) rop.exportObject(dt, 0);
+            Tester stub = (Tester) cms.getRemoteObjectProvider().exportObject(dt, 0);
             //Tester stub = (Tester) UnicastRemoteObject.exportObject(dt, 0);
             registry.bind("DT", stub);
         } catch (RemoteException e) {
