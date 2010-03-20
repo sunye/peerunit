@@ -57,8 +57,15 @@ public abstract class ByteArrayDecoder extends Decoder implements
     @Override
     public void handle(byte[] array, int size) {
 	synchronized (decoded) {
+	    boolean empty = decoded.isEmpty();
 	    decoded.addAll(decode(array, size - 1));
-	    executor.execute(this);
+	    if (empty) {
+		/**
+		 * if the list is not empty, it means this is yet in the
+		 * executor's queue of runnable
+		 */
+		executor.execute(this);
+	    }
 	}
     }
 
