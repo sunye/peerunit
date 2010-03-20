@@ -27,7 +27,7 @@ import fr.univnantes.alma.nio.Server;
  */
 public abstract class ANioServer implements Server {
 
-    protected Object StateLock = new Object();
+    protected final Object StateLock = new Object();
 
     protected ServerState state = ServerState.stopped;
 
@@ -104,7 +104,7 @@ public abstract class ANioServer implements Server {
     protected ExecutorService executor;
 
     /** the lock to modify the ports listened */
-    protected Object selectorLock = new Object();
+    protected final Object selectorLock = new Object();
 
     protected Selector sel;
 
