@@ -97,12 +97,15 @@ public class GlobalVerdict {
 
     @Override
     public String toString() {
+        long accumulatedDelay = 0;
         StringBuffer result = new StringBuffer();
         result.append("------------------------------\n");
         result.append("Test Case Verdict: \n");
         for (ResultSet each : results.values()) {
             result.append(each).append("\n");
+            accumulatedDelay += each.getDelay() ;
         }
+        result.append("Accumulated Time Elapsed: ").append(accumulatedDelay).append("\n");
         result.append("------------------------------\n");
 
         return result.toString();
