@@ -1,4 +1,4 @@
-package fr.univnantes.alma.rmilite.ioLayer.ioManager;
+package fr.univnantes.alma.rmilite.io;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import fr.univnantes.alma.rmilite.ioLayer.RemoteProxy;
 
 public class RemoteProxy_IO implements RemoteProxy {
 

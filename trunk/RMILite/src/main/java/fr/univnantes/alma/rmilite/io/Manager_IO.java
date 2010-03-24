@@ -1,12 +1,10 @@
-package fr.univnantes.alma.rmilite.ioLayer.ioManager;
+package fr.univnantes.alma.rmilite.io;
 
 import java.io.IOException;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.univnantes.alma.rmilite.ioLayer.Manager;
-import fr.univnantes.alma.rmilite.ioLayer.RemoteProxy;
 import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 
 public class Manager_IO implements Manager {

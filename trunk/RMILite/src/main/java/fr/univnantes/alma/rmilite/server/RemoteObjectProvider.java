@@ -3,7 +3,7 @@ package fr.univnantes.alma.rmilite.server;
 import java.rmi.Remote;
 
 import fr.univnantes.alma.rmilite.client.StubFactory;
-import fr.univnantes.alma.rmilite.ioLayer.Manager;
+import fr.univnantes.alma.rmilite.io.Manager;
 
 /**
  * The RemoteObjectProvider instance defines a non-replicated remote object whose

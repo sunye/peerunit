@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.univnantes.alma.rmilite.RemoteMethod;
-import fr.univnantes.alma.rmilite.ioLayer.Manager;
-import fr.univnantes.alma.rmilite.ioLayer.RemoteProxy;
+import fr.univnantes.alma.rmilite.io.Manager;
+import fr.univnantes.alma.rmilite.io.RemoteProxy;
 
 public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
 		RemoteObjectManager {

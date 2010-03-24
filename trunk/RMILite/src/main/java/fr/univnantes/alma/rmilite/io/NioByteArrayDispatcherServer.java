@@ -1,4 +1,4 @@
-package fr.univnantes.alma.rmilite.ioLayer.nioManager;
+package fr.univnantes.alma.rmilite.io;
 
 import java.io.IOException;
 import java.io.Serializable;

@@ -7,8 +7,8 @@ import java.rmi.RemoteException;
 
 import fr.univnantes.alma.rmilite.RemoteMethodFactory;
 import fr.univnantes.alma.rmilite.RemoteMethodResult;
-import fr.univnantes.alma.rmilite.ioLayer.Manager;
-import fr.univnantes.alma.rmilite.ioLayer.RemoteProxy;
+import fr.univnantes.alma.rmilite.io.Manager;
+import fr.univnantes.alma.rmilite.io.RemoteProxy;
 
 /**
  * <p>

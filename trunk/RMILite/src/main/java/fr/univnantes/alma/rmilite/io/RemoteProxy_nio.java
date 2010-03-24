@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fr.univnantes.alma.rmilite.ioLayer.nioManager;
+package fr.univnantes.alma.rmilite.io;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +12,6 @@ import fr.univnantes.alma.nio.Client;
 import fr.univnantes.alma.nio.client.NioByteArrayClient;
 import fr.univnantes.alma.nio.client.NioByteArrayWriter;
 import fr.univnantes.alma.nio.objectToBytes.Encoder;
-import fr.univnantes.alma.rmilite.ioLayer.RemoteProxy;
 
 /**
  * implementation of {@link RemoteProxy} using the

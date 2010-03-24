@@ -2,7 +2,7 @@ package fr.univnantes.alma.rmilite;
 
 import fr.univnantes.alma.rmilite.RemoteMethodFactory;
 import fr.univnantes.alma.rmilite.client.StubFactory;
-import fr.univnantes.alma.rmilite.ioLayer.ioManager.Manager_IO;
+import fr.univnantes.alma.rmilite.io.Manager_IO;
 import fr.univnantes.alma.rmilite.registry.NamingServer;
 import fr.univnantes.alma.rmilite.registry.NamingServer_Socket;
 import fr.univnantes.alma.rmilite.server.RemoteObjectProvider;

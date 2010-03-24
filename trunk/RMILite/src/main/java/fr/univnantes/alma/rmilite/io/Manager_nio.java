@@ -1,11 +1,9 @@
-package fr.univnantes.alma.rmilite.ioLayer.nioManager;
+package fr.univnantes.alma.rmilite.io;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
-import fr.univnantes.alma.rmilite.ioLayer.Manager;
-import fr.univnantes.alma.rmilite.ioLayer.RemoteProxy;
 import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 
 /**
