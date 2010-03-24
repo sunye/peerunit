@@ -4,7 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import fr.univnantes.alma.rmilite.ioLayer.Manager;
+import fr.univnantes.alma.rmilite.io.Manager;
 
 public class RemoteObjectProvider_RMI implements RemoteObjectProvider {
 

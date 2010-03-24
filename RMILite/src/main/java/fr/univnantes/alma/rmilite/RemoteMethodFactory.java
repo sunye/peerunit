@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.rmi.Remote;
 
-import fr.univnantes.alma.rmilite.ioLayer.Manager;
+import fr.univnantes.alma.rmilite.io.Manager;
 import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 
 /**

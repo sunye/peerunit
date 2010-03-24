@@ -4,8 +4,8 @@ import java.rmi.Remote;
 
 import fr.univnantes.alma.rmilite.RemoteMethodFactory;
 import fr.univnantes.alma.rmilite.UnexportedException;
-import fr.univnantes.alma.rmilite.ioLayer.Manager;
-import fr.univnantes.alma.rmilite.ioLayer.RemoteProxy;
+import fr.univnantes.alma.rmilite.io.Manager;
+import fr.univnantes.alma.rmilite.io.RemoteProxy;
 
 /**
  * The RemoteObjectManager instance provides methods for
