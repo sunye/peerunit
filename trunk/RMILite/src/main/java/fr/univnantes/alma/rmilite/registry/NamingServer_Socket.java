@@ -22,19 +22,11 @@ public class NamingServer_Socket implements NamingServer {
 	public Registry getRegistry(String host, int port) throws Exception {
 		return (Registry) StubFactory.createStub(host, port, new Class<?>[]{ Registry.class });
 	}
-
-	/* (non-Javadoc)
-	 * @see fr.univnantes.alma.rmilite.registry.NamingServer#getRemoteObjectProvider()
-	 */
-	@Override
+	
 	public RemoteObjectProvider getRemoteObjectProvider() {
 		return this.remoteObjectProvider;
 	}
-
-	/* (non-Javadoc)
-	 * @see fr.univnantes.alma.rmilite.registry.NamingServer#setRemoteObjectProvider(fr.univnantes.alma.rmilite.server.RemoteObjectProvider)
-	 */
-	@Override
+	
 	public void setRemoteObjectProvider(RemoteObjectProvider rop) {
 		this.remoteObjectProvider = rop;	
 	}

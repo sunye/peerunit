@@ -22,18 +22,10 @@ public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
 		this.object2port = new HashMap<Remote, Integer>();
 	}
 	
-	/* (non-Javadoc)
-	 * @see fr.univnantes.alma.rmilite.server.RemoteObjectProvider#setIOManager(fr.univnantes.alma.rmilite.io.IOManager)
-	 */
-	@Override
 	public void setIOManager(Manager ioManager) {
 		this.ioManager = ioManager;
 	}
-	
-	/* (non-Javadoc)
-	 * @see fr.univnantes.alma.rmilite.server.RemoteObjectProvider#getIOManager()
-	 */
-	@Override
+
 	public Manager getIOManager() {
 		return this.ioManager;
 	}
