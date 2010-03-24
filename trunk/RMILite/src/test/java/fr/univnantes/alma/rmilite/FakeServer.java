@@ -3,7 +3,7 @@ package fr.univnantes.alma.rmilite;
 import fr.univnantes.alma.rmilite.registry.Registry;
 
 public class FakeServer {
-    private static ConfigManagerStrategy configManagerStrategy = null;
+    private static ConfigManager configManagerStrategy = null;
     private static int port;
 
     private static Registry registry;
@@ -17,10 +17,10 @@ public class FakeServer {
 	System.out.println("Using port " + port);
 
 	if (args.length == 2 && args[1].equals("--rmi")) {
-	    configManagerStrategy = new ConfigManagerRMIStrategy();
+	    configManagerStrategy = new ConfigManagerRMI();
 	    System.out.println("Starting FakeServer using RMI");
 	} else {
-	    configManagerStrategy = new ConfigManagerSocketStrategy();
+	    configManagerStrategy = new ConfigManagerSocket();
 	    System.out.println("Starting FakeServer using Socket");
 	}
 

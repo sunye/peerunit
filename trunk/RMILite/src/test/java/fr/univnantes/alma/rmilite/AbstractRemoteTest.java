@@ -9,11 +9,11 @@ import fr.univnantes.alma.rmilite.registry.Registry;
 
 public abstract class AbstractRemoteTest extends TestCase {
 
-    private static ConfigManagerStrategy configManagerStrategy = null;
+    private static ConfigManager configManagerStrategy = null;
     private static int port;
 
     protected static void setConfigManagerStrategy(
-	    ConfigManagerStrategy aConfigManagerStrategy) {
+	    ConfigManager aConfigManagerStrategy) {
 	configManagerStrategy = aConfigManagerStrategy;
     }
 

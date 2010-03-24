@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 
-import fr.univnantes.alma.rmilite.ConfigManagerStrategy;
+import fr.univnantes.alma.rmilite.ConfigManager;
 import fr.univnantes.alma.rmilite.registry.NamingServer;
 import fr.univnantes.alma.rmilite.registry.Registry;
 
@@ -24,7 +24,7 @@ public abstract class AbstractNamingServerTest extends TestCase {
 	public int signature = 123456;
     };
 
-    private static ConfigManagerStrategy configManagerStrategy;
+    private static ConfigManager configManagerStrategy;
     private static Registry registry;
     private static int port;
 
@@ -42,7 +42,7 @@ public abstract class AbstractNamingServerTest extends TestCase {
      *            the naming server that will be used in the whole test
      */
     public static void setConfigManagerStrategy(
-	    ConfigManagerStrategy configManagerStrategy) {
+	    ConfigManager configManagerStrategy) {
 	AbstractNamingServerTest.configManagerStrategy = configManagerStrategy;
     }
 
