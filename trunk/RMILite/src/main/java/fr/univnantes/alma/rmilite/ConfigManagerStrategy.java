@@ -8,5 +8,4 @@ public interface ConfigManagerStrategy {
     public RemoteObjectProvider getRemoteObjectProvider();
 
     public NamingServer getNamingServer();
-
 }
