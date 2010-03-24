@@ -3,7 +3,6 @@ package fr.univnantes.alma.rmilite.io;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import fr.univnantes.alma.rmilite.RemoteMethodFactory;
 import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 
 /**
@@ -49,20 +48,4 @@ public interface Manager {
 	 * @throws IOException
 	 */
 	public void close(int port) throws IOException;
-
-	/**
-	 * Sets the {@link RemoteObjectManager}, it's the same instance as
-	 * {@link RemoteMethodFactory};
-	 * 
-	 * @param rop
-	 *            - the RemoteObjectManager
-	 */
-	public void setRemoteObjectManager(RemoteObjectManager rom);
-
-	/**
-	 * Gets the {@link RemoteObjectManager}.
-	 * 
-	 * @return the used RemoteObjectManager
-	 */
-	public RemoteObjectManager getRemoteObjectManager();
 }

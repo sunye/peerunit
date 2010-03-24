@@ -1,7 +1,5 @@
 package fr.univnantes.alma.rmilite.registry;
 
-import fr.univnantes.alma.rmilite.server.RemoteObjectProvider;
-
 /**
  * The NamingServer instance is used to obtain a reference to a bootstrap remote object
  * {@link Registry} on a particular host (including the local host), or to create a
@@ -27,16 +25,4 @@ public interface NamingServer {
 	 * @throws Exception
 	 */
 	public Registry getRegistry(String host, int port) throws Exception;
-	
-	/**
-	 * Sets the {@link RemoteObjectProvider}.
-	 * @param rop - the RemoteObjectProvider.
-	 */
-	public void setRemoteObjectProvider(RemoteObjectProvider rop);
-	
-	/**
-	 * Gets the {@link RemoteObjectProvider}.
-	 * @return the used RemoteObjectProvider
-	 */
-	public RemoteObjectProvider getRemoteObjectProvider();
 }

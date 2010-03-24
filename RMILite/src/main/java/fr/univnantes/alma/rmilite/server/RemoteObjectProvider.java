@@ -2,9 +2,6 @@ package fr.univnantes.alma.rmilite.server;
 
 import java.rmi.Remote;
 
-import fr.univnantes.alma.rmilite.client.StubFactory;
-import fr.univnantes.alma.rmilite.io.Manager;
-
 /**
  * The RemoteObjectProvider instance defines a non-replicated remote object whose
  * references are valid only while the server process is alive. The
@@ -44,16 +41,4 @@ public interface RemoteObjectProvider {
 	 * @throws Exception
 	 */
 	public boolean unexportObject(Remote object) throws Exception;
-
-	/**
-	 * Sets the {@link Manager}, it's the same instance as {@link StubFactory}.
-	 * @param ioManager - the IOManager
-	 */
-	public void setIOManager(Manager ioManager);
-	
-	/**
-	 * Gets the used instance of {@link Manager}.
-	 * @return this instance
-	 */
-	public Manager getIOManager();
 }
