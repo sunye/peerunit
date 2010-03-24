@@ -31,7 +31,7 @@ public class RemoteObjectTestImpl implements RemoteObjectTest {
 	RemoteObjectTest newNb = new RemoteObjectTestImpl();
 
 	// XXX CHEAT = ON
-	RemoteObjectProvider remoteObjectProvider = new ConfigManagerSocketStrategy()
+	RemoteObjectProvider remoteObjectProvider = new ConfigManagerSocket()
 		.getRemoteObjectProvider();
 	// XXX CHEAT = OFF
 

@@ -2,7 +2,7 @@ package fr.univnantes.alma.rmilite.registry;
 
 import org.junit.Before;
 
-import fr.univnantes.alma.rmilite.ConfigManagerSocketStrategy;
+import fr.univnantes.alma.rmilite.ConfigManagerSocket;
 
 /**
  * This class use the {@link AbstractNamingServerTest} test and initialize it
@@ -12,7 +12,7 @@ public class NamingServerSocketTest extends AbstractNamingServerTest {
 
     @Before
     public void testInit() {
-	setConfigManagerStrategy(new ConfigManagerSocketStrategy());
+	setConfigManagerStrategy(new ConfigManagerSocket());
 	setPort(9090);
     }
 
