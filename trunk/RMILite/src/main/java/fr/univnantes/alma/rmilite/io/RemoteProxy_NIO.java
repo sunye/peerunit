@@ -21,17 +21,17 @@ import fr.univnantes.alma.nio.objectToBytes.Encoder;
  * @author Guillaume Le Louët
  * 
  */
-public class RemoteProxy_nio implements RemoteProxy {
+public class RemoteProxy_NIO implements RemoteProxy {
 
     protected SocketChannel socket;
     protected Client client;
 
-    public RemoteProxy_nio(SocketChannel socket) throws IOException {
+    public RemoteProxy_NIO(SocketChannel socket) throws IOException {
 	this.socket = socket;
 	client = new NioByteArrayClient(socket);
     }
 
-    public RemoteProxy_nio(InetSocketAddress reference) throws IOException {
+    public RemoteProxy_NIO(InetSocketAddress reference) throws IOException {
 	this(NioByteArrayWriter.openChannel(reference));
     }
 

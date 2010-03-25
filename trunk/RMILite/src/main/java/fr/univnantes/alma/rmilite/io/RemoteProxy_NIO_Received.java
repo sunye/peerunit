@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 /**
- * A {@link RemoteProxy_nio} which is constructed on a received object, and then
+ * A {@link RemoteProxy_NIO} which is constructed on a received object, and then
  * will only return it once and then throw an exception
  * <p>
  * Usefull in case of sockets already listened to, and thus they should not be
@@ -14,11 +14,11 @@ import java.nio.channels.SocketChannel;
  * @author Guillaume Le Louët
  * 
  */
-public class RemoteProxy_nio_Received extends RemoteProxy_nio {
+public class RemoteProxy_NIO_Received extends RemoteProxy_NIO {
 
     protected Object received;
 
-    public RemoteProxy_nio_Received(SocketChannel socket, Object received)
+    public RemoteProxy_NIO_Received(SocketChannel socket, Object received)
 	    throws IOException {
 	super(socket);
 	this.received = received;
