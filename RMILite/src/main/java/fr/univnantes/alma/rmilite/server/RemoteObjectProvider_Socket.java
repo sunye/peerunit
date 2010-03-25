@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.univnantes.alma.rmilite.RemoteMethod;
-import fr.univnantes.alma.rmilite.io.Manager;
+import fr.univnantes.alma.rmilite.io.IOManager;
 import fr.univnantes.alma.rmilite.io.RemoteProxy;
 
 public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
@@ -15,18 +15,18 @@ public class RemoteObjectProvider_Socket implements RemoteObjectProvider,
 	private Map<Integer, Remote> port2object;
 	private Map<Remote, Integer> object2port;
 	
-	private Manager ioManager;
+	private IOManager ioManager;
 
 	public RemoteObjectProvider_Socket() {
 		this.port2object = new HashMap<Integer, Remote>();
 		this.object2port = new HashMap<Remote, Integer>();
 	}
 	
-	public void setIOManager(Manager ioManager) {
+	public void setIOManager(IOManager ioManager) {
 		this.ioManager = ioManager;
 	}
 
-	public Manager getIOManager() {
+	public IOManager getIOManager() {
 		return this.ioManager;
 	}
 

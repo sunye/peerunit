@@ -86,7 +86,7 @@ public class RemoteTestSocket extends AbstractRemoteTest {
 
     @Before
     public void setUp() {
-	setConfigManagerStrategy(new ConfigManagerSocket());
+	setConfigManagerStrategy(new ConfigManager_Socket());
 	setPort(20020);
     }
 

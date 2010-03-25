@@ -13,7 +13,7 @@ import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
  * 
  * @author Guillaume Le Louët
  */
-public class Manager_nio implements Manager {
+public class Manager_nio implements IOManager {
 
 	protected NioByteArrayDispatcherServer server;
 

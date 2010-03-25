@@ -19,7 +19,16 @@ public class SerializableMethodImpl implements SerializableMethod {
 	/* (non-Javadoc)
 	 * @see fr.univnantes.alma.rmilite.SerializableMethod#getMethod()
 	 */
+	@Override
 	public Method getMethod() throws SecurityException, NoSuchMethodException {
 		return this.classe.getMethod(name, parameterTypes);
+	}
+
+	/* (non-Javadoc)
+	 * @see fr.univnantes.alma.rmilite.SerializableMethod#getParameterTypes()
+	 */
+	@Override
+	public Class<?>[] getParameterTypes() {
+		return parameterTypes;
 	}
 }

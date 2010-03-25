@@ -87,7 +87,7 @@ public class RemoteTestRMI extends AbstractRemoteTest {
 
     @Before
     public void setUp() {
-	setConfigManagerStrategy(new ConfigManagerRMI());
+	setConfigManagerStrategy(new ConfigManager_RMI());
 	setPort(10010);
     }
 
