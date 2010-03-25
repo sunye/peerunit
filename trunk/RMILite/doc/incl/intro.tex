@@ -2,12 +2,12 @@
 
 \section{Objectifs}
 
-RMI Lite est une API écrite en pure java. Elle permet de partager et manipuler des objets distants de la même manière que l'API RMI de base fournie par le JDK, toutefois avec un nombre limité de fonctionnalité. L'implémentation ne requiert pas de compilateur externe pour les Stubs qui sont générés à la volés, ainsi que deux mode de communication sont proposés par défaut : java.io et java.nio. L'utilisation de java.rmi est toujours possible mais sera encapsulée dans RMI Lite.\\
+RMI Lite est une API écrite en pur java. Elle permet de partager et manipuler des objets distants de la même manière que l'API RMI de base fournie par le JDK, toutefois avec un nombre limité de fonctionnalités. L'implémentation ne requiert pas de compilateur externe pour les Stubs qui sont générés à la volée, ainsi que deux mode de communication sont proposés par défaut : java.io et java.nio. L'utilisation de java.rmi est toujours possible mais sera encapsulée dans RMI Lite.\\
 
 L'avantage est de rendre indépendant l'application du middleware utilisé, en effet java.rmi n'est pas disponible sur toutes les plateformes (par exemple Dalvik).
 
 \section{Conventions}
-On considère qu'un appel distant est l'invocation du méthode sur un objet distant en incluant les arguments.
+On considère qu'un appel distant est l'invocation d'une méthode sur un objet distant en incluant les arguments.
 \medskip
 
 Chaque interface, en fonction de son implémentation, est suffixée par la technologie utilisée ("\_RMI" pour java.rmi, "\_IO" pour java.io...).
@@ -19,5 +19,5 @@ Ce dossier ce destine au développeur désireux d'utiliser RMI Lite ou d'implém
 Ce dossier a pour but de compléter la documentation déjà fournie au sein du code.
 
 \section{Plan}
-Dans un premier temps nous verrons comment se servir des différents modes disponibles. Ensuite, dans un second temps nous nous attarderons sur l'architecture globale de l'API suivie par les interactions entre les différentes classes. Enfin pour les plus téméraire, nous terminerons sur les extensions possibles à l'implémentation par défaut proposée.
+Dans un premier temps, nous verrons comment se servir des différents modes disponibles. Ensuite, dans un second temps nous nous attarderons sur l'architecture globale de l'API suivie par les interactions entre les différentes classes. Enfin pour les plus téméraire, nous terminerons sur les extensions possibles à l'implémentation par défaut proposée.
 

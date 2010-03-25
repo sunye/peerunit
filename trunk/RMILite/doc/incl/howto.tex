@@ -12,7 +12,7 @@ Pour les applications utilisant RMI, le portage vers RMI Lite ne bouleversera pa
 Une fois les correspondances connues, les noms des méthodes restent sensiblement les mêmes... A noter qu'il n'est pas possible de créer automatiquement un stub en héritant de la classe RemoteObjectProvider comme avec UnicastRemoteObject en java.rmi. La méthode exportObject est obligatoire.
 
 \section{Configuration}
-\hspace{-.6cm}Par défaut, deux configuration sont proposées au sein de l'API : 
+\hspace{-.6cm}Par défaut, deux configurations sont proposées au sein de l'API : 
 \begin{itemize}
 \item ConfigManager\_RMI : encapsule java.rmi.
 \item ConfigManager\_Socket : utilise RMI Lite avec java.io pour la communication.

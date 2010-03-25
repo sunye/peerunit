@@ -8,11 +8,11 @@
 \end{center}
 \end{figure}
 \medskip
-On peut distinguer clairement 5 parties différentes :
+\hspace{-.6cm}On peut distinguer clairement 5 parties différentes :
 \begin{itemize}
 \item Serveur de nom
 \item Partage d'objets
-\item Couche de communication
+\item Couche réseau
 \item Appels distants
 \item Stub
 \end{itemize}
@@ -21,12 +21,12 @@ On peut distinguer clairement 5 parties différentes :
 On identifie un objet partagé sur le réseau grâce à son adresse IP et le port (InetSocketAddress) sur lequel il reçoit les appels distants.
 
 \section{Serveur de nom}
-\hspace{-.6cm}Le fournisseur de registre fournit un stub lorsqu'on demande un registre distant.
+\hspace{-.6cm}Le fournisseur de registre exporte en même temps que de créer un registre distant. De même, il créé un stub quand on lui en demande un.
 
 \section{Partage d'objets}
-L'interface RemoteObjectManager est interne à l'API, elle n'est pas destinée à être utilisée par l'utilisateur lambda. Elle permet à l'usine d'appel distant de vérifier si les objets manipulés en paramètre ou en retour sont bien exportés, et si c'est le cas, d'obtenir leur port d'écoute. Elle permet aussi à la couche de communication de faire remonter un appel distant vers l'objet partagé.
+L'interface RemoteObjectManager est interne à l'API, elle n'est pas destinée à être utilisée par l'utilisateur lambda. Elle permet à l'usine d'appels distants de vérifier si les objets manipulés en paramètre ou en retour sont bien exportés, et si c'est le cas, d'obtenir leur port d'écoute. Elle permet aussi à la couche de communication de faire remonter un appel distant vers l'objet partagé.
 
-\section{Couche de communication}
+\section{Couche réseau}
 L'interface RemoteProxy est destinée à encapsuler un socket, fournit par un IOManager qui se charge d'ouvrir, d'écouter et de fermer des ports.
 
 \section{Stub}
