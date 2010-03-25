@@ -9,11 +9,11 @@ import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 /**
  * A manager that handles incoming data on several ports with a
  * {@link NioByteArrayDispatcherServer}.<br />
- * I allows to send data and received data back with a {@link RemoteProxy_nio}.
+ * I allows to send data and received data back with a {@link RemoteProxy_NIO}.
  * 
  * @author Guillaume Le Louët
  */
-public class Manager_nio implements IOManager {
+public class IOManager_NIO implements IOManager {
 
 	protected NioByteArrayDispatcherServer server;
 
@@ -39,7 +39,7 @@ public class Manager_nio implements IOManager {
 	@Override
 	public RemoteProxy getRemoteProxy(InetSocketAddress reference)
 			throws IOException {
-		return new RemoteProxy_nio(reference);
+		return new RemoteProxy_NIO(reference);
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public class NioByteArrayDispatcherServer extends ANioServer {
 	    public void handleObject(Serializable o, SocketChannel sc) {
 		try {
 		    remoteobjectmanager
-			    .remoteProcedureCall(new RemoteProxy_nio_Received(
+			    .remoteProcedureCall(new RemoteProxy_NIO_Received(
 				    sc, o));
 		} catch (IOException e) {
 		    e.printStackTrace();
