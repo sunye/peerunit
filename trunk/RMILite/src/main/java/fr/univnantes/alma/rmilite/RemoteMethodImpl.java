@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.rmi.Remote;
 
 import fr.univnantes.alma.rmilite.client.Stub;
-import fr.univnantes.alma.rmilite.client.StubFactory;
 
 public class RemoteMethodImpl implements RemoteMethod {
 
@@ -35,22 +34,14 @@ public class RemoteMethodImpl implements RemoteMethod {
 	 */
 	private void args2refs() throws UnexportedException,
 			NotSerializableException {
-		if (args != null) { // method without argument
-			for (int i = 0; i < this.args.length; i++) {
-				if (this.args[i] instanceof Remote) { // if the argument is a
-														// remote object
-					Remote remoteArg = (Remote) args[i];
-					if (StubFactory.isStub(remoteArg)) { // if the remote
-															// argument is
-															// already a stub
-						args[i] = StubFactory.getStubReference(remoteArg);
-					} else { // else the remote argument is serialized
-						args[i] = RemoteMethodFactory.createSerializableRemoteObject(remoteArg);
-					}
-				} else if (!(args[i] instanceof Serializable)) {
-					throw new NotSerializableException(
-							"Not serializable argument");
-				}
+		Class<?>[] argTypes = this.serializableMethod.getParameterTypes();
+		for (int i = 0; i < argTypes.length; i++) {
+			if (Remote.class.isAssignableFrom(argTypes[i])) { // if the argument is a
+																// remote object
+				args[i] = RemoteMethodFactory
+						.createSerializableRemoteObject((Remote) args[i]);
+			} else if (!(Serializable.class.isAssignableFrom(argTypes[i]))) {
+				throw new NotSerializableException("Not serializable argument");
 			}
 		}
 	}
@@ -60,31 +51,40 @@ public class RemoteMethodImpl implements RemoteMethod {
 	 * 
 	 * @see fr.univnantes.alma.rmilite.RemoteMethod#invoke(java.rmi.Remote)
 	 */
+	@Override
 	public Object invoke(Remote object) throws SecurityException,
 			NoSuchMethodException, NotSerializableException,
 			IllegalArgumentException, UnexportedException,
 			IllegalAccessException, InvocationTargetException {
+		/* Transforms the remote arguments in stub. */
+		this.args2stubs();
+		
 		/* Deserializes the method. */
 		Method method = this.serializableMethod.getMethod();
 
-		/* Transforms the remote arguments in stub. */
-		this.args2stubs(method.getParameterTypes());
-
-		/* Invokes the method and returns the result. */
-		return RemoteMethodFactory.createRemoteMethodResult(method, method
-				.invoke(object, this.args));
+		/* Invokes the method. */
+		Object result = method.invoke(object, this.args);
+		
+		/* And returns the result. */
+		Class<?> returnType = method.getReturnType();
+		if (Remote.class.isAssignableFrom(returnType)) {
+			return RemoteMethodFactory.createSerializableRemoteObject(object);
+		} else if (Serializable.class.isAssignableFrom(returnType)) {
+			return result;
+		} else {
+			throw new NotSerializableException("Not serializable result");
+		}		
 	}
 
 	/**
 	 * Transforms remote arguments in {@link Stub}.
 	 * 
-	 * @param argTypes
-	 *            - arguments
 	 * @throws SecurityException
 	 * @throws NoSuchMethodException
 	 */
-	private void args2stubs(Class<?>[] argTypes) throws SecurityException,
+	private void args2stubs() throws SecurityException,
 			NoSuchMethodException {
+		Class<?>[] argTypes = this.serializableMethod.getParameterTypes();
 		if (args != null) { // method without arguments
 			for (int i = 0; i < args.length; i++) {
 				if (Remote.class.isAssignableFrom(argTypes[i])) { // if the

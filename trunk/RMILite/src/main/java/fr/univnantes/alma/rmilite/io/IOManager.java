@@ -13,7 +13,7 @@ import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
  * @see RemoteProxy
  * @see RemoteObjectManager
  */
-public interface Manager {
+public interface IOManager {
 
 	/**
 	 * Returns the specified RemoteProxy {@code reference}.

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 
-public class Manager_IO implements Manager {
+public class IOManager_IO implements IOManager {
 
 	/**
 	 * This thread execute the remote call.
@@ -71,7 +71,7 @@ public class Manager_IO implements Manager {
 
 	protected RemoteObjectManager remoteObjectManager;
 
-	public Manager_IO() {
+	public IOManager_IO() {
 		this.serverSockets = new HashMap<Integer, ServerSocket>();
 	}
 

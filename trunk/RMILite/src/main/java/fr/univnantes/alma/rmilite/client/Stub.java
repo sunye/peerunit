@@ -1,13 +1,15 @@
 package fr.univnantes.alma.rmilite.client;
 
+import java.io.NotSerializableException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.rmi.RemoteException;
+import java.rmi.Remote;
 
 import fr.univnantes.alma.rmilite.RemoteMethodFactory;
-import fr.univnantes.alma.rmilite.RemoteMethodResult;
-import fr.univnantes.alma.rmilite.io.Manager;
+import fr.univnantes.alma.rmilite.SerializableRemoteObject;
+import fr.univnantes.alma.rmilite.io.IOManager;
 import fr.univnantes.alma.rmilite.io.RemoteProxy;
 
 /**
@@ -22,9 +24,9 @@ public class Stub implements InvocationHandler {
 	 * Reference to the remote object.
 	 */
 	private InetSocketAddress reference;
-	private Manager ioManager;
+	private IOManager ioManager;
 
-	public Stub(InetSocketAddress adress, Manager ioManager) {
+	public Stub(InetSocketAddress adress, IOManager ioManager) {
 		this.reference = adress;
 		this.ioManager = ioManager;
 	}
@@ -55,10 +57,12 @@ public class Stub implements InvocationHandler {
 		if (result instanceof Exception) {
 			throw (Exception) result; // an exception occurs during the
 			// execution of the remote method
-		} else if (result instanceof RemoteMethodResult) {
-			return ((RemoteMethodResult) result).getObject();
+		} else if (Remote.class.isAssignableFrom(method.getReturnType())) {
+			return ((SerializableRemoteObject) result).getObject();
+		} else if (Serializable.class.isAssignableFrom(method.getReturnType())) {
+			return result;
 		} else {
-			throw new RemoteException("Invalid data !");
+			throw new NotSerializableException("Not serializable result");
 		}
 	}
 

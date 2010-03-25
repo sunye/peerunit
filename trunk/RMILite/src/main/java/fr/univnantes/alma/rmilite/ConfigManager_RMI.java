@@ -5,7 +5,7 @@ import fr.univnantes.alma.rmilite.registry.NamingServer_RMI;
 import fr.univnantes.alma.rmilite.server.RemoteObjectProvider;
 import fr.univnantes.alma.rmilite.server.RemoteObjectProvider_RMI;
 
-public class ConfigManagerRMI implements ConfigManager {
+public class ConfigManager_RMI implements ConfigManager {
 
     private static RemoteObjectProvider remoteObjectProvider = new RemoteObjectProvider_RMI();
     private static NamingServer namingServer = new NamingServer_RMI();

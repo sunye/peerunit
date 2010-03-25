@@ -5,7 +5,8 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.rmi.Remote;
 
-import fr.univnantes.alma.rmilite.io.Manager;
+import fr.univnantes.alma.rmilite.client.StubFactory;
+import fr.univnantes.alma.rmilite.io.IOManager;
 import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 
 /**
@@ -21,7 +22,7 @@ import fr.univnantes.alma.rmilite.server.RemoteObjectManager;
 public class RemoteMethodFactory {
 	
 	/**
-	 * The {@link RemoteObjectManager}, it's the same instance used by the {@link Manager};
+	 * The {@link RemoteObjectManager}, it's the same instance used by the {@link IOManager};
 	 */
 	public static RemoteObjectManager remoteObjectManager;
 
@@ -38,20 +39,6 @@ public class RemoteMethodFactory {
 			throws NotSerializableException, UnexportedException {
 		return new RemoteMethodImpl(new SerializableMethodImpl(method), args);
 	}
-
-	/**
-	 * Returns a serializable result of the specified {@code method}.
-	 * 
-	 * @param method - the method
-	 * @param result - the result object
-	 * @return the serializable result object
-	 * @throws NotSerializableException
-	 * @throws UnexportedException
-	 */
-	static public RemoteMethodResult createRemoteMethodResult(Method method,
-			Object result) throws NotSerializableException, UnexportedException {
-		return new RemoteMethodResultImpl(method, result);
-	}
 	
 	/**
 	 * Returns a serializable remote {@code object}.
@@ -61,12 +48,15 @@ public class RemoteMethodFactory {
 	 */
 	static public SerializableRemoteObject createSerializableRemoteObject(
 			Remote object) throws UnexportedException {
-		if (remoteObjectManager.isExported(object)) { // if the remote object is
+		InetSocketAddress reference;
+		if (StubFactory.isStub(object)) { // if the remote result is already a stub
+			reference = StubFactory.getStubReference(object);
+		} else if (remoteObjectManager.isExported(object)) { // if the remote object is
 														// exported
-			return new SerializableRemoteObjectImpl(object,
-					new InetSocketAddress(remoteObjectManager.getPort(object)));
+			reference = new InetSocketAddress(remoteObjectManager.getPort(object));
 		} else {
 			throw new UnexportedException("Unexported argument");
 		}
+		return new SerializableRemoteObjectImpl(object,reference);
 	}
 }

@@ -17,10 +17,10 @@ public class FakeServer {
 	System.out.println("Using port " + port);
 
 	if (args.length == 2 && args[1].equals("--rmi")) {
-	    configManagerStrategy = new ConfigManagerRMI();
+	    configManagerStrategy = new ConfigManager_RMI();
 	    System.out.println("Starting FakeServer using RMI");
 	} else {
-	    configManagerStrategy = new ConfigManagerSocket();
+	    configManagerStrategy = new ConfigManager_Socket();
 	    System.out.println("Starting FakeServer using Socket");
 	}
 
