@@ -76,6 +76,7 @@ public class CoordinatorImpl implements Runnable {
      * to Testers.
      */
     public CoordinatorImpl(int testerNbr, int relaxIndex) {
+        LOG.finest("Creating a CoordinatorImpl for "+testerNbr+" testers.");
         expectedTesters = new AtomicInteger(testerNbr);
         registeredTesters = Collections.synchronizedList(new ArrayList<Tester>(testerNbr));
         executor = Executors.newFixedThreadPool(testerNbr > 10 ? 10 : testerNbr);

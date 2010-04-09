@@ -12,7 +12,7 @@
     <href>http://www.univ-nantes.fr/</href>
   </bannerRight>
   <body>
-    <menu name="Contents">
+    <menu name="Introduction">
 	  <item name="Introduction" href="index.html"/>
       <item name="Architecture" href="architecture.html"/>
       <item name="Usage" href="usage.html"/>
@@ -23,9 +23,9 @@
     <menu name="Examples">
       <item name="FreePastry and OpenChord" href="tests.html"/>
     </menu>
-    <menu name="Development">
-        <item name="Reports" href="project-reports.html"/>
-        <item name="Information" href="project-info.html"/>
+    <menu name="Project Documentation">
+        <item name="Project Information" href="project-info.html"/>
+        <item name="Project Reports" href="project-reports.html"/>
     </menu>
   </body>
 </project>
