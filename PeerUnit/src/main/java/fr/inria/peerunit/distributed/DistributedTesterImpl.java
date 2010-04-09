@@ -94,7 +94,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
             this.initializeLogger();
 
         } catch (RemoteException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
 //        this.tester = new TesterImpl(this.globalTable(), this.getId(), defaults);
@@ -147,7 +147,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
             ResultSet result = coordinator.getResultFor(md);
             parent.methodExecutionFinished(result);
         } catch (InterruptedException e) {
-            LOG.log(Level.SEVERE, null, e);
+            LOG.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -228,7 +228,7 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
             parent = null;
             UnicastRemoteObject.unexportObject(this, true);
         } catch (NoSuchObjectException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -284,9 +284,9 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
                 System.exit(0);
 
             } catch (RemoteException ex) {
-                LOG.log(Level.SEVERE, null, ex);
+                LOG.log(Level.SEVERE, ex.getMessage(), ex);
             } catch (InterruptedException ex) {
-                LOG.log(Level.SEVERE, null, ex);
+                LOG.log(Level.SEVERE, ex.getMessage(), ex);
             } finally {
                 System.exit(1);
             }
