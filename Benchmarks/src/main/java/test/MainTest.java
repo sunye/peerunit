@@ -1,9 +1,7 @@
 package test;
 
-import static fr.inria.peerunit.test.assertion.Assert.*;
 
-import fr.inria.peerunit.GlobalVariables;
-import fr.inria.peerunit.parser.AfterClass;
+import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.TestStep;
 

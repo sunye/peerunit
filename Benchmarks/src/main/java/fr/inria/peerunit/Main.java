@@ -26,6 +26,7 @@ public class Main {
     private static String TESTER = "fr.inria.peerunit.TestRunner";
     private static String PATH = "/Users/sunye/Work/gforge/peerunit/trunk/Benchmarks/Benchmark-1.0.jar";
     private static String TEST = "test.MainTest";
+    private static String HOSTS = "hosts.txt";
 
     private Project project;
     private Path path;
