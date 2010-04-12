@@ -115,7 +115,8 @@ public class TestRunner {
         }
 
         if (boot == null) {
-            LOG.severe("Unable to bind");
+            LOG.severe("Unable to bind server: "+defaults.getServerAddr()+
+                    " at port " + defaults.getRegistryPort());
             System.exit(1);
         }
 
