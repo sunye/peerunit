@@ -58,53 +58,40 @@ public class TesterImplTest {
      * @throws InterruptedException
      */
     @BeforeClass
-    public static void inititalize() throws InterruptedException, RemoteException {
-        // Coordinator initialization
-        coord = new CoordinatorImpl(3, 100);
-        remoteCoordinator = coord.getRemoteCoordinator();
-        bootstrapper = coord.getRemoteBootstrapper();
-        new Thread(coord, "Coordinator").start();
-        Thread.yield();
+    public static void inititalize() throws InterruptedException {
+        Properties properties = new Properties();
+        properties.setProperty("tester.peers", "3");
+        properties.setProperty("tester.log.dateformat", "yyyy-MM-dd");
+        properties.setProperty("tester.log.timeformat", "HH:mm:ss.SSS");
+        properties.setProperty("tester.log.level", "FINEST");
+        properties.setProperty("tester.logfolder", "/tmp/");
+        properties.setProperty("tester.log.delimiter", "|");
+        properties.setProperty("tester.waitForMethod", "500");
+        try {
+            TesterUtil defaults = new TesterUtil(properties);
+            coord = new CoordinatorImpl(3, 1);
+            globals = new GlobalVariablesImpl();
+            new Thread(coord, "Coordinator").start();
+            tester0 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
+            tester0.setCoordinator(coord.getRemoteCoordinator());
+            //executor = new TestCaseWrapper(tester0);
+            tester1 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
+            tester1.setCoordinator(coord.getRemoteCoordinator());
+            tester2 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
+            tester2.setCoordinator(coord.getRemoteCoordinator());
+            tester0.registerTestCase(Sample.class);
+            tester1.registerTestCase(Sample.class);
+            tester2.registerTestCase(Sample.class);
+            tester0.start();
+            tester1.start();
+            tester2.start();
+            Thread.yield();
+            coord.waitForTesterRegistration();
 
-        // Testers initialization
-        globals = new GlobalVariablesImpl();
-        tester0 = new TesterImpl(bootstrapper, globals);
-        tester1 = new TesterImpl(bootstrapper, globals);
-        tester2 = new TesterImpl(bootstrapper, globals);
-
-        tester0.setCoordinator(remoteCoordinator);
-        tester1.setCoordinator(remoteCoordinator);
-        tester2.setCoordinator(remoteCoordinator);
-
-        tester0.registerTestCase(Sample.class);
-        tester1.registerTestCase(Sample.class);
-        tester2.registerTestCase(Sample.class);
-
-
-        wrapper = new TestCaseWrapper(tester0);
-
-        Thread.yield();
-
-        tester0.start();
-        tester1.start();
-        tester2.start();
-
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    coord.waitForTesterRegistration();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TesterImplTest.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        };
-
-        t.start();
-        t.join();
-
-        //new Thread(tester0, "Tester 0").start();
-
+            //new Thread(tester0, "Tester 0").start();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     //@Test

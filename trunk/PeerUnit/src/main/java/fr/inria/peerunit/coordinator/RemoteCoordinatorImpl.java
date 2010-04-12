@@ -22,6 +22,7 @@ import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.Tester;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -58,6 +59,13 @@ public class RemoteCoordinatorImpl implements Bootstrapper, Coordinator {
     private final AtomicInteger registerdTesters = new AtomicInteger(0);
 
     /**
+     * Number of expected testers for this coordinator.
+     * Only used for distributed testers.
+     * TODO: refactoring needed.
+     */
+    private int expectedTesters = 0;
+
+    /**
      *
      * @param expectedTesters Expected number of testers.
      */
@@ -69,12 +77,16 @@ public class RemoteCoordinatorImpl implements Bootstrapper, Coordinator {
 
     /**
      * Bulk tester registration.
-     * Not implemented yet.
-     * @param testers
+     * Only used for distributed testers.
+     * TODO: refactoring needed?
+     * @param list
      * @throws RemoteException
      */
-    public void registerTesters(List<Tester> testers) throws RemoteException {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public void registerTesters(List<Tester> list) throws RemoteException {
+        expectedTesters = list.size();
+        for (Tester each : list) {
+            each.setCoordinator(this);
+        }
     }
 
     /**
@@ -154,5 +166,13 @@ public class RemoteCoordinatorImpl implements Bootstrapper, Coordinator {
      */
     BlockingQueue<Tester> leaving() {
         return leaving;
+    }
+
+    /**
+     *
+     * @return number of expected testers.
+     */
+    public int getExpectedTesters() {
+        return expectedTesters;
     }
 }
