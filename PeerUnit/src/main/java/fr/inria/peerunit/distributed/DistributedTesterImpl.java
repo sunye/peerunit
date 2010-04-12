@@ -29,11 +29,13 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.CoordinatorImpl;
+import fr.inria.peerunit.coordinator.RemoteCoordinatorImpl;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.tester.AbstractTester;
+import fr.inria.peerunit.tester.RemoteTesterImpl;
 import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
 
@@ -71,36 +73,61 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     private transient TesterImpl tester;
     private transient CoordinatorImpl coordinator;
     private transient Class<?> testCaseClass;
+    /**
+     * The tester interface, RMI implementation.
+     */
+    private final RemoteTesterImpl remoteTester = new RemoteTesterImpl();
+    /**
+     * The coordinator interface, RMI implementation.
+     */
+    private RemoteCoordinatorImpl remoteCoordinator;
+
 
     public DistributedTesterImpl(Class<?> klass, Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
         super(gv);
         defaults = tu;
         bootstrapper = boot;
         testCaseClass = klass;
+
     }
+
 
     /**
      * Registers this distributed tester with the bootstrapper and
      * receives an id.
-     * 
-     * 
-     * 
      */
-    public void register() {
-        LOG.entering("DistributedTester", "register()");
+    public void register() throws RemoteException {
+        // registration cannot be done in the constructor because
+        // this object must be exported first.
+        // The export is done externally.
 
-        try {
-            this.setId(bootstrapper.register(this));
-            this.initializeLogger();
+        int i = bootstrapper.register(this);
+        this.setId(i);
 
-        } catch (RemoteException ex) {
-            LOG.log(Level.SEVERE, ex.getMessage(), ex);
-        }
-
-//        this.tester = new TesterImpl(this.globalTable(), this.getId(), defaults);
-//        tester.registerTestCase(testCaseClass);
-//        this.testers.add(tester);
+        // Log only can be initialized when the tester
+        // receives an ID (the file name depends on it)
+        this.initializeLogger();
     }
+
+
+    /**
+     *
+     * @return The RemoteTester implementation
+     */
+    public Tester getRemoteTester() {
+        return remoteTester;
+    }
+
+    /**
+     *
+     * @return The RemoteCoordinator implementation
+     */
+    public Coordinator getRemoteCoordinator() {
+        return remoteCoordinator;
+    }
+
+
+
 
     /**
      * Sets the testers that are controlled by this tester and
@@ -190,13 +217,19 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
     }
 
     /**
-     * Starts the distributed tester:
-     * 		- Creates the local tester and the local coordinator.
-     *          - Starts all child testers.
-     * @throws RemoteException
+     * Starts the distributed tester thread.
      * @throws InterruptedException
      */
     public void start() throws RemoteException {
+        if (parent == null) {
+            // This is the root
+        } else if (remoteCoordinator.getExpectedTesters() == 0 ) {
+            // This is a leaf node
+        } else {
+            // This is a intermediary node.
+        }
+
+
         LOG.entering("DistributedTester", "start()");
         Thread root = new Thread(new DistributedTesterThread());
         root.start();
@@ -232,10 +265,20 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
         }
     }
 
-    
+    private boolean isRoot() {
+        return false;
+    }
+
     class DistributedTesterThread implements Runnable {
 
         public void run() {
+            // - Register with bootstrapper and get an Id
+            // 1. Wait for coordinator;
+            // 2. Register with coordinator;
+            // 3. Wait for tester registration;
+            // - IF root, start test case execution
+            // - wait all testers to quit
+            // - leave and cleanup
 
             LOG.fine(String.format("Starting Tester %d", id));
 
@@ -291,6 +334,20 @@ public class DistributedTesterImpl extends AbstractTester implements Tester, Coo
                 System.exit(1);
             }
 
+
+        }
+    }
+
+    class RootTesterThread implements Runnable {
+        
+        public void run() {
+
+        }
+    }
+
+    class LeafTesterThread implements Runnable {
+
+        public void run() {
 
         }
     }

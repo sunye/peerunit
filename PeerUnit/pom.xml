@@ -9,7 +9,7 @@
     <artifactId>PeerUnit</artifactId>
     <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>PeerUnit</name>
+    <name>PeerUnit-Trunk</name>
     <url>http://peerunit.gforge.inria.fr/</url>
     <licenses>
         <license>
@@ -161,9 +161,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>net.sourceforge.cobertura</groupId>
-            <artifactId>cobertura</artifactId>
-            <version>1.9.3</version>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cobertura-maven-plugin</artifactId>
+            <version>2.3</version>
         </dependency>
     </dependencies>
 
@@ -176,3 +176,4 @@
     <url>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</url>
   </scm>
 </project>
+

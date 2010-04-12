@@ -81,7 +81,7 @@ public class ResultSetTest {
         SingleResult sr = new SingleResult(1, md);
         ResultSet rs = sr.asResultSet();
 
-        String expected = String.format("Step: %d. Pass: %d. Fails: %d. Erros: %d. " +
+        String expected = String.format("Step: %d. Pass: %d. Fails: %d. Errors: %d. " +
                 "Inconclusive: %d.  Time elapsed: %d msec. Average: %d msec. \t Method: %s",
                 0, 1, 0, 0, 0, 0, 0, "name");
 
