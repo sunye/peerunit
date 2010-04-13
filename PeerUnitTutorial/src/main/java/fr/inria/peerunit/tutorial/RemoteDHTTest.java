@@ -72,14 +72,14 @@ public class RemoteDHTTest {
 
     @TestStep(range = "0", order = 9, timeout = 1000)
     public void setAGlobal() throws Exception {
-        globals.put(1, "Juste one value");
+        globals.put(1, "Just one value");
     }   
  
     @TestStep(range = "*", order = 10, timeout = 1000)
     public void getAGlobal() throws Exception {
         String response = (String) globals.get(1);
         
-        assert response.equals("Juste one value");
+        assert response.equals("Just one value");
     } 
     
     
