@@ -128,6 +128,7 @@ public class TesterUtil {
      *
      * @return the number of testers expected that is decremented before
      */
+    @Deprecated
     public int getPeerName() {
         if (peerName == Integer.MIN_VALUE) {
             peerName = readProperty();

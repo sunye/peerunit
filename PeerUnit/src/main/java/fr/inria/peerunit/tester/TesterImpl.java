@@ -26,7 +26,6 @@ import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.base.SingleResult;
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.TesterRegistration;
-import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.remote.Tester;
@@ -150,25 +149,23 @@ public class TesterImpl extends AbstractTester implements Serializable {
     private void testCaseExecution() {
         LOG.entering("TesterImpl", "testCaseExecution()");
 
-        Thread timeoutThread;
-
         while (!stop && remainingMethods.size() > 0) {
             MethodDescription md = null;
             try {
                 md = remoteTester.takeMethodDescription();
-                if (md != null) {
-                    invocationThread = new Thread(new Invoke(md));
-                    if (md.getTimeout() > 0) {
-                        timeoutThread = new Thread(new Timeout(invocationThread, md.getTimeout()));
-                        timeoutThread.start();
+
+                invocationThread = new Thread(new Invoke(md));
+                invocationThread.start();
+                if (md.getTimeout() > 0) {
+                    invocationThread.join(md.getTimeout());
+                    if (invocationThread.isAlive()) {
+                        invocationThread.interrupt();
                     }
-                    invocationThread.start();
-                    remainingMethods.remove(md);
                 }
+                remainingMethods.remove(md);
             } catch (InterruptedException e) {
                 LOG.log(Level.SEVERE, "TesterImpl:run() - InterruptedException", e);
             }
-
         }
         LOG.exiting("TesterImpl", "testCaseExecution()");
     }

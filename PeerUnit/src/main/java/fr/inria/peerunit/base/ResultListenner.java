@@ -25,5 +25,5 @@ import fr.inria.peerunit.coordinator.Verdicts;
  */
 public interface ResultListenner {
 
-    public void newResult(int TesterId, MethodDescription md, Verdicts verdict);
+    public void newResult(ResultSet result);
 }

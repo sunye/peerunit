@@ -16,7 +16,7 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.coordinator;
 
-import java.io.Serializable;
+import fr.inria.peerunit.base.ResultListenner;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,8 +28,6 @@ import java.util.logging.Logger;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
-import fr.inria.peerunit.remote.Bootstrapper;
-import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 
@@ -69,6 +67,10 @@ public class CoordinatorImpl implements Runnable {
      * The coordinator interface, RMI implementation.
      */
     private RemoteCoordinatorImpl remoteCoordinator;
+    /**
+     * List of result listenners.
+     */
+    private List<ResultListenner> listenners = new ArrayList<ResultListenner>();
 
     /**
      * @param testerNbr Number of expected testers. The Coordinator will wait for
@@ -146,16 +148,12 @@ public class CoordinatorImpl implements Runnable {
      * @throws InterruptedException
      */
     public void testcaseExecution() throws InterruptedException {
-        //assert (status == IDLE) : "Trying to execute test case while not idle";
-
         LOG.entering("CoordinatorImpl", "testCaseExecution()");
         LOG.finer(String.format("RegistredMethods: %d", schedule.size()));
 
         for (MethodDescription each : schedule.methods()) {
             execute(each);
         }
-
-        //assert (status = LEAVING) == LEAVING;
     }
 
     /**
@@ -226,16 +224,16 @@ public class CoordinatorImpl implements Runnable {
      *
      */
     private void waitForExecutionFinished() throws InterruptedException {
-        //assert status == RUNNING : "Trying to finish method while not running";
-
         LOG.fine("Waiting for the end of the execution.");
         while (runningTesters.intValue() > 0) {
             ResultSet rs = remoteCoordinator.results().take();
             ResultSet result = verdict.getResultFor(rs.getMethodDescription());
             result.add(rs);
+            for(ResultListenner each : listenners) {
+                each.newResult(rs);
+            }
             runningTesters.decrementAndGet();
         }
-        //assert (status = IDLE) == IDLE;
     }
 
     /**
@@ -246,8 +244,6 @@ public class CoordinatorImpl implements Runnable {
      * TODO Timeout needed.
      */
     public void waitAllTestersToQuit() throws InterruptedException {
-        //assert status == LEAVING : "Trying to quit before time";
-
         LOG.fine("Waiting all testers to quit.");
         while (registeredTesters.size() > 0) {
             Tester t = remoteCoordinator.leaving().take();
@@ -267,10 +263,6 @@ public class CoordinatorImpl implements Runnable {
         runningTesters.set(0);
         registeredTesters.clear();
         executor.shutdown();
-
-//        System.out.println("Coordinator remaining registrations: " + remoteCoordinator.registrations().size());
-//        System.out.println("Coordinator remaining leaving testers: " + remoteCoordinator.leaving().size());
-//        System.out.println("Coordinator remaining results: " + remoteCoordinator.results().size());
     }
 
     @Override
@@ -286,5 +278,9 @@ public class CoordinatorImpl implements Runnable {
      */
     public RemoteCoordinatorImpl getRemoteCoordinator() {
         return remoteCoordinator;
+    }
+
+    public void registerResultListenner(ResultListenner listenner) {
+        this.listenners.add(listenner);
     }
 }
