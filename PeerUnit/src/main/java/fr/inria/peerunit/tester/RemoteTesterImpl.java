@@ -14,7 +14,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package fr.inria.peerunit.tester;
 
 import fr.inria.peerunit.remote.Coordinator;
@@ -29,18 +28,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 /**
  *
  * @author sunye
  */
 public class RemoteTesterImpl implements Tester, Serializable {
+    private static Logger LOG = Logger.getLogger(RemoteTesterImpl.class.getName());
 
     private static final long serialVersionUID = 1L;
     /**
      * The tester id
      */
-    protected int id;
+    private int id = -1;
     /**
      * The (remote) Coordinator for this tester
      */
@@ -50,7 +51,7 @@ public class RemoteTesterImpl implements Tester, Serializable {
      */
     private transient MethodDescription action;
     private transient AtomicBoolean start = new AtomicBoolean(false);
-    private transient AtomicBoolean stop = new AtomicBoolean(false);
+    //private transient AtomicBoolean stop = new AtomicBoolean(false);
     /**
      * Locks for blocking multi-threaded methods.
      */
@@ -76,6 +77,8 @@ public class RemoteTesterImpl implements Tester, Serializable {
      * 
      */
     public void execute(MethodDescription m) throws RemoteException {
+        LOG.entering("RemoteTesterImpl", "execute()");
+
         action = m;
         lock.lock();
         try {
@@ -83,6 +86,7 @@ public class RemoteTesterImpl implements Tester, Serializable {
             newAction.signal();
         } finally {
             lock.unlock();
+            LOG.exiting("RemoteTesterImpl", "execute()");
         }
     }
 
@@ -90,16 +94,17 @@ public class RemoteTesterImpl implements Tester, Serializable {
      * 
      */
     public int getId() throws RemoteException {
+        assert id != -1 : "Id not set";
+
         return id;
     }
 
     /**
      * 
      */
-    public void stop() throws RemoteException {
-        this.stop.set(true);
-    }
-
+//    public void stop() throws RemoteException {
+//        this.stop.set(true);
+//    }
     /**
      * @see 
      */
@@ -120,7 +125,7 @@ public class RemoteTesterImpl implements Tester, Serializable {
      * @return The description of the TestStep to be executed
      * @throws InterruptedException
      */
-    public MethodDescription take() throws InterruptedException {
+    public MethodDescription takeMethodDescription() throws InterruptedException {
         MethodDescription md;
         lock.lock();
         try {
@@ -178,8 +183,16 @@ public class RemoteTesterImpl implements Tester, Serializable {
      * 
      * @return
      */
-    public boolean shouldStop() {
-        return stop.get();
+//    public boolean shouldStop() {
+//        return stop.get();
+//    }
+    public void setId(int i) {
+        id = i;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("RemoteTesterImpl %d", id);
     }
 
     public void kill() throws RemoteException {

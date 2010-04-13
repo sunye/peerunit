@@ -19,6 +19,6 @@ public class AfterClassMethod extends TestMethod {
         AfterClass ac = m.getAnnotation(AfterClass.class);
         timeout = ac.timeout();
         method = m;
-        range = this.newRange(ac.place(), ac.from(), ac.to(), ac.range());
+        range = this.newRange(ac.range());
     }
 }

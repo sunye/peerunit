@@ -19,6 +19,6 @@ public class BeforeClassMethod extends TestMethod {
         BeforeClass ac = m.getAnnotation(BeforeClass.class);
         timeout = ac.timeout();
         method = m;
-        range = this.newRange(ac.place(), ac.from(), ac.to(), ac.range());
+        range = this.newRange(ac.range());
     }
 }

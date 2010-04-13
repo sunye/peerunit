@@ -38,9 +38,9 @@ public class TestStepMethod extends TestMethod {
     public TestStepMethod(final Method m) {
         TestStep ts = m.getAnnotation(fr.inria.peerunit.parser.TestStep.class);
         timeout = ts.timeout();
-        order = ts.order() == -1 ? ts.step() : ts.order();
+        order = ts.order();
         method = m;
-        range = this.newRange(ts.place(), ts.from(), ts.to(), ts.range());
+        range = this.newRange(ts.range());
 
     }
 

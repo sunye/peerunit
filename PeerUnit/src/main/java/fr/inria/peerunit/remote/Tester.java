@@ -29,9 +29,8 @@ import fr.inria.peerunit.common.MethodDescription;
  * @version 1.0
  * @since 1.0 
  * @see fr.inria.peerunit.tester.TesterImpl
- * @see fr.inria.peerunit.tree.TreeTesterImpl 
  */
-public interface Tester extends Remote, StorageTester {
+public interface Tester extends Remote {
 
     /**
      * Sets the coordinator for this tester.
@@ -43,8 +42,10 @@ public interface Tester extends Remote, StorageTester {
     /**
      * Execute a <i>test case action</i> thanks to it description.
      *
-     * @param m is a instance of <tt>MathodDescription</tt> class containing all informations allowing
-     *        the correct execution of the <i>test case action</i> that it describes.
+     * @param m is a instance of <tt>MathodDescription</tt> class containing 
+     * all informations allowing the correct execution of the <i>test case
+     * action</i> that it describes.
+     * 
      * @throws RemoteException because the method is distant
      */
     public void execute(MethodDescription m) throws RemoteException;
@@ -61,6 +62,11 @@ public interface Tester extends Remote, StorageTester {
      */
     public void kill() throws RemoteException;
 
+    /**
+     * Starts the tester.
+     *
+     * @throws RemoteException
+     */
     public void start() throws RemoteException;
 
 }

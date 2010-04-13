@@ -16,12 +16,12 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package test.remote;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
 
 import java.rmi.RemoteException;
 import java.util.HashSet;
@@ -39,10 +39,11 @@ import fr.inria.peerunit.coordinator.CoordinatorImpl;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.tester.TestCaseWrapper;
 import fr.inria.peerunit.tester.TesterImpl;
+import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
+import java.util.logging.FileHandler;
 
 public class TesterImplTest {
 
@@ -54,11 +55,22 @@ public class TesterImplTest {
     private static TesterImpl tester0, tester1, tester2;
 
     /**
-     * FIXME Tests not working correctly in all platforms.
+     * 
      * @throws InterruptedException
      */
     @BeforeClass
-    public static void inititalize() throws InterruptedException {
+    public static void inititalize() throws InterruptedException, IOException {
+        Level l = Level.ALL;
+        FileHandler handler = new FileHandler("TesterImplTest.log");
+        handler.setFormatter(new LogFormat());
+        handler.setLevel(l);
+
+        Logger myLogger = Logger.getLogger("fr.inria");
+        myLogger.setUseParentHandlers(false);
+        myLogger.addHandler(handler);
+        myLogger.setLevel(l);
+
+
         Properties properties = new Properties();
         properties.setProperty("tester.peers", "3");
         properties.setProperty("tester.log.dateformat", "yyyy-MM-dd");
@@ -70,25 +82,36 @@ public class TesterImplTest {
         try {
             TesterUtil defaults = new TesterUtil(properties);
             coord = new CoordinatorImpl(3, 1);
+
             globals = new GlobalVariablesImpl();
-            new Thread(coord, "Coordinator").start();
-            tester0 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
-            tester0.setCoordinator(coord.getRemoteCoordinator());
+            tester0 = new TesterImpl(coord.getRemoteCoordinator(), globals);
+            tester0.getRemoteTester().setCoordinator(coord.getRemoteCoordinator());
             //executor = new TestCaseWrapper(tester0);
-            tester1 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
-            tester1.setCoordinator(coord.getRemoteCoordinator());
-            tester2 = new TesterImpl(coord.getRemoteBootstrapper(), globals);
-            tester2.setCoordinator(coord.getRemoteCoordinator());
+            tester1 = new TesterImpl(coord.getRemoteCoordinator(), globals);
+            tester1.getRemoteTester().setCoordinator(coord.getRemoteCoordinator());
+            tester2 = new TesterImpl(coord.getRemoteCoordinator(), globals);
+            tester2.getRemoteTester().setCoordinator(coord.getRemoteCoordinator());
             tester0.registerTestCase(Sample.class);
             tester1.registerTestCase(Sample.class);
             tester2.registerTestCase(Sample.class);
-            tester0.start();
-            tester1.start();
-            tester2.start();
-            Thread.yield();
-            coord.waitForTesterRegistration();
 
-            //new Thread(tester0, "Tester 0").start();
+
+            // Start Threads
+            System.out.println("Starting tester threads");
+            tester0.startThread();
+            tester1.startThread();
+            tester2.startThread();
+
+            System.out.println("Sending start message to testers");
+            tester0.getRemoteTester().start();
+            tester1.getRemoteTester().start();
+            tester2.getRemoteTester().start();
+            //Thread.yield();
+            System.out.println("Coordinator is waiting for testers");
+            //Thread.yield();
+            coord.waitForTesterRegistration();
+            System.out.println("Registration is finished");
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -111,9 +134,26 @@ public class TesterImplTest {
         assertEquals(3, coord.getSchedule().size());
 
         assertTrue(coord.getSchedule().containsMethod(md));
-        assertTrue(coord.getSchedule().testersFor(md).contains(tester0));
-        assertTrue(coord.getSchedule().testersFor(md).contains(tester1));
-        assertTrue(coord.getSchedule().testersFor(md).contains(tester2));
+        assertTrue(coord.getSchedule().testersFor(md).contains(tester0.getRemoteTester()));
+        assertTrue(coord.getSchedule().testersFor(md).contains(tester1.getRemoteTester()));
+        assertTrue(coord.getSchedule().testersFor(md).contains(tester2.getRemoteTester()));
+
+    }
+
+    @Test
+    public void testGetId() {
+        assertEquals(0, tester0.getId());
+        assertEquals(1, tester1.getId());
+        assertEquals(2, tester2.getId());
+    }
+
+    @Test
+    public void mysets() {
+        Set<TesterImpl> myset = new HashSet<TesterImpl>();
+
+        assertTrue(myset.add(tester0));
+        assertTrue(!myset.add(tester0));
+        assertTrue(!myset.add(tester0));
 
     }
 
@@ -123,18 +163,17 @@ public class TesterImplTest {
     //@Test
     public void testExecute() {
         try {
-            Bootstrapper boot = mock(Bootstrapper.class);
-            TesterImpl tester = new TesterImpl(boot, globals);
-            tester.setCoordinator(remoteCoordinator);
+            
+            TesterImpl tester = new TesterImpl(remoteCoordinator, globals);
+            tester.getRemoteTester().setCoordinator(remoteCoordinator);
             tester.registerTestCase(Sample.class);
 
             System.setProperty("executed", "nok");
             List<MethodDescription> methods = wrapper.register(Sample.class);
-            Thread tt = new Thread(tester, "Test Execute");
-            tt.start();
+            tester.startThread();
 
             for (MethodDescription md : methods) {
-                tester.execute(md);
+                tester.getRemoteTester().execute(md);
             }
             Thread.sleep(1200);
             Thread.yield();
@@ -148,19 +187,12 @@ public class TesterImplTest {
 
     }
 
-    @Test
-    public void testGetId() {
-        assertEquals(0, tester0.getId());
-        assertEquals(1, tester1.getId());
-        assertEquals(2, tester2.getId());
-    }
-
     //@Test
     public void testKill() {
         fail("Not yet implemented");
     }
 
-    @Test
+    //@Test
     public void testPut() {
         try {
             tester0.put(0, "zero");
@@ -193,15 +225,5 @@ public class TesterImplTest {
     public void testContainsKey() {
 
         fail("Not yet implemented");
-    }
-
-    @Test
-    public void mysets() {
-        Set<Tester> myset = new HashSet<Tester>();
-
-        assertTrue(myset.add(tester0));
-        assertTrue(!myset.add(tester0));
-        assertTrue(!myset.add(tester0));
-
     }
 }

@@ -51,11 +51,8 @@ public class TestCaseWrapper {
         assert t != null;
 
         this.tester = t;
-//        try {
         this.testerId = tester.getId();
-//        } catch (RemoteException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
-//        }
+
     }
 
     /**
@@ -139,9 +136,9 @@ public class TestCaseWrapper {
         //TestCase instantiation
         try {
             testcase = klass.newInstance();
-            if (TestCase.class.isAssignableFrom(klass)) {
-                ((TestCase) testcase).setTester(tester);
-            }
+//            if (TestCase.class.isAssignableFrom(klass)) {
+//                ((TestCase) testcase).setTester(tester);
+//            }
 
             if (filter.setId() != null) {
                 filter.setId().invoke(testcase, testerId);
@@ -192,13 +189,13 @@ class ClassFilter {
                 beforeMethods.add(new BeforeClassMethod(each));
             } else if (each.isAnnotationPresent(AfterClass.class)) {
                 afterMethods.add(new AfterClassMethod(each));
-            } else if (each.isAnnotationPresent(SetId.class) &&
-                    each.getParameterTypes().length == 1 &&
-                    each.getParameterTypes()[0] == int.class) {
+            } else if (each.isAnnotationPresent(SetId.class)
+                    && each.getParameterTypes().length == 1
+                    && each.getParameterTypes()[0] == int.class) {
                 setId = each;
-            } else if (each.isAnnotationPresent(SetGlobals.class) &&
-                    each.getParameterTypes().length == 1 &&
-                    each.getParameterTypes()[0] == GlobalVariables.class) {
+            } else if (each.isAnnotationPresent(SetGlobals.class)
+                    && each.getParameterTypes().length == 1
+                    && each.getParameterTypes()[0] == GlobalVariables.class) {
                 setGlobals = each;
             }
         }

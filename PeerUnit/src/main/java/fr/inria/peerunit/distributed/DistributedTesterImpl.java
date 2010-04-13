@@ -17,27 +17,24 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.distributed;
 
 import java.io.Serializable;
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.base.ResultSet;
-import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.CoordinatorImpl;
 import fr.inria.peerunit.coordinator.RemoteCoordinatorImpl;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.remote.Tester;
-import fr.inria.peerunit.tester.AbstractTester;
-import fr.inria.peerunit.tester.RemoteTesterImpl;
 import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
+import fr.inria.peerunit.remote.DistributedTester;
+import fr.inria.peerunit.util.LogFormat;
+import java.io.IOException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.FileHandler;
 
 /**
  * The DistributedTester is both, a Tester and a Coordinator.
@@ -49,306 +46,260 @@ import fr.inria.peerunit.util.TesterUtil;
  * 
  * @author sunye
  */
-public class DistributedTesterImpl extends AbstractTester implements Tester, Coordinator, Serializable {
+public class DistributedTesterImpl { //implements Serializable {
+    // - Register with bootstrapper and get an Id
+    // 1. Wait for coordinator;
+    // 2. Register with coordinator;
+    // 3. Wait for tester registration;
+    // - IF root, start test case execution
+    // - wait all testers to quit
+    // - leave and cleanup
+    // SD
+    // this ----- id = register(this) -----> bootstrapper
+    // bootstrapper -----registerTesters(testers) ----------> this
+    // this -------- setCoordinator(this) ---------> testers
+    // bootstrapper -----start() -----> this[root]
 
     /**
      *
      */
-    private static final long serialVersionUID = 2806863880157215029L;
+    private static final long serialVersionUID = 11L;
     private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
-    /**
-     * The coordinator of this tester. Since DistributedTester is used in
-     * a distributed architecture, the coordinator is also a DistributedTester.
-     *
-     */
-    private transient Coordinator parent;
     /**
      * Set of testers that are coordinated by this tester.
      */
-    private transient List<Tester> testers = new LinkedList<Tester>();
+    private transient List<DistributedTester> children;
     /**
      * The bootstrapper, that will help me to find my parent and my children.
      */
     private transient Bootstrapper bootstrapper;
-    private transient TesterImpl tester;
-    private transient CoordinatorImpl coordinator;
+    /**
+     * The test case that whill be executed
+     */
     private transient Class<?> testCaseClass;
     /**
-     * The tester interface, RMI implementation.
+     * Remote interface for distributed testers.
+     * RMI implementation.
      */
-    private final RemoteTesterImpl remoteTester = new RemoteTesterImpl();
+    private RemoteDistributedTesterImpl remoteDistributedTester;
     /**
-     * The coordinator interface, RMI implementation.
+     * Thread for the distributed testers.
      */
-    private RemoteCoordinatorImpl remoteCoordinator;
+    private Thread thread = new Thread(new DistributedTesterThread());
+    /**
+     * Default profperties.
+     */
+    private TesterUtil defaults;
+    /**
+     * GlobalVariables.
+     */
+    private GlobalVariables globals;
 
-
-    public DistributedTesterImpl(Class<?> klass, Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
-        super(gv);
+    public DistributedTesterImpl(Class<?> klass, Bootstrapper boot,
+            GlobalVariables gv, TesterUtil tu) throws RemoteException {
         defaults = tu;
         bootstrapper = boot;
         testCaseClass = klass;
-
+        remoteDistributedTester = new RemoteDistributedTesterImpl(tu);
+        globals = gv;
     }
 
+    public int getId() {
+        return remoteDistributedTester.id();
+    }
 
     /**
+     *
+     * @return The remote distributed tester interface.
+     */
+    public DistributedTester getRemoteDistributedTester() {
+        return remoteDistributedTester;
+    }
+
+    public void join() throws InterruptedException {
+        this.thread.join();
+    }
+
+    private DistributedTester getParent() {
+        return remoteDistributedTester.getParent();
+    }
+
+   /**
      * Registers this distributed tester with the bootstrapper and
      * receives an id.
      */
-    public void register() throws RemoteException {
+    public void startThread() throws RemoteException {
         // registration cannot be done in the constructor because
         // this object must be exported first.
         // The export is done externally.
 
-        int i = bootstrapper.register(this);
-        this.setId(i);
+        int i = bootstrapper.register(remoteDistributedTester);
+        remoteDistributedTester.setId(i);
 
         // Log only can be initialized when the tester
         // receives an ID (the file name depends on it)
         this.initializeLogger();
-    }
-
-
-    /**
-     *
-     * @return The RemoteTester implementation
-     */
-    public Tester getRemoteTester() {
-        return remoteTester;
-    }
-
-    /**
-     *
-     * @return The RemoteCoordinator implementation
-     */
-    public Coordinator getRemoteCoordinator() {
-        return remoteCoordinator;
-    }
-
-
-
-
-    /**
-     * Sets the testers that are controlled by this tester and
-     * informs the tester that this tester is their controller
-     *
-     * @see fr.inria.peerunit.remote.Coordinator#registerTesters(java.util.List)
-     */
-    public void registerTesters(List<Tester> l) throws RemoteException {
-        assert l != null : "Null argument";
-        assert !l.isEmpty() : "Empty argument";
-
-        LOG.entering("DistributedTesterImpl", "registerTesters(List<Tester>)", l.size());
-        testers.addAll(l);
-
-    }
-
-    /**
-     * Starts the Coordinator, which will control my children.
-     */
-    private void createLocalCoordinator() {
-        LOG.entering("DistributedTester", "startCoordination()");
-
-        this.coordinator = new CoordinatorImpl(testers.size(), defaults.getRelaxIndex());
-    }
-
-    /** 
-     * @see fr.inria.peerunit.remote.Coordinator#registerMethods(fr.inria.peerunit.remote.Tester, java.util.List)
-     */
-    public void registerMethods(Tester tester, Collection<MethodDescription> list) throws RemoteException {
-        assert testers.contains(tester);
-
-        coordinator.getRemoteCoordinator().registerMethods(tester, list);
-
-    }
-
-    /**
-     * @throws InterruptedException
-     * @see fr.inria.peerunit.remote.Tester#execute(fr.inria.peerunit.common.MethodDescription)
-     */
-    public void execute(MethodDescription md) throws RemoteException {
-        LOG.entering("DistributedTester", "Execute", md);
-        try {
-            coordinator.execute(md);
-            ResultSet result = coordinator.getResultFor(md);
-            parent.methodExecutionFinished(result);
-        } catch (InterruptedException e) {
-            LOG.log(Level.SEVERE, e.getMessage(), e);
-        }
-    }
-
-    /**
-     * @see fr.inria.peerunit.remote.Coordinator#methodExecutionFinished(Tester, fr.inria.peerunit.MessageType)
-     */
-    public void methodExecutionFinished(ResultSet result) throws RemoteException {
-        assert coordinator != null : "Null Coordinator";
-
-        coordinator.getRemoteCoordinator().methodExecutionFinished(result);
-    }
-
-    /** 
-     * @see fr.inria.peerunit.remote.Coordinator#quit(fr.inria.peerunit.remote.Tester, fr.inria.peerunit.test.oracle.Verdicts)
-     */
-    public void quit(Tester t) throws RemoteException {
-        assert coordinator != null : "Null Coordinator";
-
-        LOG.entering(null, null);
-        LOG.fine(String.format("Tester %s is leaving.", t));
-        coordinator.getRemoteCoordinator().quit(t);
-    }
-
-    /**
-     * @see fr.inria.peerunit.remote.Tester#kill()
-     */
-    public void kill() throws RemoteException {
-        for (Tester each : testers) {
-            each.kill();
-        }
-    }
-
-    /**
-     * @see fr.inria.peerunit.remote.Tester#setCoordinator(fr.inria.peerunit.remote.Coordinator)
-     */
-    public void setCoordinator(Coordinator coord) {
-        LOG.entering("DistributedTesterImpl", "setCoordinator(Coordinator)");
-
-        this.parent = coord;
+        LOG.fine("Log initialized for DistributedTester " + getId());
+        thread.start();
+        LOG.exiting("DistributedTesterImpl", "startThread()");
     }
 
     /**
      * Starts the distributed tester thread.
      * @throws InterruptedException
      */
-    public void start() throws RemoteException {
-        if (parent == null) {
-            // This is the root
-        } else if (remoteCoordinator.getExpectedTesters() == 0 ) {
-            // This is a leaf node
-        } else {
-            // This is a intermediary node.
+    public void start() throws RemoteException, InterruptedException {
+        LOG.entering("DistributedTester", "start()");
+
+        // 1 - Build the tree.
+        children = remoteDistributedTester.getChildren();
+        for (DistributedTester each : children) {
+            each.setParent(remoteDistributedTester);
         }
 
+        // 2 - Start children
+        for (DistributedTester each : children) {
+            each.start();
+        }
 
-        LOG.entering("DistributedTester", "start()");
-        Thread root = new Thread(new DistributedTesterThread());
-        root.start();
+        // 3 - Start threads
+        if (getParent() == null) {
+            // This is root
+            runRootTester();
+        } else if (children.size() > 0) {
+            // This is an intermediary node.
+            runMiddleTester();
+        } else {
+            // This is a LeafTester.
+            runLeafTester();
+        }
         LOG.exiting("DistributedTester", "start()");
     }
 
-    private void createLocalTester() {
-        this.tester = new TesterImpl(this.globalTable(), this.getId(), defaults);
-        tester.registerTestCase(testCaseClass);
-        this.testers.add(tester);
-    }
-
-    private void registerWithParent() throws RemoteException {
-        assert parent != null : "Trying to register with a null parent";
-        Collection<MethodDescription> methods = coordinator.getSchedule().methods();
-        parent.registerMethods(this, methods);
-    }
-
     private void cleanUp() {
-        LOG.fine(String.format("DistributedTester %d cleaning up.", id));
-        try {
-            testers.clear();
-            tester.cleanUp();
-            tester = null;
-            coordinator.cleanUp();
-            coordinator = null;
-            bootstrapper = null;
-            globals = null;
-            parent = null;
-            UnicastRemoteObject.unexportObject(this, true);
-        } catch (NoSuchObjectException ex) {
-            LOG.log(Level.SEVERE, ex.getMessage(), ex);
-        }
+        LOG.entering("DistributedTesterImpl", "cleanup()");
+
+        children.clear();
+        bootstrapper = null;
+        globals = null;
+        LOG.exiting("DistributedTesterImpl", "cleanup()");
     }
 
-    private boolean isRoot() {
-        return false;
-    }
+    /**
+     * Execution for leaf testers.
+     * @throws RemoteException
+     * @throws InterruptedException
+     */
+    private void runLeafTester() throws RemoteException, InterruptedException {
+        LOG.entering("DistributedTesterImpl", "runLeafTester()");
 
-    class DistributedTesterThread implements Runnable {
-
-        public void run() {
-            // - Register with bootstrapper and get an Id
-            // 1. Wait for coordinator;
-            // 2. Register with coordinator;
-            // 3. Wait for tester registration;
-            // - IF root, start test case execution
-            // - wait all testers to quit
-            // - leave and cleanup
-
-            LOG.fine(String.format("Starting Tester %d", id));
-
-            createLocalTester();
-            createLocalCoordinator();
-
-            try {
-                for (Tester each : testers) {
-                    each.setCoordinator(DistributedTesterImpl.this);
-                }
-
-                for (Tester each : testers) {
-                    each.start();
-                }
-
-                Thread tt = new Thread(tester, "LocalTester for DT: " + id);
-                tt.start();
-
-                coordinator.waitForTesterRegistration();
-
-                LOG.fine("Registration finished");
-
-                if (parent == null) {
-                    LOG.fine(String.format("I am root (DistributedTester %d)", id));
-                    LOG.fine("ROOT: will start the execution.");
-                    coordinator.testcaseExecution();
-                    LOG.fine("ROOT: execution finished, waiting for testers to quit.");
-                    coordinator.waitAllTestersToQuit();
-                    LOG.fine("ROOT: all testers quit, calculating verdict.");
-                    coordinator.printVerdict();
-                    bootstrapper.quit();
-
-                } else {
-                    LOG.fine(String.format("DistributedTester %d will register with parent", id));
-                    registerWithParent();
-                    coordinator.waitAllTestersToQuit();
-                    LOG.fine(String.format("DistributedTester %d will now quit", id));
-                    parent.quit(DistributedTesterImpl.this);
-                }
-
-                LOG.fine("Waiting for tester thread");
-                tt.join();
-                LOG.fine("Tester thread finished");
-                cleanUp();
-
-                System.exit(0);
-
-            } catch (RemoteException ex) {
-                LOG.log(Level.SEVERE, ex.getMessage(), ex);
-            } catch (InterruptedException ex) {
-                LOG.log(Level.SEVERE, ex.getMessage(), ex);
-            } finally {
-                System.exit(1);
-            }
-
-
-        }
-    }
-
-    class RootTesterThread implements Runnable {
+        // Local Tester
+        TesterImpl localTester = new TesterImpl(globals, this.getId(), defaults);
+        localTester.registerTestCase(testCaseClass);
+        Tester remoteTester = localTester.getRemoteTester();
+        UnicastRemoteObject.exportObject(remoteTester);
+        //localTester.startThread();
         
-        public void run() {
+        LOG.finest("Waiting for coordinator");
+        Coordinator c = remoteDistributedTester.takeCoordinator();
+        LOG.finest("DT got a coordinator and will set local tester");
+        remoteTester.setCoordinator(c);
+        remoteTester.start();
+        localTester.execute();
 
+
+        LOG.exiting("DistributedTesterImpl", "runLeafTester()");
+    }
+
+    /**
+     * Execution for root tester (coordinator)
+     * @throws InterruptedException
+     * @throws RemoteException
+     */
+    private void runRootTester() throws InterruptedException, RemoteException {
+        LOG.entering("DistributedTesterImpl", "runRootTester()");
+
+        // Coordinator
+        CoordinatorImpl coordinator = new CoordinatorImpl(children.size() + 1,
+                defaults.getRelaxIndex());
+        RemoteCoordinatorImpl remoteCoordinator = coordinator.getRemoteCoordinator();
+        UnicastRemoteObject.exportObject(remoteCoordinator);
+        for (DistributedTester each : children) {
+            each.setCoordinator(remoteCoordinator);
+        }
+
+        // Local Tester
+        TesterImpl localTester = new TesterImpl(globals, this.getId(), defaults);
+        localTester.registerTestCase(testCaseClass);
+        Tester remoteTester = localTester.getRemoteTester();
+        remoteTester.setCoordinator(remoteCoordinator);
+        localTester.startThread();
+        remoteTester.start();
+
+        coordinator.run();
+        bootstrapper.quit();
+        LOG.exiting("DistributedTesterImpl", "runRootTester()");
+    }
+
+    private void runMiddleTester() throws InterruptedException, RemoteException {
+        LOG.entering("DistributedTesterImpl", "runRootTester()");
+
+        // Middle Tester
+        ManInTester middle = new ManInTester(children.size() + 1);
+        Coordinator coordinator = middle.getCoordinator();
+        Tester tester = middle.getTester();
+        UnicastRemoteObject.exportObject(coordinator);
+        UnicastRemoteObject.exportObject(tester);
+        for (DistributedTester each : children) {
+            each.setCoordinator(coordinator);
+        }
+
+        // Local Tester
+        TesterImpl localTester = new TesterImpl(globals, this.getId(), defaults);
+        localTester.registerTestCase(testCaseClass);
+        Tester remoteTester = localTester.getRemoteTester();
+        remoteTester.setCoordinator(coordinator);
+        localTester.startThread();
+        remoteTester.start();
+
+        // Set parent tester to MiddleTester
+        Coordinator c = remoteDistributedTester.takeCoordinator();
+        tester.setCoordinator(c);
+
+        middle.execute();
+        LOG.exiting("DistributedTesterImpl", "runRootTester()");
+    }
+
+    protected void initializeLogger() {
+        FileHandler handler;
+        try {
+            Level level = defaults.getLogLevel();
+            handler = new FileHandler(String.format("Tester%d.log", getId()));
+            handler.setFormatter(new LogFormat());
+            handler.setLevel(level);
+
+            Logger myLogger = Logger.getLogger("fr.inria");
+            myLogger.setUseParentHandlers(false);
+            myLogger.addHandler(handler);
+            myLogger.setLevel(level);
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 
-    class LeafTesterThread implements Runnable {
+    private class DistributedTesterThread implements Runnable {
 
         public void run() {
-
+            try {
+                remoteDistributedTester.waitForStart();
+                start();
+            } catch (RemoteException ex) {
+                Logger.getLogger(DistributedTesterImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(DistributedTesterImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }

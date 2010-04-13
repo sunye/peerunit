@@ -16,6 +16,7 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package test.btree;
 
+import fr.inria.peerunit.base.Data;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -29,10 +30,10 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.bootstrapper.BootstrapperImpl;
 import fr.inria.peerunit.distributed.DistributedTesterImpl;
 import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.util.TesterUtil;
 
 public class BootstrapperImplTest {
@@ -70,7 +71,7 @@ public class BootstrapperImplTest {
         int id = 0;
         try {
             for (int i = 0; i < 5; i++) {
-                DistributedTesterImpl tester = mock(DistributedTesterImpl.class);
+                DistributedTester tester = mock(DistributedTester.class);
                 id = bootstrapper.register(tester);
                 assertTrue(id == i);
             }
@@ -87,8 +88,8 @@ public class BootstrapperImplTest {
         Bootstrapper stub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
         registry.bind("BootTest", stub);
         Bootstrapper remoteBoot = (Bootstrapper) registry.lookup("BootTest");
-        DistributedTesterImpl tester = new DistributedTesterImpl(TestCaseImpl.class, remoteBoot, null, defaults);
-        tester.register();
+        DistributedTesterImpl tester = new DistributedTesterImpl(Data.class, remoteBoot, null, defaults);
+        tester.startThread();
         assertTrue(tester.getId() == 0);
     }
 

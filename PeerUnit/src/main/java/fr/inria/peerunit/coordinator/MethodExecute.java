@@ -56,6 +56,7 @@ public class MethodExecute implements Runnable {
      * Asks the Tester to execute the Method.
      */
     public void run() {
+        LOG.entering("MethodExecute", "run()");
         try {
             tester.execute(md);
         } catch (RemoteException e) {
@@ -64,5 +65,6 @@ public class MethodExecute implements Runnable {
                 LOG.severe(each.toString());
             }
         }
+        LOG.exiting("MethodExecute", "run()");
     }
 }

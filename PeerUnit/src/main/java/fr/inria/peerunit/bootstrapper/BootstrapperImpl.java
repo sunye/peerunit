@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -69,7 +70,13 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
         }
     }
 
-    public synchronized int register(Tester t) throws RemoteException {
+    /**
+     * 
+     * @param t
+     * @return
+     * @throws RemoteException
+     */
+    public synchronized int register(DistributedTester t) throws RemoteException {
         log.entering("BootstrapperImpl", "register()");
         return context.register(t);
     }

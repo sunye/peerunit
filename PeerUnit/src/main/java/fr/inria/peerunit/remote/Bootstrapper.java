@@ -34,7 +34,7 @@ public interface Bootstrapper extends Remote {
      * if all nodes have already been registered
      * @throws java.rmi.RemoteException When a communication error occurs.
      */
-    int register(Tester t) throws RemoteException;
+    int register(DistributedTester t) throws RemoteException;
 
     /**
      * Makes the boostrapper leave the system.
