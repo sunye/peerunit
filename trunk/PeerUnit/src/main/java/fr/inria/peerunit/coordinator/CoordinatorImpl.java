@@ -71,18 +71,37 @@ public class CoordinatorImpl implements Runnable {
     private RemoteCoordinatorImpl remoteCoordinator;
 
     /**
-     * @param i Number of expected testers. The Coordinator will wait for
+     * @param testerNbr Number of expected testers. The Coordinator will wait for
      * the connection of "i" testers before starting to dispatch actions
      * to Testers.
      */
+    public CoordinatorImpl(int testerNbr) {
+        this(testerNbr, 100);
+    }
+
+    /**
+     *
+     * @param testerNbr Number of expected testers.
+     * @param relaxIndex
+     */
     public CoordinatorImpl(int testerNbr, int relaxIndex) {
+        this(testerNbr, relaxIndex, new RemoteCoordinatorImpl(testerNbr));
+    }
+
+    /**
+     *
+     * @param testerNbr Number of expected testers.
+     * @param relaxIndex
+     * @param rci
+     */
+    private CoordinatorImpl(int testerNbr, int relaxIndex, RemoteCoordinatorImpl rci) {
         LOG.finest("Creating a CoordinatorImpl for "+testerNbr+" testers.");
         expectedTesters = new AtomicInteger(testerNbr);
         registeredTesters = Collections.synchronizedList(new ArrayList<Tester>(testerNbr));
         executor = Executors.newFixedThreadPool(testerNbr > 10 ? 10 : testerNbr);
-        verdict = new GlobalVerdict(relaxIndex);
         runningTesters = new AtomicInteger(0);
-        remoteCoordinator = new RemoteCoordinatorImpl(testerNbr);
+        verdict = new GlobalVerdict(relaxIndex);
+        remoteCoordinator = rci;
     }
 
     /**
@@ -194,7 +213,9 @@ public class CoordinatorImpl implements Runnable {
                 schedule.put(m, reg.tester());
             }
             registeredTesters.add(reg.tester());
+            LOG.finest("Total tester registrations: " + registeredTesters.size());
         }
+        LOG.exiting("CoordinatorImpl", "waitForTesterRegistration()");
     }
 
     /**
@@ -246,6 +267,10 @@ public class CoordinatorImpl implements Runnable {
         runningTesters.set(0);
         registeredTesters.clear();
         executor.shutdown();
+
+//        System.out.println("Coordinator remaining registrations: " + remoteCoordinator.registrations().size());
+//        System.out.println("Coordinator remaining leaving testers: " + remoteCoordinator.leaving().size());
+//        System.out.println("Coordinator remaining results: " + remoteCoordinator.results().size());
     }
 
     @Override
@@ -257,17 +282,9 @@ public class CoordinatorImpl implements Runnable {
 
     /**
      * 
-     * @return The RemoteCoordinator implemantation
+     * @return The RemoteCoordinator implementation
      */
-    public Coordinator getRemoteCoordinator() {
-        return remoteCoordinator;
-    }
-
-    /**
-     *
-     * @return The Boostrapper remote implementation.
-     */
-    public Bootstrapper getRemoteBootstrapper() {
+    public RemoteCoordinatorImpl getRemoteCoordinator() {
         return remoteCoordinator;
     }
 }

@@ -37,6 +37,7 @@ import org.mockito.InOrder;
 import fr.inria.peerunit.base.SingleResult;
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.CoordinatorImpl;
+import fr.inria.peerunit.coordinator.TesterRegistration;
 import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 
@@ -88,7 +89,7 @@ public class CoordinatorImplTest {
 
         coordination.start();
         try {
-            coord.getRemoteCoordinator().registerMethods(tester, methods);
+            coord.getRemoteCoordinator().registerMethods(new TesterRegistration(tester, methods));
             for (MethodDescription each : methods) {
                 assertTrue(coord.getSchedule().containsMethod(each));
             }
@@ -129,7 +130,7 @@ public class CoordinatorImplTest {
             Tester[] testers = new Tester[size];
             for (int i = 0; i < testers.length; i++) {
                 testers[i] = mock(Tester.class);
-                coord.getRemoteCoordinator().registerMethods(testers[i], methods);
+                coord.getRemoteCoordinator().registerMethods(new TesterRegistration(testers[i], methods));
             }
             for (MethodDescription each : methods) {
                 Thread.sleep(100 + size / 10);

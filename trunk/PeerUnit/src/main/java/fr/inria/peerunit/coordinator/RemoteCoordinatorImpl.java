@@ -18,13 +18,11 @@ package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
-import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.Tester;
+import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,59 +32,43 @@ import java.util.logging.Logger;
  *
  * @author sunye
  */
-public class RemoteCoordinatorImpl implements Bootstrapper, Coordinator {
+public class RemoteCoordinatorImpl implements Coordinator, Serializable {
 
     private static final Logger LOG = Logger.getLogger(RemoteCoordinatorImpl.class.getName());
-
     /**
      * Stores arriving registrations.
      */
     private final BlockingQueue<TesterRegistration> registrations;
-
     /**
      * Stores method execution results.
      */
     private final BlockingQueue<ResultSet> results;
-
     /**
      * Stores testers that are leaving the system.
      */
     private final BlockingQueue<Tester> leaving;
-
     /**
-     * Quantity of registered testers.
+     * Number of registered testers.
      */
-    private final AtomicInteger registerdTesters = new AtomicInteger(0);
-
+    private final AtomicInteger registeredTesters = new AtomicInteger(0);
     /**
-     * Number of expected testers for this coordinator.
-     * Only used for distributed testers.
-     * TODO: refactoring needed.
+     * Counter used to increment tester identifications.
      */
-    private int expectedTesters = 0;
+    private final AtomicInteger idCounter = new AtomicInteger(0);
+    /**
+     * Number of expected testers.
+     */
+    private final int expectedTesters;
 
     /**
      *
      * @param expectedTesters Expected number of testers.
      */
-    public RemoteCoordinatorImpl(int expectedTesters) {
+    public RemoteCoordinatorImpl(int i) {
+        expectedTesters = i;
         registrations = new ArrayBlockingQueue<TesterRegistration>(expectedTesters);
         results = new ArrayBlockingQueue<ResultSet>(expectedTesters);
         leaving = new ArrayBlockingQueue<Tester>(expectedTesters);
-    }
-
-    /**
-     * Bulk tester registration.
-     * Only used for distributed testers.
-     * TODO: refactoring needed?
-     * @param list
-     * @throws RemoteException
-     */
-    public void registerTesters(List<Tester> list) throws RemoteException {
-        expectedTesters = list.size();
-        for (Tester each : list) {
-            each.setCoordinator(this);
-        }
     }
 
     /**
@@ -96,11 +78,19 @@ public class RemoteCoordinatorImpl implements Bootstrapper, Coordinator {
      * @param coll
      * @throws RemoteException
      */
-    public void registerMethods(Tester t, Collection<MethodDescription> coll)
-            throws RemoteException {
-        registrations.offer(new TesterRegistration(t, coll));
-    }
+//    public void registerMethods(Tester t, Collection<MethodDescription> coll)
+//            throws RemoteException {
+//        LOG.finest(String.format("%s registering tester %s", this, t));
+//        registrations.offer(new TesterRegistration(t, coll));
+//
+//
+//    }
 
+    public void registerMethods(TesterRegistration tr)
+            throws RemoteException {
+
+        registrations.offer(tr);
+    }
     /**
      * Method execution end. Sent by testers after the execution of a
      * method (TestStep).
@@ -130,8 +120,7 @@ public class RemoteCoordinatorImpl implements Bootstrapper, Coordinator {
      */
     public int register(Tester t) throws RemoteException {
         LOG.entering("CoordinatorIml", "register(Tester)");
-        int id = registerdTesters.getAndIncrement();
-        LOG.fine("New Registered Tester: " + id + " new client " + t);
+        int id = idCounter.getAndIncrement();
         return id;
     }
 
@@ -143,12 +132,18 @@ public class RemoteCoordinatorImpl implements Bootstrapper, Coordinator {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    @Override
+    public String toString() {
+        return String.format("Coordinator for %d testers.",
+                this.idCounter.get());
+    }
+
     /**
      * Pending registrations.
      *
      * @return
      */
-    BlockingQueue<TesterRegistration> registrations() {
+    public BlockingQueue<TesterRegistration> registrations() {
         return registrations;
     }
 
@@ -156,7 +151,7 @@ public class RemoteCoordinatorImpl implements Bootstrapper, Coordinator {
      * Pending test results.
      * @return
      */
-    BlockingQueue<ResultSet> results() {
+    public BlockingQueue<ResultSet> results() {
         return results;
     }
 
@@ -164,15 +159,7 @@ public class RemoteCoordinatorImpl implements Bootstrapper, Coordinator {
      * Testers leaving the system.
      * @return
      */
-    BlockingQueue<Tester> leaving() {
+    public BlockingQueue<Tester> leaving() {
         return leaving;
-    }
-
-    /**
-     *
-     * @return number of expected testers.
-     */
-    public int getExpectedTesters() {
-        return expectedTesters;
     }
 }

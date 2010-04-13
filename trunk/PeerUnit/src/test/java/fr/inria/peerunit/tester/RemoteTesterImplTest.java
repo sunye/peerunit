@@ -83,6 +83,31 @@ public class RemoteTesterImplTest {
         assertFalse(t.isAlive());
     }
 
+
+    /**
+     * Test of start method, of class RemoteTesterImpl.
+     */
+    @Test
+    public void testStart() throws Exception {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    remoteTester.waitForStart();
+                } catch (InterruptedException ex) {
+                    fail("Thread interrupted");
+                }
+            }
+        };
+        t.start();
+        t.join(1000);
+        assertTrue(t.isAlive());
+        remoteTester.start();
+        t.join(500);
+        assertFalse(t.isAlive());
+    }
+
+
     /**
      * Test of execute method, of class RemoteTesterImpl.
      */
@@ -110,29 +135,6 @@ public class RemoteTesterImplTest {
         fail("The test case is a prototype.");
     }
 
-    /**
-     * Test of stop method, of class RemoteTesterImpl.
-     */
-    //@Test
-    public void testStop() throws Exception {
-        System.out.println("stop");
-        RemoteTesterImpl instance = new RemoteTesterImpl();
-        instance.stop();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of start method, of class RemoteTesterImpl.
-     */
-    //@Test
-    public void testStart() throws Exception {
-        System.out.println("start");
-        RemoteTesterImpl instance = new RemoteTesterImpl();
-        instance.start();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of take method, of class RemoteTesterImpl.
@@ -142,7 +144,7 @@ public class RemoteTesterImplTest {
         System.out.println("take");
         RemoteTesterImpl instance = new RemoteTesterImpl();
         MethodDescription expResult = null;
-        MethodDescription result = instance.take();
+        MethodDescription result = instance.takeMethodDescription();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -170,20 +172,6 @@ public class RemoteTesterImplTest {
         System.out.println("waitForStart");
         RemoteTesterImpl instance = new RemoteTesterImpl();
         instance.waitForStart();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of shouldStop method, of class RemoteTesterImpl.
-     */
-    //@Test
-    public void testShouldStop() {
-        System.out.println("shouldStop");
-        RemoteTesterImpl instance = new RemoteTesterImpl();
-        boolean expResult = false;
-        boolean result = instance.shouldStop();
-        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

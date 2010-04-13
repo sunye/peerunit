@@ -84,8 +84,10 @@ public class CoordinatorRunner {
     private void initializeRegistry() throws RemoteException {
         try {
             registry = LocateRegistry.createRegistry(defaults.getRegistryPort());
+            LOG.fine("Registry created in port: " + defaults.getRegistryPort());
         } catch (RemoteException e) {
             registry = LocateRegistry.getRegistry(defaults.getRegistryPort());
+            LOG.fine("Registry found in port: " + defaults.getRegistryPort());
         }
         assert registry != null;
     }

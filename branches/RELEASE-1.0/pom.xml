@@ -11,7 +11,7 @@
     <artifactId>PeerUnit</artifactId>
     <version>1.0.1</version>
     <packaging>jar</packaging>
-    <name>PeerUnit</name>
+    <name>PeerUnit-1.01</name>
     <url>http://peerunit.gforge.inria.fr/</url>
     <licenses>
         <license>
@@ -145,3 +145,4 @@
     <url>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</url>
   </scm>
 </project>
+

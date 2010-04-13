@@ -16,9 +16,9 @@
  */
 package fr.inria.peerunit.bootstrapper;
 
+import fr.inria.peerunit.remote.DistributedTester;
 import java.rmi.RemoteException;
 
-import fr.inria.peerunit.remote.Tester;
 
 /**
  * The classes that implement a concrete strategy should implement this The
@@ -35,7 +35,7 @@ public interface TreeStrategy {
 
 	public int getNodesSize();
 
-	public int register(Tester t) throws RemoteException;
+	public int register(DistributedTester t) throws RemoteException;
 
 	void setCommunication();
 

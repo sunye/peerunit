@@ -34,6 +34,12 @@ public class Schedule {
         testerMap.get(md).add(t);
     }
 
+    public void put(TesterRegistration tr) {
+        for(MethodDescription each : tr.methods()) {
+            this.put(each,tr.tester());
+        }
+    }
+
     public void clear() {
         testerMap.clear();
     }

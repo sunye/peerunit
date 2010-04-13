@@ -1,23 +1,22 @@
 /*
-    This file is part of PeerUnit.
+This file is part of PeerUnit.
 
-    PeerUnit is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+PeerUnit is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    PeerUnit is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+PeerUnit is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.tester;
 
 import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.IOException;
@@ -31,43 +30,38 @@ import java.util.logging.Logger;
  *
  * @author sunye
  */
-public abstract class AbstractTester implements Tester {
+public abstract class AbstractTester {
 
     private static final Logger LOG = Logger.getLogger(AbstractTester.class.getName());
-
     protected int id;
     protected transient GlobalVariables globals;
     protected transient TesterUtil defaults = TesterUtil.instance;
-    
+
     /**
      * No arguments constructor.
      * Needed for serialization/deserialization of subclasses.
      */
     public AbstractTester() {
-    	
     }
 
     public AbstractTester(GlobalVariables gv) {
         this.globals = gv;
     }
-     /**
+
+    /**
      * Returns this tester's id
      * @return the tester's id
      */
     public int getId() {
-        LOG.entering("AbstractTester", "getId()");
-
         return this.id;
     }
 
+    /**
+     * Sets the tester id.
+     * @param i
+     */
     public void setId(int i) {
-        LOG.entering("AbstractTester", "setId(int)");
-
-       this.id =i;
-    }
-
-    public int getPeerName() throws RemoteException {
-        return this.getId();
+        this.id = i;
     }
 
     @Override
@@ -75,19 +69,9 @@ public abstract class AbstractTester implements Tester {
         return String.format("Tester: %d", id);
     }
 
-    /*
-    public void execute(MethodDescription m) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void kill() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }*/
-
     public void put(Integer key, Object object) throws RemoteException {
         this.globalTable().put(key, object);
     }
-    
 
     public Map<Integer, Object> getCollection() throws RemoteException {
         return this.globalTable().getCollection();

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.remote.Coordinator;
+import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.HNode;
 import fr.inria.peerunit.util.HTree;
@@ -42,7 +42,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
     /**
      * Tree containing Tester Id X Tester
      */
-    private final HTree<Integer, Tester> testers;
+    private final HTree<Integer, DistributedTester> testers;
     /**
      * Number of expected testers.
      */
@@ -50,7 +50,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 
     public ConcreteBtreeStrategy(TesterUtil tu) {
         defaults = tu;
-        testers = new HTree<Integer, Tester>(defaults.getTreeOrder());
+        testers = new HTree<Integer, DistributedTester>(defaults.getTreeOrder());
         expectedTesters = defaults.getExpectedTesters();
     }
 
@@ -60,7 +60,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
      * @return
      * @throws RemoteException
      */
-    public int register(Tester tester) throws RemoteException {
+    public int register(DistributedTester tester) throws RemoteException {
         log.entering("ConcreteBtreeStrategy", "register(Tester)");
 
         int id = testers.size();
@@ -81,16 +81,16 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
     }
 
     public void setCommunication() {
-        HNode<Integer, Tester> node = testers.head();
+        HNode<Integer, DistributedTester> node = testers.head();
         this.setCommunication(node);
     }
 
-    private void setCommunication(HNode<Integer, Tester> n) {
+    private void setCommunication(HNode<Integer, DistributedTester> n) {
         assert !n.isLeaf();
 
-        HNode<Integer, Tester>[] children = n.children();
-        List<Tester> nodes = new ArrayList<Tester>(children.length);
-        for (HNode<Integer, Tester> each : children) {
+        HNode<Integer, DistributedTester>[] children = n.children();
+        List<DistributedTester> nodes = new ArrayList<DistributedTester>(children.length);
+        for (HNode<Integer, DistributedTester> each : children) {
             nodes.add(each.value());
         }
         try {
@@ -100,13 +100,13 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
         }
 
         try {
-            Coordinator c = (Coordinator) n.value();
+            DistributedTester c =  n.value();
             c.registerTesters(nodes);
         } catch (RemoteException ex) {
             log.log(Level.SEVERE, null, ex);
         }
 
-        for (HNode<Integer, Tester> each : children) {
+        for (HNode<Integer, DistributedTester> each : children) {
             if (!each.isLeaf()) {
                 this.setCommunication(each);
             }
@@ -134,7 +134,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
     }
 
     public void startRoot() throws RemoteException {
-        Tester root = testers.head().value();
+        DistributedTester root = testers.head().value();
         root.start();
     }
 

@@ -30,13 +30,7 @@ public abstract class TestMethod {
         return timeout;
     }
 
-    protected Range newRange(int place, int from, int to, String str) {
-        if (place != -1) {
-            return Range.newInstance(place);
-        }
-        if (from != -1 && to != -1) {
-            return Range.newInstance(from, to);
-        }
+    protected Range newRange(String str) {
         return Range.fromString(str);
     }
 

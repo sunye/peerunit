@@ -18,15 +18,14 @@ package fr.inria.peerunit.tester;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.base.SingleResult;
 import fr.inria.peerunit.common.MethodDescription;
+import fr.inria.peerunit.coordinator.TesterRegistration;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
@@ -35,6 +34,8 @@ import fr.inria.peerunit.util.TesterUtil;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.channels.ClosedByInterruptException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Eduardo Almeida
@@ -48,17 +49,28 @@ import java.nio.channels.ClosedByInterruptException;
  * @see fr.inria.peerunit.remote.Coordinator
  * @see java.util.concurrent.BlockingQueue<Object>
  */
-public class TesterImpl extends AbstractTester implements Tester, Serializable, Runnable {
+public class TesterImpl extends AbstractTester implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
-    private transient Coordinator coord;
-    private transient Bootstrapper bootstrapper;
-    private transient boolean stop = false;
-    private transient TestCaseWrapper testCase;
-    private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
-    
+    /**
+     * The tester remote interface, RMI implementation
+     */
+    private final RemoteTesterImpl remoteTester;
+    private Coordinator coord;
+    private boolean stop = false;
+    private TestCaseWrapper testCase;
+    //private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
     private Class<?> testCaseClass;
+    private List<MethodDescription> remainingMethods =
+            new ArrayList<MethodDescription>(20);
+    /**
+     * Thread used to invoke @TestStep methods
+     */
+    private Thread invocationThread;
+    private Thread testerThread;
+
+    ;
 
     /**
      * Used to give the identifier of the tester.
@@ -66,75 +78,99 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      * @param klass the coordinator which give the tester's identifier.
      * @throws RemoteException
      */
-    public TesterImpl(Bootstrapper boot, GlobalVariables gv) throws RemoteException {
+    public TesterImpl(Coordinator boot, GlobalVariables gv) throws RemoteException {
         super(gv);
-        bootstrapper = boot;
-
-        this.setId(bootstrapper.register(this));
+        remoteTester = new RemoteTesterImpl();
+        coord = boot;
+        int i = coord.register(remoteTester);
+        this.setId(i);
+        remoteTester.setId(i);
         testCase = new TestCaseWrapper(this);
         this.initializeLogger();
     }
 
-    public TesterImpl(Bootstrapper boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
+    public TesterImpl(Coordinator boot, GlobalVariables gv, TesterUtil tu) throws RemoteException {
         this(boot, gv);
         defaults = tu;
     }
 
     public TesterImpl(GlobalVariables gv, int i, TesterUtil tu) {
+        this(gv, i, tu, new RemoteTesterImpl());
+    }
+
+    public TesterImpl(GlobalVariables gv, int i, TesterUtil tu, RemoteTesterImpl remote) {
         super(gv);
+        remoteTester = remote;
         defaults = tu;
         this.setId(i);
+        remoteTester.setId(i);
         testCase = new TestCaseWrapper(this);
     }
 
-    public void setCoordinator(Coordinator c) {
-        LOG.entering("TesterImpl", "setCoordinator");
-        assert c != null : "Null coordinator";
-        this.coord = c;
-    }
-
-    public void start() throws RemoteException {
-        LOG.entering("TesterImpl", "start()");
-        assert coord != null : "Null coordinator";
-
-        coord.registerMethods(this, testCase.register(testCaseClass));
-    }
-
     /**
-     * starts the tester
-     *
-     * @throws InterruptedException
+     * Starts the thread for this tester
      */
-    public void run() {
+    public void startThread() {
+        LOG.entering("TesterImpl", "startThread()");
+        testerThread = new Thread(new TesterThread());
+        testerThread.start();
+
+//            LOG.warning("Could not obtain a valid id, leaving the system.");
+
+
+    }
+
+    public void execute() throws InterruptedException, RemoteException {
+        LOG.entering("TesterImpl", "execute()");
+
+        // 1 - Get Coordinator;
+        coord = remoteTester.takeCoordinator();
+        LOG.finest("Got a coordinator");
         assert coord != null : "Null coordinator";
-        LOG.entering("TesterImpl", "run()");
+
+        // 2 - Wait for start message;
+        remoteTester.waitForStart();
+        LOG.finest("Start message received");
+
+        // 3 - Parse test case class (need id);
+        remainingMethods.addAll(testCase.register(testCaseClass));
+        LOG.finest("Tester will register " + remainingMethods.size() + " methods.");
+
+        // 4 - Register my test steps.
+        coord.registerMethods(new TesterRegistration(remoteTester, remainingMethods));
+        // 5 - Execute all test steps.
+        this.testCaseExecution();
+        // 6 - Leave;
+        LOG.fine("Waiting for invokation thread");
+
+        invocationThread.join();
+
+    }
+
+    private void testCaseExecution() {
+        LOG.entering("TesterImpl", "testCaseExecution()");
 
         Thread timeoutThread;
-        Thread invocationThread;
 
-        while (!stop) {
+        while (!stop && remainingMethods.size() > 0) {
             MethodDescription md = null;
             try {
-                md = executionQueue.poll(defaults.getWaitForMethod(), TimeUnit.MILLISECONDS);
+                md = remoteTester.takeMethodDescription();
                 if (md != null) {
                     invocationThread = new Thread(new Invoke(md));
-
                     if (md.getTimeout() > 0) {
                         timeoutThread = new Thread(new Timeout(invocationThread, md.getTimeout()));
                         timeoutThread.start();
                     }
                     invocationThread.start();
+                    remainingMethods.remove(md);
                 }
             } catch (InterruptedException e) {
                 LOG.log(Level.SEVERE, "TesterImpl:run() - InterruptedException", e);
             }
+
         }
-        LOG.fine("Stopping Tester ");
-        try {
-            coord.quit(this);
-        } catch (RemoteException e) {
-            LOG.log(Level.SEVERE, "Error calling Coordinator.quit()", e);
-        } 
+        LOG.exiting("TesterImpl", "testCaseExecution()");
     }
 
     /**
@@ -148,39 +184,6 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     public void registerTestCase(Class<?> klass) {
         LOG.entering("TesterImpl", "registerTestCase(CLass)");
         testCaseClass = klass;
-    }
-
-    /**
-     * Used to add an action to be executed
-     *
-     * @throws RemoteExcption
-     * @throws InterruptedException
-     */
-    public synchronized void execute(MethodDescription md)
-            throws RemoteException {
-        LOG.log(Level.FINE, "Starting TesterImpl::execute(MethodDescription) with: " + md);
-
-        try {
-            executionQueue.put(md);
-        } catch (InterruptedException e) {
-            for (StackTraceElement each : e.getStackTrace()) {
-                LOG.severe(each.toString());
-            }
-
-        }
-    }
-
-    /**
-     * An example how to kill a peer
-     * <code> YourTestClass test = new YourTestClass();
-     * test.export(test.getClass());
-     * test.run();
-     * ...	 // code
-     * test.kill(); </code>
-     */
-    public void kill() {
-        quit();
-        LOG.log(Level.INFO, "Test Case finished by kill ");
     }
 
     /**
@@ -210,17 +213,14 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
      *  Used to interrupt actions's execution. 
      *  Cleans the action list and asks coordinator to quit.
      */
-    public void quit() {
+    public void quit() throws RemoteException {
+        LOG.entering("TesterImpl", "quit()");
         assert coord != null : "Null coordinator";
 
-        try {
-            executionQueue.clear();
-            coord.quit(this);
-        } catch (RemoteException e) {
-            LOG.log(Level.SEVERE, "Remote error during quit().", e);
-        } finally {
-            stop = true;
-        }
+        coord.quit(remoteTester);
+        this.cleanUp();
+
+        LOG.exiting("TesterImpl", "quit()");
     }
 
     /**
@@ -257,7 +257,8 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
             StringWriter writer = new StringWriter();
             PrintWriter pw = new PrintWriter(writer);
             e.printStackTrace(pw);
-            pw.flush();writer.flush();
+            pw.flush();
+            writer.flush();
             LOG.log(Level.WARNING, writer.toString());
             result.addError(e);
         } finally {
@@ -271,11 +272,20 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
     public void cleanUp() {
         LOG.fine("Tester cleaning up.");
         globals = null;
-        bootstrapper = null;
         coord = null;
     }
 
+    /**
+     *
+     * @return The Tester remote implementation.
+     */
+    public Tester getRemoteTester() {
+        return remoteTester;
+    }
 
+    public void join() throws InterruptedException {
+        testerThread.join();
+    }
 
     /**
      * @author Eduardo Almeida.
@@ -293,6 +303,20 @@ public class TesterImpl extends AbstractTester implements Tester, Serializable, 
 
         public void run() {
             invoke(md);
+        }
+    }
+
+    private class TesterThread implements Runnable {
+
+        public void run() {
+            try {
+                LOG.entering("TesterThread", "run()");
+                execute();
+            } catch (InterruptedException ex) {
+                LOG.log(Level.SEVERE, "TesterThread interrupted exception", ex);
+            } catch (RemoteException ex) {
+                LOG.log(Level.SEVERE, "TesterThread remote exception", ex);
+            }
         }
     }
 }

@@ -33,6 +33,8 @@ import fr.inria.peerunit.distributed.DistributedTesterImpl;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
+import fr.inria.peerunit.remote.Tester;
+import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
@@ -71,6 +73,7 @@ public class TestRunner {
         testcase = klass;
 
         Bootstrapper boot = null;
+        Coordinator coordinator = null;
 
         registry = null;
         int times = 0;
@@ -98,7 +101,7 @@ public class TestRunner {
 
             } catch (NotBoundException ex) {
                 try {
-                    boot = (Bootstrapper) registry.lookup("Coordinator");
+                    coordinator = (Coordinator) registry.lookup("Coordinator");
                 } catch (Exception e) {
                 }
             } catch (AccessException ex) {
@@ -114,7 +117,7 @@ public class TestRunner {
             
         }
 
-        if (boot == null) {
+        if (boot == null && coordinator == null) {
             LOG.severe("Unable to bind server: "+defaults.getServerAddr()+
                     " at port " + defaults.getRegistryPort());
             System.exit(1);
@@ -124,21 +127,28 @@ public class TestRunner {
             GlobalVariables globals = (GlobalVariables) registry.lookup("Globals");
             if (centralized) {
                 LOG.fine("Coordinator found, using the centralized architecture.");
-                TesterImpl tester = new TesterImpl(boot, globals, defaults);
-                UnicastRemoteObject.exportObject(tester);
-
-                tester.setCoordinator((Coordinator) boot);
+                TesterImpl tester = new TesterImpl(coordinator, globals, defaults);
+                Tester remoteTester = tester.getRemoteTester();
+                UnicastRemoteObject.exportObject(remoteTester);
+                remoteTester.setCoordinator(coordinator);
 
                 tester.registerTestCase(testcase);
-                tester.start();
-                tester.run();
-                System.exit(0);
+                tester.startThread();
+                remoteTester.start();
+                tester.join();
+                LOG.fine("Tester thread joined");
+                UnicastRemoteObject.unexportObject(remoteTester, true);
 
             } else {
                 LOG.fine("Bootstrapper found, using the distributed architecture.");
                 DistributedTesterImpl tester = new DistributedTesterImpl(testcase, boot, globals, defaults);
-                UnicastRemoteObject.exportObject(tester);
-                tester.register();
+                DistributedTester remoteTester = tester.getRemoteDistributedTester();
+                UnicastRemoteObject.exportObject(remoteTester);
+                tester.startThread();
+                tester.join();
+                LOG.fine("DistributedTester thread joined");
+                UnicastRemoteObject.unexportObject(remoteTester, true);
+                System.exit(0);
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);

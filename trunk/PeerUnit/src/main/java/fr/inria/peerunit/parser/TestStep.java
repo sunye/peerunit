@@ -42,45 +42,4 @@ public @interface TestStep {
 
     int timeout() default -1;
     
-    /**
-     * @deprecated  As of release 1.0, replaced by {@link #range()}
-     * @return
-     */
-    @Deprecated
-	int place() default -1;
-	
-    /**
-     * @deprecated  As of release 1.0, replaced by {@link #range()}
-     * @return
-     */
-    @Deprecated
-	int from() default -1;
-	
-    /**
-     * @deprecated  As of release 1.0, replaced by {@link #range()}
-     * @return
-     */
-    @Deprecated
-	int to() default -1;
-	
-    /**
-     * @deprecated  As of release 1.0.
-     * @return
-     */
-    @Deprecated
-	boolean measure() default true;
-	
-    /**
-     * @deprecated  As of release 1.0, replaced by {@link #order()}
-     * @return
-     */
-    @Deprecated
-	int step() default -1;
-    
-    /**
-     * @deprecated  As of release 1.0, use method name instead.
-     * @return
-     */   
-    @Deprecated
-    String name() default "step";
 }
