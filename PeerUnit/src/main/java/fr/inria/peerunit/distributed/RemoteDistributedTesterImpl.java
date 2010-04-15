@@ -20,6 +20,8 @@ import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -47,12 +50,14 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
      * The (remote) Coordinator for this tester
      */
     private Coordinator coordinator;
+    private String  address;
+
     /**
      * Number of expected testers for this coordinator.
      * Only used for distributed testers.
      * TODO: refactoring needed.
      */
-    private int expectedTesters = 0;
+    //private int expectedTesters = 0;
     /**
      * Locks for blocking multi-threaded methods.
      */
@@ -64,6 +69,12 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
 
     public RemoteDistributedTesterImpl(TesterUtil tu) {
         this.children = new ArrayList<DistributedTester>(tu.getTreeOrder());
+        try {
+            address = InetAddress.getLocalHost().getHostAddress() ;
+        } catch (UnknownHostException ex) {
+            LOG.log(Level.SEVERE, "UnknownHost", ex);
+        }
+
     }
 
     /**
@@ -107,8 +118,18 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
      * @throws RemoteException
      */
     public void registerTesters(List<DistributedTester> testers) throws RemoteException {
-        expectedTesters = testers.size();
+        LOG.finest("Registering "+testers.size() + " testers.");
+        //expectedTesters = testers.size();
         this.children.addAll(testers);
+    }
+
+    /**
+     *
+     * @return The local IP address of this tester.
+     * @throws RemoteException
+     */
+    public String getAddress() throws RemoteException {
+        return address;
     }
 
     @Override

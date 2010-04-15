@@ -4,6 +4,7 @@
  */
 package fr.inria.peerunit.remote;
 
+import java.net.InetAddress;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -29,4 +30,6 @@ public interface DistributedTester extends Remote {// extends Tester, Coordinato
     void setCoordinator(Coordinator c) throws RemoteException;
 
     int getId() throws RemoteException;
+    
+    String getAddress() throws RemoteException;
 }

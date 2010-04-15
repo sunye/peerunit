@@ -23,7 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.remote.DistributedTester;
-import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.HNode;
 import fr.inria.peerunit.util.HTree;
 import fr.inria.peerunit.util.TesterUtil;

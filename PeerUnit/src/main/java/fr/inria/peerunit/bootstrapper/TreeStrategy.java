@@ -1,24 +1,23 @@
 /*
-    This file is part of PeerUnit.
+This file is part of PeerUnit.
 
-    PeerUnit is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+PeerUnit is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    PeerUnit is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+PeerUnit is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.bootstrapper;
 
 import fr.inria.peerunit.remote.DistributedTester;
 import java.rmi.RemoteException;
-
 
 /**
  * The classes that implement a concrete strategy should implement this The
@@ -31,22 +30,22 @@ import java.rmi.RemoteException;
  */
 public interface TreeStrategy {
 
-	public void buildTree();
+    void buildTree();
 
-	public int getNodesSize();
+    int getNodesSize();
 
-	public int register(DistributedTester t) throws RemoteException;
+    int register(DistributedTester t) throws RemoteException;
 
-	void setCommunication();
+    void setCommunication();
 
-	public int getRegistered();
+    int getRegistered();
 
-	/**
-	 * Blocks current thread until all expected testers have registered.
-	 */
-	public void waitForTesterRegistration() throws InterruptedException;
+    /**
+     * Blocks current thread until all expected testers have registered.
+     */
+    void waitForTesterRegistration() throws InterruptedException;
 
-	public void startRoot() throws RemoteException;
+    void startRoot() throws RemoteException;
 
-	public void cleanUp();
+    void cleanUp();
 }

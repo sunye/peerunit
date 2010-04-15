@@ -1,18 +1,18 @@
 /*
-    This file is part of PeerUnit.
+This file is part of PeerUnit.
 
-    PeerUnit is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+PeerUnit is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    PeerUnit is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+PeerUnit is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.bootstrapper;
 
@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.DistributedTester;
-import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.TesterUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,37 +35,42 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Logger log = Logger.getLogger(BootstrapperImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(BootstrapperImpl.class.getName());
     private TreeStrategy context;
     private TesterUtil defaults;
     private final AtomicBoolean shouldILeave = new AtomicBoolean(false);
 
     public BootstrapperImpl(TesterUtil tu) {
         defaults = tu;
-        context = new ConcreteBtreeStrategy(defaults);
+        if (defaults.getCoordinationType() == 1) {
+            LOG.fine("Using the HTree strategy");
+            context = new ConcreteBtreeStrategy(defaults);
+        } else {
+            LOG.fine("Using the Grid strategy");
+            context = new GridStrategy(defaults);
+        }
     }
 
     public void run() {
-        log.entering("BootstrapperImpl", "run()");
-        log.info("Starting Bootstrapper");
-        
+        LOG.entering("BootstrapperImpl", "run()");
+        LOG.info("Starting Bootstrapper");
+
         try {
-            
+
             context.waitForTesterRegistration();
             context.buildTree();
             context.setCommunication();
             context.startRoot();
 
-            log.fine("Waiting fot testers to terminate");
+            LOG.fine("Waiting fot testers to terminate");
             this.waitForTesterTermination();
             context.cleanUp();
-            log.info("[Bootstrapper] Finished !");
+            LOG.info("[Bootstrapper] Finished !");
         } catch (RemoteException ex) {
-            log.log(Level.SEVERE, "Remote exception", ex);
+            LOG.log(Level.SEVERE, "Remote exception", ex);
             ex.printStackTrace();
         } catch (InterruptedException ex) {
-            log.log(Level.SEVERE,"Wait interrupted" , ex);
+            LOG.log(Level.SEVERE, "Wait interrupted", ex);
         }
     }
 
@@ -77,7 +81,7 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
      * @throws RemoteException
      */
     public synchronized int register(DistributedTester t) throws RemoteException {
-        log.entering("BootstrapperImpl", "register()");
+        LOG.entering("BootstrapperImpl", "register()");
         return context.register(t);
     }
 
@@ -86,29 +90,27 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
      * @return the current number of registered nodes
      */
     public int getRegistered() {
-        log.entering("BootstrapperImpl", "getRegistered()");
+        LOG.entering("BootstrapperImpl", "getRegistered()");
         return context.getRegistered();
     }
 
-    
     private void waitForTesterTermination() throws InterruptedException {
-         log.entering("BootstrapperImpl", "waitForTesterTermination()");
-       while (! shouldILeave.get()) {
-            synchronized(shouldILeave) {
+        LOG.entering("BootstrapperImpl", "waitForTesterTermination()");
+        while (!shouldILeave.get()) {
+            synchronized (shouldILeave) {
                 shouldILeave.wait();
-                }
+            }
         }
-        log.exiting("BootstrapperImpl", "waitForTesterTermination()");
+        LOG.exiting("BootstrapperImpl", "waitForTesterTermination()");
     }
 
     public void quit() throws RemoteException {
-        log.entering("BootstrapperImpl", "quit()");
-        synchronized(shouldILeave) {
+        LOG.entering("BootstrapperImpl", "quit()");
+        synchronized (shouldILeave) {
             shouldILeave.set(true);
             shouldILeave.notifyAll();
         }
-        log.exiting("BootstrapperImpl", "quit()");
+        LOG.exiting("BootstrapperImpl", "quit()");
     }
-
 }
 
