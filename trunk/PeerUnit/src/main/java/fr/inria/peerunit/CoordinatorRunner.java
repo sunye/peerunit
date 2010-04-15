@@ -36,6 +36,7 @@ import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -70,15 +71,7 @@ public class CoordinatorRunner {
      * @throws IOException
      */
     private void initializeLogger() throws IOException {
-        Level l = defaults.getLogLevel();
-        FileHandler handler = new FileHandler("coordination.log");
-        handler.setFormatter(new LogFormat());
-        handler.setLevel(l);
-
-        Logger myLogger = Logger.getLogger("fr.inria");
-        myLogger.setUseParentHandlers(false);
-        myLogger.addHandler(handler);
-        myLogger.setLevel(l);
+        PeerUnitLogger.createLogger(defaults, "coordination.log");
     }
 
     private void initializeRegistry() throws RemoteException {

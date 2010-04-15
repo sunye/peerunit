@@ -17,12 +17,11 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.tester;
 
 import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -94,17 +93,8 @@ public abstract class AbstractTester {
     }
 
     protected void initializeLogger() {
-        FileHandler handler;
         try {
-            Level level = defaults.getLogLevel();
-            handler = new FileHandler(String.format("Tester%d.log", id));
-            handler.setFormatter(new LogFormat());
-            handler.setLevel(level);
-
-            Logger myLogger = Logger.getLogger("fr.inria");
-            myLogger.setUseParentHandlers(false);
-            myLogger.addHandler(handler);
-            myLogger.setLevel(level);
+            PeerUnitLogger.createLogger(defaults, String.format("Tester%d.log", id));
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {

@@ -16,7 +16,6 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.distributed;
 
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,7 +30,7 @@ import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.remote.DistributedTester;
-import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.util.PeerUnitLogger;
 import java.io.IOException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.FileHandler;
@@ -271,17 +270,11 @@ public class DistributedTesterImpl { //implements Serializable {
     }
 
     protected void initializeLogger() {
+
         FileHandler handler;
         try {
-            Level level = defaults.getLogLevel();
-            handler = new FileHandler(String.format("Tester%d.log", getId()));
-            handler.setFormatter(new LogFormat());
-            handler.setLevel(level);
-
-            Logger myLogger = Logger.getLogger("fr.inria");
-            myLogger.setUseParentHandlers(false);
-            myLogger.addHandler(handler);
-            myLogger.setLevel(level);
+            PeerUnitLogger.createLogger(defaults,
+                    String.format("Tester%d.log", getId()));
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {

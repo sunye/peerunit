@@ -17,6 +17,7 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.util;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -95,5 +96,21 @@ public class PeerUnitLogger {
         }
 
         LOG.log(Level.SEVERE, "Caused by: " + e.getCause());
+    }
+    
+    public static void createLogger(TesterUtil defaults, String pattern) throws IOException {
+        String folder = defaults.getLogfolder();
+        File f = new File(folder);
+        f.mkdirs();
+        Level l = defaults.getLogLevel();
+        FileHandler handler = new FileHandler(folder+"/"+pattern);
+        
+        handler.setFormatter(new LogFormat());
+        handler.setLevel(l);
+
+        Logger myLogger = Logger.getLogger("fr.inria");
+        myLogger.setUseParentHandlers(false);
+        myLogger.addHandler(handler);
+        myLogger.setLevel(l);
     }
 }
