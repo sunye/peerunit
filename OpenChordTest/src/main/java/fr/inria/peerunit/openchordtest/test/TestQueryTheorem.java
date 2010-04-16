@@ -12,7 +12,7 @@ import de.uniba.wiai.lspi.chord.service.ServiceException;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.test.assertion.Assert;
+import fr.inria.peerunit.tester.Assert;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**
@@ -98,7 +98,7 @@ public class TestQueryTheorem extends AbstractOpenChordTest {
 
     }
 
-    @TestStep(order = 3, timeout = 100000, place = 1)
+    @TestStep(order = 3, timeout = 100000, range = "1")
     public void testInsert() throws RemoteException, InterruptedException {
         List<String> resultSet = new ArrayList<String>();
 

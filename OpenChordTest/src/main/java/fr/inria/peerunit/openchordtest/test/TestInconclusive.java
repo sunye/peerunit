@@ -1,17 +1,11 @@
 package fr.inria.peerunit.openchordtest.test;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
-import static fr.inria.peerunit.test.assertion.Assert.*;
-import fr.inria.peerunit.util.LogFormat;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.tester.Assert.*;
 
 public class TestInconclusive extends AbstractOpenChordTest {
 
