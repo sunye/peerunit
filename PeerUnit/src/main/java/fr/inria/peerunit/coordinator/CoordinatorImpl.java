@@ -183,7 +183,7 @@ public class CoordinatorImpl implements Runnable {
         }
         waitForExecutionFinished();
         result.stop();
-        LOG.finest("Method " + md + " executed in " + result.getDelay() + " msec");
+        LOG.fine("Method " + md + " executed in " + result.getDelay() + " msec");
     }
 
     public ResultSet getResultFor(MethodDescription md) {
