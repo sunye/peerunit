@@ -1,6 +1,6 @@
 package fr.inria.peerunit.openchordtest.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
+import static fr.inria.peerunit.tester.Assert.inconclusive;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;

@@ -9,7 +9,7 @@ import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
-import static fr.inria.peerunit.test.assertion.Assert.*;
+import static fr.inria.peerunit.tester.Assert.*;
 
 public class TestFindSuccTheoremC extends AbstractOpenChordTest {
 

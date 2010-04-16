@@ -14,7 +14,7 @@ import fr.inria.peerunit.openchordtest.StringKey;
 import de.uniba.wiai.lspi.chord.service.Key;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.test.assertion.Assert;
+import fr.inria.peerunit.tester.Assert;
 import fr.inria.peerunit.util.TesterUtil;
 
 /**

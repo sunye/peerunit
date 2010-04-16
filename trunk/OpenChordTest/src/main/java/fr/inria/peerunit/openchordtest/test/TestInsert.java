@@ -20,7 +20,7 @@ import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.test.assertion.Assert;
+import fr.inria.peerunit.tester.Assert;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.File;
 import java.io.FileInputStream;

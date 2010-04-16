@@ -1,6 +1,6 @@
 package fr.inria.peerunit.openchordtest.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.assertTrue;
+import static fr.inria.peerunit.tester.Assert.assertTrue;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

@@ -8,7 +8,7 @@ import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.AsynChord;
 import de.uniba.wiai.lspi.chord.service.PropertiesLoader;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
-import fr.inria.peerunit.GlobalVariables;
+import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.openchordtest.DbCallback;
 import fr.inria.peerunit.openchordtest.util.FreeLocalPort;
 import fr.inria.peerunit.parser.BeforeClass;

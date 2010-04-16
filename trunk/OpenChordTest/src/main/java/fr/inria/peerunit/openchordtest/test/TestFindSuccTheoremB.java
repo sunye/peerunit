@@ -1,6 +1,6 @@
 package fr.inria.peerunit.openchordtest.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.assertTrue;
+import static fr.inria.peerunit.tester.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class TestFindSuccTheoremB extends AbstractOpenChordTest {
         callback.setCallback(OBJECTS, log);
     }
 
-    @TestStep(order = 2,  step = 1, timeout = 10000000, range = "*")
+    @TestStep(order = 2,   timeout = 10000000, range = "*")
     public void find() throws Exception {
 
         chordPrint = (ChordImpl) chord;
@@ -37,7 +37,7 @@ public class TestFindSuccTheoremB extends AbstractOpenChordTest {
 
     }
 
-    @TestStep(order = 4,  step = 1, timeout = 10000000, range = "*")
+    @TestStep(order = 4, timeout = 10000000, range = "*")
     public void testLeave() throws Exception {
 
         Thread.sleep(sleep);
@@ -67,7 +67,7 @@ public class TestFindSuccTheoremB extends AbstractOpenChordTest {
 
     }
 
-    @TestStep(order = 5,  step = 1, timeout = 10000000, range = "*")
+    @TestStep(order = 5, timeout = 10000000, range = "*")
     public void testRetrieve() throws Exception {
         Thread.sleep(sleep);
 
