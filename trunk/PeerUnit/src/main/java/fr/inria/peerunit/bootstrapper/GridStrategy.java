@@ -153,7 +153,7 @@ public class GridStrategy implements TreeStrategy {
 
     class TesterMap {
 
-        private int size = 0;
+        private AtomicInteger size = new AtomicInteger(0);
         private Map<String, Collection<DistributedTester>> testers;
 
         public TesterMap() {
@@ -161,17 +161,17 @@ public class GridStrategy implements TreeStrategy {
                     new HashMap<String, Collection<DistributedTester>>());
         }
         
-        void put(String address, DistributedTester tester) {
+        synchronized void put(String address, DistributedTester tester) {
             if (!testers.containsKey(address)) {
                 testers.put(address, Collections.synchronizedList(
                         new LinkedList<DistributedTester>()));
             }
             testers.get(address).add(tester);
-            size++;
+            size.getAndIncrement();
         }
 
         int size() {
-            return size;
+            return size.get();
         }
 
         void clear() {
