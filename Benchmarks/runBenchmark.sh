@@ -28,6 +28,7 @@ echo "Server: $SERVER  peers: $PEERS nodes: " $(( $PEERS/$NTESTERS ))
 
 # Execute the Coordinator on the first node
 java -classpath ./target/Benchmark-1.0.jar fr.inria.peerunit.CoordinatorRunner peerunit.properties &
+#./runTesters.sh ${TEST} 1 &
 
 # for each node dismissing the first
 for i in $(uniq /var/lib/oar/${OAR_JOB_ID} | sed 1d) ;
