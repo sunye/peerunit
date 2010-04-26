@@ -27,6 +27,7 @@ import fr.inria.peerunit.util.HNode;
 import fr.inria.peerunit.util.HTree;
 import fr.inria.peerunit.util.TesterUtil;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -156,12 +157,14 @@ public class GridStrategy implements TreeStrategy {
         private Map<String, Collection<DistributedTester>> testers;
 
         public TesterMap() {
-            testers = new HashMap<String, Collection<DistributedTester>>();
+            testers =  Collections.synchronizedMap(
+                    new HashMap<String, Collection<DistributedTester>>());
         }
         
         void put(String address, DistributedTester tester) {
             if (!testers.containsKey(address)) {
-                testers.put(address, new LinkedList<DistributedTester>());
+                testers.put(address, Collections.synchronizedList(
+                        new LinkedList<DistributedTester>()));
             }
             testers.get(address).add(tester);
             size++;
@@ -209,7 +212,6 @@ public class GridStrategy implements TreeStrategy {
             if (children.length > 0) {
                 head.registerTesters(Arrays.asList(children));
             }
-            
         }
 
         DistributedTester head() {
