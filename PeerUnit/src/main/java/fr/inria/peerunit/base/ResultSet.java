@@ -19,6 +19,7 @@ package fr.inria.peerunit.base;
 import fr.inria.peerunit.common.MethodDescription;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,7 +49,7 @@ public class ResultSet implements Serializable {
     private long stop;
     
     public ResultSet (MethodDescription md) {
-        results = new LinkedList<SingleResult>();
+        results = Collections.synchronizedList(new LinkedList<SingleResult>());
         method = md;
 	errors = new AtomicInteger(0);
 	failures = new AtomicInteger(0);
