@@ -241,10 +241,10 @@ public class DistributedTesterImpl { //implements Serializable {
     }
 
     private void runMiddleTester() throws InterruptedException, RemoteException {
-        LOG.entering("DistributedTesterImpl", "runRootTester()");
+        LOG.entering("DistributedTesterImpl", "runMiddleTester()");
 
         // Middle Tester
-        ManInTester middle = new ManInTester(children.size() + 1);
+        MiddleTester middle = new MiddleTester(children.size() + 1);
         Coordinator coordinator = middle.getCoordinator();
         Tester tester = middle.getTester();
         UnicastRemoteObject.exportObject(coordinator);

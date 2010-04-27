@@ -36,9 +36,9 @@ import java.util.logging.Logger;
  *
  * @author sunye
  */
-public class ManInTester {
+public class MiddleTester {
 
-    private static Logger LOG = Logger.getLogger(ManInTester.class.getName());
+    private static Logger LOG = Logger.getLogger(MiddleTester.class.getName());
 
     /**
      * Coordinator of this tester.
@@ -89,7 +89,7 @@ public class ManInTester {
      */
     private ResultSet executionResult;
    
-    public ManInTester(int testerNbr) {
+    public MiddleTester(int testerNbr) {
         tester = new RemoteTesterImpl();
         coordinator = new RemoteCoordinatorImpl(testerNbr);
         expectedTesters = testerNbr;
