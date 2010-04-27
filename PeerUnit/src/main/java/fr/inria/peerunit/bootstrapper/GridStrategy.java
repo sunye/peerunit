@@ -117,7 +117,7 @@ public class GridStrategy implements TreeStrategy {
             if (!each.isLeaf()) {
                 this.setCommunication(each);
             } else {
-                each.value();
+                this.register(each.value());
             }
         }
     }
