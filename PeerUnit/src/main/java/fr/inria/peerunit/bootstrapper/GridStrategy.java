@@ -101,8 +101,8 @@ public class GridStrategy implements TreeStrategy {
         }
     }
 
-    private void setCommunication(HNode<String, TesterNode> n) throws RemoteException {
-        assert !n.isLeaf();
+    private void setCommunication(HNode<String, TesterNode> n)
+            throws RemoteException {
 
         HNode<String, TesterNode>[] children = n.children();
 
@@ -111,7 +111,7 @@ public class GridStrategy implements TreeStrategy {
             nodes.add(each.value());
         }
         TesterNode c = n.value();
-        c.register(nodes);
+        this.register(c, nodes);
 
         for (HNode<String, TesterNode> each : children) {
             if (!each.isLeaf()) {
@@ -120,6 +120,24 @@ public class GridStrategy implements TreeStrategy {
                 each.value();
             }
         }
+    }
+
+    private void register(TesterNode tn, List<TesterNode> children) 
+            throws RemoteException {
+        
+        List<DistributedTester> list = new LinkedList<DistributedTester>();
+        list.addAll(tn.dependents());
+        for (TesterNode each : children) {
+            list.add(each.head());
+        }
+        tn.head().registerTesters(list);
+    }
+
+    private void register(TesterNode tn) throws RemoteException {
+        if (! tn.dependents().isEmpty()) {
+            tn.head().registerTesters(tn.dependents());
+        }
+        
     }
 
     public int getRegistered() {
@@ -139,7 +157,6 @@ public class GridStrategy implements TreeStrategy {
                 testerMap.wait();
             }
         }
-
     }
 
     public void startRoot() throws RemoteException {
@@ -185,39 +202,6 @@ public class GridStrategy implements TreeStrategy {
         Set<Map.Entry<String, Collection<DistributedTester>>> entrySet() {
             return testers.entrySet();
         }
-    }
-
-    class TesterNode {
-        DistributedTester head;
-        DistributedTester[] children;
-
-        TesterNode(DistributedTester[] coll) {
-            assert coll.length > 0;
-            head = coll[0];
-            children = new DistributedTester[coll.length -1];
-            System.arraycopy(coll, 1, children, 0, coll.length -1);
-        }
-
-        void register(List<TesterNode> l) throws RemoteException {
-            List<DistributedTester> list = new LinkedList<DistributedTester>();
-            list.addAll(Arrays.asList(children));
-
-            for(TesterNode each : l) {
-                list.add(each.head);
-            }
-            head.registerTesters(list);
-        }
-
-        void register() throws RemoteException {
-            if (children.length > 0) {
-                head.registerTesters(Arrays.asList(children));
-            }
-        }
-
-        DistributedTester head() {
-            return head;
-        }
-
     }
 }
 
