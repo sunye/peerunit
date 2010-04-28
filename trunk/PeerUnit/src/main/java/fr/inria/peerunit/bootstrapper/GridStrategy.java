@@ -50,20 +50,15 @@ public class GridStrategy implements TreeStrategy {
      */
     private final HTree<String, TesterNode> testerTree;
     private final TesterMap testerMap;
-    /**
-     * Number of expected testers.
-     */
-    private final int expectedTesters;
-    private AtomicInteger idCounter = new AtomicInteger(0);
+
 
     public GridStrategy(TesterUtil tu) {
         defaults = tu;
         testerMap = new TesterMap();
         testerTree = new HTree<String, TesterNode>(defaults.getTreeOrder());
-        expectedTesters = defaults.getExpectedTesters();
     }
 
-    public synchronized int register(DistributedTester tester) {
+    public void register(DistributedTester tester) {
         LOG.entering("GridStrategy", "register(Tester)");
         String address = "Unknown";
         try {
@@ -77,10 +72,11 @@ public class GridStrategy implements TreeStrategy {
         synchronized (testerMap) {
             testerMap.notifyAll();
         }
-        return idCounter.getAndIncrement();
     }
 
     public void buildTree() {
+        LOG.fine("Ready to build the tester tree");
+        LOG.fine(testerMap.toString());
         for (Map.Entry<String, Collection<DistributedTester>> each : testerMap.entrySet()) {
             DistributedTester[] aux  = each.getValue().toArray(new DistributedTester[]{});
             testerTree.put(each.getKey(), new TesterNode(aux));
@@ -144,21 +140,6 @@ public class GridStrategy implements TreeStrategy {
         return testerMap.size();
     }
 
-    /**
-     * Waits for all expected testers to registerMethods.
-     */
-    public void waitForTesterRegistration() throws InterruptedException {
-        LOG.entering("GridStrategy", "waitForTesterRegistration()");
-
-        while (testerMap.size() < expectedTesters) {
-            LOG.fine(String.format("Waiting for %d testers to register",
-                    expectedTesters - testerMap.size()));
-            synchronized (testerMap) {
-                testerMap.wait();
-            }
-        }
-    }
-
     public void startRoot() throws RemoteException {
         DistributedTester root = testerTree.head().value().head();
         root.start();
@@ -178,7 +159,7 @@ public class GridStrategy implements TreeStrategy {
                     new HashMap<String, Collection<DistributedTester>>());
         }
         
-        synchronized void put(String address, DistributedTester tester) {
+        void put(String address, DistributedTester tester) {
             if (!testers.containsKey(address)) {
                 testers.put(address, Collections.synchronizedList(
                         new LinkedList<DistributedTester>()));
@@ -201,6 +182,17 @@ public class GridStrategy implements TreeStrategy {
 
         Set<Map.Entry<String, Collection<DistributedTester>>> entrySet() {
             return testers.entrySet();
+        }
+
+        @Override
+        public String toString() {
+            StringBuffer result = new StringBuffer("TesterMap[size="+size+"]\n");
+            for (Map.Entry<String, Collection<DistributedTester>> each : testers.entrySet()) {
+                result.append("Key: " + each.getKey());
+                result.append(" Nodes: " + each.getValue().size());
+                result.append("\n");
+            }
+            return result.toString();
         }
     }
 }

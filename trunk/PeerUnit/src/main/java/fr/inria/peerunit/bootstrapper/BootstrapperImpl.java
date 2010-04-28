@@ -24,7 +24,9 @@ import java.util.logging.Logger;
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.util.TesterUtil;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 
@@ -32,16 +34,26 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @version 1.0
  * @since 1.0
  */
-public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
+public class BootstrapperImpl implements Serializable, Runnable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(BootstrapperImpl.class.getName());
     private TreeStrategy context;
     private TesterUtil defaults;
-    private final AtomicBoolean shouldILeave = new AtomicBoolean(false);
+    private final int expectedTesters;
+    private final RemoteBootstrapperImpl remoteBootstrapper;
+    /**
+     * Distributed Testers registered to this bootstrapper
+     */
+    final private List<DistributedTester> registeredTesters;
 
     public BootstrapperImpl(TesterUtil tu) {
         defaults = tu;
+        remoteBootstrapper = new RemoteBootstrapperImpl();
+        expectedTesters = defaults.getExpectedTesters();
+        registeredTesters = Collections.synchronizedList(
+                new ArrayList<DistributedTester>(expectedTesters));
+
         if (defaults.getCoordinationType() == 1) {
             LOG.fine("Using the HTree strategy");
             context = new ConcreteBtreeStrategy(defaults);
@@ -57,13 +69,11 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
 
         try {
 
-            context.waitForTesterRegistration();
+            this.waitForTesterRegistration();
             context.buildTree();
             context.setCommunication();
             context.startRoot();
-
-            LOG.fine("Waiting fot testers to terminate");
-            this.waitForTesterTermination();
+            remoteBootstrapper.waitForTesterTermination();
             context.cleanUp();
             LOG.info("[Bootstrapper] Finished !");
         } catch (RemoteException ex) {
@@ -75,17 +85,6 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
     }
 
     /**
-     * 
-     * @param t
-     * @return
-     * @throws RemoteException
-     */
-    public synchronized int register(DistributedTester t) throws RemoteException {
-        LOG.entering("BootstrapperImpl", "register()");
-        return context.register(t);
-    }
-
-    /**
      * Returns the current number of registered nodes
      * @return the current number of registered nodes
      */
@@ -94,23 +93,26 @@ public class BootstrapperImpl implements Bootstrapper, Serializable, Runnable {
         return context.getRegistered();
     }
 
-    private void waitForTesterTermination() throws InterruptedException {
-        LOG.entering("BootstrapperImpl", "waitForTesterTermination()");
-        while (!shouldILeave.get()) {
-            synchronized (shouldILeave) {
-                shouldILeave.wait();
-            }
+    /**
+     * Waits for all expected testers to register.
+     */
+    private void waitForTesterRegistration() throws InterruptedException {
+        LOG.entering("RemoteBoostrapperImpl", "waitForTesterRegistration()");
+        LOG.fine("Waiting for registration. Expecting " + expectedTesters + " testers.");
+
+        DistributedTester dt;
+
+        while (registeredTesters.size() < expectedTesters) {
+            dt = remoteBootstrapper.takeTester();
+            registeredTesters.add(dt);
+            context.register(dt);
+            LOG.finest("Total tester registrations: " + registeredTesters.size());
         }
-        LOG.exiting("BootstrapperImpl", "waitForTesterTermination()");
+        LOG.exiting("RemoteBoostrapperImpl", "waitForTesterRegistration()");
     }
 
-    public void quit() throws RemoteException {
-        LOG.entering("BootstrapperImpl", "quit()");
-        synchronized (shouldILeave) {
-            shouldILeave.set(true);
-            shouldILeave.notifyAll();
-        }
-        LOG.exiting("BootstrapperImpl", "quit()");
+    public Bootstrapper getRemoteBootstrapper() {
+        return remoteBootstrapper;
     }
 }
 
