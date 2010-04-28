@@ -33,7 +33,7 @@ import fr.inria.peerunit.util.TesterUtil;
  */
 public class ConcreteBtreeStrategy implements TreeStrategy {
 
-    private static final Logger log = Logger.getLogger(ConcreteBtreeStrategy.class.getName());
+    private static final Logger LOG = Logger.getLogger(ConcreteBtreeStrategy.class.getName());
     /**
      * default values for global variables
      */
@@ -59,15 +59,13 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
      * @return
      * @throws RemoteException
      */
-    public int register(DistributedTester tester) throws RemoteException {
-        log.entering("ConcreteBtreeStrategy", "register(Tester)");
+    public void register(DistributedTester tester) {
+        LOG.entering("ConcreteBtreeStrategy", "register(Tester)");
 
         int id = testers.size();
         testers.put(new Integer(id), tester);
-        synchronized (testers) {
-            testers.notifyAll();
-        }
-        return id;
+        LOG.exiting("ConcreteBtreeStrategy", "register(Tester)");
+
     }
 
     public void buildTree() {
@@ -93,7 +91,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
             nodes.add(each.value());
         }
         try {
-            log.fine(String.format("Registering %d testers to tester %d", nodes.size(), n.value().getId()));
+            LOG.fine(String.format("Registering %d testers to tester %d", nodes.size(), n.value().getId()));
         } catch (RemoteException ex) {
             Logger.getLogger(ConcreteBtreeStrategy.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -102,7 +100,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
             DistributedTester c =  n.value();
             c.registerTesters(nodes);
         } catch (RemoteException ex) {
-            log.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
 
         for (HNode<Integer, DistributedTester> each : children) {
@@ -116,21 +114,6 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
         return testers.size();
     }
 
-    /**
-     * Waits for all expected testers to registerMethods.
-     */
-    public void waitForTesterRegistration() throws InterruptedException {
-        log.entering("ConcreteBtreeStrategy", "waitForTesterRegistration()");
-
-        while (testers.size() < expectedTesters) {
-            log.fine(String.format("Waiting for %d testers to register", 
-                    expectedTesters - testers.size()));
-            synchronized (testers) {
-                testers.wait();
-            }
-        }
-
-    }
 
     public void startRoot() throws RemoteException {
         DistributedTester root = testers.head().value();

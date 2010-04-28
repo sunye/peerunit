@@ -134,7 +134,7 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
 
     @Override
     public String toString() {
-        return String.format("Distributed Tester");
+        return String.format("Distributed Tester [%d]", id);
     }
 
     void setId(int i) {

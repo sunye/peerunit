@@ -34,16 +34,11 @@ public interface TreeStrategy {
 
     int getNodesSize();
 
-    int register(DistributedTester t) throws RemoteException;
+    void register(DistributedTester t);
 
     void setCommunication();
 
     int getRegistered();
-
-    /**
-     * Blocks current thread until all expected testers have registered.
-     */
-    void waitForTesterRegistration() throws InterruptedException;
 
     void startRoot() throws RemoteException;
 

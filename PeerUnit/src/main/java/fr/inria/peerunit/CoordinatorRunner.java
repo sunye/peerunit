@@ -118,7 +118,8 @@ public class CoordinatorRunner {
     public void startBootstrapper() throws RemoteException, AlreadyBoundException, InterruptedException {
         LOG.info("Using the distributed architecture");
         BootstrapperImpl bootstrapper = new BootstrapperImpl(defaults);
-        Bootstrapper bootStub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper, 0);
+
+        Bootstrapper bootStub = (Bootstrapper) UnicastRemoteObject.exportObject(bootstrapper.getRemoteBootstrapper(), 0);
         registry.bind("Bootstrapper", bootStub);
         Thread boot = new Thread(bootstrapper, "Bootstrapper");
         boot.start();
