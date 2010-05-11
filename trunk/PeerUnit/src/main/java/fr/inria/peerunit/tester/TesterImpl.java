@@ -69,8 +69,6 @@ public class TesterImpl extends AbstractTester implements Serializable {
     private Thread invocationThread;
     private Thread testerThread;
 
-    ;
-
     /**
      * Used to give the identifier of the tester.
      *

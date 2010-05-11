@@ -16,6 +16,7 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.tester;
 
+import fr.inria.peerunit.Globals;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
@@ -61,6 +62,7 @@ public abstract class AbstractTester {
      */
     public void setId(int i) {
         this.id = i;
+        this.initialzeGlobals();
     }
 
     @Override
@@ -100,5 +102,9 @@ public abstract class AbstractTester {
         } catch (SecurityException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void initialzeGlobals() {
+        Globals.setId(id);
     }
 }
