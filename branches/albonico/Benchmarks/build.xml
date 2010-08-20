@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+    Document   : build.xml
+    Created on : 23 septembre 2009, 15:43
+    Author     : sunye
+    Description:
+        Base build.xml for writing tests.
+-->
+
+<project name="Tutorial" default="exec" basedir=".">
+    
+    <property file="peerunit.properties" />
+    <property name="tester.class" value="fr.inria.peerunit.TestRunner"/>
+    <property name="coordinator.class" value="fr.inria.peerunit.CoordinatorRunner"/>
+    
+    <path id="exec.classpath">
+        <pathelement path="${test.jar}" />
+    </path>
+
+    <target name="exec">
+        <parallel>
+            <antcall target="coordinator.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+            <antcall  target="tester.execute"/>
+        </parallel>
+    </target>
+    
+    <target name="tester.execute">
+        <java classname="${tester.class}" classpathref="exec.classpath" fork="true">
+            <arg value="${testcase.class}"/>
+            <assertions>
+                <enable/>
+            </assertions>
+        </java>
+    </target>
+    <target name="coordinator.execute">
+        <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
+    </target>
+</project>
