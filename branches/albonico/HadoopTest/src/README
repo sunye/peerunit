@@ -1,0 +1,6 @@
+### Informações sobre a estrutura de pacotes
+./
+./main
+./main/java
+./main/java/ufpr
+./main/java/ufpr/test
