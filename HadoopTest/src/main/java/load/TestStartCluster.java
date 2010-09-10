@@ -9,6 +9,7 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TaskTracker;
 import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.hdfs.server.datanode.DataNode;
+import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,6 +54,7 @@ import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.AbstractList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -185,13 +187,22 @@ public class TestStartCluster {
    }
 
    @TestStep(order = 4, timeout = 100000, range = "*")
-   public void startDataNode() throws IOException, InterruptedException, RemoteException {
+   public void startDataNode(String args[]) throws IOException, InterruptedException, RemoteException {
 
         Thread.sleep(sleep);
         log.info("Starting DataNode...");
-        DataNode dn;
+	Configuration cfg = (Configuration) this.get(-2);
+	DataNode dn = DataNode.createDataNode(args,cfg);
+	// args deverá ser passado na execução para saber quais diretórios ele trabalhará
+	String serveraddr = dn.getNamenode();
+	log.info("Connected to NameNode: " + serveraddr); 
 
    }
 
+   @AfterClass(range = "*", timeout = 100000)
+   public void stopCluster() throws IOException, InterruptedException, RemoteException {
+	// if is 1 then stop NameNode and JobTracker, else stop TaskTracker and DataNode
+
+   }
 
 }
