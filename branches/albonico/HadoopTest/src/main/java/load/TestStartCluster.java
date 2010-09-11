@@ -199,7 +199,7 @@ public class TestStartCluster {
 
    }
 
-   @AfterClass(range = "*", timeout = 100000)
+//   @AfterClass(range = "*", timeout = 100000)
    public void stopCluster() throws IOException, InterruptedException, RemoteException {
 	// if is 1 then stop NameNode and JobTracker, else stop TaskTracker and DataNode
 
