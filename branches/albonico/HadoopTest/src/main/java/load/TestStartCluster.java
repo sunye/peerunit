@@ -75,7 +75,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
   
 public class TestStartCluster {
-
     private static Logger log = Logger.getLogger(TestStartCluster.class.getName());
     private int id;
     private GlobalVariables globals;
@@ -126,6 +125,22 @@ public class TestStartCluster {
         
     }
 
+    public Configuration getConf() throws IOException, InterruptedException {
+
+	// Definida manualmente pois o TestRunner nao le os arquivos de configuracao
+	Thread.sleep(sleep);
+	Configuration conf = new Configuration();
+        conf.setIfUnset("mapred.job.tracker","cohiba:9000");
+	conf.setIfUnset("mapred.tasktracker.map.tasks.maximum","1");
+	conf.setIfUnset("mapred.tasktracker.reduce.tasks.maximum","1");
+        conf.setIfUnset("fs.default.name","hdfs://cohiba:9001");
+        conf.setIfUnset("dfs.name.dir","./namenodedir/");
+	conf.setIfUnset("dfs.data.dir","/tmp/hdfsalbonico");
+        conf.setIfUnset("dfs.replication","1");
+	return conf;
+
+    }
+
     @BeforeClass(range = "*", timeout = 100000)
     public void bc() throws FileNotFoundException {
         if (new File("peerunit.properties").exists()) {
@@ -141,48 +156,51 @@ public class TestStartCluster {
         log.info("Starting Cluster Hadoop... ");
     }
 
-    @TestStep(order = 1, timeout = 100000, range = "1")
+    @TestStep(order = 1, timeout = 100000, range = "0")
     public void startJobTracker() throws IOException, InterruptedException {
 
 	log.info("Setting Job Configuration...");
-	Configuration conf = new Configuration();
-	this.put(-2, conf);
+	Configuration conf = getConf();
+
 	JobConf job = new JobConf(conf);
 
+//	this.put(-1, job);
+	
 	Thread.sleep(sleep);
 	log.info("Starting JobTracker...");
 	try {	
-		JobTracker jb = JobTracker.startTracker(job);
+		JobTracker jt = JobTracker.startTracker(job);
 	} catch (InterruptedException e) {
 
 	}
 
-	Thread.sleep(sleep);
-	// Send Job Configuration
-	log.info("Setting Global Var With Job Configuration...");
-	this.put(-1, job);
-
     }
 
-   @TestStep(order = 2, timeout = 100000, range = "*")
-   public void startTaskTracker() throws IOException, InterruptedException, RemoteException {
-
-	log.info("Getting Job Configuration...");
-	JobConf jobtracker = (JobConf) this.get(-1);		
-
-	Thread.sleep(sleep);
-	log.info("Starting TaskTracker...");
-        TaskTracker tt = new TaskTracker(jobtracker);
-
-   }
-
-   @TestStep(order = 3, timeout = 100000, range = "1")
+/*
+   @TestStep(order = 2, timeout = 100000, range = "0")
    public void startNameNode() throws IOException, InterruptedException, RemoteException {
 
         Thread.sleep(sleep);
         log.info("Starting NameNode...");
-	Configuration cfg = (Configuration) this.get(-2);	
+	Configuration cfg = getConf();	
+
 	NameNode nn = new NameNode(cfg);
+
+   }
+
+   @TestStep(order = 3, timeout = 100000, range = "*")
+   public void startTaskTracker() throws IOException, InterruptedException, RemoteException {
+
+	log.info("Getting Job Configuration...");
+	Configuration conf = getConf();
+
+        JobConf job = new JobConf(conf);
+
+	Thread.sleep(sleep);
+	log.info("Starting TaskTracker...");
+        TaskTracker tt = new TaskTracker(job);
+	log.info("Stopping TaskTracker...");
+	tt.shutdown();
 
    }
 
@@ -204,5 +222,7 @@ public class TestStartCluster {
 	// if is 1 then stop NameNode and JobTracker, else stop TaskTracker and DataNode
 
    }
+
+*/
 
 }
