@@ -10,6 +10,7 @@ import org.apache.hadoop.mapred.TaskTracker;
 import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.hdfs.server.datanode.DataNode;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
+import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +20,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.ipc.RPC;
-//import org.apache.hadoop.ipc.RemoteException;
 import org.apache.hadoop.ipc.Server;
 import org.apache.hadoop.ipc.RPC.VersionMismatch;
 import org.apache.hadoop.net.DNSToSwitchMapping;
@@ -73,73 +73,8 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-  
-public class TestStartCluster {
-    private static Logger log = Logger.getLogger(TestStartCluster.class.getName());
-    private int id;
-    private GlobalVariables globals;
-    protected TesterUtil defaults;
-    protected int size;
-    protected int sleep;
-    protected int OBJECTS;
 
-    @SetId
-    public void setId(int i) {
-        id = i;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    @SetGlobals
-    public void setGlobals(GlobalVariables gv) {
-        globals = gv;
-    }
-
-    public GlobalVariables getGlobals() {
-        return globals;
-    }
-
-    protected void put(int key, Object value) throws RemoteException {
-	    globals.put(key, value);
-    }
-
-    protected Object get(int key) throws RemoteException {
-        return globals.get(key);
-    }
-
-    protected int getName() {
-        return id;
-    }
-
-    protected Map<Integer,Object> getCollection() throws RemoteException {
-        return globals.getCollection();
-    }
-
-    protected void kill() {
-        
-    }
-
-    protected void clear() {
-        
-    }
-
-    public Configuration getConf() throws IOException, InterruptedException {
-
-	// Definida manualmente pois o TestRunner nao le os arquivos de configuracao
-	Thread.sleep(sleep);
-	Configuration conf = new Configuration();
-        conf.setIfUnset("mapred.job.tracker","cohiba:9000");
-	conf.setIfUnset("mapred.tasktracker.map.tasks.maximum","1");
-	conf.setIfUnset("mapred.tasktracker.reduce.tasks.maximum","1");
-        conf.setIfUnset("fs.default.name","hdfs://cohiba:9001");
-        conf.setIfUnset("dfs.name.dir","./namenodedir/");
-	conf.setIfUnset("dfs.data.dir","/tmp/hdfsalbonico");
-        conf.setIfUnset("dfs.replication","1");
-	return conf;
-
-    }
+public class TestStartCluster extends StartClusterParent {
 
     @BeforeClass(range = "*", timeout = 100000)
     public void bc() throws FileNotFoundException {
@@ -157,72 +92,24 @@ public class TestStartCluster {
     }
 
     @TestStep(order = 1, timeout = 100000, range = "0")
-    public void startJobTracker() throws IOException, InterruptedException {
-
-	log.info("Setting Job Configuration...");
-	Configuration conf = getConf();
-
-	JobConf job = new JobConf(conf);
-
-//	this.put(-1, job);
-	
-	Thread.sleep(sleep);
-	log.info("Starting JobTracker...");
-	try {	
-		JobTracker jt = JobTracker.startTracker(job);
-	} catch (InterruptedException e) {
-
-	}
-
+    public void startNN() throws IOException, InterruptedException {
+	NameNode nnode = startNameNode();
     }
 
-/*
-   @TestStep(order = 2, timeout = 100000, range = "0")
-   public void startNameNode() throws IOException, InterruptedException, RemoteException {
+    @TestStep(order = 2, timeout = 100000, range = "0")
+    public void startJT() throws IOException, InterruptedException {
+	startJobTracker();
+    }
 
-        Thread.sleep(sleep);
-        log.info("Starting NameNode...");
-	Configuration cfg = getConf();	
+    @TestStep(order = 3, timeout = 100000, range = "*")
+    public void startSlaves() throws IOException, InterruptedException {
 
-	NameNode nn = new NameNode(cfg);
-
-   }
-
-   @TestStep(order = 3, timeout = 100000, range = "*")
-   public void startTaskTracker() throws IOException, InterruptedException, RemoteException {
-
-	log.info("Getting Job Configuration...");
-	Configuration conf = getConf();
-
-        JobConf job = new JobConf(conf);
-
-	Thread.sleep(sleep);
-	log.info("Starting TaskTracker...");
-        TaskTracker tt = new TaskTracker(job);
-	log.info("Stopping TaskTracker...");
-	tt.shutdown();
-
-   }
-
-   @TestStep(order = 4, timeout = 100000, range = "*")
-   public void startDataNode(String args[]) throws IOException, InterruptedException, RemoteException {
-
-        Thread.sleep(sleep);
-        log.info("Starting DataNode...");
-	Configuration cfg = (Configuration) this.get(-2);
-	DataNode dn = DataNode.createDataNode(args,cfg);
-	// args deverá ser passado na execução para saber quais diretórios ele trabalhará
-	String serveraddr = dn.getNamenode();
-	log.info("Connected to NameNode: " + serveraddr); 
-
-   }
+    }
 
 //   @AfterClass(range = "*", timeout = 100000)
    public void stopCluster() throws IOException, InterruptedException, RemoteException {
 	// if is 1 then stop NameNode and JobTracker, else stop TaskTracker and DataNode
 
    }
-
-*/
 
 }
