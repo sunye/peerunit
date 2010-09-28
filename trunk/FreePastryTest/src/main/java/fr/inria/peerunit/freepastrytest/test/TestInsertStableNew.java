@@ -16,6 +16,7 @@ import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.tester.Assert;
 import fr.inria.peerunit.freepastrytest.Network;
 import java.util.HashSet;
+import java.util.Random;
 
 /**
  * Test Insert and retrieve on a stable system
@@ -29,7 +30,7 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
 
     @TestStep(range = "0", timeout = 100000, order = 1)
     public void startingNetwork() throws Exception {
-        this.bootstrap();
+//        this.bootstrap();
         Thread.sleep(sleep);
     }
 
@@ -70,27 +71,28 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
     }
 
     @TestStep(range = "*", timeout = 100000, order = 4)
-    public void testInsert() throws RemoteException, InterruptedException {
+    public void testInsert() throws InterruptedException, RemoteException {
 
+        Random random = new Random();
+        Thread.sleep(sleep);
         if (this.getPeerName() == 0) {
-            log.info("I will insert");
             List<PastContent> resultSet = new ArrayList<PastContent>();
+
             // these variables are final so that the continuation can access them
-            for (int i = 0; i < defaults.getObjects(); i++) {
-                final String s = "test" + peer.env.getRandomSource().nextInt();
+            for (int i = 0; i < OBJECTS; i++) {
+                final String s = "test" + random.nextInt();//peer.env.getRandomSource().nextInt();
+
                 // build the past content
-                final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //peer.insert(myContent);
 
-                peer.insert(myContent);
-                resultSet.add(myContent);
-                Thread.sleep(150);
+
+                peer.put(s, s);
+                //resultSet.add(myContent);
+
             }
-            this.put(0, resultSet);
-
-            log.info("Inserted " + resultSet.size());
+            this.put(-1, resultSet);
         }
-
-        Thread.sleep(sleep * 3);
 
     }
 

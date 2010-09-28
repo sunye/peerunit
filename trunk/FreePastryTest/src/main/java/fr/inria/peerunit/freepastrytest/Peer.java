@@ -1,10 +1,13 @@
 package fr.inria.peerunit.freepastrytest;
 
+import fr.inria.peerunit.freepastrytest.util.FreeLocalPort;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +19,6 @@ import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.Message;
 import rice.p2p.commonapi.RouteMessage;
 import rice.p2p.past.Past;
-import rice.p2p.past.PastContent;
 import rice.p2p.past.PastImpl;
 import rice.pastry.NodeHandle;
 import rice.pastry.NodeIdFactory;
@@ -32,21 +34,13 @@ import rice.persistence.PersistentStorage;
 import rice.persistence.Storage;
 import rice.persistence.StorageManagerImpl;
 import rice.tutorial.forwarding.MyMsg;
-import fr.inria.peerunit.util.TesterUtil;
-import java.io.File;
-import java.io.FileInputStream;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Peer implements Application {
 
-    /**
-     * FIXME: Attributes should not be public
-     */
-    public PastryIdFactory localFactory;
-    /**
-     * FIXME: Attributes should not be public
-     */
-    public Environment env;
-
+    private PastryIdFactory pastryIdFactory;
+    private Environment environment;
     private NodeIdFactory nidFactory;
     // construct the PastryNodeFactory, this is how we use rice.pastry.socket
     private PastryNodeFactory factory;
@@ -55,82 +49,73 @@ public class Peer implements Application {
     // construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
     private PastryNode node;
     private Past app;
-    private static Logger log;
-    private List<Object> resultSet = new ArrayList<Object>();
+    private static final Logger LOG = Logger.getLogger(Peer.class.getName());
+    private List<Content> resultSet = new ArrayList<Content>();
     private List<Id> nullResult = new ArrayList<Id>();
-    private List<PastContent> insertedContent = new ArrayList<PastContent>();
-    private List<PastContent> failedContent = new ArrayList<PastContent>();
-    private boolean bootstrapper = false;
+    private List<Content> insertedContent = new ArrayList<Content>();
+    private List<Content> failedContent = new ArrayList<Content>();
     private Endpoint endpoint;
-    private TesterUtil defaults;
+    //private TesterUtil defaults;
+    private final ReentrantLock lock = new ReentrantLock();
+    private final Condition dataInserted = lock.newCondition();
+    private final Condition dataRetrieved = lock.newCondition();
+    private InetSocketAddress socketAddress;
 
-    public Peer() {
-        try {
-            if (new File("peerunit.properties").exists()) {
-                String filename = "peerunit.properties";
-                FileInputStream fs = new FileInputStream(filename);
-                defaults = new TesterUtil(fs);
-            } else {
-                defaults = TesterUtil.instance;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public Peer(InetSocketAddress address) throws IOException {
+        socketAddress = address;
+        environment = new Environment();
+        nidFactory = new RandomNodeIdFactory(environment);
     }
 
-    public boolean join(int bindport, InetSocketAddress bootaddress, Environment environ, Logger log, boolean bootstrapper) throws InterruptedException, IOException {
-        this.bootstrapper = bootstrapper;
-        return join(bindport, bootaddress, environ, log);
+    public Peer() throws UnknownHostException, IOException {
+        this(new InetSocketAddress(InetAddress.getLocalHost(), 1200));
     }
 
-    /**
-     * This method sets up a PastryNode.  It will bootstrap to an
-     * existing ring if it can find one at the specified location, otherwise
-     * it will start a new ring.
-     *
-     * @param bindport the local port to bind to
-     * @param bootaddress the IP:port of the node to boot from
-     * @param env the environment for these nodes
-     */
-    public boolean join(int bindport, InetSocketAddress bootaddress, Environment environ, Logger log) throws InterruptedException, IOException {
-        env = environ;
-        Peer.log = log;
-        // Generate the NodeIds Randomly
-        nidFactory = new RandomNodeIdFactory(env);
+    public boolean bootsrap() throws InterruptedException, IOException {
 
-        // construct the PastryNodeFactory, this is how we use rice.pastry.socket
-        factory = new SocketPastryNodeFactory(nidFactory, bindport, env);
+        factory = new SocketPastryNodeFactory(nidFactory, socketAddress.getPort(), environment);
+        node = factory.newNode();
+        pastryIdFactory = new rice.pastry.commonapi.PastryIdFactory(environment);
+        node.boot(socketAddress);
 
-        if (bootstrapper) {
-            bootHandle = null;
-            log.log(Level.INFO, "I will create a new network");
-            //	 construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
-            node = factory.newNode(bootHandle);
-        } else {
-            // This will return null if we there is no node at that location
-            bootHandle = ((SocketPastryNodeFactory) factory).getNodeHandle(bootaddress);
-            log.log(Level.INFO, "Trying to join a FreePastry ring.");
-
-            // construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
-            node = factory.newNode(bootHandle);
-
-            // the node may require sending several messages to fully boot into the ring
-            synchronized (node) {
-                int tryes = 0;
-                while (!node.isReady() && !node.joinFailed()) {
-                    // delay so we don't busy-wait
-                    node.wait(200);
-
-                    // abort if can't join
-                    if (node.joinFailed()) {
-                        log.log(Level.SEVERE, "Could not join the FreePastry ring.  Reason:" + node.joinFailedReason());
-                        throw new IOException("Could not join the FreePastry ring.  Reason:" + node.joinFailedReason());
-                    } else if (tryes > 300) {
-                        return false;
-                    }
-                    tryes++;
+        synchronized (this) {
+            while (!node.isReady() && !node.joinFailed()) {
+                // delay so we don't busy-wait
+                this.wait(500);
+                // abort if can't join
+                if (node.joinFailed()) {
+                    throw new IOException("Could not join the FreePastry ring.  Reason:" + node.joinFailedReason());
                 }
             }
+        }
+        return true;
+    }
+
+    public boolean join() throws InterruptedException, IOException {
+        FreeLocalPort port = new FreeLocalPort();
+        int freePort = port.getPort();
+
+        factory = new SocketPastryNodeFactory(nidFactory, freePort, environment);
+        node = factory.newNode();
+        pastryIdFactory = new rice.pastry.commonapi.PastryIdFactory(environment);
+        node.boot(socketAddress);
+        // the node may require sending several messages to fully boot into the ring
+        synchronized (this) {
+            int tries = 0;
+            while (!node.isReady() && !node.joinFailed()) {
+                // delay so we don't busy-wait
+                this.wait(200);
+
+                // abort if can't join
+                if (node.joinFailed()) {
+                    LOG.log(Level.SEVERE, "Could not join the FreePastry ring.  Reason:{0}", node.joinFailedReason());
+                    throw new IOException("Could not join the FreePastry ring.  Reason:" + node.joinFailedReason());
+                } else if (tries > 300) {
+                    return false;
+                }
+                tries++;
+            }
+
             // We are only going to use one instance of this application on each PastryNode
             endpoint = node.buildEndpoint(this, "myinstance");
 
@@ -138,104 +123,146 @@ public class Peer implements Application {
             endpoint.register();
         }
 
-        // used for generating PastContent object Ids.
-        // this implements the "hash function" for our DHT
-        PastryIdFactory idf = new rice.pastry.commonapi.PastryIdFactory(env);
+        return true;
 
+    }
+
+    public void createPast() throws IOException {
         // Setting log(n) replicas
-        Double replica = Math.log(defaults.getExpectedTesters()) / Math.log(2);
+        Double replica = Math.log(8) / Math.log(2);
 
         //	create a different storage root for each node
         String storageDirectory = "./storage" + node.getId().hashCode();
 
         // create the persistent part
-        Storage stor = new PersistentStorage(idf, storageDirectory, 4 * 1024 * 1024, node.getEnvironment());
+        Storage stor = new PersistentStorage(pastryIdFactory, storageDirectory, 4 * 1024 * 1024, node.getEnvironment());
 
-        app = new PastImpl(node, new StorageManagerImpl(idf, stor, new LRUCache(
-                new MemoryStorage(idf), 512 * 1024, node.getEnvironment())), replica.intValue(), "");
+        app = new PastImpl(node, new StorageManagerImpl(pastryIdFactory, stor, new LRUCache(
+                new MemoryStorage(pastryIdFactory), 512 * 1024, node.getEnvironment())), replica.intValue(), "");
 
-        // We could cache the idf from whichever app we use, but it doesn't matter
-        localFactory = new rice.pastry.commonapi.PastryIdFactory(env);
-        log.info("Started with node id : " + node.getLocalHandle().toString());
-        return true;
+        //log.log(Level.INFO, "Started with node id : {0}", node.getLocalHandle().toString());
+
     }
 
-    public InetSocketAddress getInetSocketAddress(InetAddress add) {
-        String workStr = node.getLocalHandle().toString().substring(node.getLocalHandle().toString().lastIndexOf(":") + 1, node.getLocalHandle().toString().lastIndexOf("]"));
-        int port = Integer.valueOf(workStr);
-        InetSocketAddress inet = new InetSocketAddress(add, port);
-        return inet;
+    public void put(String key, String value) throws InterruptedException {
+        Content myContent = new Content(pastryIdFactory.buildId(key), value);
+        this.insert(myContent);
     }
 
-    public int getPort() {
-        int port = 0;
-        String workStr = node.getLocalHandle().toString().substring(node.getLocalHandle().toString().lastIndexOf(":") + 1, node.getLocalHandle().toString().lastIndexOf("]"));
-        port = Integer.valueOf(workStr);
-        return port;
-    }
-
-    public void insert(PastContent content) {
-
-        log.log(Level.INFO, "Storing content " + content.toString());
-        final PastContent myContent = content;
-
-        // pick a random past appl on a random node
-        log.log(Level.INFO, "Inserting " + myContent + " at node " + app.getLocalNodeHandle());
-
-        app.insert(myContent, new Continuation() {
-            // the result is an Array of Booleans for each insert
+    private void insert(final Content content) throws InterruptedException {
+        app.insert(content, new Continuation() {
 
             public void receiveResult(Object result) {
-                Boolean[] results = ((Boolean[]) result);
-                int numSuccessfulStores = 0;
-                for (int ctr = 0; ctr < results.length; ctr++) {
-                    if (results[ctr].booleanValue()) {
-                        numSuccessfulStores++;
-                    }
+                lock.lock();
+                try {
+                    LOG.log(Level.INFO, "Data inserted: {0}", result);
+                    dataInserted.signal();
+                } finally {
+                    lock.unlock();
                 }
-                log.log(Level.INFO, myContent + " successfully stored at "
-                        + numSuccessfulStores + " locations.");
-                insertedContent.add(myContent);
+
+                insertedContent.add(content);
             }
 
             public void receiveException(Exception result) {
-                log.log(Level.SEVERE, "Error storing " + myContent, result);
-                failedContent.add(myContent);
-                result.printStackTrace();
+                failedContent.add(content);
+                throw new RuntimeException("Error storing " + content, result);
             }
         });
 
+        lock.lock();
+        try {
+            LOG.info("Waiting for insertion.");
+            dataInserted.await();
+            LOG.info("Insertion finished.");
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public String get(String key) throws InterruptedException {
+
+        Id id = pastryIdFactory.buildId(key);
+        String result = this.retrieve(id);
+        LOG.log(Level.INFO, "Retrieved value: {0}", result);
+        return result;
+
+    }
+
+    private String retrieve(final Id key) throws InterruptedException {
+        assert key != null : "Trying to retrieve null key.";
+
+        final AtomicReference<Content> result = new AtomicReference<Content>();
+
+        Continuation cont = new Continuation() {
+            public void receiveResult(Object o) {
+                Content c = (Content) o;
+                if ((o != null) && (key.equals(c.getId()))) {
+                    result.set(c);
+                    LOG.log(Level.INFO, "Content received: {0}", o.toString());
+                    lock.lock();
+                    try {
+                        dataRetrieved.signal();
+                    } finally {
+                        lock.unlock();
+                    }
+                }
+            }
+
+            public void receiveException(Exception result) {
+                LOG.log(Level.SEVERE, "Error receiving content: {0}",
+                        result.getMessage());
+                throw new RuntimeException("Error receiving " + result);
+            }
+        };
+
+
+
+        lock.lock();
+        app.lookup(key, true, cont);
+        try {
+            LOG.info("Waiting for data reception.");
+            while (result.get() == null) {
+                dataRetrieved.await();
+            }
+            LOG.info("Data arrived");
+        } finally {
+            lock.unlock();
+        }
+
+        return result.get().getContent();
     }
 
     public void lookup(Id key) {
-        // wait 5 seconds
-
-        // let's do the "get" operation
-        log.log(Level.INFO, "Looking up ...");
+        LOG.log(Level.INFO, "Looking up ...");
 
         final Id lookupKey = key;
-        log.log(Level.INFO, "Looking up " + lookupKey + " at node " + app.getLocalNodeHandle());
+        LOG.log(Level.INFO, "Looking up {0} at node {1}",
+                new Object[]{lookupKey, app.getLocalNodeHandle()});
+
         app.lookup(lookupKey, true, new Continuation() {
 
             public void receiveResult(Object result) {
-                log.log(Level.INFO, "Successfully looked up " + result + " for key " + lookupKey + ".");
+                LOG.log(Level.INFO, "Successfully looked up {0} for key {1}.",
+                        new Object[]{result, lookupKey});
+
                 if (result == null) {
                     nullResult.add(lookupKey);
                 } else {
                     if (!resultSet.contains(result)) {
-                        resultSet.add(result);
+                        resultSet.add((Content) result);
                     }
                 }
             }
 
             public void receiveException(Exception result) {
-                log.log(Level.SEVERE, "Error looking up " + lookupKey, result);
+                LOG.log(Level.SEVERE, "Error looking up " + lookupKey, result);
                 result.printStackTrace();
             }
         });
     }
 
-    public List<Object> getResultSet() {
+    public List<Content> getResultSet() {
         return resultSet;
     }
 
@@ -243,17 +270,17 @@ public class Peer implements Application {
         return resultSet.size();
     }
 
-    public List<PastContent> getInsertedContent() {
+    public List<Content> getInsertedContent() {
         return insertedContent;
     }
 
-    public List<PastContent> getFailedContent() {
+    public List<Content> getFailedContent() {
         return failedContent;
     }
 
     public void leave() {
         node.destroy();
-        env.destroy();
+        environment.destroy();
     }
 
     public boolean isAlive() {
@@ -339,5 +366,20 @@ public class Peer implements Application {
 
     public Past getPast() {
         return app;
+    }
+
+    public int getPort() {
+        return socketAddress.getPort();
+    }
+
+    public static void main(String[] argv) throws UnknownHostException, IOException, InterruptedException {
+        InetSocketAddress address =
+                new InetSocketAddress(InetAddress.getLocalHost(), 1200);
+        Peer p = new Peer(address);
+        System.out.println("#");
+
+        System.out.println(Integer.parseInt("*"));
+        p.bootsrap();
+
     }
 }

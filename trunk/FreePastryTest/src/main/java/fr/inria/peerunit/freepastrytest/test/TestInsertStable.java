@@ -18,6 +18,7 @@ import fr.inria.peerunit.freepastrytest.util.FreeLocalPort;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.tester.Assert;
+import java.util.Random;
 
 /**
  * Test Insert and retrieve on a stable system
@@ -47,11 +48,11 @@ public class TestInsertStable extends AbstractFreePastryTest {
         InetSocketAddress bootaddress;
 
         bootaddress = new InetSocketAddress(bootaddr, bootport.intValue());
-        if (!peer.join(bindport, bootaddress, env, log, true)) {
-            inconclusive("I couldn't become a boostrapper, sorry");
-        }
+//        if (!peer.join(bindport, bootaddress, env, log, true)) {
+//            inconclusive("I couldn't become a boostrapper, sorry");
+//        }
 
-        this.put(-1, peer.getInetSocketAddress(bootaddr));
+//        this.put(-1, peer.getInetSocketAddress(bootaddr));
         //log.info("Cached boot address: "+bootaddress.toString());
         //test.put(-1,bootaddress);
         log.info("Net created");
@@ -81,10 +82,10 @@ public class TestInsertStable extends AbstractFreePastryTest {
             Thread.sleep(this.getPeerName() * 1000);
             InetSocketAddress bootaddress = (InetSocketAddress) this.get(-1);
             log.info("Getting cached boot " + bootaddress.toString());
-            if (!peer.join(bindport, bootaddress, env, log)) {
-                inconclusive("Couldn't boostrap, sorry");
-                this.put(this.getPeerName(), "INCONCLUSIVE");
-            }
+//            if (!peer.join(bindport, bootaddress, env, log)) {
+//                inconclusive("Couldn't boostrap, sorry");
+//                this.put(this.getPeerName(), "INCONCLUSIVE");
+//            }
             log.info("Running on port " + peer.getPort());
             log.info("Time to bootstrap");
 
@@ -111,23 +112,27 @@ public class TestInsertStable extends AbstractFreePastryTest {
     @TestStep(range = "*", timeout = 10000, order = 3)
     public void testInsert() throws InterruptedException, RemoteException {
 
+        Random random = new Random();
         Thread.sleep(sleep);
         if (this.getPeerName() == 0) {
             List<PastContent> resultSet = new ArrayList<PastContent>();
 
             // these variables are final so that the continuation can access them
-            for (int i = 0; i < defaults.getObjects(); i++) {
-                final String s = "test" + peer.env.getRandomSource().nextInt();
+            for (int i = 0; i < OBJECTS; i++) {
+                final String s = "test" + random.nextInt();//peer.env.getRandomSource().nextInt();
 
                 // build the past content
-                final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //peer.insert(myContent);
 
-                peer.insert(myContent);
-                resultSet.add(myContent);
+
+                peer.put(s, s);
+                //resultSet.add(myContent);
 
             }
             this.put(-1, resultSet);
         }
+
     }
 
     @TestStep(range = "*", timeout = 10000, order = 4)
@@ -147,9 +152,9 @@ public class TestInsertStable extends AbstractFreePastryTest {
 
                 if (bootstrapped(i)) {
                     if (expecteds.size() < defaults.getObjects()) {
-                        expecteds.add(new MyPastContent(peer.localFactory.buildId(content), content).toString());
+//                        expecteds.add(new MyPastContent(peer.localFactory.buildId(content), content).toString());
                     }
-                    peer.lookup(peer.localFactory.buildId(content));
+                   // peer.lookup(peer.localFactory.buildId(content));
                 }
             }
 
