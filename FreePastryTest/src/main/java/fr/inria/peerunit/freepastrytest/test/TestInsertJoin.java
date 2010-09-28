@@ -1,5 +1,6 @@
 package fr.inria.peerunit.freepastrytest.test;
 
+import fr.inria.peerunit.freepastrytest.Content;
 import static fr.inria.peerunit.tester.Assert.inconclusive;
 
 import java.net.InetSocketAddress;
@@ -15,7 +16,6 @@ import java.util.logging.Logger;
 import rice.p2p.commonapi.Id;
 import rice.p2p.past.PastContent;
 import rice.p2p.past.PastContentHandle;
-import rice.tutorial.past.MyPastContent;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
@@ -79,20 +79,22 @@ public class TestInsertJoin extends AbstractFreePastryTest {
 
     @TestStep(range = "*", timeout = 10000, order = 4)
     public void testInsert() throws RemoteException, InterruptedException {
-
+        Random random = new Random();
         Thread.sleep(sleep);
         if (this.getPeerName() == 0) {
             List<PastContent> resultSet = new ArrayList<PastContent>();
 
             // these variables are final so that the continuation can access them
             for (int i = 0; i < OBJECTS; i++) {
-                final String s = "test" + peer.env.getRandomSource().nextInt();
+                final String s = "test" + random.nextInt();//peer.env.getRandomSource().nextInt();
 
                 // build the past content
-                final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //peer.insert(myContent);
 
-                peer.insert(myContent);
-                resultSet.add(myContent);
+
+                peer.put(s, s);
+                //resultSet.add(myContent);
 
             }
             this.put(-1, resultSet);
@@ -206,7 +208,7 @@ public class TestInsertJoin extends AbstractFreePastryTest {
 
     @TestStep(range = "*", timeout = 10000, order = 8)
     public void getHandle() {
-        List<PastContent> cont = peer.getInsertedContent();
+        List<Content> cont = peer.getInsertedContent();
         PastContentHandle pch;
         for (PastContent pc : cont) {
             pch = pc.getHandle(peer.getPast());

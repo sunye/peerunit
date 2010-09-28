@@ -6,6 +6,7 @@ import static fr.inria.peerunit.tester.Assert.inconclusive;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rice.pastry.Id;
@@ -22,7 +23,7 @@ import fr.inria.peerunit.freepastrytest.Network;
  */
 public class TestPeerIsolation extends AbstractFreePastryTest {
 
-    private static Logger log = Logger.getLogger(TestPeerIsolation.class.getName());
+    private static final Logger log = Logger.getLogger(TestPeerIsolation.class.getName());
     private List<Id> volatiles = new ArrayList<Id>();
 
     @TestStep(range = "*", timeout = 10000, order = 1)
@@ -36,8 +37,8 @@ public class TestPeerIsolation extends AbstractFreePastryTest {
         if (!net.joinNetwork(peer, null, false, log)) {
             inconclusive("I couldn't join, sorry");
         }
-        log.info("Getting bootstrapper " + net.getInetSocketAddress().toString());
-        log.info("Running on port " + peer.getPort());
+        log.log(Level.INFO, "Getting bootstrapper {0}", net.getInetSocketAddress().toString());
+        log.log(Level.INFO, "Running on port {0}", peer.getPort());
         log.info("Time to bootstrap");
 
 
@@ -48,18 +49,18 @@ public class TestPeerIsolation extends AbstractFreePastryTest {
 
 
         // Letting the system to stabilize
-        while (peer.getRoutingTable().size() == 0) {
+        while (peer.getRoutingTable().isEmpty()) {
             Thread.sleep(sleep);
         }
 
 
         this.put(1, peer.getRoutingTable());
 
-        log.info("My ID " + peer.getId().toString());
+        log.log(Level.INFO, "My ID {0}", peer.getId().toString());
         for (NodeHandle nd : peer.getRoutingTable()) {
             if (!peer.getId().toString().equalsIgnoreCase(nd.getNodeId().toString())) {
                 volatiles.add(nd.getNodeId());
-                log.info(" Successor to leave " + nd.getNodeId());
+                log.log(Level.INFO, " Successor to leave {0}", nd.getNodeId());
             }
         }
 
@@ -107,7 +108,7 @@ public class TestPeerIsolation extends AbstractFreePastryTest {
 
                 for (NodeHandle nd : actuals) {
                     obj = nd.getNodeId();
-                    log.info(" Successor NodeId " + obj + " is volatile " + volatiles.contains(obj));
+                    log.log(Level.INFO, " Successor NodeId {0} is volatile {1}", new Object[]{obj, volatiles.contains(obj)});
 
                     if ((obj != peer.getId()) && (!volatiles.contains(obj))) {
                         log.info(" Table was updated, verdict may be PASS ");

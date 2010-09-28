@@ -52,11 +52,11 @@ public class TestInsertLeave extends AbstractFreePastryTest {
         InetSocketAddress bootaddress;
 
         bootaddress = new InetSocketAddress(bootaddr, bootport.intValue());
-        if (!peer.join(bindport, bootaddress, env, log, true)) {
-            inconclusive("I couldn't become a boostrapper, sorry");
-        }
+//        if (!peer.join(bindport, bootaddress, env, log, true)) {
+//            inconclusive("I couldn't become a boostrapper, sorry");
+//        }
 
-        this.put(-2, peer.getInetSocketAddress(bootaddr));
+//        this.put(-2, peer.getInetSocketAddress(bootaddr));
         //log.info("Cached boot address: "+bootaddress.toString());
         //test.put(-1,bootaddress);
         log.info("Net created");
@@ -114,10 +114,10 @@ public class TestInsertLeave extends AbstractFreePastryTest {
             Thread.sleep(this.getPeerName() * 1000);
             InetSocketAddress bootaddress = (InetSocketAddress) this.get(-2);
             log.info("Getting cached boot " + bootaddress.toString());
-            if (!peer.join(bindport, bootaddress, env, log)) {
-                inconclusive("Couldn't boostrap, sorry");
-                this.put(this.getPeerName(), "INCONCLUSIVE");
-            }
+//            if (!peer.join(bindport, bootaddress, env, log)) {
+//                inconclusive("Couldn't boostrap, sorry");
+//                this.put(this.getPeerName(), "INCONCLUSIVE");
+//            }
             log.info("Running on port " + peer.getPort());
             log.info("Time to bootstrap");
 
@@ -128,19 +128,22 @@ public class TestInsertLeave extends AbstractFreePastryTest {
     @TestStep(range = "*", timeout = 10000, order = 4)
     public void testInsert() throws InterruptedException, RemoteException {
 
+        Random random = new Random();
         Thread.sleep(sleep);
         if (this.getPeerName() == 0) {
             List<PastContent> resultSet = new ArrayList<PastContent>();
 
             // these variables are final so that the continuation can access them
             for (int i = 0; i < OBJECTS; i++) {
-                final String s = "test" + peer.env.getRandomSource().nextInt();
+                final String s = "test" + random.nextInt();//peer.env.getRandomSource().nextInt();
 
                 // build the past content
-                final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //peer.insert(myContent);
 
-                peer.insert(myContent);
-                resultSet.add(myContent);
+
+                peer.put(s, s);
+                //resultSet.add(myContent);
 
             }
             this.put(-1, resultSet);

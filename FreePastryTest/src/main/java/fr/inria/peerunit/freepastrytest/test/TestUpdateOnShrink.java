@@ -1,5 +1,6 @@
 package fr.inria.peerunit.freepastrytest.test;
 
+import fr.inria.peerunit.freepastrytest.Content;
 import static fr.inria.peerunit.tester.Assert.inconclusive;
 
 import java.rmi.RemoteException;
@@ -141,7 +142,7 @@ public class TestUpdateOnShrink extends AbstractFreePastryTest {
 
     @TestStep(range = "*", timeout = 10000, order = 7)
     public void getHandle() {
-        List<PastContent> cont = peer.getInsertedContent();
+        List<Content> cont = peer.getInsertedContent();
         PastContentHandle pch;
         for (PastContent pc : cont) {
             pch = pc.getHandle(peer.getPast());

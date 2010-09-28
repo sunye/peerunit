@@ -1,5 +1,6 @@
 package fr.inria.peerunit.freepastrytest.test;
 
+import fr.inria.peerunit.freepastrytest.Content;
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -112,19 +113,22 @@ public class TestInsertJoinLeaveNew extends AbstractFreePastryTest {
     @TestStep(range = "*", timeout = 10000, order = 4)
     public void testInsert() throws InterruptedException, RemoteException {
 
+        Random random = new Random();
         Thread.sleep(sleep);
-        if (super.getPeerName() == 0) {
+        if (this.getPeerName() == 0) {
             List<PastContent> resultSet = new ArrayList<PastContent>();
 
             // these variables are final so that the continuation can access them
             for (int i = 0; i < OBJECTS; i++) {
-                final String s = "test" + peer.env.getRandomSource().nextInt();
+                final String s = "test" + random.nextInt();//peer.env.getRandomSource().nextInt();
 
                 // build the past content
-                final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //peer.insert(myContent);
 
-                peer.insert(myContent);
-                resultSet.add(myContent);
+
+                peer.put(s, s);
+                //resultSet.add(myContent);
 
             }
             this.put(-1, resultSet);
@@ -310,7 +314,7 @@ public class TestInsertJoinLeaveNew extends AbstractFreePastryTest {
 
     @TestStep(range = "*", timeout = 10000, order = 9)
     public void getHandle() {
-        List<PastContent> cont = peer.getInsertedContent();
+        List<Content> cont = peer.getInsertedContent();
         PastContentHandle pch;
         for (PastContent pc : cont) {
             pch = pc.getHandle(peer.getPast());

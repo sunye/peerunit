@@ -1,5 +1,6 @@
 package fr.inria.peerunit.freepastrytest.test;
 
+import fr.inria.peerunit.freepastrytest.Peer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -55,11 +56,14 @@ public class TestInsertJoinLeave extends AbstractFreePastryTest {
             InetSocketAddress bootaddress;
 
             bootaddress = new InetSocketAddress(bootaddr, bootport.intValue());
-            if (!peer.join(bindport, bootaddress, env, log, true)) {
+
+            peer = new Peer(bootaddress);
+
+            if (!peer.bootsrap()) {
                 inconclusive("I couldn't become a boostrapper, sorry");
             }
 
-            this.put(-2, peer.getInetSocketAddress(bootaddr));
+            this.put(-2, bootaddress);
             //log.info("Cached boot address: "+bootaddress.toString());
             //this.put(-1,bootaddress);
             log.info("Net created");
@@ -123,9 +127,9 @@ public class TestInsertJoinLeave extends AbstractFreePastryTest {
             Thread.sleep(this.getPeerName() * 1000);
             InetSocketAddress bootaddress = (InetSocketAddress) this.get(-2);
             log.info("Getting cached boot " + bootaddress.toString());
-            if (!peer.join(bindport, bootaddress, env, log)) {
-                inconclusive("Couldn't boostrap, sorry");
-            }
+//            if (!peer.join(bindport, bootaddress, env, log)) {
+//                inconclusive("Couldn't boostrap, sorry");
+//            }
             log.info("Running on port " + peer.getPort());
             log.info("Time to bootstrap");
 
@@ -134,30 +138,29 @@ public class TestInsertJoinLeave extends AbstractFreePastryTest {
     }
 
     @TestStep(range = "*", timeout = 10000, order = 4)
-    public void testInsert() {
-        try {
-            Thread.sleep(sleep);
-            if (this.getPeerName() == 0) {
-                List<PastContent> resultSet = new ArrayList<PastContent>();
+    public void testInsert() throws InterruptedException, RemoteException {
 
-                // these variables are final so that the continuation can access them
-                for (int i = 0; i < OBJECTS; i++) {
-                    final String s = "test" + peer.env.getRandomSource().nextInt();
+        Random random = new Random();
+        Thread.sleep(sleep);
+        if (this.getPeerName() == 0) {
+            List<PastContent> resultSet = new ArrayList<PastContent>();
 
-                    // build the past content
-                    final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+            // these variables are final so that the continuation can access them
+            for (int i = 0; i < OBJECTS; i++) {
+                final String s = "test" + random.nextInt();//peer.env.getRandomSource().nextInt();
 
-                    peer.insert(myContent);
-                    resultSet.add(myContent);
+                // build the past content
+                //final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
+                //peer.insert(myContent);
 
-                }
-                this.put(-1, resultSet);
+
+                peer.put(s, s);
+                //resultSet.add(myContent);
+
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            this.put(-1, resultSet);
         }
+
     }
 
     @TestStep(range = "*", timeout = 10000, order = 5)
@@ -218,9 +221,9 @@ public class TestInsertJoinLeave extends AbstractFreePastryTest {
             Thread.sleep(this.getPeerName() * 1000);
             InetSocketAddress bootaddress = (InetSocketAddress) this.get(-2);
             log.info("Getting cached boot " + bootaddress.toString());
-            if (!peer.join(bindport, bootaddress, env, log)) {
-                inconclusive("Couldn't boostrap, sorry");
-            }
+//            if (!peer.join(bindport, bootaddress, env, log)) {
+//                inconclusive("Couldn't boostrap, sorry");
+//            }
             while (!peer.isAlive()) {
                 log.info("I'm not ready yet ");
                 Thread.sleep(sleep);

@@ -1,103 +1,83 @@
 package fr.inria.peerunit.freepastrytest.test;
 
-import static fr.inria.peerunit.tester.Assert.inconclusive;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
-import rice.p2p.commonapi.Id;
-import rice.p2p.past.PastContent;
-import rice.p2p.past.PastContentHandle;
-import rice.tutorial.past.MyPastContent;
-import fr.inria.peerunit.TestCaseImpl;
-import fr.inria.peerunit.parser.AfterClass;
-import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.tester.Assert;
-import fr.inria.peerunit.freepastrytest.Network;
 import fr.inria.peerunit.freepastrytest.Peer;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 
-public class SimpleTest extends TestCaseImpl {
+import fr.inria.peerunit.parser.AfterClass;
+import fr.inria.peerunit.parser.TestStep;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+public class SimpleTest extends AbstractFreePastryTest {
     // logger from jdk
 
-    private static Logger log = Logger.getLogger(SimpleTest.class.getName());
-    // Freepastry peer
-    private Peer peer = new Peer();
+    private static final int PORT = 1200;
+    private static InetAddress HOST;
 
-    /**
-     * This method starts the this
-     */
-    @BeforeClass(range = "*", timeout = 100)
-    public void begin() {
-        log.info("Starting the test ");
+    public SimpleTest() throws UnknownHostException {
+        HOST = InetAddress.getLocalHost();
     }
 
-    @TestStep(range = "*", timeout = 10000, order = 1)
-    public void startingNetwork() {
-        try {
+    @TestStep(range = "0", timeout = 40000, order = 0)
+    public void startBootstrap() throws UnknownHostException, IOException,
+            InterruptedException {
 
-            log.info("Joining in first");
-            Network net = new Network();
-            Thread.sleep(this.getPeerName() * 1000);
+        InetSocketAddress address =
+                new InetSocketAddress(HOST, PORT);
 
-            if (!net.joinNetwork(peer, null, false, log)) {
-                inconclusive("I couldn't join, sorry");
-            }
-            log.info("Getting bootstrapper " + net.getInetSocketAddress().toString());
-            //log.info("Running on port " + peer.getPort());
-            log.info("Time to bootstrap");
+        peer = new Peer(address);
+        peer.bootsrap();
+        peer.createPast();
+        this.put(0, address);
+
+        //Thread.sleep(16000);
+    }
+
+    @TestStep(range = "1-*", timeout = 100000, order = 1)
+    public void startingNetwork() throws InterruptedException,
+            UnknownHostException, IOException {
 
 
+        Thread.sleep(this.getPeerName() * 100);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        InetSocketAddress address = (InetSocketAddress) this.get(0);
+
+        peer = new Peer(address);
+        peer.join();
+        peer.createPast();
     }
 
     /**
      * Stabilize the network.
      */
-    @TestStep(range = "*", timeout = 10000, order = 2)
-    public void stabilize() {
+    //@TestStep(range = "*", timeout = 100000, order = 2)
+    public void stabilize() throws InterruptedException {
+        assert peer != null;
+
         for (int i = 0; i < 4; i++) {
-            try {
-                // Force the routing table update
-                peer.pingNodes();
-                Thread.sleep(16000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            // Force the routing table update
+            peer.pingNodes();
+            Thread.sleep(1600);
         }
     }
 
     /**
      * Put some data and store in this variables.
      */
-    @TestStep(range = "0", timeout = 10000, order = 3)
-    public void put() {
+    @TestStep(range = "1", timeout = 10000, order = 3)
+    public void put() throws RemoteException, InterruptedException {
+        Random random = new Random();
+        Map<String, String> expecteds = new HashMap<String, String>();
+
         for (int i = 0; i < 2; i++) {
-            // build the past content
-            final String s = "test" + peer.env.getRandomSource().nextInt();
-            final PastContent myContent = new MyPastContent(peer.localFactory.buildId(s), s);
-            peer.insert(myContent);
-        }
-
-        // Wait until all the insert ends since it is asynchronous
-        while ((peer.getFailedContent().size() + peer.getInsertedContent().size()) < 2) {
-            log.info("Inserted so far : " + peer.getInsertedContent().size());
-            log.info("Failed so far : " + peer.getFailedContent().size());
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        List<PastContent> expecteds = new ArrayList<PastContent>();
-        for (PastContent content : peer.getInsertedContent()) {
-            log.info("Expected so far : " + content.toString());
-            expecteds.add(content);
+            String value = "test" + random.nextInt();
+            peer.put(value, value);
+            expecteds.put(value, value);
         }
 
         // Use a this variable to store the expected data
@@ -108,66 +88,22 @@ public class SimpleTest extends TestCaseImpl {
      * Get the data and the verdict.
      */
     @TestStep(range = "*", timeout = 10000, order = 4)
-    public void get() {
-        // Lookup
-        List<PastContent> expectedContent = (List<PastContent>) this.get(1);
-        Id contentKey;
+    public void get() throws RemoteException, InterruptedException {
+        Map<String, String> expectedContent = (Map<String, String>) this.get(1);
 
-        // Get the keys to lookup for data
-        for (PastContent key : expectedContent) {
-            contentKey = key.getId();
-            if (contentKey != null) {
-                log.info("Lookup Expected " + contentKey.toString());
-                peer.lookup(contentKey);
-            }
-        }
+        for (String key : expectedContent.keySet()) {
+            String result = peer.get(key);
+            assert expectedContent.get(key).equals(result) : "Wrong value.";
 
-        // Wait a little while for a response
-        try {
-            Thread.sleep(16000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        // A list to store the retrieved data
-        List<String> actuals = new ArrayList<String>();
-        for (Object actual : peer.getResultSet()) {
-            if (actual != null) {
-                if (!actuals.contains(actual.toString())) {
-                    log.info("[Local verdict] Actual " + actual.toString());
-                    actuals.add(actual.toString());
-                }
-            }
-        }
-
-        // Generating the expecteds list
-        List<String> expecteds = new ArrayList<String>();
-        for (PastContent expected : expectedContent) {
-            expecteds.add(expected.toString());
-        }
-
-        // Assigning a verdict
-        log.info("[Local verdict] Waiting a Verdict. Found " + actuals.size() + " of " + expecteds.size());
-        Assert.assertListEquals("[Local verdict] Arrays ", expecteds, actuals);
-    }
-
-    @TestStep(range = "*", timeout = 10000, order = 5)
-    public void getHandle() {
-        List<PastContent> cont = peer.getInsertedContent();
-        PastContentHandle pch;
-        for (PastContent pc : cont) {
-            pch = pc.getHandle(peer.getPast());
-            System.out.println("NodeHandle " + pch.getNodeHandle());
         }
     }
 
     /**
-     * This method finishes the this
+     * The peer leaves the system.
      *
      */
-    @AfterClass(timeout = 100, range = "*")
+    @AfterClass(timeout = 1000, range = "*")
     public void end() {
-        log.info("Peer bye bye");
+        peer.leave();
     }
 }
-

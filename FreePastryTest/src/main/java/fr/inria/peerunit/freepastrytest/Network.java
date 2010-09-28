@@ -57,7 +57,7 @@ public class Network {
             usedPort = port.getPort();
         }
 
-        joined = peer.join(usedPort, bootadd, env, log, createNetwork);
+        joined = peer.join();
         return joined;
     }
 
