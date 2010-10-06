@@ -128,6 +128,7 @@ public class StartClusterParent {
     // Same machine
     public static JobTracker jobtracker;
     public static NameNode namenode;
+    public static JobConf job;
 
     public Configuration getConfMR() throws IOException, InterruptedException {
 
@@ -181,7 +182,7 @@ public class StartClusterParent {
 
 	Configuration conf = getConfMR();
 	
-	JobConf job = new JobConf(conf);
+	job = new JobConf(conf);
 
 	try {
 
@@ -206,38 +207,71 @@ public class StartClusterParent {
 
    }
 
-/*
+   public class startTaskTracker implements Runnable {
 
-   @TestStep(order = 3, timeout = 100000, range = "*")
-   public void startTaskTracker() throws IOException, InterruptedException, RemoteException {
+	public void run() {
+   
+		try {
+			Configuration conf = getConfMR();
+	
+        		JobConf job = new JobConf(conf);
 
-	Configuration conf = getConfMR();
+        		Thread.sleep(sleep);
+        		log.info("Starting TaskTracker...");
+        		TaskTracker tt = new TaskTracker(job);
 
-	JobConf job = new JobConf(conf);
+		} catch(IOException e) {
 
-	Thread.sleep(sleep);
-	log.info("Starting TaskTracker...");
-        TaskTracker tt = new TaskTracker(job);
-	log.info("Stopping TaskTracker...");
-	//tt.shutdown();
+
+		} catch(InterruptedException ee) {
+
+
+		}
+	
+	}
 
    }
 
-   @TestStep(order = 4, timeout = 100000, range = "*")
-   public void startDataNode(String args[]) throws IOException, InterruptedException, RemoteException {
+   public void startDataNode() throws IOException, InterruptedException, RemoteException {
 
-
- 	DatanodeRegistration dr = DatanodeRegistration();
 
         Thread.sleep(sleep);
         log.info("Starting DataNode...");
 	Configuration cfg = getConfHDFS();
-	DataNode dn = DataNode.createDataNode(args,cfg);
+
+  	try {
+        
+	        java.net.InetAddress localMachine = java.net.InetAddress.getLocalHost();
+                String hostname = localMachine.getHostName();
+
+	if (hostname.equals("cohiba.c3sl.ufpr.br")) {
+        	cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/cohibaname/");
+        	cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/cohibadata/");
+	} else {
+		if (hostname.equals("macalan.c3sl.ufpr.br")) {
+			cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/macalanname/");
+                	cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/macalandata/");
+		} else {
+		
+			if (hostname.equals("dalmore.c3sl.ufpr.br")) {
+				cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/dalmorename/");
+                		cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/dalmoredata/");
+			}
+
+		} 
+
+	}
+
+        } catch (java.net.UnknownHostException uhe) {
+
+        }
+	String[] teste = {"-rollback"};
+
+	DataNode dn = DataNode.createDataNode(teste,cfg);
 	// args deveria ser passado na execucao para saber quais diretorios ele trabalharah...
 	String serveraddr = dn.getNamenode();
 	log.info("Connected to NameNode: " + serveraddr); 
 
 
    }
-*/
 }
