@@ -11,6 +11,7 @@ import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.hdfs.server.datanode.DataNode;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
+import org.apache.hadoop.examples.PiEstimator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,8 +74,12 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.math.BigDecimal;
 
 public class TestStartCluster extends StartClusterParent {
+
+    public static Thread ttThread;
+    public static startTaskTracker tasktracker;
 
     @BeforeClass(range = "*", timeout = 100000)
     public void bc() throws FileNotFoundException {
@@ -104,11 +109,39 @@ public class TestStartCluster extends StartClusterParent {
     @TestStep(order = 3, timeout = 100000, range = "*")
     public void startSlaves() throws IOException, InterruptedException {
 
-    }
+	tasktracker = new startTaskTracker();
+        ttThread = new Thread( tasktracker );
+	ttThread.start();
+	ttThread.sleep(5000);
+	//TaskTracker tasktracker = startTaskTracker();
+	startDataNode();
+    
+	}
 
-//   @AfterClass(range = "*", timeout = 100000)
+   @TestStep(order = 5, timeout = 100000, range = "0")
+   public void runJob() throws IOException, InterruptedException, RemoteException, Exception {
+
+	Configuration config = getConfMR();
+
+	// run PiEstimator
+	PiEstimator pi = new PiEstimator();
+
+	pi.setConf(config);
+
+	// pi.configure(job);
+
+	String[] argumentos = {"2","4"};
+
+	pi.run(argumentos);
+	
+
+//	BigDecimal piresult = pi.estimate(2,4,job);
+
+   }
+
+   @TestStep(order = 4, timeout = 100000, range = "*")
    public void stopCluster() throws IOException, InterruptedException, RemoteException {
-	// if is 1 then stop NameNode and JobTracker, else stop TaskTracker and DataNode
+
 
    }
 
