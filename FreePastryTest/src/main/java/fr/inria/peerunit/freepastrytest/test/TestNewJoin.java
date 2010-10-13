@@ -48,8 +48,8 @@ public class TestNewJoin extends AbstractFreePastryTest {
 
         Thread.sleep(sleep);
         if (this.getPeerName() % 2 != 0) {
-            log.info("My ID " + peer.getId());
-            for (NodeHandle nd : peer.getRoutingTable()) {
+            log.info("My ID " + peer.oldGetId());
+            for (NodeHandle nd : peer.oldGetRoutingTable()) {
                 log.info("Successor NodeId " + nd.getId());
                 firstSuccessors.add(nd.getNodeId());
             }
@@ -94,7 +94,7 @@ public class TestNewJoin extends AbstractFreePastryTest {
 
                 Thread.sleep(1000);
 
-                actuals = peer.getRoutingTable();
+                actuals = peer.oldGetRoutingTable();
 
                 for (NodeHandle nd : actuals) {
                     obj = nd.getNodeId();

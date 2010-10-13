@@ -6,7 +6,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +38,7 @@ import rice.persistence.StorageManagerImpl;
 import rice.tutorial.forwarding.MyMsg;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import rice.pastry.routing.RoutingTable;
 
 public class Peer implements Application {
 
@@ -195,6 +198,7 @@ public class Peer implements Application {
         final AtomicReference<Content> result = new AtomicReference<Content>();
 
         Continuation cont = new Continuation() {
+
             public void receiveResult(Object o) {
                 Content c = (Content) o;
                 if ((o != null) && (key.equals(c.getId()))) {
@@ -283,11 +287,13 @@ public class Peer implements Application {
         environment.destroy();
     }
 
+    @Deprecated
     public boolean isAlive() {
         return bootHandle.isAlive();
     }
 
-    public List<NodeHandle> getRoutingTable() {
+    @Deprecated
+    public List<NodeHandle> oldGetRoutingTable() {
         List<NodeHandle> list = new ArrayList<NodeHandle>();
         RouteSet[] routeSetVector;
         RouteSet routeSet;
@@ -307,6 +313,25 @@ public class Peer implements Application {
         return list;
     }
 
+    public Set<String> getRoutingTable() {
+        Set<String> result = new HashSet<String>();
+
+        RoutingTable rt = node.getRoutingTable();
+        for (int i = 0; i < rt.numRows(); i++) {
+            for (RouteSet rs : rt.getRow(i)) {
+                // rs can be null
+                if (rs != null) {
+                    for (NodeHandle handle : rs) {
+                        Id id = handle.getNodeId();
+                        result.add(id.toStringFull());
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
     public void pingNodes() {
         RouteSet[] routeSetVector;
         for (int i = 0; i < node.getRoutingTable().numRows(); i++) {
@@ -322,8 +347,17 @@ public class Peer implements Application {
     /*	public void ping(PastryNode nd){
     Ping pg = new Ping(nd);
     }*/
-    public Id getId() {
+    @Deprecated
+    public Id oldGetId() {
         return node.getNodeId();
+    }
+
+    /**
+     *
+     * @return The node Id, as String
+     */
+    public String getId() {
+        return node.getId().toStringFull();
     }
 
     public boolean isReady() {

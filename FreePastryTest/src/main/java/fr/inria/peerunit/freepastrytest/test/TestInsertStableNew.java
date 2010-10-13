@@ -29,7 +29,7 @@ public class TestInsertStableNew extends AbstractFreePastryTest {
     private List<String> expecteds = new ArrayList<String>();
 
     @TestStep(range = "0", timeout = 100000, order = 1)
-    public void startingNetwork() throws Exception {
+    public void startNetwork() throws Exception {
 //        this.bootstrap();
         Thread.sleep(sleep);
     }

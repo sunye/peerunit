@@ -42,9 +42,7 @@ public class SimpleTest extends AbstractFreePastryTest {
     public void startingNetwork() throws InterruptedException,
             UnknownHostException, IOException {
 
-
         Thread.sleep(this.getPeerName() * 100);
-
         InetSocketAddress address = (InetSocketAddress) this.get(0);
 
         peer = new Peer(address);
@@ -96,14 +94,5 @@ public class SimpleTest extends AbstractFreePastryTest {
             assert expectedContent.get(key).equals(result) : "Wrong value.";
 
         }
-    }
-
-    /**
-     * The peer leaves the system.
-     *
-     */
-    @AfterClass(timeout = 1000, range = "*")
-    public void end() {
-        peer.leave();
     }
 }
