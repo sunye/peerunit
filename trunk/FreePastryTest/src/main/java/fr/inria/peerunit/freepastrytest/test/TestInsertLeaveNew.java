@@ -29,7 +29,7 @@ public class TestInsertLeaveNew extends AbstractFreePastryTest {
     private List<PastContent> keySet;
 
     @TestStep(range = "*", timeout = 10000, order = 1)
-    public void startingNetwork() throws Exception {
+    public void startNetwork() throws Exception {
 
 
         if (this.getPeerName() == 0) {

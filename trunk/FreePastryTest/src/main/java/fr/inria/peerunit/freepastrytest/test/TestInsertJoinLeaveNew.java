@@ -34,7 +34,7 @@ public class TestInsertJoinLeaveNew extends AbstractFreePastryTest {
     private List<PastContent> keySet;
 
     @TestStep(range = "0", timeout = 10000, order = 1)
-    public void startingNetwork() throws Exception {
+    public void startNetwork() throws Exception {
 
         Thread.sleep(2000);
         if (super.getPeerName() == 0) {

@@ -5,18 +5,25 @@
 package fr.inria.peerunit.freepastrytest.test;
 
 
+import fr.inria.peerunit.parser.AfterClass;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.freepastrytest.Peer;
+import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.util.TesterUtil;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 /**
  * 
@@ -35,7 +42,21 @@ public class AbstractFreePastryTest {
 
     protected Peer peer;
 
-    //@BeforeClass(range = "*", timeout = 1000000)
+
+    private static final int PORT = 1200;
+    private static InetAddress HOST;
+
+    public AbstractFreePastryTest() {
+        try {
+            HOST = InetAddress.getLocalHost();
+        } catch (UnknownHostException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+    }
+
+
+
+    @BeforeClass(range = "*", timeout = 1000000)
     public void bc() throws FileNotFoundException {
         
         if (new File("peerunit.properties").exists()) {
@@ -96,6 +117,7 @@ public class AbstractFreePastryTest {
      * FIXME: Implement kill()
      */
     protected void kill() {
+        this.end();
     }
 
     /**
@@ -105,35 +127,38 @@ public class AbstractFreePastryTest {
     protected void clear() {
     }
 
-//    protected void bootstrap() throws UnknownHostException,
-//            InterruptedException, IOException {
-//
-//        Network net = new Network();
-//        if (!net.joinNetwork(peer, null, true, LOG)) {
-//            inconclusive("Can't bootstrap");
-//        }
-//
-//        this.put(-1, net.getInetSocketAddress());
-//        LOG.info(String.format("Net created at: %s", net.getInetSocketAddress()));
-//
-//        while (!peer.isReady()) {
-//            Thread.sleep(1000);
-//        }
-//    }
-//
-//    protected void join() throws InterruptedException, UnknownHostException, IOException {
-//        LOG.info("Joining network");
-//        Network net = new Network();
-//        Thread.sleep(this.getPeerName() * 1000);
-//
-//        InetSocketAddress bootaddress = (InetSocketAddress) this.get(-1);
-//
-//        if (!net.joinNetwork(peer, bootaddress, false, LOG)) {
-//            inconclusive("I couldn't join, sorry");
-//        }
-//
-//    }
+    /**
+     * The peer leaves the system.
+     *
+     */
+    @AfterClass(timeout = 1000, range = "*")
+    public void end() {
+        peer.leave();
+    }
 
-    
+    public void startBootstrap() throws UnknownHostException, IOException,
+            InterruptedException {
+
+        InetSocketAddress address =
+                new InetSocketAddress(HOST, PORT);
+
+        peer = new Peer(address);
+        peer.bootsrap();
+        peer.createPast();
+        this.put(0, address);
+
+        //Thread.sleep(16000);
+    }
+
+    public void startingNetwork() throws InterruptedException,
+            UnknownHostException, IOException {
+
+        Thread.sleep(this.getPeerName() * 100);
+        InetSocketAddress address = (InetSocketAddress) this.get(0);
+
+        peer = new Peer(address);
+        peer.join();
+        peer.createPast();
+    }
 
 }
