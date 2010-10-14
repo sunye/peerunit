@@ -12,17 +12,20 @@ public class Model {
 
     final private P2PSystem system = new P2PSystem();
     final private RemoteModelImpl remote;
-    final private Thread thread;
+    final private Thread nodeCreationThread;
+    final private Thread nodeUpdateThread;
     private boolean running = true;
 
     public Model(RemoteModelImpl rmi) {
         remote = rmi;
-        thread = new Thread(new ModelThread());
+        nodeCreationThread = new Thread(new NewNodeThread());
+        nodeUpdateThread = new Thread(new NodeUpdateThread());
 
     }
 
     public void start() {
-        thread.start();
+        nodeCreationThread.start();
+        nodeUpdateThread.start();
     }
 
     public void stop() {
@@ -33,13 +36,32 @@ public class Model {
         system.print();
     }
 
-    class ModelThread implements Runnable {
+    public boolean unicity() {
+        return system.unicity();
+    }
+
+    class NewNodeThread implements Runnable {
 
         public void run() {
             try {
                 while (running) {
                     String id = remote.takeNewNode();
                     system.newNode(id);
+                }
+            } catch (InterruptedException ex) {
+                //Nothing for now.
+            }
+
+        }
+    }
+
+    class NodeUpdateThread implements Runnable {
+
+        public void run() {
+            try {
+                while (running) {
+                    NodeUpdate nu = remote.takeNodeUpdate();
+                    system.nodeUpdate(nu.id(), nu.neighbors());
                 }
             } catch (InterruptedException ex) {
                 //Nothing for now.

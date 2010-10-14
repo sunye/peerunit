@@ -6,6 +6,7 @@
 package fr.inria.peerunit.freepastrytest.model;
 
 import java.rmi.RemoteException;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -17,12 +18,24 @@ public class RemoteModelImpl implements RemoteModel {
 
     BlockingQueue<String> newNodes = new LinkedBlockingQueue<String>();
 
+    BlockingQueue<NodeUpdate> nodeUpdates =
+            new LinkedBlockingQueue<NodeUpdate>();
+
     public void newNode(String id) throws RemoteException {
         newNodes.offer(id);
     }
+
+    public void updateNode(String id, Set<String> neighbors)
+            throws RemoteException {
+        nodeUpdates.offer(new NodeUpdate(id, neighbors));
+    }
+
 
     public String takeNewNode() throws InterruptedException {
         return newNodes.take();
     }
 
+    public NodeUpdate takeNodeUpdate() throws InterruptedException {
+        return nodeUpdates.take();
+    }
 }
