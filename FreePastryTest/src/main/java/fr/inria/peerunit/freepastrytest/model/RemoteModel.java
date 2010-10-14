@@ -7,6 +7,7 @@ package fr.inria.peerunit.freepastrytest.model;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Set;
 
 /**
  *
@@ -15,4 +16,7 @@ import java.rmi.RemoteException;
 public interface RemoteModel extends Remote {
 
     public void newNode(String id) throws RemoteException;
+
+    public void updateNode(String id, Set<String> neighbors)
+            throws RemoteException;
 }

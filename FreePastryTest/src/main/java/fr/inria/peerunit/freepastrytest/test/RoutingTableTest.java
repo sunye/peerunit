@@ -18,6 +18,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,6 +27,7 @@ import java.util.Set;
  */
 public class RoutingTableTest extends AbstractFreePastryTest {
 
+    private static Logger LOG = Logger.getLogger(RoutingTableTest.class.getName());
     private static final int PORT = 8282;
     private Model model;
     private RemoteModel remoteModel;
@@ -43,7 +46,7 @@ public class RoutingTableTest extends AbstractFreePastryTest {
 
     }
 
-    @TestStep(range = "*", order = 2, timeout = 2000)
+    @TestStep(range = "*", order = 2, timeout = 40000)
     public void lookupModel() throws RemoteException, NotBoundException {
 
         String hostName = (String) this.get(1);
@@ -76,8 +79,17 @@ public class RoutingTableTest extends AbstractFreePastryTest {
     }
 
     @TestStep(range = "1-*", order = 6)
-    public void updateModel() {
+    public void updateModel() throws RemoteException {
+
+        LOG.log(Level.INFO, "Neighbors size: {0}", peer.getRoutingTable().size());
+        remoteModel.updateNode(peer.getId(),peer.getRoutingTable() );
     }
+
+    @TestStep(range = "6", order = 7)
+    public void unicity() {
+        assert model.unicity() : "Unicity";
+    }
+
 
     @TestStep(range = "6", order = 20)
     public void print() {
