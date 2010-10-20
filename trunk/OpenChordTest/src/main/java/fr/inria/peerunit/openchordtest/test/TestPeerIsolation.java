@@ -21,13 +21,13 @@ import fr.inria.peerunit.util.TesterUtil;
  */
 public class TestPeerIsolation extends AbstractOpenChordTest {
 
-    private static Logger log = Logger.getLogger(TestPeerIsolation.class.getName());
+    private static final Logger LOG = Logger.getLogger(TestPeerIsolation.class.getName());
     private List<String> volatiles = new ArrayList<String>();
     private static final long serialVersionUID = 1L;
 
     public TestPeerIsolation() {
         super();
-        callback.setCallback(OBJECTS, log);
+        callback.setCallback(OBJECTS, LOG);
         // TODO Auto-generated constructor stub
     }
 
@@ -40,10 +40,10 @@ public class TestPeerIsolation extends AbstractOpenChordTest {
         if (this.getPeerName() == 0) {
             chosePeer = rand.nextInt(this.getCollection().size());
             ID id = (ID) this.get(chosePeer);
-            log.info("Chose peer " + chosePeer + " ID " + chord.getID());
+            LOG.info("Chose peer " + chosePeer + " ID " + getChord().getID());
             this.clear();
             Thread.sleep(sleep);
-            this.put(-1, chord.getID());
+            this.put(-1, getChord().getID());
         }
 
     }
@@ -55,14 +55,14 @@ public class TestPeerIsolation extends AbstractOpenChordTest {
 
 
         Object obj = this.get(-1);
-        chordPrint = (ChordImpl) chord;
+        chordPrint = (ChordImpl) getChord();
         if (obj instanceof ID) {
             ID id = (ID) obj;
-            log.info("I am " + chord.getID() + " and the chose was  ID " + id);
+            LOG.info("I am " + getChord().getID() + " and the chose was  ID " + id);
 
             // Only the chose peer store its table now
-            if (chord.getID().toString().equals(id.toString())) {
-                log.info("Let's see the list");
+            if (getChord().getID().toString().equals(id.toString())) {
+                LOG.info("Let's see the list");
 
                 Thread.sleep(sleep);
 
@@ -74,7 +74,7 @@ public class TestPeerIsolation extends AbstractOpenChordTest {
                 for (int i = 0; i < succ.length; i++) {
                     if (i > 0) {
                         successor = succ[i].toString().trim();
-                        log.info("Successor List " + successor);
+                        LOG.info("Successor List " + successor);
                         volatiles.add(successor);
                     }
                 }
@@ -90,7 +90,7 @@ public class TestPeerIsolation extends AbstractOpenChordTest {
 
         Thread.sleep(sleep);
 
-        String idToSearch = chord.getID().toString().substring(0, 2) + " " + localURL.toString().trim();
+        String idToSearch = getChord().getID().toString().substring(0, 2) + " " + localURL.toString().trim();
         String[] succ = (String[]) this.get(-2);
 
         String successor = null;
@@ -98,7 +98,7 @@ public class TestPeerIsolation extends AbstractOpenChordTest {
             successor = succ[i].toString().trim();
             if (successor.equalsIgnoreCase(idToSearch)) {
                 //test.put(test.getPeerName(),idToSearch);
-                log.info("Leaving early " + idToSearch);
+                LOG.info("Leaving early " + idToSearch);
                 this.kill();
 
                 Thread.sleep(sleep);
@@ -111,17 +111,17 @@ public class TestPeerIsolation extends AbstractOpenChordTest {
     public void searchingNeighbours() throws RemoteException, InterruptedException {
 
         Object obj = this.get(-1);
-        chordPrint = (ChordImpl) chord;
+        chordPrint = (ChordImpl) getChord();
         if (obj instanceof ID) {
             ID id = (ID) obj;
-            if (chord.getID().toString().equals(id.toString())) {
+            if (getChord().getID().toString().equals(id.toString())) {
 
                 //Iterations to find someone in the routing table
                 int timeToClean = 0;
 
                 boolean tableUpdated = false;
                 while (!tableUpdated && timeToClean < TesterUtil.instance.getLoopToFail()) {
-                    log.info(" Let's verify the table " + timeToClean);
+                    LOG.info(" Let's verify the table " + timeToClean);
 
 
                     Thread.sleep(1000);
@@ -133,7 +133,7 @@ public class TestPeerIsolation extends AbstractOpenChordTest {
                     for (int i = 0; i < succ.length; i++) {
                         if (i > 0) {
                             successor = succ[i].toString().trim();
-                            log.info("New Successor List " + successor);
+                            LOG.info("New Successor List " + successor);
                             //if((successor.equalsIgnoreCase(chord.getID().toString().trim())) && (!volatiles.contains(successor))){
                             if (!volatiles.contains(successor)) {
                                 tableUpdated = true;
@@ -153,6 +153,6 @@ public class TestPeerIsolation extends AbstractOpenChordTest {
 
     @AfterClass(timeout = 100000, range = "*")
     public void end() {
-        log.info("[OpenChord] Peer bye bye");
+        LOG.info("[OpenChord] Peer bye bye");
     }
 }

@@ -32,7 +32,7 @@ public class Bootstrap {
             handler.setFormatter(new LogFormat());
             log.addHandler(handler);
 
-            Peer peer = new Peer();
+            PastryPeer peer = new PastryPeer();
             Network net = new Network();
             if (!net.joinNetwork(peer, null, true, log)) {
                 throw new BootException("Can't bootstrap");

@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.freepastrytest.Peer;
+import fr.inria.peerunit.freepastrytest.PastryPeer;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
@@ -40,7 +40,7 @@ public class AbstractFreePastryTest {
     protected int churnPercentage;
     protected int OBJECTS;
 
-    protected Peer peer;
+    protected PastryPeer peer;
 
 
     private static final int PORT = 1200;
@@ -142,7 +142,7 @@ public class AbstractFreePastryTest {
         InetSocketAddress address =
                 new InetSocketAddress(HOST, PORT);
 
-        peer = new Peer(address);
+        peer = new PastryPeer(address);
         peer.bootsrap();
         peer.createPast();
         this.put(0, address);
@@ -156,7 +156,7 @@ public class AbstractFreePastryTest {
         Thread.sleep(this.getPeerName() * 100);
         InetSocketAddress address = (InetSocketAddress) this.get(0);
 
-        peer = new Peer(address);
+        peer = new PastryPeer(address);
         peer.join();
         peer.createPast();
     }

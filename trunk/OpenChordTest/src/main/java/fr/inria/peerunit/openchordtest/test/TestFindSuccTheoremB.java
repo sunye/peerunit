@@ -24,17 +24,7 @@ public class TestFindSuccTheoremB extends AbstractOpenChordTest {
 
     @TestStep(order = 2,   timeout = 10000000, range = "*")
     public void find() throws Exception {
-
-        chordPrint = (ChordImpl) chord;
-
-        Thread.sleep(sleep);
-        log.info("My ID is " + chord.getID());
-        String[] succ = chordPrint.printSuccessorList().split("\n");
-        for (String succList : succ) {
-            log.info("Successor List " + succList + " size " + succ.length);
-        }
-
-
+    	peer.print();
     }
 
     @TestStep(order = 4, timeout = 10000000, range = "*")
@@ -46,8 +36,8 @@ public class TestFindSuccTheoremB extends AbstractOpenChordTest {
         if (this.getName() % 10 == 9) {
             log.info("Leaving early");
 
-            chord.leave();
-            String insertValue = chord.getID().toString().substring(0, 2) + " " + localURL.toString();
+            getChord().leave();
+            String insertValue = getChord().getID().toString().substring(0, 2) + " " + localURL.toString();
             this.put(this.getName(), insertValue);
             log.info("Cached " + insertValue);
 
@@ -112,7 +102,7 @@ public class TestFindSuccTheoremB extends AbstractOpenChordTest {
     public void end() throws Exception {
         if (this.getName() % 10 != 9) {
             Thread.sleep(sleep);
-            chord.leave();
+            getChord().leave();
             log.info("Peer bye bye");
         }
     }

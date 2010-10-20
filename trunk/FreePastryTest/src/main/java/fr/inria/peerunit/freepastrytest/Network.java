@@ -31,7 +31,7 @@ public class Network {
         }
     }
 
-    public boolean joinNetwork(Peer peer, InetSocketAddress bootaddress, boolean createNetwork, Logger log) throws UnknownHostException, InterruptedException, IOException {
+    public boolean joinNetwork(PastryPeer peer, InetSocketAddress bootaddress, boolean createNetwork, Logger log) throws UnknownHostException, InterruptedException, IOException {
         bootadd = bootaddress;
         Environment env = new Environment();
 
