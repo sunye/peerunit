@@ -5,6 +5,9 @@ rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dfs/cohibadata/
 rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dfs/macalandata/
 rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dfs/dalmoredata/
 
+rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/
+rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dir2data/
+
 rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/PiEstimator_TMP_3_141592654
 
 # Teste
