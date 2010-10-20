@@ -140,7 +140,7 @@ public class StartClusterParent {
 	//conf.set("mapred.tasktracker.map.tasks.maximum","1");
 	//conf.set("mapred.tasktracker.reduce.tasks.maximum","1");
 	conf.set("mapred.child.java.opts","-Xmx1024m -XX:-UseGCOverheadLimit");
-        conf.set("mapred.job.reuse.jvm.num.tasks","1");	
+        //conf.set("mapred.job.reuse.jvm.num.tasks","1");	
 	return conf;
 
     }

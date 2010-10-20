@@ -11,7 +11,6 @@ import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.hdfs.server.datanode.DataNode;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
-import org.apache.hadoop.examples.PiEstimator;
 import org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode;
 import org.apache.hadoop.mapred.JobClient;
 
@@ -114,35 +113,41 @@ public class TestStartCluster extends StartClusterParent {
     }
  
     @TestStep(order = 4, timeout = 100000, range = "*")
-    public void startSlaves() throws IOException, InterruptedException {
+    public void startTaskTracker() throws IOException, InterruptedException {
 
 	tasktracker = new startTaskTracker();
         ttThread = new Thread( tasktracker );
 	ttThread.start();
 	ttThread.sleep(5000);
-	//TaskTracker tasktracker = startTaskTracker();
-	startDataNode();
-    
-	}
+	
+   }
+
+   @TestStep(order = 5, timeout = 100000, range = "*")
+    public void startDataNode() throws IOException, InterruptedException {
+     
+	   startDataNode();
+
+   }
 
    @TestStep(order = 6, timeout = 100000, range = "0")
    public void runJob() throws IOException, InterruptedException, RemoteException, Exception {
-
 	Configuration config = getConfMR();
 
 	log.info("Starting PI");
 	// run PiEstimator
+
 	PiEstimator pi = new PiEstimator();
 
 	pi.setConf(config);
 
-//	pi.configure(job);
+	pi.setJobConf(job, config);
 
-	String[] argumentos = {"4","4"};
+	pi.setJobTrackerAddress("cohiba.c3sl.ufpr.br",9000);
+
+	String[] argumentos = {"4","20"};
 
 	pi.run(argumentos);
 
-	JobClient.runJob(job);
 
    }
 
