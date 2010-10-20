@@ -104,9 +104,9 @@ public class TestInsertJoinB extends AbstractOpenChordTest {
 
             Thread.sleep(100 * this.getPeerName());
             log.info("LocalURL: " + localURL.toString());
-            chord.join(localURL, bootstrapURL);
+            getChord().join(localURL, bootstrapURL);
 
-            log.info("Joining Chord DHT: " + chord.toString());
+            log.info("Joining Chord DHT: " + getChord().toString());
 
 
 
@@ -125,7 +125,7 @@ public class TestInsertJoinB extends AbstractOpenChordTest {
             data = "" + i;
             log.info("[TestDbpartout] Inserting data " + data);
             key = new StringKey(data);
-            chord.insert(key, data, callback);
+            getChord().insert(key, data, callback);
             insertedKeys.add(key);
         }
     }
@@ -139,7 +139,7 @@ public class TestInsertJoinB extends AbstractOpenChordTest {
             for (int i = 0; i < OBJECTS; i++) {
                 data = "" + i;
                 key = new StringKey(data);
-                chord.retrieve(key, callback);
+                getChord().retrieve(key, callback);
             }
             callback.retr++;
             Thread.sleep(sleep);
@@ -182,9 +182,9 @@ public class TestInsertJoinB extends AbstractOpenChordTest {
 
             Thread.sleep(100 * this.getPeerName());
             log.info("LocalURL: " + localURL.toString());
-            chord.join(localURL, bootstrapURL);
+            getChord().join(localURL, bootstrapURL);
 
-            log.info("Joining Chord DHT: " + chord.toString());
+            log.info("Joining Chord DHT: " + getChord().toString());
 
 
 
@@ -202,7 +202,7 @@ public class TestInsertJoinB extends AbstractOpenChordTest {
             for (int i = 0; i < OBJECTS; i++) {
                 data = "" + i;
                 key = new StringKey(data);
-                chord.retrieve(key, callback);
+                getChord().retrieve(key, callback);
             }
             callback.retr++;
             Thread.sleep(sleep);

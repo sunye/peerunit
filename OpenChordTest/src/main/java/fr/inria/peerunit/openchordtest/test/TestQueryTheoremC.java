@@ -33,10 +33,10 @@ public class TestQueryTheoremC extends AbstractOpenChordTest {
     @TestStep(order = 2, timeout = 100000, range = "*")
     public void find() throws InterruptedException {
 
-        chordPrint = (ChordImpl) chord;
+        chordPrint = (ChordImpl) getChord();
 
         Thread.sleep(sleep);
-        log.info("[TestDbpartout] My ID is " + chord.getID());
+        log.info("[TestDbpartout] My ID is " + getChord().getID());
         String[] succ = chordPrint.printSuccessorList().split("\n");
         for (String succList : succ) {
             log.info("[TestDbpartout] Successor List " + succList + " size " + succ.length);
@@ -64,7 +64,7 @@ public class TestQueryTheoremC extends AbstractOpenChordTest {
             data = "" + i;
             log.info("[TestDbpartout] Inserting data " + data);
             key = new StringKey(data);
-            chord.insert(key, data, callback);
+            getChord().insert(key, data, callback);
             insertedKeys.add(key);
             resultSet.add(data);
         }
@@ -90,7 +90,7 @@ public class TestQueryTheoremC extends AbstractOpenChordTest {
         if (this.getName() % 2 == 0) {
             log.info("[TestDbpartout] Leaving early");
             try {
-                chord.leave();
+                getChord().leave();
             } catch (ServiceException e) {
                 e.printStackTrace();
             }
@@ -114,7 +114,7 @@ public class TestQueryTheoremC extends AbstractOpenChordTest {
                 for (int i = 0; i < OBJECTS; i++) {
                     data = "" + i;
                     key = new StringKey(data);
-                    chord.retrieve(key, callback);
+                    getChord().retrieve(key, callback);
                 }
                 callback.retr++;
                 String[] succ = chordPrint.printSuccessorList().split("\n");
@@ -168,7 +168,7 @@ public class TestQueryTheoremC extends AbstractOpenChordTest {
         if (this.getName() % 2 != 0) {
 
             Thread.sleep(sleep);
-            chord.leave();
+            getChord().leave();
         }
 
         log.info("[TestDbpartout] Peer bye bye");

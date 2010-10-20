@@ -88,7 +88,7 @@ public class TestInsertLeaveB extends AbstractOpenChordTest {
             data = "" + i;
             log.info("[TestDbpartout] Inserting data " + data);
             key = new StringKey(data);
-            chord.insert(key, data, callback);
+            getChord().insert(key, data, callback);
             map.put(key, data);
         }
 
@@ -114,7 +114,7 @@ public class TestInsertLeaveB extends AbstractOpenChordTest {
                 for (int i = 0; i < OBJECTS; i++) {
                     data = "" + i;
                     key = new StringKey(data);
-                    chord.retrieve(key, callback);
+                    getChord().retrieve(key, callback);
                 }
                 callback.retr++;
                 Thread.sleep(sleep);
@@ -134,7 +134,7 @@ public class TestInsertLeaveB extends AbstractOpenChordTest {
             String[] succ;
             //storing my table
             String successor = null;
-            chordPrint = (ChordImpl) chord;
+            chordPrint = (ChordImpl) getChord();
             succ = chordPrint.printSuccessorList().split("\n");
             for (int i = 0; i < succ.length; i++) {
                 if (i > 0) {
@@ -159,13 +159,13 @@ public class TestInsertLeaveB extends AbstractOpenChordTest {
             Thread.sleep(sleep);
             if (chosenOne(test.getPeerName())) {
                 log.info("Leaving early ");
-                chord.leave();
+                getChord().leave();
             }
             String[] succ;
             //storing my table
             String successor = null;
             Thread.sleep(sleep);
-            chordPrint = (ChordImpl) chord;
+            chordPrint = (ChordImpl) getChord();
             succ = chordPrint.printSuccessorList().split("\n");
             for (int i = 0; i < succ.length; i++) {
                 if (i > 0) {
@@ -186,7 +186,7 @@ public class TestInsertLeaveB extends AbstractOpenChordTest {
                     for (int i = 0; i < OBJECTS; i++) {
                         data = "" + i;
                         key = new StringKey(data);
-                        chord.retrieve(key, callback);
+                        getChord().retrieve(key, callback);
                     }
                     callback.retr++;
                     Thread.sleep(sleep);

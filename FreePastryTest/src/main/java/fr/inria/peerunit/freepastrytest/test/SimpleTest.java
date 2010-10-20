@@ -1,6 +1,6 @@
 package fr.inria.peerunit.freepastrytest.test;
 
-import fr.inria.peerunit.freepastrytest.Peer;
+import fr.inria.peerunit.freepastrytest.PastryPeer;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -30,7 +30,7 @@ public class SimpleTest extends AbstractFreePastryTest {
         InetSocketAddress address =
                 new InetSocketAddress(HOST, PORT);
 
-        peer = new Peer(address);
+        peer = new PastryPeer(address);
         peer.bootsrap();
         peer.createPast();
         this.put(0, address);
@@ -45,7 +45,7 @@ public class SimpleTest extends AbstractFreePastryTest {
         Thread.sleep(this.getPeerName() * 100);
         InetSocketAddress address = (InetSocketAddress) this.get(0);
 
-        peer = new Peer(address);
+        peer = new PastryPeer(address);
         peer.join();
         peer.createPast();
     }

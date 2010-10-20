@@ -1,6 +1,6 @@
 package fr.inria.peerunit.freepastrytest.test;
 
-import fr.inria.peerunit.freepastrytest.Peer;
+import fr.inria.peerunit.freepastrytest.PastryPeer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -57,7 +57,7 @@ public class TestInsertJoinLeave extends AbstractFreePastryTest {
 
             bootaddress = new InetSocketAddress(bootaddr, bootport.intValue());
 
-            peer = new Peer(bootaddress);
+            peer = new PastryPeer(bootaddress);
 
             if (!peer.bootsrap()) {
                 inconclusive("I couldn't become a boostrapper, sorry");

@@ -6,11 +6,11 @@ package fr.inria.peerunit.openchordtest.test;
 
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.AsynChord;
-import de.uniba.wiai.lspi.chord.service.PropertiesLoader;
+import de.uniba.wiai.lspi.chord.service.ServiceException;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
+import fr.inria.peerunit.openchordtest.ChordPeer;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.openchordtest.DbCallback;
-import fr.inria.peerunit.openchordtest.util.FreeLocalPort;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
@@ -19,7 +19,11 @@ import fr.inria.peerunit.util.TesterUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -30,7 +34,7 @@ import java.util.logging.Logger;
  */
 public class AbstractOpenChordTest {
 
-    private static Logger log = Logger.getLogger(AbstractOpenChordTest.class.getName());
+    private static final Logger log = Logger.getLogger(AbstractOpenChordTest.class.getName());
     private int id;
     private GlobalVariables globals;
     protected TesterUtil defaults;
@@ -41,7 +45,13 @@ public class AbstractOpenChordTest {
     protected DbCallback callback = new DbCallback();
     protected ChordImpl chordPrint = null;
     protected int OBJECTS;
+    // new
+    protected ChordPeer peer;
+    private static final int PORT = 1200;
+    private static InetAddress HOST;
 
+    public AbstractOpenChordTest() {
+    }
 
     @SetId
     public void setId(int i) {
@@ -78,20 +88,18 @@ public class AbstractOpenChordTest {
         return id;
     }
 
-    protected Map<Integer,Object> getCollection() throws RemoteException {
+    protected Map<Integer, Object> getCollection() throws RemoteException {
         return globals.getCollection();
     }
 
     protected void kill() {
-        
     }
 
     protected void clear() {
-        
     }
 
     @BeforeClass(range = "*", timeout = 1000000)
-    public void bc() throws FileNotFoundException {
+    public void initialize() throws FileNotFoundException {
         if (new File("peerunit.properties").exists()) {
             String filename = "peerunit.properties";
             FileInputStream fs = new FileInputStream(filename);
@@ -101,32 +109,41 @@ public class AbstractOpenChordTest {
         }
         size = defaults.getObjects();
         sleep = defaults.getSleep();
-        OBJECTS =defaults.getObjects();
+        OBJECTS = defaults.getObjects();
         log.info("Starting test DHT ");
     }
 
-    @TestStep(order = 1, range = "*", timeout = 10000)
+    //@TestStep(order = 1, range = "*", timeout = 10000)
     public void init() throws Exception {
-        log.info("Sleeping: " + sleep);
-        Thread.sleep(sleep);
-        log.info("wake up !");
-        PropertiesLoader.loadPropertyFile();
-        log.info("property filr loaded");
-        String protocol = URL.KNOWN_PROTOCOLS.get(URL.SOCKET_PROTOCOL);
-        log.info("Peer name " + this.getId());
-        String address = InetAddress.getLocalHost().toString();
-        address = address.substring(address.indexOf("/") + 1, address.length());
-        FreeLocalPort port = new FreeLocalPort();
-        log.info("Address: " + address + " on port " + port.getPort());
-        localURL = new URL(protocol + "://" + address + ":" + port.getPort() + "/");
-        URL bootstrapURL = new URL(protocol + "://" + defaults.getBootstrap() + ":" + defaults.getBootstrapPort() + "/");
-        chord = new ChordImpl();
-        Thread.sleep(100 * this.getId());
-        log.info("LocalURL: " + localURL.toString());
-        chord.join(localURL, bootstrapURL);
-        log.info("Joining Chord DHT: " + chord.toString());
-        log.info("Peer init");
+        peer.join();
     }
 
 
+    /**
+     * @return the chord
+     */
+    public AsynChord getChord() {
+        return chord;
+    }
+
+    public void startBootstrap() throws IOException, InterruptedException {
+
+        InetSocketAddress address =
+                new InetSocketAddress(HOST, PORT);
+
+        peer = new ChordPeer(address);
+        peer.bootsrap();
+        this.put(0, address);
+
+        //Thread.sleep(16000);
+    }
+
+        public void startingNetwork() throws Exception {
+
+        Thread.sleep(this.getPeerName() * 100);
+        InetSocketAddress address = (InetSocketAddress) this.get(0);
+
+        peer = new ChordPeer(address);
+        peer.join();
+    }
 }

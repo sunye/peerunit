@@ -33,9 +33,9 @@ public class TestNewJoin extends AbstractOpenChordTest {
 
 
         if (this.getPeerName() % 2 != 0) {
-            chordPrint = (ChordImpl) chord;
+            chordPrint = (ChordImpl) getChord();
             Thread.sleep(sleep);
-            log.info("My ID is " + chord.getID());
+            log.info("My ID is " + getChord().getID());
             String[] succ = chordPrint.printSuccessorList().split("\n");
             String successor = null;
             for (int i = 0; i < succ.length; i++) {
@@ -77,9 +77,9 @@ public class TestNewJoin extends AbstractOpenChordTest {
 
             Thread.sleep(100 * this.getPeerName());
             log.info("LocalURL: " + localURL.toString());
-            chord.join(localURL, bootstrapURL);
+            getChord().join(localURL, bootstrapURL);
 
-            log.info("Joining Chord DHT: " + chord.toString());
+            log.info("Joining Chord DHT: " + getChord().toString());
 
 
 

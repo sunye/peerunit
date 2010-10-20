@@ -27,10 +27,10 @@ public class TestUpdateOnShrink extends AbstractOpenChordTest {
     @TestStep(order = 2, timeout = 100000, range = "*")
     public void find() throws InterruptedException {
 
-        chordPrint = (ChordImpl) chord;
+        chordPrint = (ChordImpl) getChord();
 
         Thread.sleep(sleep);
-        log.info("My ID is " + chord.getID());
+        log.info("My ID is " + getChord().getID());
         String[] succ = chordPrint.printSuccessorList().split("\n");
         for (String succList : succ) {
             log.info("Successor List " + succList + " size " + succ.length);
@@ -45,8 +45,8 @@ public class TestUpdateOnShrink extends AbstractOpenChordTest {
 
         if (this.getName() % 2 == 0) {
             log.info("Leaving early");
-            chord.leave();
-            String insertValue = chord.getID().toString().substring(0, 2) + " " + localURL.toString();
+            getChord().leave();
+            String insertValue = getChord().getID().toString().substring(0, 2) + " " + localURL.toString();
             this.put(this.getName(), insertValue);
             log.info("Cached " + insertValue);
         }
@@ -111,7 +111,7 @@ public class TestUpdateOnShrink extends AbstractOpenChordTest {
         if (this.getName() % 2 != 0) {
 
             Thread.sleep(sleep);
-            chord.leave();
+            getChord().leave();
 
 
             log.info("Peer bye bye");

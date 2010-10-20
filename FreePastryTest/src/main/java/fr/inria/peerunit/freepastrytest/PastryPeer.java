@@ -40,7 +40,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import rice.pastry.routing.RoutingTable;
 
-public class Peer implements Application {
+public class PastryPeer implements Application {
 
     private PastryIdFactory pastryIdFactory;
     private Environment environment;
@@ -52,7 +52,7 @@ public class Peer implements Application {
     // construct a node, passing the null boothandle on the first loop will cause the node to start its own ring
     private PastryNode node;
     private Past app;
-    private static final Logger LOG = Logger.getLogger(Peer.class.getName());
+    private static final Logger LOG = Logger.getLogger(PastryPeer.class.getName());
     private List<Content> resultSet = new ArrayList<Content>();
     private List<Id> nullResult = new ArrayList<Id>();
     private List<Content> insertedContent = new ArrayList<Content>();
@@ -64,13 +64,13 @@ public class Peer implements Application {
     private final Condition dataRetrieved = lock.newCondition();
     private InetSocketAddress socketAddress;
 
-    public Peer(InetSocketAddress address) throws IOException {
+    public PastryPeer(InetSocketAddress address) throws IOException {
         socketAddress = address;
         environment = new Environment();
         nidFactory = new RandomNodeIdFactory(environment);
     }
 
-    public Peer() throws UnknownHostException, IOException {
+    public PastryPeer() throws UnknownHostException, IOException {
         this(new InetSocketAddress(InetAddress.getLocalHost(), 1200));
     }
 
@@ -409,7 +409,7 @@ public class Peer implements Application {
     public static void main(String[] argv) throws UnknownHostException, IOException, InterruptedException {
         InetSocketAddress address =
                 new InetSocketAddress(InetAddress.getLocalHost(), 1200);
-        Peer p = new Peer(address);
+        PastryPeer p = new PastryPeer(address);
         System.out.println("#");
 
         System.out.println(Integer.parseInt("*"));

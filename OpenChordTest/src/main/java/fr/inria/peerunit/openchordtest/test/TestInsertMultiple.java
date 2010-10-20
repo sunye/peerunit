@@ -34,10 +34,10 @@ public class TestInsertMultiple extends AbstractOpenChordTest {
     @TestStep(order = 2, timeout = 100000, range = "*")
     public void find() throws InterruptedException {
 
-        chordPrint = (ChordImpl) chord;
+        chordPrint = (ChordImpl) getChord();
 
         Thread.sleep(sleep);
-        log.info("My ID is " + chord.getID());
+        log.info("My ID is " + getChord().getID());
         String[] succ = chordPrint.printSuccessorList().split("\n");
         for (String succList : succ) {
             log.info("Successor List " + succList + " size " + succ.length);
@@ -55,7 +55,7 @@ public class TestInsertMultiple extends AbstractOpenChordTest {
 
         log.info("[TestDbpartout] Inserting data " + data);
         key = new StringKey(data);
-        chord.insert(key, data, callback);
+        getChord().insert(key, data, callback);
 
         log.info("[TestDbpartout] Will cache ");
         log.info("[TestDbpartout] Caching data " + data);
@@ -75,7 +75,7 @@ public class TestInsertMultiple extends AbstractOpenChordTest {
             for (int i = 0; i < OBJECTS; i++) {
                 data = "" + i;
                 key = new StringKey(data);
-                chord.retrieve(key, callback);
+                getChord().retrieve(key, callback);
             }
             callback.retr++;
             Thread.sleep(sleep);

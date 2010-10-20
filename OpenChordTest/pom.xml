@@ -4,81 +4,104 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:xs="http://www.w3.org/2001/XMLSchema"
          xmlns:ns="http://maven.apache.org/POM/4.0.0">
-  <parent>
+    <parent>
+        <groupId>fr.inria.peerunit</groupId>
+
+        <artifactId>PeerUnitProject</artifactId>
+
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
     <groupId>fr.inria.peerunit</groupId>
 
-    <artifactId>PeerUnitProject</artifactId>
+    <artifactId>OpenChordTest</artifactId>
+
+    <packaging>jar</packaging>
 
     <version>1.0-SNAPSHOT</version>
-  </parent>
 
-  <modelVersion>4.0.0</modelVersion>
+    <name>OpenChordTest</name>
 
-  <groupId>fr.inria.peerunit</groupId>
+    <url>http://maven.apache.org</url>
 
-  <artifactId>OpenChordTest</artifactId>
+    <properties>
+        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+    </properties>
 
-  <packaging>jar</packaging>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>1.4</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
 
-  <version>1.0-SNAPSHOT</version>
+                <artifactId>maven-compiler-plugin</artifactId>
 
-  <name>OpenChordTest</name>
+                <configuration>
+                    <source>1.5</source>
 
-  <url>http://maven.apache.org</url>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
 
-  <properties>
-    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-  </properties>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
 
-        <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.2-beta-4</version>
 
-        <configuration>
-          <source>1.5</source>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-
-        <artifactId>maven-assembly-plugin</artifactId>
-
-        <version>2.2-beta-4</version>
-
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <dependencies>
-    <dependency>
-      <groupId>fr.inria.peerunit</groupId>
-
-      <artifactId>PeerUnit</artifactId>
-
-      <version>1.1-SNAPSHOT</version>
-
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>de.uniba.wiai.lspi</groupId>
-
-      <artifactId>OpenChord</artifactId>
-
-      <version>1.0.5</version>
-
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>fr.inria.peerunit</groupId>
+            <artifactId>PeerUnit</artifactId>
+            <version>1.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>fr.inria.peerunit</groupId>
+            <artifactId>DHTModel</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.uniba.wiai.lspi</groupId>
+            <artifactId>OpenChord</artifactId>
+            <version>1.0.5</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>

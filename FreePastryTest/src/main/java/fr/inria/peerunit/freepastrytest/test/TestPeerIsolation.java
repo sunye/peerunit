@@ -12,7 +12,7 @@ import rice.pastry.Id;
 import rice.pastry.NodeHandle;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.freepastrytest.Peer;
+import fr.inria.peerunit.freepastrytest.PastryPeer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
