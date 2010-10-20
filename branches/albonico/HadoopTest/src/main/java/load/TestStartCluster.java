@@ -12,6 +12,8 @@ import org.apache.hadoop.hdfs.server.datanode.DataNode;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.examples.PiEstimator;
+import org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode;
+import org.apache.hadoop.mapred.JobClient;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,12 +103,17 @@ public class TestStartCluster extends StartClusterParent {
 	NameNode nnode = startNameNode();
     }
 
-    @TestStep(order = 2, timeout = 100000, range = "0")
+    @TestStep(order = 2, timeout = 100000, range = "1")
+    public void startSNN() throws IOException, InterruptedException {
+        SecondaryNameNode snnode = startSecondaryNameNode();
+    }
+
+    @TestStep(order = 3, timeout = 100000, range = "0")
     public void startJT() throws IOException, InterruptedException {
 	startJobTracker();
     }
-
-    @TestStep(order = 3, timeout = 100000, range = "*")
+ 
+    @TestStep(order = 4, timeout = 100000, range = "*")
     public void startSlaves() throws IOException, InterruptedException {
 
 	tasktracker = new startTaskTracker();
@@ -118,28 +125,28 @@ public class TestStartCluster extends StartClusterParent {
     
 	}
 
-   @TestStep(order = 5, timeout = 100000, range = "0")
+   @TestStep(order = 6, timeout = 100000, range = "0")
    public void runJob() throws IOException, InterruptedException, RemoteException, Exception {
 
 	Configuration config = getConfMR();
 
+	log.info("Starting PI");
 	// run PiEstimator
 	PiEstimator pi = new PiEstimator();
 
 	pi.setConf(config);
 
-	// pi.configure(job);
+//	pi.configure(job);
 
-	String[] argumentos = {"2","4"};
+	String[] argumentos = {"4","4"};
 
 	pi.run(argumentos);
-	
 
-//	BigDecimal piresult = pi.estimate(2,4,job);
+	JobClient.runJob(job);
 
    }
 
-   @TestStep(order = 4, timeout = 100000, range = "*")
+   @TestStep(order = 7, timeout = 100000, range = "*")
    public void stopCluster() throws IOException, InterruptedException, RemoteException {
 
 

@@ -11,6 +11,7 @@ import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.hdfs.server.datanode.DataNode;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
+import org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -136,10 +137,10 @@ public class StartClusterParent {
 	Thread.sleep(sleep);
 	Configuration conf = new Configuration();
         conf.set("mapred.job.tracker","cohiba:9000");
-	conf.set("mapred.tasktracker.map.tasks.maximum","1");
-	conf.set("mapred.tasktracker.reduce.tasks.maximum","1");
-	conf.set("mapred.child.java.opts","-Xmx512m");
-	
+	//conf.set("mapred.tasktracker.map.tasks.maximum","1");
+	//conf.set("mapred.tasktracker.reduce.tasks.maximum","1");
+	conf.set("mapred.child.java.opts","-Xmx1024m -XX:-UseGCOverheadLimit");
+        conf.set("mapred.job.reuse.jvm.num.tasks","1");	
 	return conf;
 
     }
@@ -150,14 +151,15 @@ public class StartClusterParent {
         Configuration conf = new Configuration();
 	
 	conf.set("fs.default.name","hdfs://cohiba:9001");
-        conf.set("dfs.name.dir","/tmp/dfsname/");
-        conf.set("dfs.data.dir","/tmp/dfsdata/");
+        conf.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
+        conf.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
         conf.set("dfs.replication","1");
 	conf.set("hadoop.tmp.dir","/tmp/hadoop/");
 	conf.set("mapred.child.java.opts","-Xmx512m");
+	conf.set("fs.checkpoint.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir3/");
 
         // Sempre formata o Sistema de Arquivos...
-        //conf.set("dfs.namenode.startup","FORMAT");
+        //conf.set("dfs.namenode.startup","UPGRADE");
 
 	return conf;
 
@@ -207,6 +209,21 @@ public class StartClusterParent {
 
    }
 
+
+   public SecondaryNameNode startSecondaryNameNode() throws IOException, InterruptedException, RemoteException {
+
+	Thread.sleep(sleep);
+
+	log.info("Starting Secondary NameNode");
+
+	Configuration conf = getConfHDFS();
+
+	SecondaryNameNode snn = new SecondaryNameNode(conf);
+
+	return snn;
+
+   }
+
    public class startTaskTracker implements Runnable {
 
 	public void run() {
@@ -245,9 +262,12 @@ public class StartClusterParent {
                 String hostname = localMachine.getHostName();
 
 	if (hostname.equals("cohiba.c3sl.ufpr.br")) {
-        	cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/cohibaname/");
-        	cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/cohibadata/");
+        	cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
+        	cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
 	} else {
+		cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir2/");
+                cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir2data/");
+		/*
 		if (hostname.equals("macalan.c3sl.ufpr.br")) {
 			cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/macalanname/");
                 	cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dfs/macalandata/");
@@ -259,19 +279,32 @@ public class StartClusterParent {
 			}
 
 		} 
+		*/
 
 	}
 
         } catch (java.net.UnknownHostException uhe) {
 
         }
+
+	// Testar em uma unica maquina
+/*
+	if (testando == 1) {
+		cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
+		cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
+	} else {
+		cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir2/");
+		cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir2data/");
+	}
+*/
+	//Fim teste
+
+
 	String[] teste = {"-rollback"};
 
 	DataNode dn = DataNode.createDataNode(teste,cfg);
 	// args deveria ser passado na execucao para saber quais diretorios ele trabalharah...
 	String serveraddr = dn.getNamenode();
 	log.info("Connected to NameNode: " + serveraddr); 
-
-
    }
 }
