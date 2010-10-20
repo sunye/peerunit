@@ -4,11 +4,15 @@
  */
 package fr.inria.peerunit.freepastrytest.model;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author sunye
  */
 public class Model {
+    private static final Logger LOG = Logger.getLogger(Model.class.getName());
 
     final private P2PSystem system = new P2PSystem();
     final private RemoteModelImpl remote;
@@ -37,7 +41,11 @@ public class Model {
     }
 
     public boolean unicity() {
-        return system.unicity();
+         return system.unicity();
+    }
+
+    public boolean distance() {
+        return system.distance();
     }
 
     class NewNodeThread implements Runnable {

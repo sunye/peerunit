@@ -17,7 +17,6 @@ public class Node {
     private final Set<Node> neighbors;
 
     protected int index;
-    protected int lowlink;
 
     public Node(String str) {
         id = str;

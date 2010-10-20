@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  */
 public class RoutingTableTest extends AbstractFreePastryTest {
 
-    private static Logger LOG = Logger.getLogger(RoutingTableTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(RoutingTableTest.class.getName());
     private static final int PORT = 8282;
     private Model model;
     private RemoteModel remoteModel;
@@ -72,13 +72,13 @@ public class RoutingTableTest extends AbstractFreePastryTest {
         super.startingNetwork();
     }
 
-    @TestStep(range = "1-*", order = 5)
+    @TestStep(range = "*", order = 5)
     public void nodeCreation() throws RemoteException {
 
         remoteModel.newNode(peer.getId());
     }
 
-    @TestStep(range = "1-*", order = 6)
+    @TestStep(range = "*", order = 6)
     public void updateModel() throws RemoteException {
 
         LOG.log(Level.INFO, "Neighbors size: {0}", peer.getRoutingTable().size());
@@ -87,8 +87,18 @@ public class RoutingTableTest extends AbstractFreePastryTest {
 
     @TestStep(range = "6", order = 7)
     public void unicity() {
+        LOG.log(Level.INFO,"Unicity Test");
+
         assert model.unicity() : "Unicity";
     }
+
+    @TestStep(range = "6", order = 9)
+    public void distance() {
+        LOG.log(Level.INFO,"Unicity Test");
+
+        assert model.distance() : "Unicity";
+    }
+
 
 
     @TestStep(range = "6", order = 20)
