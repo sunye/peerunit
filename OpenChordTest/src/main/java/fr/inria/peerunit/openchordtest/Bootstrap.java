@@ -14,11 +14,14 @@ import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.FileInputStream;
 
-public class Bootstrap {
+@Deprecated
+class Bootstrap {
 
     private static final Logger log = Logger.getLogger(Bootstrap.class.getName());
 
     public static void main(String[] args) {
+        /**
+
         de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
         String protocol = URL.KNOWN_PROTOCOLS.get(URL.SOCKET_PROTOCOL);
         URL localURL = null;
@@ -40,10 +43,10 @@ public class Bootstrap {
             handler.setFormatter(new LogFormat());
             log.addHandler(handler);
 
-            /*String address = InetAddress.getLocalHost().toString();
-            address = address.substring(address.indexOf("/")+1,address.length());
-            localURL = new URL(protocol + "://"+address+":"+TesterUtil.instance.getBootstrapPort()+"/");
-            log.info("[Bootstrap] Starting at: "+address+" "+TesterUtil.instance.getBootstrapPort());*/
+            //String address = InetAddress.getLocalHost().toString();
+            //address = address.substring(address.indexOf("/")+1,address.length());
+            //localURL = new URL(protocol + "://"+address+":"+TesterUtil.instance.getBootstrapPort()+"/");
+            //log.info("[Bootstrap] Starting at: "+address+" "+TesterUtil.instance.getBootstrapPort());
             localURL = new URL(protocol + "://" + defaults.getBootstrap() + ":" + defaults.getBootstrapPort() + "/");
             log.info("[Dbpartout] Bootstrap : " + localURL);
         } catch (MalformedURLException e) {
@@ -62,6 +65,7 @@ public class Bootstrap {
         } catch (ServiceException e) {
             throw new RuntimeException("Could not create DHT!", e);
         }
+        **/
     }
 }	
 	

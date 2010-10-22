@@ -6,7 +6,6 @@ package fr.inria.peerunit.openchordtest.test;
 
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.AsynChord;
-import de.uniba.wiai.lspi.chord.service.ServiceException;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 import fr.inria.peerunit.openchordtest.ChordPeer;
 import fr.inria.peerunit.remote.GlobalVariables;
@@ -14,18 +13,16 @@ import fr.inria.peerunit.openchordtest.DbCallback;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
-import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -34,7 +31,7 @@ import java.util.logging.Logger;
  */
 public class AbstractOpenChordTest {
 
-    private static final Logger log = Logger.getLogger(AbstractOpenChordTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(AbstractOpenChordTest.class.getName());
     private int id;
     private GlobalVariables globals;
     protected TesterUtil defaults;
@@ -51,6 +48,11 @@ public class AbstractOpenChordTest {
     private static InetAddress HOST;
 
     public AbstractOpenChordTest() {
+        try {
+            HOST = InetAddress.getLocalHost();
+        } catch (UnknownHostException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 
     @SetId
@@ -110,14 +112,13 @@ public class AbstractOpenChordTest {
         size = defaults.getObjects();
         sleep = defaults.getSleep();
         OBJECTS = defaults.getObjects();
-        log.info("Starting test DHT ");
+        LOG.info("Starting test DHT ");
     }
 
     //@TestStep(order = 1, range = "*", timeout = 10000)
     public void init() throws Exception {
         peer.join();
     }
-
 
     /**
      * @return the chord
@@ -126,7 +127,7 @@ public class AbstractOpenChordTest {
         return chord;
     }
 
-    public void startBootstrap() throws IOException, InterruptedException {
+    public void startBootstrap() throws Exception {
 
         InetSocketAddress address =
                 new InetSocketAddress(HOST, PORT);
@@ -138,7 +139,7 @@ public class AbstractOpenChordTest {
         //Thread.sleep(16000);
     }
 
-        public void startingNetwork() throws Exception {
+    public void startingNetwork() throws Exception {
 
         Thread.sleep(this.getPeerName() * 100);
         InetSocketAddress address = (InetSocketAddress) this.get(0);

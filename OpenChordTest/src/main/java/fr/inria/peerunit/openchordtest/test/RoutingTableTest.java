@@ -8,7 +8,6 @@ import fr.inria.peerunit.dhtmodel.RemoteModel;
 import fr.inria.peerunit.dhtmodel.RemoteModelImpl;
 import fr.inria.peerunit.dhtmodel.Model;
 import fr.inria.peerunit.parser.TestStep;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
@@ -58,13 +57,12 @@ public class RoutingTableTest extends AbstractOpenChordTest {
 
     @TestStep(range = "0", timeout = 40000, order = 3)
     @Override
-    public void startBootstrap() throws UnknownHostException, IOException,
-            InterruptedException {
+    public void startBootstrap() throws Exception {
 
         super.startBootstrap();
     }
 
-    @TestStep(range = "*", timeout = 100000, order = 4)
+    @TestStep(range = "1-*", timeout = 100000, order = 4)
     @Override
     public void startingNetwork() throws Exception {
 
@@ -73,32 +71,46 @@ public class RoutingTableTest extends AbstractOpenChordTest {
 
     @TestStep(range = "*", order = 5)
     public void nodeCreation() throws RemoteException {
+        LOG.log(Level.INFO, "My id: {0}", peer.getId());
+        for (String each : peer.getRoutingTable()) {
+            LOG.log(Level.INFO, "Neighbor: {0}", each);
+        }
+
 
         remoteModel.newNode(peer.getId());
     }
 
     @TestStep(range = "*", order = 6)
+    public void stabilize() throws InterruptedException {
+        Thread.sleep(10000);
+    }
+
+
+    @TestStep(range = "*", order = 7)
     public void updateModel() throws RemoteException {
 
         LOG.log(Level.INFO, "Neighbors size: {0}", peer.getRoutingTable().size());
-        remoteModel.updateNode(peer.getId(),peer.getRoutingTable() );
+        remoteModel.updateNode(peer.getId(), peer.getRoutingTable());
     }
 
-    @TestStep(range = "6", order = 7)
+    @TestStep(range = "6", order = 9)
     public void unicity() {
-        LOG.log(Level.INFO,"Unicity Test");
+        LOG.log(Level.INFO, "Unicity Test");
 
         assert model.unicity() : "Unicity";
     }
 
-    @TestStep(range = "6", order = 9)
+    @TestStep(range = "6", order = 11)
     public void distance() {
-        LOG.log(Level.INFO,"Unicity Test");
+        LOG.log(Level.INFO, "Unicity Test");
 
         assert model.distance() : "Unicity";
     }
 
-
+    @TestStep(range = "6", order = 18)
+    public void printPeer() {
+        peer.print();
+    }
 
     @TestStep(range = "6", order = 20)
     public void print() {
