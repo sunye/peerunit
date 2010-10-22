@@ -37,57 +37,6 @@
         </parallel>
     </target>
 
-    <target name="testArray">
-        <parallel>
-            <!--
-            <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
-            -->
-            <java classname="fr.inria.peerunit.CoordinatorRunner" classpathref="exec.classpath" fork="true"/>
-                <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-                  <java classname="fr.inria.peerunit.TestRunner" classpathref="exec.classpath" fork="true">
-                    <arg value="fr.inria.peerunit.tutorial.TestInconclusiveArray"/>
-                    <assertions>
-                        <enable/>
-                    </assertions>
-                </java>
-
-          </parallel>
-    </target>
     <target name="tester.execute">
         <java classname="${tester.class}" classpathref="exec.classpath" fork="true">
             <arg value="${testcase.class}"/>

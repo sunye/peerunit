@@ -234,19 +234,19 @@ public class TesterImpl extends AbstractTester implements Serializable {
                 LOG.finest("Thread was interrupted.");
             }
         } catch (InconclusiveFailure e) {
-            LOG.log(Level.WARNING, "InconclusiveFailure", e);
+            LOG.log(Level.WARNING, "InconclusiveFailure: " + e.getMessage(), e);
             result.addInconclusive(e);
         } catch (TestException e) {
-            LOG.log(Level.WARNING, "TestException", e);
+            LOG.log(Level.WARNING, "TestException: " + e.getMessage(), e);
             result.addFailure(e);
         } catch (AssertionError e) {
-            LOG.log(Level.WARNING, "AssertionError", e);
+            LOG.log(Level.WARNING, "AssertionError: " + e.getMessage(), e);
             result.addFailure(e);
         } catch (InterruptedException e) {
-            LOG.log(Level.WARNING, "InterruptedException", e);
+            LOG.log(Level.WARNING, "InterruptedException: " + e.getMessage(), e);
             result.addInconclusive(e);
         } catch (ClosedByInterruptException e) {
-            LOG.log(Level.WARNING, "ClosedByInterruptException", e);
+            LOG.log(Level.WARNING, "ClosedByInterruptException: " + e.getMessage(), e);
             result.addInconclusive(null);
         } catch (Throwable e) {
             StringWriter writer = new StringWriter();
