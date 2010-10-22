@@ -38,7 +38,7 @@ public class P2PSystem {
             if (nodes.containsKey(each)) {
                 neighbors.add(nodes.get(each));
             } else {
-                LOG.log(Level.WARNING, "Unknwon node id : {0}", each);
+                LOG.log(Level.WARNING, "Unknwon node id : <{0}>", each);
             }
         }
         n.updateNodes(neighbors);
@@ -61,7 +61,7 @@ public class P2PSystem {
             this.visit(visited, head);
         }
 
-        LOG.log(Level.INFO, "Root node could reach {0}  nodes", coll.size());
+        LOG.log(Level.INFO, "Root node could reach {0}  nodes", visited.size());
         return visited.size() == coll.size();
     }
 

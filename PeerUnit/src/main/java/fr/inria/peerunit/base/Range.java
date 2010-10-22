@@ -36,8 +36,15 @@ public abstract class Range {
             return newInstance(Integer.parseInt(values[0]));
         }
         if (values.length == 2) {
-            return newInstance(Integer.parseInt(values[0]),
-                    Integer.parseInt(values[1]));
+            int start, end;
+            start = Integer.parseInt(values[0]);
+            if ("*".equals(values[1])) {
+                end = Integer.MAX_VALUE;
+            } else {
+                end = Integer.parseInt(values[1]);
+            }
+
+            return newInstance(start,end);
         }
 
         return null;

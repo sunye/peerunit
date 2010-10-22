@@ -31,7 +31,7 @@ import java.net.UnknownHostException;
  */
 public class AbstractFreePastryTest {
 
-    private static Logger LOG = Logger.getLogger(AbstractFreePastryTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(AbstractFreePastryTest.class.getName());
     private int id;
     private static GlobalVariables globals;
     protected TesterUtil defaults;
