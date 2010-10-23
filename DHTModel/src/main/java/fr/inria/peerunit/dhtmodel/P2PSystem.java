@@ -4,6 +4,7 @@
  */
 package fr.inria.peerunit.dhtmodel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,52 +54,57 @@ public class P2PSystem {
 
     public boolean unicity() {
         LOG.log(Level.INFO, "There are {0} known nodes", nodes.size());
-        List<Node> visited = new LinkedList<Node>();
-        Collection<Node> coll = nodes.values();
-        if (!nodes.isEmpty()) {
-            Node head = nodes.values().iterator().next();
+        List<Node> remaining = new ArrayList<Node>(nodes.values());
+        List<List<Node>> groups = new LinkedList<List<Node>>();
+        List<Node> visited;
+
+        while (!remaining.isEmpty()) {
+            visited = new LinkedList<Node>();
+            Node head = remaining.iterator().next();
             visited.add(head);
             this.visit(visited, head);
+
+            groups.add(visited);
+            remaining.removeAll(visited);
         }
 
-        LOG.log(Level.INFO, "Root node could reach {0}  nodes", visited.size());
-        return visited.size() == coll.size();
+        LOG.log(Level.INFO, "We found {0} groups", groups.size());
+        return groups.size() == 1;
     }
-
 
     public boolean distance() {
         // Floyd-Warshall Algorithm Implementation
-        
+
         int size = nodes.size();
         short[][][] distances = new short[size][size][size];
-        for(int row = 0; row < size; row++) {
+        for (int row = 0; row < size; row++) {
             Arrays.fill(distances[0][row], Short.MAX_VALUE);
         }
 
         int index = 0;
-        for(Node each : nodes.values()) {
+        for (Node each : nodes.values()) {
             each.index = index++;
         }
 
-        for(Node each : nodes.values()) {
-            for(Node neighbor : each.neighbors()) {
+        for (Node each : nodes.values()) {
+            for (Node neighbor : each.neighbors()) {
                 distances[0][each.index][neighbor.index] = 1;
             }
         }
 
-        for(int k = 1; k < size; k++) {
-            for(int i = 0; i < size; i++) {
-                for(int j = 0; j < size; j++) {
-                    distances[k][i][j] = (short) Math.min(distances[k-1][i][j],
-                            distances[k-1][i][k] + distances[k-1][k][j]);
+        for (int k = 1; k < size; k++) {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    distances[k][i][j] = (short) Math.min(distances[k - 1][i][j],
+                            distances[k - 1][i][k] + distances[k - 1][k][j]);
                 }
             }
         }
 
         int max = 0;
-        for(short row = 0 ; row < size ; row ++) {
-            for(short col = 0 ; col < size ; col ++) {
-                max = Math.max(max,distances[size-1][row][col]);
+        for (short row = 0; row < size; row++) {
+            for (short col = 0; col < size; col++) {
+                max = Math.max(max, distances[size - 1][row][col]);
             }
         }
 
@@ -106,8 +112,8 @@ public class P2PSystem {
 
         /*
         for(short row = 0 ; row < size ; row ++) {
-            StringBuilder out = new StringBuilder(size*2);
-            LOG.info(Arrays.toString(distances[size - 1][row]));
+        StringBuilder out = new StringBuilder(size*2);
+        LOG.info(Arrays.toString(distances[size - 1][row]));
         }
          *
          */
@@ -127,8 +133,6 @@ public class P2PSystem {
     //      for i = 1 to N
     //          for j = 1 to N
     //              dist[k][i][j] = min(dist[k-1][i][j], dist[k-1][i][k] + dist[k-1][k][j])
-
-
     private void visit(Collection<Node> visited, Node n) {
         for (Node each : n.neighbors()) {
             if (!visited.contains(each)) {
