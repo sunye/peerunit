@@ -21,7 +21,7 @@
 * @author albonico
 */
 
-package load;
+package examples;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -273,8 +273,7 @@ public class PiEstimator extends Configured implements Tool {
 
 	// JobTracker Address
 	jtaddress = address;
-	//jtport = Integer.parseInt(port);
-	jtport = 10000;
+	jtport = Integer.parseInt(port);
 
   }
 
