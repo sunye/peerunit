@@ -353,4 +353,28 @@ public class StartClusterParent {
 	String serveraddr = dn.getNamenode();
 	log.info("Connected to NameNode: " + serveraddr); 
    }
+
+   public void runExample(String nameExample) throws IOException, RemoteException, InterruptedException, Exception {
+
+        Configuration config = getConfMR();
+
+        log.info("Starting " + nameExample);
+
+	if (nameExample.equals("PiEstimator")) {
+        
+		PiEstimator pi = new PiEstimator();
+
+        	String masteraddr = (String) this.get(-2);
+        	String masterport = (String)this.get(-4);
+
+       		pi.setCfg(masteraddr,masterport);
+        	//pi.setCfg(config); (This is the correct)
+
+        	String[] argumentos = {"4","20"};
+
+        	pi.run(argumentos);
+ 
+	}
+
+   }
 }

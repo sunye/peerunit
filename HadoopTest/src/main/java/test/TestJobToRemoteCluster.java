@@ -1,4 +1,4 @@
-package load;
+package test;
 
 /**
  * @author albonico  
@@ -13,6 +13,9 @@ import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode;
 import org.apache.hadoop.mapred.JobClient;
+
+import examples.PiEstimator;
+import load.StartClusterParent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,7 +80,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.math.BigDecimal;
 
-public class TestStartCluster extends StartClusterParent {
+public class TestJobToRemoteCluster extends StartClusterParent {
 
     public static Thread ttThread;
     public static startTaskTracker tasktracker;
@@ -96,66 +99,14 @@ public class TestStartCluster extends StartClusterParent {
         OBJECTS =defaults.getObjects();
 
 	log.info("Reading Properties for Hadoop");
-//	readPropertiesHadoop();
 
         log.info("Starting Cluster Hadoop... ");
     }
 
-    @TestStep(order = 1, timeout = 100000, range = "0")
-    public void startNN() throws IOException, InterruptedException {
-	NameNode nnode = startNameNode();
-    }
-
-    @TestStep(order = 2, timeout = 100000, range = "1")
-    public void startSNN() throws IOException, InterruptedException {
-        SecondaryNameNode snnode = startSecondaryNameNode();
-    }
-
-    @TestStep(order = 3, timeout = 100000, range = "0")
-    public void startJT() throws IOException, InterruptedException {
-	startJobTracker();
-    }
- 
-    @TestStep(order = 4, timeout = 100000, range = "*")
-    public void startSlaves() throws IOException, InterruptedException {
-
-	tasktracker = new startTaskTracker();
-        ttThread = new Thread( tasktracker );
-	ttThread.start();
-	ttThread.sleep(5000);
-     
-        startDataNode();
-
-   }
-
-   @TestStep(order = 6, timeout = 100000, range = "1")
+   @TestStep(order = 1, timeout = 100000, range = "0")
    public void runJob() throws IOException, InterruptedException, RemoteException, Exception {
 
-//	jobtracker.taskTrackers();
-
-	Configuration config = getConfMR();
-
-	log.info("Starting PI");
-	// run PiEstimator
-
-	PiEstimator pi = new PiEstimator();
-
-	String masteraddr = (String) this.get(-2);
-	String masterport = (String)this.get(-4);
-
-	pi.setCfg(masteraddr,masterport);
-	//pi.setCfg(config); (This is the correct)
-
-	String[] argumentos = {"4","20"};
-
-	pi.run(argumentos);
-
-
-   }
-
-   @TestStep(order = 7, timeout = 100000, range = "*")
-   public void stopCluster() throws IOException, InterruptedException, RemoteException {
-
+	runExample("PiEstimator");
 
    }
 
