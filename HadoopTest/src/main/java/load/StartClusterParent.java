@@ -46,6 +46,7 @@ import fr.inria.peerunit.util.TesterUtil;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.net.BindException;
@@ -131,12 +132,62 @@ public class StartClusterParent {
     public static NameNode namenode;
     public static JobConf job;
 
+    public void readPropertiesHadoop() throws IOException {
+
+	Properties properties = new Properties();
+	
+	File file = new File("hadoop.properties");
+
+	FileInputStream fis = null;
+
+	try {
+
+		//fis = new FileOutputStream(file);
+		fis = new FileInputStream(file);
+
+		properties.load(fis);
+
+		//fis.close(0);
+
+		// Read JobTracker and Namenode Addresses
+		String nnaddr = properties.getProperty("hadoop.namenode");
+		String jtaddr = properties.getProperty("hadoop.jobtracker");
+
+		System.out.println("Endereco do NameNode: " + nnaddr);
+
+
+		this.put(-1, nnaddr);
+		this.put(-2, jtaddr);
+
+		String nnport = properties.getProperty("hadoop.namenode.port");
+		String jtport = properties.getProperty("hadoop.jobtracker.port");
+
+		this.put(-3, nnport);
+		this.put(-4, jtport);
+		
+	} catch(IOException e) {
+
+		System.out.println("----------------------------");
+
+		System.out.println(e.toString());
+
+		System.out.println("----------------------------");
+
+	}
+
+
+    } 
+
     public Configuration getConfMR() throws IOException, InterruptedException {
 
 	// Definida manualmente pois o TestRunner nao le os arquivos de configuracao
 	Thread.sleep(sleep);
 	Configuration conf = new Configuration();
-        conf.set("mapred.job.tracker","cohiba:9000");
+	String jthost = this.get(-2)+":"+this.get(-4);
+	
+	jthost = (String) jthost;
+
+        conf.set("mapred.job.tracker",jthost);
 	//conf.set("mapred.tasktracker.map.tasks.maximum","1");
 	//conf.set("mapred.tasktracker.reduce.tasks.maximum","1");
 	conf.set("mapred.child.java.opts","-Xmx1024m -XX:-UseGCOverheadLimit");
@@ -149,8 +200,12 @@ public class StartClusterParent {
         
 	Thread.sleep(sleep);
         Configuration conf = new Configuration();
-	
-	conf.set("fs.default.name","hdfs://cohiba:9001");
+
+	String nnhost = "hdfs://"+this.get(-1)+":"+this.get(-3);	
+
+	nnhost = (String) nnhost;
+
+	conf.set("fs.default.name", nnhost);
         conf.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
         conf.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
         conf.set("dfs.replication","1");
@@ -163,21 +218,6 @@ public class StartClusterParent {
 
 	return conf;
 
-    }
-
-    @BeforeClass(range = "*", timeout = 100000)
-    public void bc() throws FileNotFoundException {
-        if (new File("peerunit.properties").exists()) {
-            String filename = "peerunit.properties";
-            FileInputStream fs = new FileInputStream(filename);
-            defaults = new TesterUtil(fs);
-        } else {
-            defaults = TesterUtil.instance;
-        }
-        size = defaults.getObjects();
-        sleep = defaults.getSleep();
-        OBJECTS =defaults.getObjects();
-        log.info("Starting Cluster Hadoop... ");
     }
 
     public void startJobTracker() throws IOException, InterruptedException {
@@ -197,6 +237,10 @@ public class StartClusterParent {
    }
 
    public NameNode startNameNode() throws IOException, InterruptedException, RemoteException {
+
+	// test
+	readPropertiesHadoop();
+
 
         Thread.sleep(sleep);
         log.info("Starting NameNode...");
@@ -256,12 +300,14 @@ public class StartClusterParent {
         log.info("Starting DataNode...");
 	Configuration cfg = getConfHDFS();
 
+	String masterhost = (String) this.get(-1);
+
   	try {
         
 	        java.net.InetAddress localMachine = java.net.InetAddress.getLocalHost();
                 String hostname = localMachine.getHostName();
 
-	if (hostname.equals("cohiba.c3sl.ufpr.br")) {
+	if (hostname.equals(masterhost)) {
         	cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
         	cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
 	} else {
