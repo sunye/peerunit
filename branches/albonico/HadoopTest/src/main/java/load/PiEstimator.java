@@ -82,7 +82,7 @@ public class PiEstimator extends Configured implements Tool {
 
   static public String jtaddress; 
   static public int jtport; 
- 
+
   /** 2-dimensional Halton sequence {H(i)},
    * where H(i) is a 2-dimensional point and i >= 1 is the index.
    * Halton sequence is used to generate sample points for Pi estimation. 
@@ -252,21 +252,29 @@ public class PiEstimator extends Configured implements Tool {
   * Set JobConf to same started on the JobTracker.
   * albonico
   */
-  public void setJobConf(JobConf job, Configuration cfg) {
+  public Configuration getCfg() {
 
-	jobConf = job;
-	config = cfg;
+	return config;
 
   }
 
-  /**
-  * Set Address and Port to JobTracker.
-  * albonico
-  */
   public void setJobTrackerAddress(String address, int port) {
+  }
 
+  public void setCfg(String address, String port) {
+
+	Configuration cfg = new Configuration();
+
+	String hostport = address+":"+port;
+
+	cfg.set("mapred.job.tracker",hostport);
+
+	config = cfg;
+
+	// JobTracker Address
 	jtaddress = address;
-	jtport = port;
+	//jtport = Integer.parseInt(port);
+	jtport = 10000;
 
   }
 
@@ -331,17 +339,25 @@ public class PiEstimator extends Configured implements Tool {
       //start a map/reduce job
       System.out.println("Starting Job");
       final long startTime = System.currentTimeMillis();
-
      // Beginning to set new features.
+      
       InetSocketAddress addrjt = new InetSocketAddress(jtaddress,jtport);
 
-      JobClient jc = new JobClient(addrjt, config);
+      JobClient jcli = new JobClient(addrjt, config);
 
-      jc.runJob(jobConf);
+      System.out.println("Aqui------->");      
+
+      jcli.runJob(jobConf);
+      //JobClient jcli = new JobClient(jobConf);
+
      // End new features.
-	
+
+      //JobClient.runJob(jobConf);	
+
       final double duration = (System.currentTimeMillis() - startTime)/1000.0;
       System.out.println("Job Finished in " + duration + " seconds");
+
+       System.out.println("Test...");
 
       //read outputs
       Path inFile = new Path(outDir, "reduce-out");
@@ -371,21 +387,20 @@ public class PiEstimator extends Configured implements Tool {
    * @return a non-zero if there is an error.  Otherwise, return 0.  
    */
 
-//  public int run(String[] args) throws Exception {
   public int run(String[] args) throws Exception {
-    if (args.length != 2) {
+    if (args.length < 2) {
       System.err.println("Usage: "+getClass().getName()+" <nMaps> <nSamples>");
       ToolRunner.printGenericCommandUsage(System.err);
       return -1;
     }
-    
+
     final int nMaps = Integer.parseInt(args[0]);
     final long nSamples = Long.parseLong(args[1]);
         
     System.out.println("Number of Maps  = " + nMaps);
     System.out.println("Samples per Map = " + nSamples);
         
-   //final JobConf jobConf = new JobConf(getConf(), getClass());
+   final JobConf jobConf = new JobConf(getCfg(), getClass());
     System.out.println("Estimated value of Pi is "
         + estimate(nMaps, nSamples, jobConf));
     return 0;

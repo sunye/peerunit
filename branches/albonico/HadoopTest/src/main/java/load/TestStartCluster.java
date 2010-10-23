@@ -83,7 +83,7 @@ public class TestStartCluster extends StartClusterParent {
     public static startTaskTracker tasktracker;
 
     @BeforeClass(range = "*", timeout = 100000)
-    public void bc() throws FileNotFoundException {
+    public void bc() throws FileNotFoundException, IOException {
         if (new File("peerunit.properties").exists()) {
             String filename = "peerunit.properties";
             FileInputStream fs = new FileInputStream(filename);
@@ -94,6 +94,10 @@ public class TestStartCluster extends StartClusterParent {
         size = defaults.getObjects();
         sleep = defaults.getSleep();
         OBJECTS =defaults.getObjects();
+
+	log.info("Reading Properties for Hadoop");
+//	readPropertiesHadoop();
+
         log.info("Starting Cluster Hadoop... ");
     }
 
@@ -113,24 +117,22 @@ public class TestStartCluster extends StartClusterParent {
     }
  
     @TestStep(order = 4, timeout = 100000, range = "*")
-    public void startTaskTracker() throws IOException, InterruptedException {
+    public void startSlaves() throws IOException, InterruptedException {
 
 	tasktracker = new startTaskTracker();
         ttThread = new Thread( tasktracker );
 	ttThread.start();
 	ttThread.sleep(5000);
-	
-   }
-
-   @TestStep(order = 5, timeout = 100000, range = "*")
-    public void startDataNode() throws IOException, InterruptedException {
      
-	   startDataNode();
+        startDataNode();
 
    }
 
-   @TestStep(order = 6, timeout = 100000, range = "0")
+   @TestStep(order = 6, timeout = 100000, range = "1")
    public void runJob() throws IOException, InterruptedException, RemoteException, Exception {
+
+//	jobtracker.taskTrackers();
+
 	Configuration config = getConfMR();
 
 	log.info("Starting PI");
@@ -138,11 +140,11 @@ public class TestStartCluster extends StartClusterParent {
 
 	PiEstimator pi = new PiEstimator();
 
-	pi.setConf(config);
+	String masteraddr = (String) this.get(-2);
+	String masterport = (String)this.get(-4);
 
-	pi.setJobConf(job, config);
-
-	pi.setJobTrackerAddress("cohiba.c3sl.ufpr.br",9000);
+	pi.setCfg(masteraddr,masterport);
+	//pi.setCfg(config); (This is the correct)
 
 	String[] argumentos = {"4","20"};
 
