@@ -98,13 +98,13 @@ public class ChordPeer implements Peer {
     public void print() {
         LOG.log(Level.INFO, "My ID is {0}", this.getId());
 
-        for (String each : this.getRoutingTable()) {
-            LOG.info("Successor entry: " + each + each.length());
-        }
-
-        for (String each : node.printFingerTable().split("\n")) {
-            LOG.info("Finger table entry:"+ each);
-        }
+//        for (String each : this.getRoutingTable()) {
+//            LOG.info("Successor entry: " + each + each.length());
+//        }
+//
+//        for (String each : node.printFingerTable().split("\n")) {
+//            LOG.info("Finger table entry:"+ each);
+//        }
 
 
         LOG.info("FINGER TABLE:");
