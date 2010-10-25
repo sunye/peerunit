@@ -80,7 +80,7 @@ public class RoutingTableTest extends AbstractOpenChordTest {
         remoteModel.newNode(peer.getId());
     }
 
-    @TestStep(range = "*", order = 6)
+    @TestStep(range = "*", order = 6, timeout = 11000)
     public void stabilize() throws InterruptedException {
         Thread.sleep(10000);
     }
@@ -100,7 +100,23 @@ public class RoutingTableTest extends AbstractOpenChordTest {
         assert model.unicity() : "Unicity";
     }
 
+
+    @TestStep(range = "*", order = 10, timeout = 110000)
+    public void again() throws Exception {
+        Thread.sleep(100000);
+        remoteModel.updateNode(peer.getId(), peer.getRoutingTable());
+    }
+
     @TestStep(range = "6", order = 11)
+    public void reUnicity() {
+        LOG.log(Level.INFO, "Unicity Test");
+
+        assert model.unicity() : "Unicity";
+    }
+
+
+
+    @TestStep(range = "6", order = 14)
     public void distance() {
         LOG.log(Level.INFO, "Unicity Test");
 
