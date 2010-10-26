@@ -71,6 +71,10 @@ public class CoordinatorImpl implements Runnable {
      * List of result listenners.
      */
     private List<ResultListenner> listenners = new ArrayList<ResultListenner>();
+    /**
+     * Strategy for test step execution.
+     */
+    private CoordinationStrategy strategy = new SequencialStrategy(this);
 
     /**
      * @param testerNbr Number of expected testers. The Coordinator will wait for
@@ -143,18 +147,15 @@ public class CoordinatorImpl implements Runnable {
     }
 
     /**
-     * Dispatches actions to testers:
+     * Dispatches test steps to testers:
      *
-     * @param chrono
      * @throws InterruptedException
      */
     public void testcaseExecution() throws InterruptedException {
         LOG.entering("CoordinatorImpl", "testCaseExecution()");
         LOG.finer(String.format("RegistredMethods: %d", schedule.size()));
 
-        for (MethodDescription each : schedule.methods()) {
-            execute(each);
-        }
+        strategy.testcaseExecution();
     }
 
     /**
