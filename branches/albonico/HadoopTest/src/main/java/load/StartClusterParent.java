@@ -13,6 +13,8 @@ import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode;
 
+import examples.PiEstimator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -180,6 +182,14 @@ public class StartClusterParent {
 
     public Configuration getConfMR() throws IOException, InterruptedException {
 
+	String test = (String) this.get(-1); 
+
+	if (test.equals("")) {
+	
+		readPropertiesHadoop();
+
+	}
+
 	// Definida manualmente pois o TestRunner nao le os arquivos de configuracao
 	Thread.sleep(sleep);
 	Configuration conf = new Configuration();
@@ -197,7 +207,15 @@ public class StartClusterParent {
     }
 
     public Configuration getConfHDFS() throws IOException, InterruptedException {
-        
+
+	String test = (String) this.get(-1);
+
+        if (test.equals("")) {
+
+                readPropertiesHadoop();
+
+        } 
+       
 	Thread.sleep(sleep);
         Configuration conf = new Configuration();
 
@@ -238,8 +256,6 @@ public class StartClusterParent {
 
    public NameNode startNameNode() throws IOException, InterruptedException, RemoteException {
 
-	// test
-	readPropertiesHadoop();
 
 
         Thread.sleep(sleep);
@@ -300,6 +316,13 @@ public class StartClusterParent {
         log.info("Starting DataNode...");
 	Configuration cfg = getConfHDFS();
 
+	// Host NameNode
+	String masterhost = (String) this.get(-1);
+
+	try {
+		java.net.InetAddress addr = java.net.InetAddress.getLocalHost();
+		String hostname = addr.getHostName();
+
 	if (hostname.equals(masterhost)) {
         	cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
         	cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
@@ -322,9 +345,9 @@ public class StartClusterParent {
 
 	}
 
-        } catch (java.net.UnknownHostException uhe) {
+	} catch (java.net.UnknownHostException uhe) {
 
-        }
+	}
 
 	// Testar em uma unica maquina
 /*
@@ -348,18 +371,20 @@ public class StartClusterParent {
 
    public void runExample(String nameExample) throws IOException, RemoteException, InterruptedException, Exception {
 
-        Configuration config = getConfMR();
+	System.out.println("KKKKKKKKKK-----KKKKKKKKK");
+
+//        Configuration config = getConfMR();
 
         log.info("Starting " + nameExample);
 
 	if (nameExample.equals("PiEstimator")) {
         
 		PiEstimator pi = new PiEstimator();
-
+/*
         	String masteraddr = (String) this.get(-2);
         	String masterport = (String)this.get(-4);
-
-       		pi.setCfg(masteraddr,masterport);
+*/
+       		pi.setCfg("192.168.3.10","9001");
         	//pi.setCfg(config); (This is the correct)
 
         	String[] argumentos = {"4","20"};

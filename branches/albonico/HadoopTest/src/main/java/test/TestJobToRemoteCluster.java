@@ -97,15 +97,12 @@ public class TestJobToRemoteCluster extends StartClusterParent {
         size = defaults.getObjects();
         sleep = defaults.getSleep();
         OBJECTS =defaults.getObjects();
-
-	log.info("Reading Properties for Hadoop");
-
-        log.info("Starting Cluster Hadoop... ");
     }
 
    @TestStep(order = 1, timeout = 100000, range = "0")
    public void runJob() throws IOException, InterruptedException, RemoteException, Exception {
 
+	System.out.println("Testando....");
 	runExample("PiEstimator");
 
    }
