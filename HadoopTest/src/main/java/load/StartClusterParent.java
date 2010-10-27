@@ -211,7 +211,7 @@ public class StartClusterParent {
         conf.set("dfs.replication","1");
 	conf.set("hadoop.tmp.dir","/tmp/hadoop/");
 	conf.set("mapred.child.java.opts","-Xmx512m");
-	conf.set("fs.checkpoint.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir3/");
+	conf.set("fs.checkpoint.dir","/home/michel/GIT/albonico/HadoopTest/dir3/");
 
         // Sempre formata o Sistema de Arquivos...
         //conf.set("dfs.namenode.startup","UPGRADE");
@@ -300,13 +300,6 @@ public class StartClusterParent {
         log.info("Starting DataNode...");
 	Configuration cfg = getConfHDFS();
 
-	String masterhost = (String) this.get(-1);
-
-  	try {
-        
-	        java.net.InetAddress localMachine = java.net.InetAddress.getLocalHost();
-                String hostname = localMachine.getHostName();
-
 	if (hostname.equals(masterhost)) {
         	cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
         	cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
@@ -344,7 +337,6 @@ public class StartClusterParent {
 	}
 */
 	//Fim teste
-
 
 	String[] teste = {"-rollback"};
 
