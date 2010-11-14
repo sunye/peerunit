@@ -85,60 +85,77 @@ public class TestStartCluster extends StartClusterParent {
     public static Thread ttThread;
     public static startTaskTracker tasktracker;
 
-    @BeforeClass(range = "*", timeout = 100000)
-    public void bc() throws FileNotFoundException, IOException {
-        if (new File("peerunit.properties").exists()) {
-            String filename = "peerunit.properties";
-            FileInputStream fs = new FileInputStream(filename);
-            defaults = new TesterUtil(fs);
-        } else {
-            defaults = TesterUtil.instance;
+    @TestStep(order=1, timeout = 100000, range = "0")
+    public void startNameNode() throws IOException, InterruptedException {
+
+    	initNN();
+
+   }
+
+    @TestStep(order=2, timeout=100000, range="2")
+    public void startSNameNode() throws IOException, InterruptedException {
+
+	initSNN();
+
+    }
+
+    @TestStep(order=3, timeout = 100000, range = "*")
+    public void startDataNode() throws IOException, InterruptedException {
+
+	initDN();
+
+    }
+
+
+    @TestStep(order=4, timeout = 100000, range = "0")
+    public void startJobTracker() throws IOException, InterruptedException {
+
+	log.info("Starting JobTracker!");
+
+    //	initJT();
+
+        try {
+                String command = "/home/ppginf/michela/hadoop-0.20.2/bin/start-job.sh";
+                final Process process = Runtime.getRuntime().exec(command);
+        } catch (Exception e) {
+
+		log.warning("Error starting JobTracker:");
+
+                log.warning(e.toString());
+
         }
-        size = defaults.getObjects();
-        sleep = defaults.getSleep();
-        OBJECTS =defaults.getObjects();
-
-	log.info("Reading Properties for Hadoop");
-//	readPropertiesHadoop();
-
-        log.info("Starting Cluster Hadoop... ");
     }
 
-    @TestStep(order = 1, timeout = 100000, range = "0")
-    public void startNN() throws IOException, InterruptedException {
-	NameNode nnode = startNameNode();
-    }
+    @TestStep(order=5, timeout = 100000, range = "*")
+    public void startTaskTracker() throws IOException, InterruptedException {
 
-    @TestStep(order = 2, timeout = 100000, range = "1")
-    public void startSNN() throws IOException, InterruptedException {
-        SecondaryNameNode snnode = startSecondaryNameNode();
-    }
+	log.info("Starting Task Tracker!");
 
-    @TestStep(order = 3, timeout = 100000, range = "0")
-    public void startJT() throws IOException, InterruptedException {
-	startJobTracker();
-    }
- 
-    @TestStep(order = 4, timeout = 100000, range = "*")
-    public void startSlaves() throws IOException, InterruptedException {
+	try {
+                String command = "/home/ppginf/michela/hadoop-0.20.2/bin/start-task.sh";
+                final Process process = Runtime.getRuntime().exec(command);
+        } catch (Exception e) {
 
-	tasktracker = new startTaskTracker();
-        ttThread = new Thread( tasktracker );
-	ttThread.start();
-	ttThread.sleep(5000);
-     
-        startDataNode();
+		log.warning("Error starting TaskTracker:");
+
+                log.warning(e.toString());
+
+        }
+
+	// initTT();
 
    }
 
-   @TestStep(order = 6, timeout = 100000, range = "1")
-   public void runJob() throws IOException, InterruptedException, RemoteException, Exception {
+   @TestStep(order=6, timeout = 440000, range = "0")
+   public void sendJob() throws IOException, InterruptedException, RemoteException, Exception {
 
-	runExample("PiEstimator");
+	runPiEstimator piest = new runPiEstimator();
+
+	piest.run();
 
    }
 
-   @TestStep(order = 7, timeout = 100000, range = "*")
+   @TestStep(order=7, timeout = 100000, range = "*")
    public void stopCluster() throws IOException, InterruptedException, RemoteException {
 
 

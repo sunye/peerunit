@@ -258,9 +258,6 @@ public class PiEstimator extends Configured implements Tool {
 
   }
 
-  public void setJobTrackerAddress(String address, int port) {
-  }
-
   public void setCfg(String address, String port) {
 
 	Configuration cfg = new Configuration();
@@ -268,6 +265,7 @@ public class PiEstimator extends Configured implements Tool {
 	String hostport = address+":"+port;
 
 	cfg.set("mapred.job.tracker",hostport);
+	//cfg.set("jobclient.output.filter","ALL");
 
 	config = cfg;
 
@@ -337,16 +335,16 @@ public class PiEstimator extends Configured implements Tool {
   
       //start a map/reduce job
       System.out.println("Starting Job");
+
       final long startTime = System.currentTimeMillis();
      // Beginning to set new features.
       
       InetSocketAddress addrjt = new InetSocketAddress(jtaddress,jtport);
 
-      JobClient jcli = new JobClient(addrjt, config);
-
-      System.out.println("Aqui------->");      
+      JobClient jcli = new JobClient(addrjt, config);   
 
       jcli.runJob(jobConf);
+
       //JobClient jcli = new JobClient(jobConf);
 
      // End new features.
@@ -355,8 +353,6 @@ public class PiEstimator extends Configured implements Tool {
 
       final double duration = (System.currentTimeMillis() - startTime)/1000.0;
       System.out.println("Job Finished in " + duration + " seconds");
-
-       System.out.println("Test...");
 
       //read outputs
       Path inFile = new Path(outDir, "reduce-out");
@@ -400,9 +396,11 @@ public class PiEstimator extends Configured implements Tool {
     System.out.println("Samples per Map = " + nSamples);
         
    final JobConf jobConf = new JobConf(getCfg(), getClass());
-    System.out.println("Estimated value of Pi is "
-        + estimate(nMaps, nSamples, jobConf));
+
+    System.out.println("Estimated value of Pi is " + estimate(nMaps, nSamples, jobConf));
+
     return 0;
+
   }
 
   /**
