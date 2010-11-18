@@ -23,15 +23,31 @@ package fr.inria.peerunit.base;
 public abstract class Range {
 
     public final static Range ALL = new AllValues();
-    private static String SEPARATOR = "-";
+    private static String RANGE_SEPARATOR = "-";
+    private static String UNION_SEPARATOR = ",";
 
     public abstract boolean includes(int i);
 
     public static Range fromString(String str) {
+        String[] values = str.split(UNION_SEPARATOR);
+        Range[] ranges = new Range[values.length];
+        
+        for (int i = 0; i < values.length; i++) {
+            ranges[i] = fromUnion(values[i].trim());
+        }
+        
+        if (values.length == 1) {
+            return ranges[0];
+        } else {
+            return new Union(ranges);
+        }
+    }
+
+    protected static Range fromUnion(String str) {
         if (str.equals("*")) {
             return ALL;
         }
-        String[] values = str.split(SEPARATOR);
+        String[] values = str.split(RANGE_SEPARATOR);
         if (values.length == 1) {
             return newInstance(Integer.parseInt(values[0]));
         }
@@ -61,6 +77,7 @@ public abstract class Range {
     public static Range newInstance(int v1, int v2) {
         return v1 > v2 ? new Interval(v2, v1) : new Interval(v1, v2);
     }
+
 }
 
 class AllValues extends Range {
@@ -102,5 +119,26 @@ class SingleValue extends Range {
     @Override
     public boolean includes(int i) {
         return i == value;
+    }
+}
+
+class Union extends Range {
+
+    private Range[] ranges;
+
+    protected Union(Range[] r) {
+        ranges = r;
+    }
+
+    @Override
+    public boolean includes(int i) {
+        boolean result = false;
+        int cc = 0;
+        while(!result && cc < ranges.length) {
+            result = ranges[cc].includes(i);
+            cc++;
+        }
+
+        return result;
     }
 }
