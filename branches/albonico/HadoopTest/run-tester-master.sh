@@ -1,9 +1,11 @@
+rm -Rf /tmp/hadoop*
+
 # Formata o HDFS
 ~/hadoop-0.20.2/bin/hadoop namenode -format
 
-rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/
-rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dir2data/
-rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dir3data/
+#rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/
+#rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dir2data/
+#rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/dir3data/
 
 rm -Rf /home/ppginf/michela/GIT/albonico/HadoopTest/PiEstimator_TMP_3_141592654
 
