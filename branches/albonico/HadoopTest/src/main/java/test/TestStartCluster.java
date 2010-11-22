@@ -42,8 +42,8 @@ public class TestStartCluster extends StartClusterParent {
     @TestStep(order=4, timeout = 100000, range = "0")
     public void startJobTracker() {
 
-    	initJT();
-/*
+//    	initJT();
+
 	log.info("Starting JobTracker!");
 
 
@@ -57,7 +57,7 @@ public class TestStartCluster extends StartClusterParent {
                 log.warning(e.toString());
 
         }
-*/
+
     }
 
     @TestStep(order=5, timeout = 100000, range = "*")
