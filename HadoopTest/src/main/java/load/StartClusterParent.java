@@ -208,14 +208,19 @@ public class StartClusterParent {
 	nnhost = (String) nnhost;
 
 	conf.set("fs.default.name", nnhost);
-        conf.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
-        conf.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
+        conf.set("dfs.name.dir","/tmp/hadoop-name/");
+        conf.set("dfs.data.dir","/tmp/hadoop-data/");
         conf.set("dfs.replication","1");
-	conf.set("hadoop.tmp.dir","/tmp/hadoop/");
+	conf.set("hadoop.tmp.dir","/tmp/hadoop-tmp/");
 	conf.set("hadoop.log.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/logs/");
 	conf.set("mapred.child.java.opts","-Xmx512m");
-	conf.set("fs.checkpoint.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir3/");
+	conf.set("fs.checkpoint.dir","/tmp/hadoop-dfssecondary");
 
+        //conf.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
+        //conf.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
+        //conf.set("dfs.replication","1");
+	//conf.set("hadoop.tmp.dir","/tmp/hadoop/");
+	//conf.set("hadoop.log.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/logs/");
         // Sempre formata o Sistema de Arquivos...
         //conf.set("dfs.namenode.startup","UPGRADE");
 
