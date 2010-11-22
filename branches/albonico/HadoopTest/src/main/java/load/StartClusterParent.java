@@ -149,12 +149,15 @@ public class StartClusterParent {
 
 		//fis.close(0);
 
+/**
+* JobTracker and NameNode Properties
+*/
+
 		// Read JobTracker and Namenode Addresses
 		String nnaddr = properties.getProperty("hadoop.namenode");
 		String jtaddr = properties.getProperty("hadoop.jobtracker");
 
 		// System.out.println("Endereco do NameNode: " + nnaddr);
-
 
 		this.put(-1, nnaddr);
 		this.put(-2, jtaddr);
@@ -164,7 +167,27 @@ public class StartClusterParent {
 
 		this.put(-3, nnport);
 		this.put(-4, jtport);
-		
+
+/**
+* Other Properties
+*/
+
+		String dfsname = properties.getProperty("hadoop.dir.name");
+		String dfsdata = properties.getProperty("hadoop.dir.data");
+		String hadooptmp = properties.getProperty("hadoop.dir.tmp");
+		String dfssnn = properties.getProperty("hadoop.dir.secnn");
+		String hadooplog = properties.getProperty("hadoop.dir.log");
+		String hadooprep = properties.getProperty("hadoop.dfs.replication");
+		String javaopt = properties.getProperty("hadoop.java.options");
+
+		this.put(-5, dfsname);
+		this.put(-6, dfsdata);
+		this.put(-7, hadooptmp);
+		this.put(-8, dfssnn);
+		this.put(-9, hadooplog);
+		this.put(-10, hadooprep);	
+		this.put(-11, javaopt);
+	
 	} catch(IOException e) {
 
 		log.warning("Error reading Hadoop configuration:");
@@ -188,9 +211,13 @@ public class StartClusterParent {
 	jthost = (String) jthost;
 
         conf.set("mapred.job.tracker",jthost);
+
+        String joptions = (String) this.get(-11);
+        conf.set("mapred.child.java.opts",joptions);
+
 	//conf.set("mapred.tasktracker.map.tasks.maximum","1");
 	//conf.set("mapred.tasktracker.reduce.tasks.maximum","1");
-	conf.set("mapred.child.java.opts","-Xmx1024m -XX:-UseGCOverheadLimit");
+	//conf.set("mapred.child.java.opts","-Xmx1024m -XX:-UseGCOverheadLimit");
         //conf.set("mapred.job.reuse.jvm.num.tasks","1");	
 	return conf;
 
@@ -207,14 +234,22 @@ public class StartClusterParent {
 
 	nnhost = (String) nnhost;
 
+	String dirname = (String) this.get(-5);
+	String dirdata = (String) this.get(-6);
+	String dirtmp = (String) this.get(-7);
+	String dirsnn = (String) this.get(-8);
+	String dirlog = (String) this.get(-9);
+	String replication = (String) this.get(-10);
+	String joptions = (String) this.get(-11);
+
 	conf.set("fs.default.name", nnhost);
-        conf.set("dfs.name.dir","/tmp/hadoop-name/");
-        conf.set("dfs.data.dir","/tmp/hadoop-data/");
-        conf.set("dfs.replication","1");
-	conf.set("hadoop.tmp.dir","/tmp/hadoop-tmp/");
-	conf.set("hadoop.log.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/logs/");
-	conf.set("mapred.child.java.opts","-Xmx512m");
-	conf.set("fs.checkpoint.dir","/tmp/hadoop-dfssecondary");
+        conf.set("dfs.name.dir",dirname);
+        conf.set("dfs.data.dir",dirdata);
+        conf.set("dfs.replication",replication);
+	conf.set("hadoop.tmp.dir",dirtmp);
+	conf.set("hadoop.log.dir",dirlog);
+	conf.set("mapred.child.java.opts",joptions);
+	conf.set("fs.checkpoint.dir",dirsnn);
 
         //conf.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
         //conf.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
@@ -417,8 +452,15 @@ public class StartClusterParent {
 		Configuration cfg = getConfHDFS();
 
 		// Host NameNode
-		String masterhost = (String) get(-1);
+//		String masterhost = (String) get(-1);
 
+	        String dirname = (String) get(-5);
+	        String dirdata = (String) get(-6);
+
+	        cfg.set("dfs.name.dir",dirname);
+	        cfg.set("dfs.data.dir",dirdata);
+
+/*
 		try {
 			java.net.InetAddress addr = java.net.InetAddress.getLocalHost();
 			String hostname = (String) addr.getHostName();
@@ -440,7 +482,7 @@ public class StartClusterParent {
 
 		}
 		//Fim teste
-
+*/
 		String[] args = {"-rollback"};
 
 		DataNode dn = DataNode.createDataNode(args,cfg);
