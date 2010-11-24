@@ -51,7 +51,11 @@ public class RemoteTesterImpl implements Tester, Serializable {
      */
     private transient MethodDescription action;
     private transient AtomicBoolean start = new AtomicBoolean(false);
-    //private transient AtomicBoolean stop = new AtomicBoolean(false);
+
+    /**
+     * Quit status. When set to true, makes the Tester leave the system.
+     */
+    private transient AtomicBoolean quit = new AtomicBoolean(false);
     /**
      * Locks for blocking multi-threaded methods.
      */
@@ -59,6 +63,7 @@ public class RemoteTesterImpl implements Tester, Serializable {
     private final Condition newAction = lock.newCondition();
     private final Condition hasCoordinator = lock.newCondition();
     private final Condition mayStart = lock.newCondition();
+    private final Condition mayQuit = lock.newCondition();
 
     /**
      * 
@@ -102,9 +107,16 @@ public class RemoteTesterImpl implements Tester, Serializable {
     /**
      * 
      */
-//    public void stop() throws RemoteException {
-//        this.stop.set(true);
-//    }
+    public void quit() throws RemoteException {
+        lock.lock();
+        try {
+            quit.set(true);
+            mayQuit.signal();
+        } finally {
+            lock.unlock();
+        } 
+    }
+    
     /**
      * @see 
      */
@@ -179,13 +191,22 @@ public class RemoteTesterImpl implements Tester, Serializable {
     }
 
     /**
-     * Returns true if the current tester should stop and false for any other case.
+     * Returns true if the current tester should quit
+     * and false for any other case.
      * 
-     * @return
+     * @return teh quit status.
      */
-//    public boolean shouldStop() {
-//        return stop.get();
-//    }
+    public void waitForQuit() throws InterruptedException {
+        lock.lock();
+        try {
+            while (!quit.get()) {
+                mayQuit.await();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public void setId(int i) {
         id = i;
     }

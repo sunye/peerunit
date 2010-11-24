@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 
@@ -371,5 +372,19 @@ public class TesterUtil {
 
         return port;
     }
+
+    public Class<?> getCoordinationStrategyClass() {
+        Class<?> result = null;
+        try {
+            String className = this.getProperty("fr.inria.peerunit.coordinator.strategy");
+             result = Class.forName(className);
+        } catch (ClassNotFoundException ex) {
+
+        }
+
+        return result;
+    }
+
+
 }
 

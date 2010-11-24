@@ -26,9 +26,9 @@ import java.util.logging.Logger;
 class SequencialStrategy implements CoordinationStrategy {
 
     private static final Logger LOG = Logger.getLogger(SequencialStrategy.class.getName());
-    private final CoordinatorImpl coordinator;
+    private CoordinatorImpl coordinator;
 
-    public SequencialStrategy(CoordinatorImpl coord) {
+    public void init(CoordinatorImpl coord) {
         coordinator = coord;
     }
 

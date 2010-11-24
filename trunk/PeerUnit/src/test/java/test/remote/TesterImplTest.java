@@ -81,7 +81,8 @@ public class TesterImplTest {
         properties.setProperty("tester.waitForMethod", "500");
         try {
             TesterUtil defaults = new TesterUtil(properties);
-            coord = new CoordinatorImpl(3, 1);
+            //coord = new CoordinatorImpl(3, 1);
+            coord = new CoordinatorImpl(defaults);
 
             globals = new GlobalVariablesImpl();
             tester0 = new TesterImpl(coord.getRemoteCoordinator(), globals);
