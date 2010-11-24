@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.peerunit.base.ResultSet;
@@ -74,7 +75,7 @@ public class CoordinatorImpl implements Runnable {
     /**
      * Strategy for test step execution.
      */
-    private CoordinationStrategy strategy = new SequencialStrategy(this);
+    private CoordinationStrategy strategy;
 
     /**
      * @param testerNbr Number of expected testers. The Coordinator will wait for
@@ -82,7 +83,7 @@ public class CoordinatorImpl implements Runnable {
      * to Testers.
      */
     public CoordinatorImpl(int testerNbr) {
-        this(testerNbr, 100);
+        this(testerNbr, 100, new RemoteCoordinatorImpl(testerNbr));
     }
 
     /**
@@ -90,8 +91,17 @@ public class CoordinatorImpl implements Runnable {
      * @param testerNbr Number of expected testers.
      * @param relaxIndex
      */
-    public CoordinatorImpl(int testerNbr, int relaxIndex) {
-        this(testerNbr, relaxIndex, new RemoteCoordinatorImpl(testerNbr));
+    public CoordinatorImpl(int testerNbr, TesterUtil tu) {
+        this(testerNbr, tu.getRelaxIndex(), new RemoteCoordinatorImpl(testerNbr),
+                tu.getCoordinationStrategyClass());
+    }
+
+    public CoordinatorImpl(int testerNbr, int relaxIndex, Class<?> strategyClass) {
+        this(testerNbr, relaxIndex, new RemoteCoordinatorImpl(testerNbr), strategyClass);
+    }
+
+    public CoordinatorImpl(int testerNbr, int relaxIndex, RemoteCoordinatorImpl rci) {
+        this(testerNbr, relaxIndex, rci, null);
     }
 
     /**
@@ -100,14 +110,31 @@ public class CoordinatorImpl implements Runnable {
      * @param relaxIndex
      * @param rci
      */
-    private CoordinatorImpl(int testerNbr, int relaxIndex, RemoteCoordinatorImpl rci) {
-        LOG.finest("Creating a CoordinatorImpl for "+testerNbr+" testers.");
+    private CoordinatorImpl(int testerNbr, int relaxIndex, RemoteCoordinatorImpl rci,
+            Class<?> strategyClass) {
+
+        LOG.log(Level.FINEST, "Creating a CoordinatorImpl for {0} testers.", testerNbr);
+        
+
         expectedTesters = new AtomicInteger(testerNbr);
         registeredTesters = Collections.synchronizedList(new ArrayList<Tester>(testerNbr));
         executor = Executors.newFixedThreadPool(testerNbr > 10 ? 10 : testerNbr);
         runningTesters = new AtomicInteger(0);
         verdict = new GlobalVerdict(relaxIndex);
         remoteCoordinator = rci;
+
+        if (strategyClass == null) {
+            strategyClass = SequencialStrategy.class;
+        }
+
+        LOG.log(Level.FINEST, "Coordination strategy: {0}", strategyClass.getName());
+        try {
+            strategy = (CoordinationStrategy) strategyClass.newInstance();
+            strategy.init(this);
+        } catch (Exception e) {
+            strategy = new SequencialStrategy();
+            strategy.init(this);
+        }
     }
 
     /**
@@ -115,7 +142,7 @@ public class CoordinatorImpl implements Runnable {
      * @param tu Defaults.
      */
     public CoordinatorImpl(TesterUtil tu) {
-        this(tu.getExpectedTesters(), tu.getRelaxIndex());
+        this(tu.getExpectedTesters(), tu.getRelaxIndex(), tu.getCoordinationStrategyClass());
     }
 
     /**
@@ -126,6 +153,7 @@ public class CoordinatorImpl implements Runnable {
         try {
             waitForTesterRegistration();
             testcaseExecution();
+            quitAllTesters();
             waitAllTestersToQuit();
             printVerdict();
             cleanUp();
@@ -142,7 +170,7 @@ public class CoordinatorImpl implements Runnable {
      * @param chrono
      */
     public void printVerdict() {
-	LOG.fine(verdict.toString());
+        LOG.fine(verdict.toString());
         System.out.println(verdict);
     }
 
@@ -156,6 +184,7 @@ public class CoordinatorImpl implements Runnable {
         LOG.finer(String.format("RegistredMethods: %d", schedule.size()));
 
         strategy.testcaseExecution();
+
     }
 
     /**
@@ -231,13 +260,21 @@ public class CoordinatorImpl implements Runnable {
             ResultSet rs = remoteCoordinator.results().take();
             ResultSet result = verdict.getResultFor(rs.getMethodDescription());
             result.add(rs);
-            for(ResultListenner each : listenners) {
+            for (ResultListenner each : listenners) {
                 each.newResult(rs);
             }
             runningTesters.decrementAndGet();
         }
     }
 
+
+    private void quitAllTesters() {
+        LOG.entering("CoordinatorImpl", "quitAllTesters()");
+        for (Tester each : registeredTesters) {
+            executor.submit(new TesterQuit(each));
+        }
+        LOG.exiting("CoordinatorImpl", "quitAllTesters()");
+    }
     /**
      * Waits for all testers to quit the system.
      *

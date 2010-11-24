@@ -73,7 +73,7 @@ public class TestCaseWrapper {
     public void invoke(MethodDescription md) throws Throwable {
 
         assert methods.containsKey(md) : "Method should be registered";
-        assert remainingMethods.contains(md) : "Method already executed";
+        //assert remainingMethods.contains(md) : "Method already executed";
         assert testcase != null : "Test Case instance should not be null";
 
         Method m = methods.get(md);
@@ -86,7 +86,7 @@ public class TestCaseWrapper {
             e.fillInStackTrace();
             throw e.getCause();
         } finally {
-            remainingMethods.remove(md);
+            //remainingMethods.remove(md);
         }
     }
 
@@ -95,7 +95,8 @@ public class TestCaseWrapper {
      * 
      * @return true if the method is the last one to be executed
      */
-    public boolean isLastMethod() {
+    @Deprecated
+    private boolean isLastMethod() {
 
         return remainingMethods.isEmpty();
     }

@@ -31,12 +31,14 @@ public class RoutingTableTest extends AbstractOpenChordTest {
     private Model model;
     private RemoteModel remoteModel;
     private Set<String> neighbors = new HashSet<String>();
+    private Registry registry;
+    private RemoteModelImpl rmi = new RemoteModelImpl();;
 
     @TestStep(range = "6", order = 1)
     public void startModel() throws RemoteException, UnknownHostException {
-        RemoteModelImpl rmi = new RemoteModelImpl();
+        
         RemoteModel stub = (RemoteModel) UnicastRemoteObject.exportObject(rmi, 0);
-        Registry registry = LocateRegistry.createRegistry(PORT);
+        registry = LocateRegistry.createRegistry(PORT);
         registry.rebind("Model", stub);
         this.put(1, InetAddress.getLocalHost().getHostName());
 
@@ -49,7 +51,7 @@ public class RoutingTableTest extends AbstractOpenChordTest {
     public void lookupModel() throws RemoteException, NotBoundException {
 
         String hostName = (String) this.get(1);
-        Registry registry = LocateRegistry.getRegistry(hostName, PORT);
+        registry = LocateRegistry.getRegistry(hostName, PORT);
         remoteModel = (RemoteModel) registry.lookup("Model");
 
         assert remoteModel != null;
@@ -82,7 +84,7 @@ public class RoutingTableTest extends AbstractOpenChordTest {
 
     @TestStep(range = "*", order = 6, timeout = 11000)
     public void stabilize() throws InterruptedException {
-        Thread.sleep(10000);
+        Thread.sleep(100000);
     }
 
 
@@ -114,6 +116,18 @@ public class RoutingTableTest extends AbstractOpenChordTest {
         assert model.unicity() : "Unicity";
     }
 
+    @TestStep(range = "*", order = 12, timeout = 200000)
+    public void unicityLoop() throws InterruptedException, RemoteException {
+        for(int i = 0; i < 10; i++) {
+            Thread.sleep(5000);
+            remoteModel.updateNode(peer.getId(), peer.getRoutingTable());
+            if (this.getId() == 6) {
+                model.unicity();
+            }
+             Thread.sleep(5000);
+
+        }
+    }
 
 
     @TestStep(range = "6", order = 14)
@@ -129,8 +143,24 @@ public class RoutingTableTest extends AbstractOpenChordTest {
     }
 
     @TestStep(range = "6", order = 20)
-    public void print() {
+    public void print() throws RemoteException, NotBoundException {
         model.print();
         model.stop();
+        registry.unbind("Model");
+        UnicastRemoteObject.unexportObject(registry, true);
+        UnicastRemoteObject.unexportObject(rmi, true);
+        
     }
+
+    @TestStep(range = "*", order = 22)
+    public void quit() throws RemoteException, NotBoundException {
+
+        //UnicastRemoteObject.unexportObject(remoteModel, true);
+        
+        
+
+    }
+
+
+
 }

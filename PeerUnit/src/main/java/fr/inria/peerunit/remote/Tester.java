@@ -69,4 +69,11 @@ public interface Tester extends Remote {
      */
     public void start() throws RemoteException;
 
+    /**
+     * Asks the tester to leave the system.
+     * 
+     * @throws RemoteException
+     */
+    public void quit() throws RemoteException;
+
 }

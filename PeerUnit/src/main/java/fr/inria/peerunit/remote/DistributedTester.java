@@ -4,7 +4,6 @@
  */
 package fr.inria.peerunit.remote;
 
-import java.net.InetAddress;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;

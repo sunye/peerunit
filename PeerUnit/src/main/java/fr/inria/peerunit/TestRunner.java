@@ -138,6 +138,7 @@ public class TestRunner {
                 tester.join();
                 LOG.fine("Tester thread joined");
                 UnicastRemoteObject.unexportObject(remoteTester, true);
+                System.exit(0);
 
             } else {
                 LOG.fine("Bootstrapper found, using the distributed architecture.");
@@ -151,6 +152,7 @@ public class TestRunner {
                 System.exit(0);
             }
         } catch (Exception e) {
+            LOG.warning(e.getLocalizedMessage());
             e.printStackTrace(System.err);
         } 
 

@@ -170,18 +170,18 @@ public class TestCaseWrapperTest {
     /**
      * Test of isLastMethod method, of class TestCaseWrapper.
      */
-    @Test
-    public void testIsLastMethod() {
-        wrapper.register(Sample.class);
-
-        assertFalse(wrapper.isLastMethod());
-        for(MethodDescription each : wrapper.getMethods().keySet()) {
-            try {
-                wrapper.invoke(each);
-            } catch (Throwable ex) {}
-        }
-        assertTrue(wrapper.isLastMethod());
-    }
+//    @Test
+//    public void testIsLastMethod() {
+//        wrapper.register(Sample.class);
+//
+//        assertFalse(wrapper.isLastMethod());
+//        for(MethodDescription each : wrapper.getMethods().keySet()) {
+//            try {
+//                wrapper.invoke(each);
+//            } catch (Throwable ex) {}
+//        }
+//        assertTrue(wrapper.isLastMethod());
+//    }
 
     @Test
     public void testSetId() {

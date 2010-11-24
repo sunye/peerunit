@@ -63,7 +63,7 @@ public class DistributedTesterImpl { //implements Serializable {
      *
      */
     private static final long serialVersionUID = 11L;
-    private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(TesterImpl.class.getName());
     /**
      * Set of testers that are coordinated by this tester.
      */
@@ -204,8 +204,9 @@ public class DistributedTesterImpl { //implements Serializable {
         LOG.finest("DT got a coordinator and will set local tester");
         remoteTester.setCoordinator(c);
         remoteTester.start();
-        localTester.execute();
-
+        //localTester.execute();
+        localTester.startThread();
+        localTester.join();
 
         LOG.exiting("DistributedTesterImpl", "runLeafTester()");
     }
@@ -220,7 +221,7 @@ public class DistributedTesterImpl { //implements Serializable {
 
         // Coordinator
         CoordinatorImpl coordinator = new CoordinatorImpl(children.size() + 1,
-                defaults.getRelaxIndex());
+                defaults);
         RemoteCoordinatorImpl remoteCoordinator = coordinator.getRemoteCoordinator();
         UnicastRemoteObject.exportObject(remoteCoordinator);
         for (DistributedTester each : children) {
@@ -265,7 +266,9 @@ public class DistributedTesterImpl { //implements Serializable {
         Coordinator c = remoteDistributedTester.takeCoordinator();
         tester.setCoordinator(c);
 
-        middle.execute();
+        //middle.execute();
+        middle.startThread();
+        middle.join();
         LOG.exiting("DistributedTesterImpl", "runRootTester()");
     }
 

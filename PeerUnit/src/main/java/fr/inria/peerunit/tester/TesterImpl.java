@@ -51,15 +51,13 @@ import java.util.List;
 public class TesterImpl extends AbstractTester implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static Logger LOG = Logger.getLogger(TesterImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(TesterImpl.class.getName());
     /**
      * The tester remote interface, RMI implementation
      */
     private final RemoteTesterImpl remoteTester;
     private Coordinator coord;
-    private boolean stop = false;
     private TestCaseWrapper testCase;
-    //private transient BlockingQueue<MethodDescription> executionQueue = new ArrayBlockingQueue<MethodDescription>(2);
     private Class<?> testCaseClass;
     private List<MethodDescription> remainingMethods =
             new ArrayList<MethodDescription>(20);
@@ -67,7 +65,14 @@ public class TesterImpl extends AbstractTester implements Serializable {
      * Thread used to invoke @TestStep methods
      */
     private Thread invocationThread;
+    /**
+     * Thread used to run this tester.
+     */
     private Thread testerThread;
+    /**
+     * Thread used to quit this tester.
+     */
+    private Thread quitThread;
 
     /**
      * Used to give the identifier of the tester.
@@ -112,10 +117,10 @@ public class TesterImpl extends AbstractTester implements Serializable {
         testerThread = new Thread(new TesterThread());
         testerThread.start();
 
-//            LOG.warning("Could not obtain a valid id, leaving the system.");
-
-
+        quitThread = new Thread(new QuitThread());
+        quitThread.start();
     }
+
 
     public void execute() throws InterruptedException, RemoteException {
         LOG.entering("TesterImpl", "execute()");
@@ -131,7 +136,8 @@ public class TesterImpl extends AbstractTester implements Serializable {
 
         // 3 - Parse test case class (need id);
         remainingMethods.addAll(testCase.register(testCaseClass));
-        LOG.finest("Tester will register " + remainingMethods.size() + " methods.");
+        LOG.log(Level.FINEST, "Tester will register {0} methods.",
+                remainingMethods.size());
 
         // 4 - Register my test steps.
         coord.registerMethods(new TesterRegistration(remoteTester, remainingMethods));
@@ -147,25 +153,29 @@ public class TesterImpl extends AbstractTester implements Serializable {
     private void testCaseExecution() {
         LOG.entering("TesterImpl", "testCaseExecution()");
 
-        while (!stop && remainingMethods.size() > 0) {
-            MethodDescription md = null;
-            try {
+        try {
+            while (true) {
+                MethodDescription md = null;
                 md = remoteTester.takeMethodDescription();
-
-                invocationThread = new Thread(new Invoke(md));
-                invocationThread.start();
-                if (md.getTimeout() > 0) {
-                    invocationThread.join(md.getTimeout());
-                    if (invocationThread.isAlive()) {
-                        invocationThread.interrupt();
-                    }
-                }
+                runInvocationThread(md);
                 remainingMethods.remove(md);
-            } catch (InterruptedException e) {
-                LOG.log(Level.SEVERE, "TesterImpl:run() - InterruptedException", e);
+            }
+        } catch (InterruptedException e) {
+            LOG.exiting("TesterImpl", "testCaseExecution()");
+        }
+    }
+
+    private void runInvocationThread(MethodDescription md)
+            throws InterruptedException {
+
+        invocationThread = new Thread(new Invoke(md));
+        invocationThread.start();
+        if (md.getTimeout() > 0) {
+            invocationThread.join(md.getTimeout());
+            if (invocationThread.isAlive()) {
+                invocationThread.interrupt();
             }
         }
-        LOG.exiting("TesterImpl", "testCaseExecution()");
     }
 
     /**
@@ -192,10 +202,10 @@ public class TesterImpl extends AbstractTester implements Serializable {
 
         try {
             coord.methodExecutionFinished(r);
-            if (testCase.isLastMethod()) {
-                LOG.log(Level.FINEST, "Test Case finished");
-                quit();
-            }
+//            if (testCase.isLastMethod()) {
+//                LOG.log(Level.FINEST, "Test Case finished");
+//                quit();
+//            }
         } catch (RemoteException e) {
             for (StackTraceElement each : e.getStackTrace()) {
                 LOG.severe(each.toString());
@@ -260,7 +270,7 @@ public class TesterImpl extends AbstractTester implements Serializable {
             result.stop();
         }
 
-        LOG.log(Level.FINEST, "Tester [" + id + "] Executed " + md);
+        LOG.log(Level.FINEST, "Tester [{0}] Executed {1}", new Object[]{id, md});
         this.executionFinished(result.asResultSet());
     }
 
@@ -280,6 +290,7 @@ public class TesterImpl extends AbstractTester implements Serializable {
 
     public void join() throws InterruptedException {
         testerThread.join();
+        quitThread.join();
     }
 
     /**
@@ -311,6 +322,32 @@ public class TesterImpl extends AbstractTester implements Serializable {
                 LOG.log(Level.SEVERE, "TesterThread interrupted exception", ex);
             } catch (RemoteException ex) {
                 LOG.log(Level.SEVERE, "TesterThread remote exception", ex);
+            }
+        }
+    }
+
+    private class QuitThread implements Runnable {
+
+        public void run() {
+            // Waits for the quit() signal and then for the
+            // current invocation thread.
+            // Then, interrupts the tester Thread.
+
+            LOG.entering("QuitThread", "run()");
+            try {
+                remoteTester.waitForQuit();
+                LOG.fine("QuitThread -- quit message received;");
+                invocationThread.join();
+                if (testerThread.isAlive()) {
+                    testerThread.interrupt();
+                }
+                quit();
+            } catch (InterruptedException ex) {
+                LOG.log(Level.SEVERE, "QuitThread interrupted exception", ex);
+            } catch(RemoteException re) {
+                LOG.log(Level.SEVERE, "QuitThread remote exception", re);
+            }finally {
+                LOG.exiting("QuitThread", "run()");
             }
         }
     }

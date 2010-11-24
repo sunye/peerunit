@@ -32,7 +32,9 @@ public class Model {
     }
 
     public void stop() {
-        running = false;
+        //running = false;
+        nodeCreationThread.interrupt();
+        nodeUpdateThread.interrupt();
     }
 
     public void print() {

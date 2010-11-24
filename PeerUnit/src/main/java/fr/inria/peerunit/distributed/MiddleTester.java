@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -39,56 +40,55 @@ import java.util.logging.Logger;
 public class MiddleTester {
 
     private static Logger LOG = Logger.getLogger(MiddleTester.class.getName());
-
     /**
      * Coordinator of this tester.
      */
     private Coordinator parent;
-     /**
+    /**
      * Testers registered to this coordinator
      */
     private final List<Tester> children;
-
     /**
      * Tester interface, RMI implementation.
      * Used to register with parent (Coordinator), which thinks this is a
      * single Tester.
      */
     private final RemoteTesterImpl tester;
-
     /**
      * Coordinator interface, RMI implementation.
      * Used to communicate with the childre (Testers), which think this is a
      * coordinator.
      */
     private final RemoteCoordinatorImpl coordinator;
-
     /**
      * Remaining tester registrations.
      */
     private final AtomicInteger remainingRegistrations;
-
     /**
      * Number of expected testers.
      */
     private final int expectedTesters;
-
     /**
      * Schedule (Methods X Testers)
      */
     private Schedule schedule = new Schedule();
-
-
     /**
      * Number of running testers in a given moment.
      */
     private AtomicInteger runningTesters = new AtomicInteger(0);
-
     /**
      * Result set for a method execution.
      */
     private ResultSet executionResult;
-   
+    /**
+     * Thread used to run this tester.
+     */
+    private Thread testerThread;
+    /**
+     * Thread used to quit this tester.
+     */
+    private Thread quitThread;
+
     public MiddleTester(int testerNbr) {
         tester = new RemoteTesterImpl();
         coordinator = new RemoteCoordinatorImpl(testerNbr);
@@ -124,10 +124,9 @@ public class MiddleTester {
         this.waitForTesterRegistration();
         this.registerWithParent();
         this.testCaseExecution();
-        this.waitAllTestersToQuit();
+        //this.waitAllTestersToQuit();
         LOG.exiting("ManInTheMiddle", "execute()");
     }
-
 
     /**
      * Waits for all expected testers to register their methods (TestSteps).
@@ -138,7 +137,7 @@ public class MiddleTester {
 
         TesterRegistration reg;
 
-        while (remainingRegistrations.getAndDecrement() > 0 ) {
+        while (remainingRegistrations.getAndDecrement() > 0) {
             reg = coordinator.registrations().take();
             schedule.put(reg);
             children.add(reg.tester());
@@ -169,16 +168,17 @@ public class MiddleTester {
      */
     private void testCaseExecution() throws InterruptedException, RemoteException {
         LOG.entering("ManInTheMiddle", "testCaseExecution()");
-        
-        Collection<MethodDescription> remainingMethods = schedule.methods();
 
-        while (remainingMethods.size() > 0) {
+        //Collection<MethodDescription> remainingMethods = schedule.methods();
+
+        //while (remainingMethods.size() > 0) {
+        while(true) {
             MethodDescription md = tester.takeMethodDescription();
             this.methodExecution(md);
             this.waitForExecutionFinished();
-            remainingMethods.remove(md);
+            //remainingMethods.remove(md);
         }
-        LOG.exiting("ManInTheMiddle", "testCaseExecution()");
+        //LOG.exiting("ManInTheMiddle", "testCaseExecution()");
     }
 
     /**
@@ -198,8 +198,14 @@ public class MiddleTester {
             each.execute(md);
         }
         LOG.exiting("ManInTheMiddle", "methodExecution()");
-   }
+    }
 
+    private void quit() throws RemoteException, InterruptedException {
+        for (Tester each : children) {
+            each.quit();
+        }
+        this.waitAllTestersToQuit();
+    }
 
     /**
      * Waits for a response from all children that executed a method.
@@ -209,7 +215,7 @@ public class MiddleTester {
      */
     private void waitForExecutionFinished() throws InterruptedException, RemoteException {
         LOG.entering("ManInTheMiddle", "waitForExecutionFinished()");
-        
+
         while (runningTesters.intValue() > 0) {
             ResultSet rs = coordinator.results().take();
             executionResult.add(rs);
@@ -237,5 +243,62 @@ public class MiddleTester {
         parent.quit(tester);
         LOG.exiting("ManInTheMiddle", "waitAllTestersToQuit()");
 
+    }
+
+    /**
+     * Starts the thread for this tester
+     */
+    public void startThread() {
+        LOG.entering("TesterImpl", "startThread()");
+        testerThread = new Thread(new TesterThread());
+        testerThread.start();
+
+        quitThread = new Thread(new QuitThread());
+        quitThread.start();
+    }
+
+    public void join() throws InterruptedException {
+        testerThread.join();
+        quitThread.join();
+    }
+
+    private class TesterThread implements Runnable {
+
+        public void run() {
+            try {
+                LOG.entering("TesterThread", "run()");
+                execute();
+            } catch (InterruptedException ex) {
+                LOG.log(Level.SEVERE, "TesterThread interrupted exception", ex);
+            } catch (RemoteException ex) {
+                LOG.log(Level.SEVERE, "TesterThread remote exception", ex);
+            }
+        }
+    }
+
+    private class QuitThread implements Runnable {
+
+        public void run() {
+            // Waits for the quit() signal and then for the
+            // current invocation thread.
+            // Then, interrupts the tester Thread.
+
+            LOG.entering("QuitThread", "run()");
+            try {
+                tester.waitForQuit();
+                LOG.fine("QuitThread -- quit message received;");
+                //invocationThread.join();
+                if (testerThread.isAlive()) {
+                    testerThread.interrupt();
+                }
+                quit();
+            } catch (InterruptedException ex) {
+                LOG.log(Level.SEVERE, "QuitThread interrupted exception", ex);
+            } catch (RemoteException re) {
+                LOG.log(Level.SEVERE, "QuitThread remote exception", re);
+            } finally {
+                LOG.exiting("QuitThread", "run()");
+            }
+        }
     }
 }
