@@ -5,18 +5,12 @@
 package fr.inria.peerunit.openchordtest.test;
 
 import fr.inria.peerunit.dhtmodel.RemoteModel;
-import fr.inria.peerunit.dhtmodel.RemoteModelImpl;
 import fr.inria.peerunit.dhtmodel.Model;
 import fr.inria.peerunit.parser.TestStep;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,27 +24,17 @@ public class RoutingTableTest extends AbstractOpenChordTest {
     private static final int PORT = 8282;
     private Model model;
     private RemoteModel remoteModel;
-    private Set<String> neighbors = new HashSet<String>();
     private Registry registry;
-    private RemoteModelImpl rmi = new RemoteModelImpl();;
 
-    @TestStep(range = "6", order = 1)
-    public void startModel() throws RemoteException, UnknownHostException {
-        
-        RemoteModel stub = (RemoteModel) UnicastRemoteObject.exportObject(rmi, 0);
-        registry = LocateRegistry.createRegistry(PORT);
-        registry.rebind("Model", stub);
-        this.put(1, InetAddress.getLocalHost().getHostName());
 
-        model = new Model(rmi);
-        model.start();
 
-    }
 
     @TestStep(range = "*", order = 2, timeout = 40000)
     public void lookupModel() throws RemoteException, NotBoundException {
 
         String hostName = (String) this.get(1);
+        LOG.info(hostName);
+        
         registry = LocateRegistry.getRegistry(hostName, PORT);
         remoteModel = (RemoteModel) registry.lookup("Model");
 
@@ -82,7 +66,7 @@ public class RoutingTableTest extends AbstractOpenChordTest {
         remoteModel.newNode(peer.getId());
     }
 
-    @TestStep(range = "*", order = 6, timeout = 11000)
+    @TestStep(range = "*", order = 6, timeout = 110000)
     public void stabilize() throws InterruptedException {
         Thread.sleep(100000);
     }
@@ -95,12 +79,7 @@ public class RoutingTableTest extends AbstractOpenChordTest {
         remoteModel.updateNode(peer.getId(), peer.getRoutingTable());
     }
 
-    @TestStep(range = "6", order = 9)
-    public void unicity() {
-        LOG.log(Level.INFO, "Unicity Test");
 
-        assert model.unicity() : "Unicity";
-    }
 
 
     @TestStep(range = "*", order = 10, timeout = 110000)
@@ -109,12 +88,6 @@ public class RoutingTableTest extends AbstractOpenChordTest {
         remoteModel.updateNode(peer.getId(), peer.getRoutingTable());
     }
 
-    @TestStep(range = "6", order = 11)
-    public void reUnicity() {
-        LOG.log(Level.INFO, "Unicity Test");
-
-        assert model.unicity() : "Unicity";
-    }
 
     @TestStep(range = "*", order = 12, timeout = 200000)
     public void unicityLoop() throws InterruptedException, RemoteException {
@@ -130,33 +103,12 @@ public class RoutingTableTest extends AbstractOpenChordTest {
     }
 
 
-    @TestStep(range = "6", order = 14)
-    public void distance() {
-        LOG.log(Level.INFO, "Unicity Test");
 
-        assert model.distance() : "Unicity";
-    }
-
-    @TestStep(range = "6", order = 18)
-    public void printPeer() {
-        peer.print();
-    }
-
-    @TestStep(range = "6", order = 20)
-    public void print() throws RemoteException, NotBoundException {
-        model.print();
-        model.stop();
-        registry.unbind("Model");
-        UnicastRemoteObject.unexportObject(registry, true);
-        UnicastRemoteObject.unexportObject(rmi, true);
-        
-    }
 
     @TestStep(range = "*", order = 22)
     public void quit() throws RemoteException, NotBoundException {
 
         //UnicastRemoteObject.unexportObject(remoteModel, true);
-        
         
 
     }
