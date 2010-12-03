@@ -53,23 +53,7 @@ public class P2PSystem {
     }
 
     public boolean unicity() {
-        LOG.log(Level.INFO, "There are {0} known nodes", nodes.size());
-        List<Node> remaining = new ArrayList<Node>(nodes.values());
-        List<List<Node>> groups = new LinkedList<List<Node>>();
-        List<Node> visited;
-
-        while (!remaining.isEmpty()) {
-            visited = new LinkedList<Node>();
-            Node head = remaining.iterator().next();
-            visited.add(head);
-            this.visit(visited, head);
-
-            groups.add(visited);
-            remaining.removeAll(visited);
-        }
-
-        LOG.log(Level.INFO, "We found {0} groups", groups.size());
-        return groups.size() == 1;
+        return groups() == 1;
     }
 
     public boolean distance() {
@@ -140,5 +124,22 @@ public class P2PSystem {
                 this.visit(visited, each);
             }
         }
+    }
+
+    private int groups() {
+        List<Node> remaining = new ArrayList<Node>(nodes.values());
+        List<List<Node>> groups = new LinkedList<List<Node>>();
+        List<Node> visited;
+
+        while (!remaining.isEmpty()) {
+            visited = new LinkedList<Node>();
+            Node head = remaining.iterator().next();
+            visited.add(head);
+            this.visit(visited, head);
+
+            groups.add(visited);
+            remaining.removeAll(visited);
+        }
+        return groups.size();
     }
 }
