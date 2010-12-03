@@ -19,6 +19,21 @@ package fr.inria.peerunit.openchordtest.test;
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.CoordinatorImpl;
 import fr.inria.peerunit.coordinator.CoordinationStrategy;
+import fr.inria.peerunit.remote.GlobalVariables;
+import fr.inria.peerunit.util.TesterUtil;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+import fr.inria.peerunit.dhtmodel.RemoteModel;
+import fr.inria.peerunit.dhtmodel.RemoteModelImpl;
+import fr.inria.peerunit.dhtmodel.Model;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.server.UnicastRemoteObject;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,11 +48,33 @@ public class RoutingTableTestStrategy implements CoordinationStrategy {
 
     private static final Logger LOG =
             Logger.getLogger(RoutingTableTestStrategy.class.getName());
+    private static final int PORT = 8282;
     private CoordinatorImpl coordinator;
     private Map<String, MethodDescription> methods;
+    private TesterUtil defaults = TesterUtil.instance;
+    private Registry registry;
+    private GlobalVariables globals;
+    private RemoteModelImpl rmi = new RemoteModelImpl();
+    private Model model;
 
     public void init(CoordinatorImpl coord) {
         coordinator = coord;
+
+        try {
+            registry = LocateRegistry.getRegistry(defaults.getRegistryPort());
+            globals = (GlobalVariables) registry.lookup("Globals");
+        } catch (NotBoundException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
+        } catch (AccessException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
+        } catch (RemoteException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
+        }
+
+
     }
 
     /**
@@ -47,30 +84,39 @@ public class RoutingTableTestStrategy implements CoordinationStrategy {
      * @throws InterruptedException
      */
     public void testcaseExecution() throws InterruptedException {
+        boolean unicity;
+        short tries = 0;
         LOG.entering("RoutingTableTestStrategy", "testCaseExecution()");
 
 
         this.execute("initialize");
-        this.execute("startModel");
+        //this.execute("startModel");
+        startModel();
 
         this.execute("lookupModel");
         this.execute("startBootstrap");
         this.execute("startingNetwork");
         this.execute("nodeCreation");
-        this.execute("stabilize");
+        //this.execute("stabilize");
 
 
-        for (int i = 0; i < 3; i++) {
+        do {
+            Thread.sleep(10000);
             this.execute("updateModel");
-        }
-        this.execute("unicity");
-        this.execute("again");
-        this.execute("reunicity");
-        this.execute("distance");
-        this.execute("printPeer");
+            tries++;
+        } while (!unicity() && tries < 100);
 
-        this.execute("print");
-        this.execute("quit");
+        System.out.println("Tries: " + tries);
+        //this.execute("unicity");
+        //this.execute("again");
+        //this.execute("reunicity");
+        //unicity();
+        //this.execute("distance");
+        distance();
+        print();
+        //this.execute("printPeer");
+        //this.execute("print");
+        //this.execute("quit");
 
     }
 
@@ -89,5 +135,50 @@ public class RoutingTableTestStrategy implements CoordinationStrategy {
         } else {
             LOG.log(Level.WARNING, "Method not found: {0}", str);
         }
+    }
+
+    public void startModel() {
+        Registry testRegistry;
+        try {
+            RemoteModel stub = (RemoteModel) UnicastRemoteObject.exportObject(rmi, 0);
+            testRegistry = LocateRegistry.createRegistry(PORT);
+            testRegistry.rebind("Model", stub);
+            globals.put(1, InetAddress.getLocalHost().getHostName());
+
+        } catch (UnknownHostException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
+        } catch (RemoteException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
+        }
+
+        model = new Model(rmi);
+        model.start();
+
+    }
+
+    public boolean unicity() {
+        LOG.log(Level.INFO, "Unicity Test");
+
+        return model.unicity(); // : "Unicity";
+    }
+
+    public void distance() {
+        LOG.log(Level.INFO, "Unicity Test");
+
+        assert model.distance() : "Unicity";
+    }
+
+    public void printPeer() {
+        //peer.print();
+    }
+
+    public void print() {
+        model.print();
+        model.stop();
+        //registry.unbind("Model");
+        //UnicastRemoteObject.unexportObject(registry, true);
+        //UnicastRemoteObject.unexportObject(rmi, true);
     }
 }
