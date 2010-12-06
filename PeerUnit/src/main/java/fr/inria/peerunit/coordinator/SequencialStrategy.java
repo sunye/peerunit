@@ -26,10 +26,10 @@ import java.util.logging.Logger;
 class SequencialStrategy implements CoordinationStrategy {
 
     private static final Logger LOG = Logger.getLogger(SequencialStrategy.class.getName());
-    private CoordinatorImpl coordinator;
+    private TesterSet testers;
 
-    public void init(CoordinatorImpl coord) {
-        coordinator = coord;
+    public void init(TesterSet ts) {
+        testers = ts;
     }
 
     /**
@@ -41,8 +41,8 @@ class SequencialStrategy implements CoordinationStrategy {
     public void testcaseExecution() throws InterruptedException {
         LOG.entering("SequencialStrategy", "testCaseExecution()");
 
-        for (MethodDescription each : coordinator.getSchedule().methods()) {
-            coordinator.execute(each);
+        for (MethodDescription each : testers.getSchedule().methods()) {
+            testers.execute(each);
         }
     }
 }

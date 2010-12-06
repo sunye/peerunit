@@ -17,8 +17,8 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.openchordtest.test;
 
 import fr.inria.peerunit.common.MethodDescription;
-import fr.inria.peerunit.coordinator.CoordinatorImpl;
 import fr.inria.peerunit.coordinator.CoordinationStrategy;
+import fr.inria.peerunit.coordinator.TesterSet;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.util.TesterUtil;
 import java.rmi.AccessException;
@@ -35,7 +35,6 @@ import java.net.UnknownHostException;
 import java.rmi.server.UnicastRemoteObject;
 
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,16 +48,15 @@ public class RoutingTableTestStrategy implements CoordinationStrategy {
     private static final Logger LOG =
             Logger.getLogger(RoutingTableTestStrategy.class.getName());
     private static final int PORT = 8282;
-    private CoordinatorImpl coordinator;
-    private Map<String, MethodDescription> methods;
+    private TesterSet testers;
     private TesterUtil defaults = TesterUtil.instance;
     private Registry registry;
     private GlobalVariables globals;
     private RemoteModelImpl rmi = new RemoteModelImpl();
     private Model model;
 
-    public void init(CoordinatorImpl coord) {
-        coordinator = coord;
+    public void init(TesterSet ts) {
+        testers = ts;
 
         try {
             registry = LocateRegistry.getRegistry(defaults.getRegistryPort());
@@ -73,74 +71,43 @@ public class RoutingTableTestStrategy implements CoordinationStrategy {
             LOG.log(Level.SEVERE, null, ex);
             System.err.println(ex.getMessage());
         }
-
-
     }
 
     /**
-     * Sequencial execution of test steps.
-     *
-     * @param schedule
+     * 
      * @throws InterruptedException
      */
     public void testcaseExecution() throws InterruptedException {
-        boolean unicity;
         short tries = 0;
         int groups;
         LOG.entering("RoutingTableTestStrategy", "testCaseExecution()");
 
-
-        this.execute("initialize");
-        //this.execute("startModel");
+        testers.execute("initialize");
         startModel();
-
-        this.execute("lookupModel");
-        this.execute("startBootstrap");
-        this.execute("startingNetwork");
-        this.execute("nodeCreation");
-        //this.execute("stabilize");
-
+        testers.execute("lookupModel");
+        testers.execute("startBootstrap");
+        testers.execute("startingNetwork");
+        testers.execute("nodeCreation");
 
         do {
             Thread.sleep(10000);
-            this.execute("updateModel");
+            testers.execute("updateModel");
             tries++;
             groups = model.groups();
-            LOG.severe("Try: "+tries+" Groups: "+groups);
+            LOG.log(Level.SEVERE, "Try: {0} Groups: {1}",
+                    new Object[]{tries, groups});
         } while (!unicity() && tries < 100);
 
-        LOG.severe("Tries: " + tries);
-        //this.execute("unicity");
-        //this.execute("again");
-        //this.execute("reunicity");
-        //unicity();
-        //this.execute("distance");
-        LOG.severe("Max Distance: " + distance());
+        LOG.log(Level.SEVERE, "Tries: {0}", tries);
+
+        testers.execute("updateModel");
+        LOG.log(Level.SEVERE, "Max Distance: {0}", distance());
         print();
-        //this.execute("printPeer");
-        this.execute("print");
-        this.execute("quit");
-
+        testers.execute("print");
+        testers.execute("quit");
     }
 
-    private void execute(String str) throws InterruptedException {
-        if (methods == null) {
-            // Lazy initialization of methods Map.
-            LOG.log(Level.FINE, "Method map initialization.");
-            methods = new HashMap<String, MethodDescription>();
-            for (MethodDescription each : coordinator.getSchedule().methods()) {
-                methods.put(each.getName(), each);
-            }
-        }
-
-        if (methods.containsKey(str)) {
-            coordinator.execute(methods.get(str));
-        } else {
-            LOG.log(Level.WARNING, "Method not found: {0}", str);
-        }
-    }
-
-    public void startModel() {
+    private void startModel() {
         Registry testRegistry;
         try {
             RemoteModel stub = (RemoteModel) UnicastRemoteObject.exportObject(rmi, 0);
@@ -169,19 +136,12 @@ public class RoutingTableTestStrategy implements CoordinationStrategy {
 
     public int distance() {
         LOG.log(Level.INFO, "Unicity Test");
-
         return model.distance();
     }
 
-    public void printPeer() {
-        //peer.print();
-    }
 
     public void print() {
         model.print();
         model.stop();
-        //registry.unbind("Model");
-        //UnicastRemoteObject.unexportObject(registry, true);
-        //UnicastRemoteObject.unexportObject(rmi, true);
     }
 }

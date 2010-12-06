@@ -128,12 +128,13 @@ public class CoordinatorImpl implements Runnable {
         }
 
         LOG.log(Level.FINEST, "Coordination strategy: {0}", strategyClass.getName());
+        TesterSet ts = new TesterSetImpl(this);
         try {
             strategy = (CoordinationStrategy) strategyClass.newInstance();
-            strategy.init(this);
+            strategy.init(ts);
         } catch (Exception e) {
             strategy = new SequencialStrategy();
-            strategy.init(this);
+            strategy.init(ts);
         }
     }
 
