@@ -22,7 +22,7 @@ package fr.inria.peerunit.coordinator;
  */
 public interface CoordinationStrategy {
 
-    void init(CoordinatorImpl ci);
+    void init(TesterSet ts);
 
     void testcaseExecution() throws InterruptedException;
 }
