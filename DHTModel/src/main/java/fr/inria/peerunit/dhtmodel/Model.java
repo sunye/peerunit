@@ -45,8 +45,12 @@ public class Model {
          return system.unicity();
     }
 
-    public boolean distance() {
+    public int distance() {
         return system.distance();
+    }
+
+    public int groups() {
+        return system.groups();
     }
 
     class NewNodeThread implements Runnable {

@@ -68,7 +68,7 @@ public class ChordPeer implements Peer {
     public Set<String> getRoutingTable() {
         Set<String> result = new HashSet<String>();
 
-        String[] successors = node.printSuccessorList().split("\n");
+        String[] successors = node.printFingerTable().split("\n");
 
         for(int i = 1 ; i < successors.length ; i++) {
             String entry = successors[i].split(",")[0].trim();

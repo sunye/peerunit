@@ -117,6 +117,15 @@ public class MethodDescription implements Comparable<MethodDescription>,
         }
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 53 * hash + this.order;
+        hash = 53 * hash + this.timeout;
+        return hash;
+    }
+
     /*
      * Returns the name associated to method
      * @return String
