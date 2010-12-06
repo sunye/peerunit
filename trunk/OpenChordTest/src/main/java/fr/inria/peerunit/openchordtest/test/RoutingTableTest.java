@@ -20,8 +20,16 @@ import java.util.logging.Logger;
  */
 public class RoutingTableTest extends AbstractOpenChordTest {
 
+    /**
+     * Logger
+     */
     private static final Logger LOG = Logger.getLogger(RoutingTableTest.class.getName());
+    
+    /**
+     * Port for RMI Registry
+     */
     private static final int PORT = 8282;
+    
     private Model model;
     private RemoteModel remoteModel;
     private Registry registry;
@@ -81,14 +89,16 @@ public class RoutingTableTest extends AbstractOpenChordTest {
 
 
 
-
+    /**
     @TestStep(range = "*", order = 10, timeout = 110000)
     public void again() throws Exception {
         Thread.sleep(100000);
         remoteModel.updateNode(peer.getId(), peer.getRoutingTable());
     }
+     */
 
 
+    /**
     @TestStep(range = "*", order = 12, timeout = 200000)
     public void unicityLoop() throws InterruptedException, RemoteException {
         for(int i = 0; i < 10; i++) {
@@ -101,18 +111,20 @@ public class RoutingTableTest extends AbstractOpenChordTest {
 
         }
     }
-
-
-
-
-    @TestStep(range = "*", order = 22)
-    public void quit() throws RemoteException, NotBoundException {
-
-        //UnicastRemoteObject.unexportObject(remoteModel, true);
-        
+*/
+    
+    @TestStep(range = "*", order = 14, timeout = 200000)
+    public void print() throws InterruptedException, RemoteException {
+        peer.print();
 
     }
 
 
+    @TestStep(range = "*", order = 22)
+    public void quit() throws RemoteException, NotBoundException {
+        peer.leave();
+        //UnicastRemoteObject.unexportObject(remoteModel, true);
+        
 
+    }
 }

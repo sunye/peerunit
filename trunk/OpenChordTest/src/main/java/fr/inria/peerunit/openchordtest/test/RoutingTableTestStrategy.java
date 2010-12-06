@@ -86,6 +86,7 @@ public class RoutingTableTestStrategy implements CoordinationStrategy {
     public void testcaseExecution() throws InterruptedException {
         boolean unicity;
         short tries = 0;
+        int groups;
         LOG.entering("RoutingTableTestStrategy", "testCaseExecution()");
 
 
@@ -104,19 +105,21 @@ public class RoutingTableTestStrategy implements CoordinationStrategy {
             Thread.sleep(10000);
             this.execute("updateModel");
             tries++;
+            groups = model.groups();
+            LOG.severe("Try: "+tries+" Groups: "+groups);
         } while (!unicity() && tries < 100);
 
-        System.out.println("Tries: " + tries);
+        LOG.severe("Tries: " + tries);
         //this.execute("unicity");
         //this.execute("again");
         //this.execute("reunicity");
         //unicity();
         //this.execute("distance");
-        distance();
+        LOG.severe("Max Distance: " + distance());
         print();
         //this.execute("printPeer");
-        //this.execute("print");
-        //this.execute("quit");
+        this.execute("print");
+        this.execute("quit");
 
     }
 
@@ -164,10 +167,10 @@ public class RoutingTableTestStrategy implements CoordinationStrategy {
         return model.unicity(); // : "Unicity";
     }
 
-    public void distance() {
+    public int distance() {
         LOG.log(Level.INFO, "Unicity Test");
 
-        assert model.distance() : "Unicity";
+        return model.distance();
     }
 
     public void printPeer() {

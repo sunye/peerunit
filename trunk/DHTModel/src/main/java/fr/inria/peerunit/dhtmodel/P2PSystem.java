@@ -56,7 +56,7 @@ public class P2PSystem {
         return groups() == 1;
     }
 
-    public boolean distance() {
+    public int distance() {
         // Floyd-Warshall Algorithm Implementation
 
         int size = nodes.size();
@@ -102,7 +102,7 @@ public class P2PSystem {
          *
          */
 
-        return true;
+        return max;
     }
 
     // Floyd-Warshall Algorithm
@@ -126,7 +126,7 @@ public class P2PSystem {
         }
     }
 
-    private int groups() {
+    public int groups() {
         List<Node> remaining = new ArrayList<Node>(nodes.values());
         List<List<Node>> groups = new LinkedList<List<Node>>();
         List<Node> visited;
