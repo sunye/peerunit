@@ -1,7 +1,9 @@
 package load;
 
 /**
- * @author albonico  
+ * @author albonico 
+ * Parent Class to Start Cluster Hadoop.
+ * All Exceptions will be deal by PeerUnit.
  */
 
 // My classes
@@ -102,15 +104,15 @@ public class StartClusterParent {
 
     public void setLogger() throws IOException {
 
-//	fh = new FileHandler("hadoop.log"); 
-  //      log.addHandler(fh);
-
-        // System.setOut(new PrintStream("testelog.txt"));
- 
+/*	    fh = new FileHandler("hadoop.log"); 
+        log.addHandler(fh);
+        System.setOut(new PrintStream("testelog.txt"));
+*/ 
     }
 
    @BeforeClass(range = "*", timeout = 100000)
     public void bc() throws FileNotFoundException, IOException {
+	   
         if (new File("peerunit.properties").exists()) {
             String filename = "peerunit.properties";
             FileInputStream fs = new FileInputStream(filename);
@@ -122,7 +124,7 @@ public class StartClusterParent {
         sleep = defaults.getSleep();
         OBJECTS =defaults.getObjects();
 
-	setLogger();
+	    setLogger();
 
         log.info("Starting Cluster Hadoop!");
 
@@ -130,48 +132,36 @@ public class StartClusterParent {
 
     public void readPropertiesHadoop() throws IOException, InterruptedException {
 
-	Thread.sleep(sleep);
-
-	Properties properties = new Properties();
+		Properties properties = new Properties();
+		File file = new File("hadoop.properties");
+		FileInputStream fis = null
 	
-	File file = new File("hadoop.properties");
-
-	FileInputStream fis = null;
-
-	try {
-
 		log.info("Reading Hadoop configuration!");
-
-		//fis = new FileOutputStream(file);
+	
 		fis = new FileInputStream(file);
-
 		properties.load(fis);
-
-		//fis.close(0);
-
-/**
-* JobTracker and NameNode Properties
-*/
-
+	
+		/**
+		* JobTracker and NameNode Properties
+		*/
+	
 		// Read JobTracker and Namenode Addresses
 		String nnaddr = properties.getProperty("hadoop.namenode");
 		String jtaddr = properties.getProperty("hadoop.jobtracker");
-
-		// System.out.println("Endereco do NameNode: " + nnaddr);
-
+	
 		this.put(-1, nnaddr);
 		this.put(-2, jtaddr);
-
+	
 		String nnport = properties.getProperty("hadoop.namenode.port");
 		String jtport = properties.getProperty("hadoop.jobtracker.port");
-
+	
 		this.put(-3, nnport);
 		this.put(-4, jtport);
-
-/**
-* Other Properties
-*/
-
+	
+		/**
+		* Other Properties
+		*/
+	
 		String dfsname = properties.getProperty("hadoop.dir.name");
 		String dfsdata = properties.getProperty("hadoop.dir.data");
 		String hadooptmp = properties.getProperty("hadoop.dir.tmp");
@@ -179,7 +169,7 @@ public class StartClusterParent {
 		String hadooplog = properties.getProperty("hadoop.dir.log");
 		String hadooprep = properties.getProperty("hadoop.dfs.replication");
 		String javaopt = properties.getProperty("hadoop.java.options");
-
+	
 		this.put(-5, dfsname);
 		this.put(-6, dfsdata);
 		this.put(-7, hadooptmp);
@@ -187,79 +177,69 @@ public class StartClusterParent {
 		this.put(-9, hadooplog);
 		this.put(-10, hadooprep);	
 		this.put(-11, javaopt);
-	
-	} catch(IOException e) {
-
-		log.warning("Error reading Hadoop configuration:");
-
-		log.warning(e.toString());
-
-	}
-
 
     } 
 
     public Configuration getConfMR() throws IOException, InterruptedException {
 
-	log.info("Reading MR configuration!");
-
-	// Definida manualmente pois o TestRunner nao le os arquivos de configuracao
-	Thread.sleep(sleep);
-	Configuration conf = new Configuration();
-	String jthost = this.get(-2)+":"+this.get(-4);
+		log.info("Reading MR configuration!");
 	
-	jthost = (String) jthost;
+		Thread.sleep(sleep);
+		Configuration conf = new Configuration();
+		String jthost = this.get(-2)+":"+this.get(-4);
+		
+		jthost = (String) jthost;
+	
+	    conf.set("mapred.job.tracker",jthost);
+	
+	    String joptions = (String) this.get(-11);
+	    conf.set("mapred.child.java.opts",joptions);
+	
+		//conf.set("mapred.tasktracker.map.tasks.maximum","1");
+		//conf.set("mapred.tasktracker.reduce.tasks.maximum","1");
+	    //conf.set("mapred.job.reuse.jvm.num.tasks","1");	
 
-        conf.set("mapred.job.tracker",jthost);
-
-        String joptions = (String) this.get(-11);
-        conf.set("mapred.child.java.opts",joptions);
-
-	//conf.set("mapred.tasktracker.map.tasks.maximum","1");
-	//conf.set("mapred.tasktracker.reduce.tasks.maximum","1");
-	//conf.set("mapred.child.java.opts","-Xmx1024m -XX:-UseGCOverheadLimit");
-        //conf.set("mapred.job.reuse.jvm.num.tasks","1");	
-	return conf;
+	    return conf;
 
     }
 
     public Configuration getConfHDFS() throws IOException, InterruptedException {
 
-	log.info("Reading HDFS configuration!");
-
-	Thread.sleep(sleep);
-        Configuration conf = new Configuration();
-
-	String nnhost = "hdfs://"+this.get(-1)+":"+this.get(-3);	
-
-	nnhost = (String) nnhost;
-
-	String dirname = (String) this.get(-5);
-	String dirdata = (String) this.get(-6);
-	String dirtmp = (String) this.get(-7);
-	String dirsnn = (String) this.get(-8);
-	String dirlog = (String) this.get(-9);
-	String replication = (String) this.get(-10);
-	String joptions = (String) this.get(-11);
-
-	conf.set("fs.default.name", nnhost);
-        conf.set("dfs.name.dir",dirname);
-        conf.set("dfs.data.dir",dirdata);
-        conf.set("dfs.replication",replication);
-	conf.set("hadoop.tmp.dir",dirtmp);
-	conf.set("hadoop.log.dir",dirlog);
-	conf.set("mapred.child.java.opts",joptions);
-	conf.set("fs.checkpoint.dir",dirsnn);
-
-        //conf.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
-        //conf.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
-        //conf.set("dfs.replication","1");
-	//conf.set("hadoop.tmp.dir","/tmp/hadoop/");
-	//conf.set("hadoop.log.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/logs/");
-        // Sempre formata o Sistema de Arquivos...
-        //conf.set("dfs.namenode.startup","UPGRADE");
-
-	return conf;
+		log.info("Reading HDFS configuration!");
+	
+		Thread.sleep(sleep);
+	    Configuration conf = new Configuration();
+	
+		String nnhost = "hdfs://"+this.get(-1)+":"+this.get(-3);	
+	
+		nnhost = (String) nnhost;
+	
+		String dirname = (String) this.get(-5);
+		String dirdata = (String) this.get(-6);
+		String dirtmp = (String) this.get(-7);
+		String dirsnn = (String) this.get(-8);
+		String dirlog = (String) this.get(-9);
+		String replication = (String) this.get(-10);
+		String joptions = (String) this.get(-11);
+	
+		conf.set("fs.default.name", nnhost);
+	    conf.set("dfs.name.dir",dirname);
+	    conf.set("dfs.data.dir",dirdata);
+	    conf.set("dfs.replication",replication);
+		conf.set("hadoop.tmp.dir",dirtmp);
+		conf.set("hadoop.log.dir",dirlog);
+		conf.set("mapred.child.java.opts",joptions);
+		conf.set("fs.checkpoint.dir",dirsnn);
+	
+	    //conf.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
+	    //conf.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
+	    //conf.set("dfs.replication","1");
+		//conf.set("hadoop.tmp.dir","/tmp/hadoop/");
+		//conf.set("hadoop.log.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/logs/");
+	    // Sempre formata o Sistema de Arquivos...
+	    //conf.set("dfs.namenode.startup","UPGRADE");
+	
+		return conf;
 
     }
 
@@ -268,88 +248,62 @@ public class StartClusterParent {
    *
    */
 
-    public void initNN() {
+    public void initNN() throws IOException, InterruptedException {
 
-	log.info("Starting NameNode!"); 
-
-	try {
+		log.info("Starting NameNode!"); 
+	
 		readPropertiesHadoop();
-	} catch(IOException ioe) {
-
-	} catch(InterruptedException ie) {
-
-	}
-
-	startNameNode nnode = new startNameNode();
-        Thread nnThread = new Thread(nnode);
-        nnThread.start();
-
-	try {
+		
+		startNameNode nnode = new startNameNode();
+	    Thread nnThread = new Thread(nnode);
+	    nnThread.start();
 		nnThread.join();
-	} catch(InterruptedException ie) {
 
-	}
     }
 
-    public void initSNN() {
+    public void initSNN() throws IOException, InterruptedException {
 
-	log.info("Starting Secondary NameNode!");
-
-	startSecondaryNameNode snn = new startSecondaryNameNode();
-        Thread snnThread = new Thread(snn);
-        snnThread.start();
-
-	try {
+		log.info("Starting Secondary NameNode!");
+	
+		startSecondaryNameNode snn = new startSecondaryNameNode();
+	    Thread snnThread = new Thread(snn);
+	    snnThread.start();
 		snnThread.join();
-	} catch(InterruptedException ie) {
 
-	}
     } 
 
-    public void initJT() {
-
-	log.info("Starting JobTracker!");
-
-	startJobTracker jtracker = new startJobTracker();
-        Thread jtThread = new Thread(jtracker);
-        jtThread.start();
-
-	try {
+    public void initJT() throws IOException, InterruptedException {
+ 
+		log.info("Starting JobTracker!");
+	
+		startJobTracker jtracker = new startJobTracker();
+	    Thread jtThread = new Thread(jtracker);
+	    jtThread.start();
 		jtThread.join();
-	} catch(InterruptedException ie) {
-
-	}
+	
     }
 
-    public void initTT() {
+    public void initTT() throws IOException, InterruptedException {
 
-	log.info("Starting TaskTracker!");
-
-        startTaskTracker ttracker = new startTaskTracker();
-        Thread ttThread = new Thread(ttracker);
-        ttThread.start();
-
-	try {
+		log.info("Starting TaskTracker!");
+	
+	    startTaskTracker ttracker = new startTaskTracker();
+	    Thread ttThread = new Thread(ttracker);
+	    ttThread.start();
 		ttThread.join();
-	} catch(InterruptedException ie) {
+	
+    }
 
+    public void initDN() throws IOException, InterruptedException {
+
+		log.info("Starting DataNode!"); 
+	
+	    startDataNode datanode = new startDataNode();
+	    Thread dnThread = new Thread(datanode);
+	    dnThread.start();
+	    dnThread.join();
+	
 	}
-    }
-
-    public void initDN() {
-
-	log.info("Starting DataNode!"); 
-
-        startDataNode datanode = new startDataNode();
-        Thread dnThread = new Thread(datanode);
-        dnThread.start();
-	try {
-                dnThread.join();
-        } catch(InterruptedException ie) {
-
-        }
-
-    }
 
     /**
     * Classes to create Runnable Objects
@@ -357,176 +311,90 @@ public class StartClusterParent {
     */
     public class startJobTracker implements Runnable {
 
-	public void run() {
-
-		try {
-
-			Configuration conf = getConfMR();
+		public void run() throws IOException, InterruptedException {
 	
-			job = new JobConf(conf);
-
-	   		JobTracker jobtracker = JobTracker.startTracker(job);
-        
-		} catch (InterruptedException e) {
-
-        	} catch(IOException e) {
-
+				Configuration conf = getConfMR();
+				job = new JobConf(conf);
+		   		JobTracker jobtracker = JobTracker.startTracker(job);
+	        
 		}
-	}
     
-   }
+    }
 
    public class startNameNode implements Runnable {
 
-	public void run() {
-
-		try {
-
+		public void run() throws IOException, InterruptedException {
+		
 			Configuration conf = getConfHDFS();	
-
 			NameNode nn = new NameNode(conf);
-
-		} catch (InterruptedException e) {
-
-        	} catch(IOException e) {
-
-        	}
-
-	}
-
+		
+		}
+	
    }
 
 
    public class startSecondaryNameNode implements Runnable {
 
-	public void run() {
-
-		try {
-
+		public void run() throws IOException, InterruptedException {
+		
 			Thread.sleep(sleep);
-
 			Configuration conf = getConfHDFS();
-
 			SecondaryNameNode snn = new SecondaryNameNode(conf);
-
-		} catch (InterruptedException e) {
-
-        	} catch(IOException e) {
-
-        	}
-
-	}
-
+		
+		
+		}
+		
    }
 
    public class startTaskTracker implements Runnable {
 
-	public void run() {
-   
-		try {
-
+		public void run() throws IOException, InterruptedException {
+		
 			Configuration conf = getConfMR();
-	
-        		JobConf job = new JobConf(conf);
-       
-	 		TaskTracker tt = new TaskTracker(job);
-
-		} catch(IOException e) {
-
-
-		} catch(InterruptedException ee) {
-
-
+		    JobConf job = new JobConf(conf);
+			TaskTracker tt = new TaskTracker(job);
+			
 		}
-	
-	}
 
    }
 
    public class startDataNode implements Runnable {
 	
-	public void run() {
-
-	try {
-
-		Configuration cfg = getConfHDFS();
-
-		// Host NameNode
-//		String masterhost = (String) get(-1);
-
-	        String dirname = (String) get(-5);
-	        String dirdata = (String) get(-6);
-
-	        cfg.set("dfs.name.dir",dirname);
-	        cfg.set("dfs.data.dir",dirdata);
-
-/*
-		try {
-			java.net.InetAddress addr = java.net.InetAddress.getLocalHost();
-			String hostname = (String) addr.getHostName();
-
-		if (hostname.equals(masterhost)) {
-        		cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
-        		cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
-		} else {
-			if (hostname.equals("macalan.c3sl.ufpr.br")) {
-				cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir2/");
-                		cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir2data/");
-			} else {
-				cfg.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir4/");
-                                cfg.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir4data/");
-			}
+		public void run() throws IOException, InterruptedException {
+		
+			Configuration cfg = getConfHDFS();
+			String dirname = (String) get(-5);
+			String dirdata = (String) get(-6);
+			cfg.set("dfs.name.dir",dirname);
+			cfg.set("dfs.data.dir",dirdata);
+				
+			String[] args = {"-rollback"};
+		
+			DataNode dn = DataNode.createDataNode(args,cfg);
+		
+			String serveraddr = dn.getNamenode();
+			log.info("DataNode connected with NameNode: " + serveraddr); 
+			
 		}
-
-		} catch (java.net.UnknownHostException uhe) {
-
-		}
-		//Fim teste
-*/
-		String[] args = {"-rollback"};
-
-		DataNode dn = DataNode.createDataNode(args,cfg);
-
-		String serveraddr = dn.getNamenode();
-		log.info("DataNode connected with NameNode: " + serveraddr); 
-
-	} catch(IOException e) {
-
-
-        } catch(InterruptedException ee) {
-
-
-        }
-
-	}
+		
    }
 
    public class runPiEstimator implements Runnable {
 
-   public void run() {
+	   public void run() throws IOException, InterruptedException {
 
-	try {
+	      	log.info("Starting PiEstimator!");
+	        
+			PiEstimator pi = new PiEstimator();
+	       	String masteraddr = (String) get(-2);
+	       	String masterport = (String) get(-4);
+	       	pi.setCfg(masteraddr,masterport);
+	       	//pi.setCfg(config); (This is the correct)
+	       	String[] argumentos = {"4","20"};
+	        pi.run(argumentos);
 
-      		log.info("Starting PiEstimator!");
-        
-		PiEstimator pi = new PiEstimator();
-
-       		String masteraddr = (String) get(-2);
-       		String masterport = (String) get(-4);
-
-       		pi.setCfg(masteraddr,masterport);
-       		//pi.setCfg(config); (This is the correct)
-
-       		String[] argumentos = {"4","20"};
-
-        	pi.run(argumentos);
-
-	} catch (IOException ioe) {
-		System.out.println("IOException");
-	} catch (Exception e) {
-		System.out.println("Exception");
-	} 
-   }
+	   }
 
   }
+   
 }
