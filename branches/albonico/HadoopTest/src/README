@@ -1,6 +1,8 @@
-### Informações sobre a estrutura de pacotes
+### Directories
+
 ./
 ./main
 ./main/java
-./main/java/ufpr
-./main/java/ufpr/test
+./main/java/examples --> Examples from Hadoop
+./main/java/load --> Loading the Cluster
+./main/java/test --> Testing the Systems
