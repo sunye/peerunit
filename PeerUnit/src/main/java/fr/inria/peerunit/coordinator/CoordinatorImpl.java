@@ -133,6 +133,9 @@ public class CoordinatorImpl implements Runnable {
             strategy = (CoordinationStrategy) strategyClass.newInstance();
             strategy.init(ts);
         } catch (Exception e) {
+            LOG.warning("Error while initializing class: " + strategyClass.getName());
+            LOG.log(Level.WARNING, null, e);
+            e.printStackTrace();
             strategy = new SequencialStrategy();
             strategy.init(ts);
         }
@@ -200,6 +203,7 @@ public class CoordinatorImpl implements Runnable {
         assert md != null : "Null MethodDescription";
 
         LOG.entering("CoordinatorImpl", "execute()", md);
+
         ResultSet result = new ResultSet(md);
         verdict.putResult(md, result);
         result.start();
@@ -210,7 +214,7 @@ public class CoordinatorImpl implements Runnable {
         //System.out.println(message);
         runningTesters.set(testers.size());
         for (Tester each : testers) {
-            LOG.finest("Dispatching " + md + " to tester " + each);
+            //LOG.finest("Dispatching " + md + " to tester " + each);
             executor.submit(new MethodExecute(each, md));
         }
         waitForExecutionFinished();

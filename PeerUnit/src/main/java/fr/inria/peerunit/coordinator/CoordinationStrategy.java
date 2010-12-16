@@ -25,4 +25,6 @@ public interface CoordinationStrategy {
     void init(TesterSet ts);
 
     void testcaseExecution() throws InterruptedException;
+
+    
 }

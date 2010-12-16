@@ -10,12 +10,7 @@ import java.util.logging.Logger;
 
 import rice.pastry.Id;
 import rice.pastry.NodeHandle;
-import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.freepastrytest.PastryPeer;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 /**
@@ -38,16 +33,14 @@ public class TestPeerIsolation extends AbstractFreePastryTest {
 
     @TestStep(range = "0", timeout = 40000, order = 0)
     @Override
-    public void startBootstrap() throws UnknownHostException, IOException,
-            InterruptedException {
+    public void startBootstrap() throws Exception {
 
             super.startBootstrap();
     }
 
     @TestStep(range = "1-*", timeout = 100000, order = 1)
     @Override
-    public void startingNetwork() throws InterruptedException,
-            UnknownHostException, IOException {
+    public void startingNetwork() throws Exception {
 
         super.startingNetwork();
     }
@@ -121,7 +114,8 @@ public class TestPeerIsolation extends AbstractFreePastryTest {
 
                 for (NodeHandle nd : actuals) {
                     obj = nd.getNodeId();
-                    LOG.log(Level.INFO, " Successor NodeId {0} is volatile {1}", new Object[]{obj, volatiles.contains(obj)});
+                    LOG.log(Level.INFO, " Successor NodeId {0} is volatile {1}",
+                            new Object[]{obj, volatiles.contains(obj)});
 
                     if ((obj != peer.oldGetId()) && (!volatiles.contains(obj))) {
                         LOG.info(" Table was updated, verdict may be PASS ");

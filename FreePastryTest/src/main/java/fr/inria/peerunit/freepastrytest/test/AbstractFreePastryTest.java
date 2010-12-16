@@ -136,8 +136,7 @@ public class AbstractFreePastryTest {
         peer.leave();
     }
 
-    public void startBootstrap() throws UnknownHostException, IOException,
-            InterruptedException {
+    public void startBootstrap() throws Exception {
 
         InetSocketAddress address =
                 new InetSocketAddress(HOST, PORT);
@@ -150,8 +149,7 @@ public class AbstractFreePastryTest {
         //Thread.sleep(16000);
     }
 
-    public void startingNetwork() throws InterruptedException,
-            UnknownHostException, IOException {
+    public void startingNetwork() throws Exception {
 
         Thread.sleep(this.getPeerName() * 100);
         InetSocketAddress address = (InetSocketAddress) this.get(0);

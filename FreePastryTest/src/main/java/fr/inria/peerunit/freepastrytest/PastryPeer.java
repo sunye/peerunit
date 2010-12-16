@@ -406,6 +406,12 @@ public class PastryPeer implements Application {
         return socketAddress.getPort();
     }
 
+
+    public void print() {
+        
+    }
+
+
     public static void main(String[] argv) throws UnknownHostException, IOException, InterruptedException {
         InetSocketAddress address =
                 new InetSocketAddress(InetAddress.getLocalHost(), 1200);
