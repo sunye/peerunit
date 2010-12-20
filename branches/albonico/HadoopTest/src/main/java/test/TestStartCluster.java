@@ -19,21 +19,21 @@ import java.rmi.RemoteException;
 public class TestStartCluster extends StartClusterParent {
 
 	@TestStep(order=1, timeout = 100000, range = "0")
-    public void startNameNode() {
+    public void startNameNode() throws IOException, InterruptedException {
 
     	initNN();
 
     }
 
     @TestStep(order=2, timeout=100000, range="1")
-    public void startSNameNode() {
+    public void startSNameNode() throws IOException, InterruptedException {
 
     	initSNN();
 
     }
 
     @TestStep(order=3, timeout = 100000, range = "*")
-    public void startDataNode() {
+    public void startDataNode() throws IOException, InterruptedException {
 
     	initDN();
 

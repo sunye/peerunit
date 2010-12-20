@@ -134,7 +134,7 @@ public class StartClusterParent {
 
 		Properties properties = new Properties();
 		File file = new File("hadoop.properties");
-		FileInputStream fis = null
+		FileInputStream fis = null;
 	
 		log.info("Reading Hadoop configuration!");
 	
@@ -311,23 +311,38 @@ public class StartClusterParent {
     */
     public class startJobTracker implements Runnable {
 
-		public void run() throws IOException, InterruptedException {
+		public void run() {
 	
-				Configuration conf = getConfMR();
-				job = new JobConf(conf);
-		   		JobTracker jobtracker = JobTracker.startTracker(job);
-	        
+			try {
+				
+					Configuration conf = getConfMR();
+				
+					job = new JobConf(conf);
+				   	JobTracker jobtracker = JobTracker.startTracker(job);
+				} catch (IOException ioe) {
+					
+				} catch (InterruptedException ie) {
+					
+				}
 		}
     
     }
 
    public class startNameNode implements Runnable {
 
-		public void run() throws IOException, InterruptedException {
+		public void run() {
 		
-			Configuration conf = getConfHDFS();	
-			NameNode nn = new NameNode(conf);
-		
+			try {
+				
+				Configuration conf = getConfHDFS();
+			
+				NameNode nn = new NameNode(conf);
+				
+			} catch (IOException ioe) {
+				
+			} catch (InterruptedException ie) {
+				
+			}
 		}
 	
    }
@@ -335,12 +350,18 @@ public class StartClusterParent {
 
    public class startSecondaryNameNode implements Runnable {
 
-		public void run() throws IOException, InterruptedException {
-		
-			Thread.sleep(sleep);
-			Configuration conf = getConfHDFS();
-			SecondaryNameNode snn = new SecondaryNameNode(conf);
-		
+		public void run() {
+			
+			try {
+				
+				Configuration conf = getConfHDFS();
+				SecondaryNameNode snn = new SecondaryNameNode(conf);
+				
+			} catch (IOException ioe) {
+				
+			} catch (InterruptedException ie) {
+				
+			}
 		
 		}
 		
@@ -348,51 +369,76 @@ public class StartClusterParent {
 
    public class startTaskTracker implements Runnable {
 
-		public void run() throws IOException, InterruptedException {
+		public void run() {
 		
-			Configuration conf = getConfMR();
-		    JobConf job = new JobConf(conf);
-			TaskTracker tt = new TaskTracker(job);
-			
+			try {
+				
+				Configuration conf = getConfMR();
+			    JobConf job = new JobConf(conf);
+		    	TaskTracker tt = new TaskTracker(job);
+		    	
+		    } catch (IOException ioe) {
+				
+			} catch (InterruptedException ie) {
+				
+			}
+		    
 		}
 
    }
 
    public class startDataNode implements Runnable {
 	
-		public void run() throws IOException, InterruptedException {
+		public void run() {
 		
-			Configuration cfg = getConfHDFS();
-			String dirname = (String) get(-5);
-			String dirdata = (String) get(-6);
-			cfg.set("dfs.name.dir",dirname);
-			cfg.set("dfs.data.dir",dirdata);
-				
-			String[] args = {"-rollback"};
-		
-			DataNode dn = DataNode.createDataNode(args,cfg);
-		
-			String serveraddr = dn.getNamenode();
-			log.info("DataNode connected with NameNode: " + serveraddr); 
+			try {
 			
+				Configuration cfg = getConfHDFS();
+				String dirname = (String) get(-5);
+				String dirdata = (String) get(-6);
+				cfg.set("dfs.name.dir",dirname);
+				cfg.set("dfs.data.dir",dirdata);
+				
+				String[] args = {"-rollback"};
+		
+				DataNode dn = DataNode.createDataNode(args,cfg);
+		
+				String serveraddr = dn.getNamenode();
+				log.info("DataNode connected with NameNode: " + serveraddr); 
+				
+			} catch (IOException ioe) {
+			
+			} catch (InterruptedException ie) {
+				
+			}
+				
 		}
 		
    }
 
    public class runPiEstimator implements Runnable {
 
-	   public void run() throws IOException, InterruptedException {
+	   public void run() {
 
-	      	log.info("Starting PiEstimator!");
-	        
-			PiEstimator pi = new PiEstimator();
-	       	String masteraddr = (String) get(-2);
-	       	String masterport = (String) get(-4);
-	       	pi.setCfg(masteraddr,masterport);
-	       	//pi.setCfg(config); (This is the correct)
-	       	String[] argumentos = {"4","20"};
-	        pi.run(argumentos);
-
+		   try {
+			   
+			    log.info("Starting PiEstimator!");
+	      	
+				PiEstimator pi = new PiEstimator();
+		       	String masteraddr = (String) get(-2);
+		       	String masterport = (String) get(-4);
+		       	pi.setCfg(masteraddr,masterport);
+		       	//pi.setCfg(config); (This is the correct)
+		       	String[] argumentos = {"4","20"};
+		        pi.run(argumentos);
+		        
+	      	} catch (IOException ioe) {
+				
+			} catch (InterruptedException ie) {
+				
+			} catch (Exception e) {
+				
+			}
 	   }
 
   }
