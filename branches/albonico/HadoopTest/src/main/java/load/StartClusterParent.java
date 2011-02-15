@@ -2,13 +2,15 @@ package load;
 
 /**
  * @author albonico 
+
  * Parent Class to Start Cluster Hadoop.
  * All Exceptions will be deal by PeerUnit.
  */
 
 // My classes
 //import org.apache.hadoop.examples.BaileyBorweinPlouffe;
-import examples.BaileyBorweinPlouffe;
+//import examples.BaileyBorweinPlouffe;
+import examples.PiEstimator;
 
 // Hadoop classes
 import org.apache.hadoop.mapred.JobTracker;
@@ -444,7 +446,7 @@ public class StartClusterParent {
 			   
 			    log.info("Starting PiEstimator!");
 	      	
-			    /*
+			    
 				PiEstimator pi = new PiEstimator();
 		       	String masteraddr = (String) get(-2);
 		       	String masterport = (String) get(-4);
@@ -452,11 +454,12 @@ public class StartClusterParent {
 		       	//pi.setCfg(config); (This is the correct)
 		       	String[] argumentos = {"4","20"};
 		        pi.run(argumentos);
-		        */
-			    
+		        
+			    /*
 			    BaileyBorweinPlouffe pi = new BaileyBorweinPlouffe();
 			    String[] args = {"1","6","4","/pi"};
 			    pi.run(args);
+		        */
 		        
 	      	} catch (IOException ioe) {
 				
