@@ -7,7 +7,8 @@ package load;
  */
 
 // My classes
-import examples.PiEstimator;
+//import org.apache.hadoop.examples.BaileyBorweinPlouffe;
+import examples.BaileyBorweinPlouffe;
 
 // Hadoop classes
 import org.apache.hadoop.mapred.JobTracker;
@@ -20,6 +21,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.mapreduce.Job;
 
 // PeerUnit classes
 import fr.inria.peerunit.remote.GlobalVariables;
@@ -58,6 +60,7 @@ public class StartClusterParent {
     protected int sleep;
     protected int OBJECTS;
 
+    //protected static JobConf job;
     protected static JobConf job;
 
     @SetId
@@ -126,12 +129,12 @@ public class StartClusterParent {
 
 	    setLogger();
 
-        log.info("Starting Cluster Hadoop!");
-
     }
 
     public void readPropertiesHadoop() throws IOException, InterruptedException {
 
+    	log.info("Starting Cluster Hadoop!");
+    	
 		Properties properties = new Properties();
 		File file = new File("hadoop.properties");
 		FileInputStream fis = null;
@@ -169,7 +172,9 @@ public class StartClusterParent {
 		String hadooplog = properties.getProperty("hadoop.dir.log");
 		String hadooprep = properties.getProperty("hadoop.dfs.replication");
 		String javaopt = properties.getProperty("hadoop.java.options");
-	
+		String memtask = properties.getProperty("mapred.child.java.opts");
+		String version = properties.getProperty("hadoop.version");
+		
 		this.put(-5, dfsname);
 		this.put(-6, dfsdata);
 		this.put(-7, hadooptmp);
@@ -177,6 +182,8 @@ public class StartClusterParent {
 		this.put(-9, hadooplog);
 		this.put(-10, hadooprep);	
 		this.put(-11, javaopt);
+		this.put(-12, memtask);
+		this.put(-13, version);
 
     } 
 
@@ -190,10 +197,13 @@ public class StartClusterParent {
 		
 		jthost = (String) jthost;
 	
-	    conf.set("mapred.job.tracker",jthost);
+	    conf.set("mapred.job.tracker", jthost);
+		//conf.set("mapreduce.jobtracker.address", jthost);
 	
 	    String joptions = (String) this.get(-11);
-	    conf.set("mapred.child.java.opts",joptions);
+	    String memtask = (String) this.get(-12);
+	    conf.set("mapred.child.java.opts", joptions);
+	    conf.set("mapred.child.java.opts", memtask);
 	
 		//conf.set("mapred.tasktracker.map.tasks.maximum","1");
 		//conf.set("mapred.tasktracker.reduce.tasks.maximum","1");
@@ -222,14 +232,15 @@ public class StartClusterParent {
 		String replication = (String) this.get(-10);
 		String joptions = (String) this.get(-11);
 	
+		//conf.set("fs.defaultFS", nnhost);
 		conf.set("fs.default.name", nnhost);
-	    conf.set("dfs.name.dir",dirname);
-	    conf.set("dfs.data.dir",dirdata);
-	    conf.set("dfs.replication",replication);
-		conf.set("hadoop.tmp.dir",dirtmp);
-		conf.set("hadoop.log.dir",dirlog);
-		conf.set("mapred.child.java.opts",joptions);
-		conf.set("fs.checkpoint.dir",dirsnn);
+	    conf.set("dfs.name.dir", dirname);
+	    conf.set("dfs.data.dir", dirdata);
+	    conf.set("dfs.replication", replication);
+		conf.set("hadoop.tmp.dir", dirtmp);
+		conf.set("hadoop.log.dir", dirlog);
+		conf.set("mapred.child.java.opts", joptions);
+		conf.set("fs.checkpoint.dir", dirsnn);
 	
 	    //conf.set("dfs.name.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1/");
 	    //conf.set("dfs.data.dir","/home/ppginf/michela/GIT/albonico/HadoopTest/dir1data/");
@@ -257,10 +268,12 @@ public class StartClusterParent {
 		startNameNode nnode = new startNameNode();
 	    Thread nnThread = new Thread(nnode);
 	    nnThread.start();
-		nnThread.join();
+		//nnThread.join();
+	    nnThread.sleep(10000);
 
     }
 
+    /*
     public void initSNN() throws IOException, InterruptedException {
 
 		log.info("Starting Secondary NameNode!");
@@ -271,15 +284,19 @@ public class StartClusterParent {
 		snnThread.join();
 
     } 
-
+    */
+    
     public void initJT() throws IOException, InterruptedException {
  
+    	readPropertiesHadoop();
+    	
 		log.info("Starting JobTracker!");
 	
 		startJobTracker jtracker = new startJobTracker();
 	    Thread jtThread = new Thread(jtracker);
 	    jtThread.start();
-		jtThread.join();
+		//jtThread.join();
+	    jtThread.sleep(10000);
 	
     }
 
@@ -290,7 +307,8 @@ public class StartClusterParent {
 	    startTaskTracker ttracker = new startTaskTracker();
 	    Thread ttThread = new Thread(ttracker);
 	    ttThread.start();
-		ttThread.join();
+		//ttThread.join();
+	    ttThread.sleep(10000);
 	
     }
 
@@ -301,7 +319,8 @@ public class StartClusterParent {
 	    startDataNode datanode = new startDataNode();
 	    Thread dnThread = new Thread(datanode);
 	    dnThread.start();
-	    dnThread.join();
+	    //dnThread.join();
+	    dnThread.sleep(5000);
 	
 	}
 
@@ -309,26 +328,7 @@ public class StartClusterParent {
     * Classes to create Runnable Objects
     *
     */
-    public class startJobTracker implements Runnable {
-
-		public void run() {
-	
-			try {
-				
-					Configuration conf = getConfMR();
-				
-					job = new JobConf(conf);
-				   	JobTracker jobtracker = JobTracker.startTracker(job);
-				} catch (IOException ioe) {
-					
-				} catch (InterruptedException ie) {
-					
-				}
-		}
-    
-    }
-
-   public class startNameNode implements Runnable {
+    public class startNameNode implements Runnable {
 
 		public void run() {
 		
@@ -365,6 +365,26 @@ public class StartClusterParent {
 		
 		}
 		
+   }
+   
+   public class startJobTracker implements Runnable {
+
+		public void run() {
+	
+			try {
+				
+					Configuration conf = getConfMR();
+				
+					//job = new JobConf(conf);
+					job = new JobConf(conf);
+				   	JobTracker jobtracker = JobTracker.startTracker(job);
+				} catch (IOException ioe) {
+					
+				} catch (InterruptedException ie) {
+					
+				}
+		}
+   
    }
 
    public class startTaskTracker implements Runnable {
@@ -424,6 +444,7 @@ public class StartClusterParent {
 			   
 			    log.info("Starting PiEstimator!");
 	      	
+			    /*
 				PiEstimator pi = new PiEstimator();
 		       	String masteraddr = (String) get(-2);
 		       	String masterport = (String) get(-4);
@@ -431,15 +452,20 @@ public class StartClusterParent {
 		       	//pi.setCfg(config); (This is the correct)
 		       	String[] argumentos = {"4","20"};
 		        pi.run(argumentos);
+		        */
+			    
+			    BaileyBorweinPlouffe pi = new BaileyBorweinPlouffe();
+			    String[] args = {"1","6","4","/pi"};
+			    pi.run(args);
 		        
 	      	} catch (IOException ioe) {
-				
-			} catch (InterruptedException ie) {
 				
 			} catch (Exception e) {
 				
 			}
 	   }
+	   
+	
 
   }
    
