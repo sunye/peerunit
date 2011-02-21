@@ -1,0 +1,13 @@
+# Comparison of L'Espresso with others. 6 comparisons, 3 with
+# Original Blend in the L'Espresso and 3 with Premium Blend, with the
+# different blend in the comparison. In each case the L'Espresso lost
+# So have 6 choices and want to pick or not pick so that we have the
+# same number of Original as premium picked. Therefore have just a
+# single marginal with value 0
+6 0
+1 -1
+1 -1
+1 -1
+1 1
+1 1
+1 1
