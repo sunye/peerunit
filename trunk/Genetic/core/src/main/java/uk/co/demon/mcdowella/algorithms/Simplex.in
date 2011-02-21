@@ -1,0 +1,21 @@
+# This is the example problem from section 3-1 of
+# "Introduction to Operations Research Techniques" by
+# Daellenbach, George, and McNickle
+# except that we minimise cost, not maximise production, and so flip
+# the sign of the objective
+# We are asked to maximise 24x_1 + 20x_2 subject to
+# 0.5x_1 + x2 <= 12
+# x_1/16 + x_2/12 <= 1
+# x_1 >= 0, x_2 >= 0
+# First of all the objective, with two slack variables on the end,
+# so x_1 and x_2 correspond to the first two elements of this vector.
+-24.0 -20.0 0.0 0.0
+# Now the choice of the variables to include in the starting basis
+# Choose the two slack variables, to ensure that we are feasible and
+# to give us something to do!
+0.0 0.0 1.0 1.0
+# 0.5x_1 + x_2 <= 12 becomes 0.5x_1 + x_2 + s_1 = 12
+# and we write the coefficients in order first, followed by the rhs
+0.5 1.0 1.0 0.0 12.0
+# 1/16x_1 + 1/24x_2 <= 1 becomes 9x_1 + 6x_2 + s_2 = 144
+9.0 6.0 0.0 1.0 144.0

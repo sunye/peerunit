@@ -1,0 +1,8 @@
+# Lines are three pairs of probability and duration
+# 2 workers so can conclude in 2 units of time 1 time in 16
+# If either worker gets 2 double-units then it takes 4 units
+# of time - 1/4 + 1/4 - double-counted 1/16th
+0.5 1 0.5 2 0.0 0
+0.5 1 0.5 2 0.0 0
+0.5 1 0.5 2 0.0 0
+0.5 1 0.5 2 0.0 0

@@ -1,0 +1,36 @@
+# This input file in fact contains several different sets of input
+# data, most of them commented out (the '#' character is a comment).
+# The input data lists a number of sets of points, together with
+# their associated costs. The program has to find the collection
+# of sets with lowest total cost that covers all the points.
+# A set is specified by giving its cost (e.g. 1.0) followed by
+# a list of the points it contains. The points must be represented
+# by small numbers. Typically the numbers 0,1,2,3.... will be used.
+# Two sets must be separated by a '*' character. In this input
+# file we give each set a line of its own, giving the cost at
+# the start of the line, and ending every set (except the last)
+# with a *
+
+# First test requires us to use every cover
+# 1.0 1 *
+# 1.0 2 *
+# 1.0 3
+# Check we can find a minimum cost solution
+# 2.0 0 *
+# 1.0 0 *
+# 3.0 0
+# Human random
+# 1.0 0 1 2 4 6 8 10 12 *
+# 1.0 3 6 9 12 *
+# 1.0 5 10 *
+# 1.0 7 *
+# 1.0 11 *
+# 1.9 6 7 8 9 10 11 12
+# First set looks good but is pointless
+ 1.0 0 2 4 6 8 10 *
+ 1.0 0 1 *
+ 1.0 2 3 *
+ 1.0 4 5 *
+ 1.0 6 7 *
+ 1.0 8 9 *
+ 1.0 10 11
