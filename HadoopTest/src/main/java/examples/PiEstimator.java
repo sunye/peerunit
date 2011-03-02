@@ -81,7 +81,8 @@ public class PiEstimator extends Configured implements Tool {
   static public Configuration config; 
 
   static public String jtaddress; 
-  static public int jtport; 
+  static public int jtport;
+  static public BigDecimal piresult;
 
   /** 2-dimensional Halton sequence {H(i)},
    * where H(i) is a 2-dimensional point and i >= 1 is the index.
@@ -257,6 +258,12 @@ public class PiEstimator extends Configured implements Tool {
 	return config;
 
   }
+  
+  public BigDecimal getResult() {
+
+		return piresult;
+
+  }
 
   public void setCfg(String address, String port) {
 
@@ -396,10 +403,14 @@ public class PiEstimator extends Configured implements Tool {
     System.out.println("Samples per Map = " + nSamples);
         
    final JobConf jobConf = new JobConf(getCfg(), getClass());
+   
+   piresult = estimate(nMaps, nSamples, jobConf);
+   
+  // System.out.println("Estimated value of Pi is " + piresult);
+   
+   System.out.println("PiEstimator is well finished!");
 
-    System.out.println("Estimated value of Pi is " + estimate(nMaps, nSamples, jobConf));
-
-    return 0;
+   return 0;
 
   }
 

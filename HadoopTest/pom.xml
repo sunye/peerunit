@@ -80,8 +80,7 @@
     </dependency>
     
     <!-- 
-
-   <dependency>
+       <dependency>
     	<groupId>org.apache.hadoop</groupId>
     	<artifactId>hadoop-mapred</artifactId>
     	<version>0.21.0</version>
@@ -116,7 +115,6 @@
     	<artifactId>hadoop-webapps</artifactId>
     	<version>0.21.0</version>
     </dependency>
-
 	-->
 	
 	<dependency>
