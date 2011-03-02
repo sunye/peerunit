@@ -2,12 +2,16 @@
 dirpeerunit=`pwd`
 
 # Hadoop dir
-hadoophome=/home/michel/hadoop-0.20.2/
+hadoophome=`cat hadoop.properties | grep hadoop.dir.install | cut -b 20-200`
 
 # Remove hadoop dirs
-rm -Rf /tmp/dfs*
-rm -Rf /tmp/Jetty*
-rm -Rf /tmp/hadoop*
+dirdata=`cat hadoop.properties | grep hadoop.dir.data | cut -b 17-200`
+dirname=`cat hadoop.properties | grep hadoop.dir.name | cut -b 17-200`
+rm -Rf $dirdata
+rm -Rf $dirname
+
+# Create hadoop conf files
+./hadoop-create-conf.sh $hadoophome $dirdata $dirname
 
 # HDFS format
 #~/hadoop-0.21.0/bin/hdfs namenode -format

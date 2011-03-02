@@ -80,7 +80,7 @@ public class TestStartCluster extends StartClusterParent {
     
     */
     
-    @TestStep(order=6, timeout=10000, range="*")
+  //  @TestStep(order=6, timeout=10000, range="*")
     public void stopSlaveServices() throws IOException, InterruptedException {
     
     	log.info("Stopping Datanode...");
@@ -93,7 +93,7 @@ public class TestStartCluster extends StartClusterParent {
     	
     }
     	
-    @TestStep(order=7, timeout=10000, range="0")
+  //  @TestStep(order=7, timeout=10000, range="0")
     public void stopMasterServices() throws IOException, InterruptedException {
     	
     	log.info("Stopping JobTracker...");
