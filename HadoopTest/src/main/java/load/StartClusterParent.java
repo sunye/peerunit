@@ -21,10 +21,19 @@ import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.hdfs.server.datanode.DataNode;
 import org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapred.JobStatus;
+import org.apache.hadoop.mapred.OutputLogFilter;
+import org.apache.commons.io.FileUtils;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileUtil;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.mapred.ClusterStatus;
 
 // PeerUnit classes
 import fr.inria.peerunit.remote.GlobalVariables;
@@ -33,6 +42,7 @@ import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
+import fr.inria.peerunit.tester.Assert;
 
 // Java classes
 import java.io.IOException;
@@ -51,6 +61,12 @@ import java.util.logging.FileHandler;
 import java.util.Map;
 import java.util.Properties;
 import java.math.BigDecimal;
+import java.util.Vector;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
   
 public class StartClusterParent {
 
@@ -133,7 +149,7 @@ public class StartClusterParent {
     }
 
    @BeforeClass(range = "*", timeout = 100000)
-    public void bc() throws FileNotFoundException, IOException {
+    public void bc() throws FileNotFoundException, IOException, InterruptedException {
 	   
         if (new File("peerunit.properties").exists()) {
             String filename = "peerunit.properties";
@@ -147,6 +163,8 @@ public class StartClusterParent {
         OBJECTS =defaults.getObjects();
 
 	    setLogger();
+	    
+	    readPropertiesHadoop();
 
     }
 
@@ -272,7 +290,7 @@ public class StartClusterParent {
     	
 		log.info("Starting NameNode!"); 
 	
-		readPropertiesHadoop();
+	//	readPropertiesHadoop();
 		
 		nnode = new startNameNode();
 	    nnThread = new Thread(nnode);
@@ -283,11 +301,21 @@ public class StartClusterParent {
     
     public void stopNN() throws IOException, InterruptedException {
     	
-    	log.info("Stopping NameNode...");
-    	
+    	log.info("Stopping NameNode!");
     	nnode.done();
     	
     }
+    
+    public void initDN() throws IOException, InterruptedException {
+
+		log.info("Starting DataNode!"); 
+	
+	    startDataNode datanode = new startDataNode();
+	    dnThread = new Thread(datanode);
+	    dnThread.start();
+	    dnThread.join();
+	    
+	}
 
     /*
     public void initSNN() throws IOException, InterruptedException {
@@ -304,14 +332,16 @@ public class StartClusterParent {
     
     public void initJT() throws IOException, InterruptedException {
     	
-    	readPropertiesHadoop();
+    	//readPropertiesHadoop();
     	
 		log.info("Starting JobTracker!");
 	
 		startJobTracker jtracker = new startJobTracker();
 	    jtThread = new Thread(jtracker);
 	    jtThread.start();
-		jtThread.join();
+		//jtThread.join();
+	    Thread.sleep(5000);
+	    jtThread.yield();
 	    
     }
 
@@ -323,24 +353,15 @@ public class StartClusterParent {
 	    // Thread ttThread = new Thread(ttracker);
 	    ttThread = new Thread(ttracker);
 	    ttThread.start();
-	    ttThread.join();
+	    //ttThread.join();
+	    Thread.sleep(5000);
+	    ttThread.yield();
 	    
     }
-
-    public void initDN() throws IOException, InterruptedException {
-
-		log.info("Starting DataNode!"); 
-	
-	    startDataNode datanode = new startDataNode();
-	    dnThread = new Thread(datanode);
-	    dnThread.start();
-	    dnThread.join();
-	    
-	}
     
     public void runJob() throws IOException, InterruptedException {
 
-		log.info("Starting DataNode!"); 
+		log.info("Running Job!"); 
 
 		runPiEstimator pi = new runPiEstimator();
 		jobThread = new Thread(pi);
@@ -348,7 +369,160 @@ public class StartClusterParent {
 		jobThread.join();
 	    
 	}
+    
+    public void runJob(int stopid) throws IOException, InterruptedException {
 
+		log.info("Running Job!"); 
+
+		runPiEstimator pi = new runPiEstimator();
+		jobThread = new Thread(pi);
+		jobThread.start();
+		Thread.sleep(2000);
+		jobThread.yield();
+		//jobThread.join();
+	    
+	}
+    
+    public void putFile(String file, String dir) {
+    	
+    	try {
+    		
+    		String hadoopdir = (String) get(-14);
+    		
+	    	String command = hadoopdir + "/bin/hadoop dfs -put " + file + " " + dir + "teste";
+	    	log.info("Command: " + command);
+	    	Process putProcess = Runtime.getRuntime().exec(command);
+	    	putProcess.waitFor();
+	    
+    	} catch (RemoteException re) {
+    	
+    	} catch (IOException ioe) {
+    		
+    	} catch (InterruptedException ie) {
+    		
+    	}
+    	
+    }
+    
+    public void sendJob(String jarFile, String jobClass, String parameters) throws InterruptedException, RemoteException {
+  
+    	this.put(-15, jarFile);
+    	this.put(-16, jobClass);
+    	this.put(-17, parameters);
+    	
+		runSendJob sjob = new runSendJob();
+		Thread sjThread = new Thread(sjob);
+		sjThread.start();
+		
+    }
+    
+    public class runSendJob implements Runnable {
+    	
+    	public void run() {
+    		
+	    	try {
+	    		
+	    		String hadoopdir = (String) get(-14);
+	    		
+	    		String jar = (String) get(-15);
+	    		String job = (String) get(-16);
+	    		String param = (String) get(-17);
+	    	
+		    	String command = hadoopdir + "/bin/hadoop jar " + jar + " " + job + " " + param; 
+		    	Process jobProcess = Runtime.getRuntime().exec(command);
+		    	jobProcess.waitFor();
+	    	
+	    	} catch (RemoteException re) {
+	    	
+	    	} catch (IOException ioe) {
+	    		
+	    	}
+	    	
+    	}
+    	
+    }
+    
+    public void validateJobOutput(String outPath, ArrayList expectedResults) {
+    	
+    	try {
+    		
+    		log.info("Validating the Job output result!");
+    		log.info("Reading " + outPath + "...");
+    		
+	    	Path outputdir = new Path(outPath);
+    		
+    		Path outputFiles[] = FileUtil.stat2Paths(outputdir.getFileSystem(getConfHDFS()).listStatus(outputdir, new OutputLogFilter()));
+    		
+    		int countexpres = 0;
+    		
+    		for (int ii=0; ii < outputFiles.length; ii++) {
+    		   
+    			Path file = outputFiles[ii];
+    	
+    			log.info("Reading file " + file + "...");
+		 
+		    	FileSystem hdfs = outputdir.getFileSystem(getConfHDFS());
+		    	
+	            if(hdfs.isFile(file)){
+	            
+	            		InputStream is = outputdir.getFileSystem(getConfHDFS()).open(file);
+	            		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+	                    
+	            		while (reader.ready()) {
+	        	        	Assert.assertTrue(expectedResults.get(countexpres).toString().equals((String) reader.readLine()));
+	        	        	countexpres++;
+	            		}
+	        	        
+	                    reader.close();
+	                    is.close();
+	                    
+	            } else {
+	            	log.info("File " + outPath + "not found!");
+	            	Assert.fail();
+	            }
+	            
+    		}
+    		
+    		// Files to ArrayList
+    		// Create a new condition - ArrayList to files
+    		
+	    	
+	    	/*
+	    	FileSystem hdfs = output.getFileSystem(getConfHDFS());
+      
+            if(hdfs.isFile(output)){
+            
+            		FSDataInputStream fis = hdfs.open(output);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+                    
+                    int n = expectedResults.size();
+        	        for (int i=0; i<n; i++) {
+        	        	Assert.assertTrue(expectedResults.get(i).toString().equals((String) reader.readLine()));
+        	        }
+        	        
+                    reader.close();
+                    fis.close();
+                    
+            } else {
+            	log.info("File " + outPath + "not found!");
+            	Assert.fail();
+            }
+            */
+	    	
+	        
+    	} catch (IOException ioe) {
+    		
+    		log.info(ioe.toString());
+    	
+    	} catch (InterruptedException ie) {
+    		
+    		log.info(ie.toString());
+    		
+    	}
+    }
+   
+    
+   
     /**
     * Classes to create Runnable Objects
     *
@@ -409,6 +583,9 @@ public class StartClusterParent {
 	
 			try {
 				
+					//log.info("Starting JobTracker!");
+				
+					/*
 					String hadoopdir = (String) get(-14);
 				    //String command = "/home/michel/hadoop-0.20.2/bin/start-job.sh";
 				    String command = "java -Xmx1000m -Dcom.sun.management.jmxremote" +
@@ -431,7 +608,7 @@ public class StartClusterParent {
 				    		hadoopdir+"/lib/commons-net-1.4.1.jar:" +
 				    		hadoopdir+"/lib/core-3.1.1.jar:" +
 				    		hadoopdir+"/lib/hsqldb-1.8.0.10.jar:" +
-				    		hadoopdir+"/lib/jasper-compiler-5.5.12.jar:" +
+				    		java.lang.NoClassDefFoundError: org/apache/hadoop/util/ProgramDriver		hadoopdir+"/lib/jasper-compiler-5.5.12.jar:" +
 				    		hadoopdir+"/lib/jasper-runtime-5.5.12.jar:" +
 				    		hadoopdir+"/lib/jets3t-0.6.1.jar:" +
 				    		hadoopdir+"/lib/jetty-6.1.14.jar:" +
@@ -450,17 +627,19 @@ public class StartClusterParent {
 				    		"org.apache.hadoop.mapred.JobTracker";
 				    
 				    jtProcess = Runtime.getRuntime().exec(command);
+				    */
 				
-		            /*
+		            
 					Configuration conf = getConfMR();
 					job = new JobConf(conf);
-				   	JobTracker jobtracker = JobTracker.startTracker(job);
-				   	JTracker = jobtracker;
-				   	*/
+					JTracker = JobTracker.startTracker(job);
+				   	JTracker.offerService();
 		            
 				} catch (IOException ioe) {
 					
-				} 
+				} catch (InterruptedException ie) {
+					
+				}
 		}
    
    }
@@ -471,8 +650,9 @@ public class StartClusterParent {
 		
 			try {
 				
-		    	log.info("Starting TaskTracker!");
+		    	//log.info("Starting TaskTracker!");
 		    	
+		    	/*
 		    	String hadoopdir = (String) get(-14);
 		    	
 		        //String command = "/home/michel/hadoop-0.20.2/bin/start-track.sh";
@@ -514,13 +694,16 @@ public class StartClusterParent {
 		        		hadoopdir+"/lib/jsp-2.1/jsp-api-2.1.jar" +
 		        		" org.apache.hadoop.mapred.TaskTracker";
 		    	ttProcess = Runtime.getRuntime().exec(command);
-				
-		        /*
+				*/
+		    
 				Configuration conf = getConfMR();
 			    JobConf job = new JobConf(conf);
-		    	TaskTracker tt = new TaskTracker(job);
-		        */
+		    	TTracker = new TaskTracker(job);
+		    	TTracker.run();
+		        
 		    } catch (IOException ioe) {
+		    	
+		    } catch (InterruptedException ie) {
 		    	
 		    }
 		    
@@ -587,7 +770,6 @@ public class StartClusterParent {
 				
 			}
 	   }
-	   
 	
 
   }
