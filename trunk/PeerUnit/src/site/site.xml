@@ -16,16 +16,22 @@
 	  <item name="Introduction" href="index.html"/>
       <item name="Architecture" href="architecture.html"/>
       <item name="Usage" href="usage.html"/>
+<!--
 	  <item name="Example" href="example.html"/>
-      <item name="Download" href="download.html"/>
+-->
 	  <item name="Publications" href="publications.html"/>
     </menu>
+
+<!--
     <menu name="Examples">
       <item name="FreePastry and OpenChord" href="tests.html"/>
     </menu>
+
     <menu name="Project Documentation">
         <item name="Project Information" href="project-info.html"/>
         <item name="Project Reports" href="project-reports.html"/>
     </menu>
+-->
+	<menu ref="reports"/>
   </body>
 </project>
