@@ -1,5 +1,23 @@
 Publications
 
+	Eduardo Cunha de Almeida, João Eugenio Marynowski, Gerson Sunyé, Patrick Valduriez.
+	PeerUnit: a framework for testing peer-to-peer systems. 
+	25th IEEE/ACM International Conference on Automated Software Engineering, ASE 2010,
+	Antwerp, Belgium, September 20-24, 2010.
+	[{{{http://dblp.uni-trier.de/rec/bibtex/conf/kbse/AlmeidaMSV10}bibtex}}]
+
+	Eduardo Cunha de Almeida, João Eugenio Marynowski, Gerson Sunyé, Yves Le Traon, Patrick Valduriez.
+	Efficient Distributed Test Architectures for Large-Scale Systems.
+	22nd IFIP WG 6.1 International Conference, ICTSS 2010, 
+	Natal, Brazil, November 8-10, 2010.
+	[{{{http://dblp.uni-trier.de/rec/bibtex/conf/pts/AlmeidaMSTV10}bibtex}}]	
+
+	Eduardo Cunha de Almeida, Gerson Sunyé, Yves Le Traon, Patrick Valduriez.
+	Testing peer-to-peer systems. 
+	Empirical Software Engineering 15(4): 346-379 (2010).
+	[{{{http://dblp.uni-trier.de/rec/bibtex/journals/ese/AlmeidaSTV10}bibtex}}]
+
+
   Eduardo Cunha de Almeida, Gerson Sunyé, Yves Le Traon, and Patrick Valduriez. 
   A Framework for Testing Peer-to-Peer Systems. 
   In 19th International Symposium on Software Reliability Engineering (ISSRE 2008), 
