@@ -39,7 +39,8 @@ object Range {
       val values: Array[String] = str split separator
 
       if (values.length == 1) new SingleValue(values(0) toInt)
-      else new Interval(values(0) toInt, values(1) toInt)
+      else if (values.length == 2) new Interval(values(0) toInt, values(1) toInt)
+      else error("not a valid range.")
     }
   }
 
