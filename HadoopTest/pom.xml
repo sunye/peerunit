@@ -37,6 +37,13 @@
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
   </properties>
+  
+  <pluginRepositories> 
+	 <pluginRepository> 
+	  <id>dev.java.net</id> 
+	  <url>http://download.java.net/maven/2/</url> 
+	 </pluginRepository> 
+  </pluginRepositories>
 
   <build>
   <plugins>
@@ -67,8 +74,61 @@
           </execution>
         </executions>
 	</plugin>
+	
+	<!-- 
+		Please, download Pitest package and install it with the follow command:
+		#mvn install:install-file -DgroupId=org.pitest -DartifactId=pitest -Dversion=0.15 -Dpackaging=jar -Dfile=/path/to/file
+		
+		mvn install:install-file -Dfile=pitest-xxx.jar -DpomFile=pitestxxx-pom.xml
+		mvn install:install-file -Dfile=pitest-maven-xxx.jar -DpomFile=pitest-maven-xxx-pom.xml
+	
+		Command to download pitrunner directory:
+		hg clone https://pitestrunner.googlecode.com/hg/ pitestrunner
+	-->
+	
+	<!-- 
+	<plugin>
+    <groupId>org.pitest</groupId>
+    <artifactId>pitest-maven</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <configuration>
+      <inScopeClasses>
+        <param>examples.*</param>
+      </inScopeClasses>
+      <targetClasses>
+        <param>examples.PiEstimator</param>
+      </targetClasses>
+      <reportsDirectory>
+      	<param>target/classes/examples/</param>
+      </reportsDirectory>
+    </configuration>
+  	</plugin>
+  	-->
+  	
+  	<!-- 
+  	To run pitest use the command: mvn org.pitest:pitest-maven:mutationCoverage 
+  	 -->
+  <plugin>
+   <groupId>com.nhncorp.jumble</groupId>
+   <artifactId>jumble-maven-plugin</artifactId>
+   <version>0.9.5</version>
+<!--
+   <configuration>
+    <jumbleHome>lib</jumbleHome>
+    <xmlOutput>output/output.xml</xmlOutput>
+    <mutator>-r -k -i -w -j</mutator>
+    <includes>
+     <include>com/nhncorp/mojo/example/**</include>
+    </includes>
+    <excludes>
+     <exclude>com/nhncorp/mojo/example/**/*DAO*</exclude>
+    </excludes>
+   </configuration>
+-->
+  </plugin>
   </plugins>
-  </build>
+  
+</build>
 
 <dependencies>
 
@@ -76,6 +136,13 @@
       <groupId>fr.inria.peerunit</groupId>
       <artifactId>PeerUnit</artifactId>
       <version>1.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>fr.inria.peerunit</groupId>
+      <artifactId>Psychedelic</artifactId>
+      <version>1.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     
@@ -338,6 +405,22 @@
       		<artifactId>hsqldb</artifactId>
       		<version>1.8.0.10</version>
     	</dependency>
+    	
+    	<!-- Mutation testing -->
+		
+		<dependency>
+		  <groupId>net.sf.grester</groupId>
+		  <artifactId>grester</artifactId>
+		  <version>1.0.1</version>
+		</dependency>
+		
+		<!--
+		<dependency>
+		  <groupId>org.pitest</groupId>
+		  <artifactId>pitest</artifactId>
+		  <version>0.17-SNAPSHOT</version>
+		</dependency>
+		-->
     	
     </dependencies>
 </project>

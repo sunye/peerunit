@@ -7,7 +7,6 @@ package test;
 // My classes
 //import examples.PiEstimator;
 import load.StartClusterParent;
-import util.ThreadUtilities;
 
 // PeerUnit classes
 import fr.inria.peerunit.parser.TestStep;

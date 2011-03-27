@@ -11,7 +11,6 @@ package load;
 //import org.apache.hadoop.examples.BaileyBorweinPlouffe;
 //import examples.BaileyBorweinPlouffe;
 import examples.PiEstimator;
-import util.ThreadUtilities;
 
 // Hadoop classes
 import org.apache.hadoop.mapred.JobTracker;
@@ -436,8 +435,9 @@ public class StartClusterParent {
 	    	
 	    	} catch (IOException ioe) {
 	    		
+	    	} catch (InterruptedException ie) {
+	    		
 	    	}
-	    	
     	}
     	
     }
