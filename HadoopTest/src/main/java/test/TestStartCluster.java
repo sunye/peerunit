@@ -52,6 +52,7 @@ public class TestStartCluster extends StartClusterParent {
 
     }
     
+   /*
     public void stopSlaveServices() throws IOException, InterruptedException {
     
     	//if (dnThread.isAlive()) {
@@ -85,6 +86,7 @@ public class TestStartCluster extends StartClusterParent {
 	    	nnThread.interrupt();
     	}
     }
+    */
     
     @AfterClass(range="*", timeout = 100000)
     public void stopCluster() throws IOException {

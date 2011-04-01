@@ -21,8 +21,6 @@
 * @author albonico
 */
 
-package examples;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -389,6 +387,7 @@ public class PiEstimator extends Configured implements Tool {
    * @return a non-zero if there is an error.  Otherwise, return 0.  
    */
 
+ // public int run(String[] args) throws Exception {
   public int run(String[] args) throws Exception {
     if (args.length < 2) {
       System.err.println("Usage: "+getClass().getName()+" <nMaps> <nSamples>");
@@ -413,7 +412,7 @@ public class PiEstimator extends Configured implements Tool {
    return 0;
 
   }
-
+  
   /**
    * main method for running it as a stand alone command. 
    */

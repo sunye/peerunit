@@ -10,7 +10,7 @@ package load;
 // My classes
 //import org.apache.hadoop.examples.BaileyBorweinPlouffe;
 //import examples.BaileyBorweinPlouffe;
-import examples.PiEstimator;
+//import examples.PiEstimator;
 
 // Hadoop classes
 import org.apache.hadoop.mapred.JobTracker;
@@ -42,6 +42,7 @@ import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.tester.Assert;
+import fr.inria.psychedelic.base.App;
 
 // Java classes
 import java.io.IOException;
@@ -66,6 +67,14 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+// Java reflection
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.lang.ClassNotFoundException;
+import java.net.MalformedURLException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
   
 public class StartClusterParent {
 
@@ -96,6 +105,7 @@ public class StartClusterParent {
     protected static Process ttProcess; 
     protected static startNameNode nnode;
     protected static startDataNode dnode;
+    protected static ArrayList mutationOutputList;
 
     @SetId
     public void setId(int i) {
@@ -211,6 +221,8 @@ public class StartClusterParent {
 		String memtask = properties.getProperty("mapred.child.java.opts");
 		String version = properties.getProperty("hadoop.version");
 		String hadoopdir = properties.getProperty("hadoop.dir.install");
+		String mutantclass = properties.getProperty("mutant.class");
+		String mutantoutputdir = properties.getProperty("mutant.output.dir");
 		
 		this.put(-5, dfsname);
 		this.put(-6, dfsdata);
@@ -222,6 +234,11 @@ public class StartClusterParent {
 		this.put(-12, memtask);
 		this.put(-13, version);
 		this.put(-14, hadoopdir);
+		// 15 - jarFile;
+		// 16 - jobClass;
+		// 17 - parameters;
+		this.put(-18, mutantclass);
+		this.put(-19, mutantoutputdir);
 
     } 
 
@@ -358,19 +375,45 @@ public class StartClusterParent {
 	    
     }
     
+    // runJob
+    
     public void runJob() throws IOException, InterruptedException {
 
+    	/*
 		log.info("Running Job!"); 
 
 		runPiEstimator pi = new runPiEstimator();
 		jobThread = new Thread(pi);
 		jobThread.start();
 		jobThread.join();
-	    
+	    */
 	}
     
     public void runJob(int stopid) throws IOException, InterruptedException {
+    	/*
+		log.info("Running Job!"); 
 
+		runPiEstimator pi = new runPiEstimator();
+		jobThread = new Thread(pi);
+		jobThread.start();
+		Thread.sleep(2000);
+		jobThread.yield();
+		//jobThread.join();
+	    */
+	}
+    
+    /*
+    public void runJob(class Mut) throws IOException, InterruptedException {
+
+    	try {  
+            Object c = Class.forName("example.").newInstance();  
+            Method m = c.getClass().getMethod("method", null);  
+            m.invoke(c, null);  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }   
+    	
+    	
 		log.info("Running Job!"); 
 
 		runPiEstimator pi = new runPiEstimator();
@@ -381,8 +424,27 @@ public class StartClusterParent {
 		//jobThread.join();
 	    
 	}
+    */
     
-    public void putFile(String file, String dir) {
+    // runMutation
+    
+    public void runMutation() throws FileNotFoundException, IOException {
+    	
+    	App mutationApp = new App();
+    	mutationApp.runMutation((String) get(-18), (String) get(-19));
+    	mutationOutputList = mutationApp.getOutputList();
+    	
+    }
+    
+    public void runMutation(String mutantclass, String mutantoutputdir) throws FileNotFoundException, IOException {
+    	
+    	App mutationApp = new App();
+    	mutationApp.runMutation(mutantclass, mutantoutputdir);
+    	mutationOutputList = mutationApp.getOutputList();
+    	
+    }
+    
+    public void putFileHDFS(String file, String dir) {
     	
     	try {
     		
@@ -400,6 +462,67 @@ public class StartClusterParent {
     	} catch (InterruptedException ie) {
     		
     	}
+    	
+    }
+    
+    public void deleteFile(String file) {
+    	
+    	try {
+    		
+	    	String command = "/bin/rm -Rf "+ file;
+	    	log.info("Command: " + command);
+	    	Process putProcess = Runtime.getRuntime().exec(command);
+	    	putProcess.waitFor();
+    	
+    	} catch (IOException ioe) {
+    		
+    	} catch (InterruptedException ie) {
+    		
+    	}
+    	
+    }
+    
+    public void classLoader(String classPath, String className, String method, String arg[]) {
+    
+    	File file = new File(classPath); // .class dir
+        
+    	try {
+    	
+	    	URL classUrl = file.toURL();  
+	    	URL[] classUrls = { classUrl };
+	    	URLClassLoader ucl = new URLClassLoader(classUrls);  
+	    	              
+	    	Class c = ucl.loadClass(className);
+	    	
+	    	Object o = c.forName(className).newInstance();
+	    	
+	    	Method m = o.getClass().getMethod(method, null);
+	    	
+	    	m.invoke(o, null, arg);
+    	
+    	} catch (MalformedURLException mue) {
+    		System.out.println(mue.toString());
+    	} catch (ClassNotFoundException cnfe) {
+    		System.out.println(cnfe.toString());
+    	} catch (Exception e) {
+    		System.out.println(e.toString());
+    	}
+    	
+    //	PiEstimator pi = new PiEstimator();
+    	
+    	/*
+    	try {  
+            Object o = c.forName("PiEstimator").newInstance();  
+            Method m = o.getClass().getMethod("method", null);  
+            m.invoke(c, null);  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }   
+    	
+    	for(Field f: c.getDeclaredFields()) {  
+    	     System.out.println("Atributo - " + f.getName());  
+    	}
+    	*/
     	
     }
     
@@ -496,7 +619,7 @@ public class StartClusterParent {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
                     
                     int n = expectedResults.size();
-        	        for (int i=0; i<n; i++) {
+        	        for (int i=0; i<n; i++) {import java.lang.reflect.Method; 
         	        	Assert.assertTrue(expectedResults.get(i).toString().equals((String) reader.readLine()));
         	        }
         	        
@@ -744,6 +867,8 @@ public class StartClusterParent {
 
 	   public void run() {
 
+		   /*
+		   
 		   try {
 			   
 			    log.info("Starting PiEstimator!");
@@ -758,17 +883,17 @@ public class StartClusterParent {
 		        
 		        jobResult = pi.getResult();
 		        
-			    /*
-			    BaileyBorweinPlouffe pi = new BaileyBorweinPlouffe();
-			    String[] args = {"1","6","4","/pi"};
-			    pi.run(args);
-		        */
+			    //BaileyBorweinPlouffe pi = new BaileyBorweinPlouffe();
+			    //String[] args = {"1","6","4","/pi"};
+			    //pi.run(args);
+		        
 		        
 	      	} catch (IOException ioe) {
 				
 			} catch (Exception e) {
 				
 			}
+			*/
 	   }
 	
 
