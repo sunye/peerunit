@@ -154,5 +154,5 @@
       <url>scp://gforge.inria.fr/home/groups/peerunit/htdocs/mvnsites/${artifactId}/${version}</url>
     </site>
   </distributionManagement>
-  
+    <name>PeerUnitProject</name>
 </project>

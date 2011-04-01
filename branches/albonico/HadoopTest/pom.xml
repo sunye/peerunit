@@ -430,4 +430,5 @@
 		-->
     	
     </dependencies>
+    <name>HadoopTest</name>
 </project>
