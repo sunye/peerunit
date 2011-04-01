@@ -15,6 +15,7 @@ import fr.inria.peerunit.tester.Assert;
 
 // Java classes
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
@@ -22,31 +23,51 @@ import java.util.Arrays;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class TestJobResult extends TestStartCluster {
+//public class TestJobResultWithMutations extends TestStartCluster {
+public class TestJobResultWithMutations extends TestStartCluster {
 
 	
 	/**
 	 * Start at TestSteps 5
 	 */
+	 
+	@TestStep(order=5, timeout=50000, range="0")
+	public void testeReflection() {
+		
+		String path = "/home/michel/workspace-eclipse/albonico/HadoopTest/target/mutants/0/PiEstimator.class";
+		String className = "PiEstimator";
+		String methodName = "run";
+		String[] arguments = {"2", "20"};
+		
+		classLoader(path, className, methodName, arguments);
+		
+	}
 	
-	 @TestStep(order=5, timeout = 440000, range = "0")
-	 public void sendFile() throws Exception, InterruptedException {
-	    	
-		log.info("Putting file!");
-	   	putFileHDFS("/home/michel/workspace-eclipse/albonico/HadoopTest/teste","/input/");
-	    
+	/*
+	 @TestStep(order=6, timeout=50000, range="0")
+	 public void mutationGeneration() throws FileNotFoundException, IOException {	 
+		 
+		 runMutation();
+
 	 }
 	
-    @TestStep(order=6, timeout = 440000, range = "0")
+	 
+    @TestStep(order=7, timeout = 440000, range = "0")
     public void jobSubmit() throws Exception, InterruptedException {
     	
-    	//runJob();
-    	log.info("Sending job!");	
-    	sendJob("/home/michel/hadoop-0.20.2/hadoop-0.20.2-examples.jar","wordcount","/input/ /output/");
+    	for (int i=0; i<mutationOutputList.size(); i++) {
+    		
+    		log.info("Sending job!");
     	
+    		System.out.println("Mutation class: " + mutationOutputList.get(i));
+    		//sendJob("/home/michel/hadoop-0.20.2/hadoop-0.20.2-examples.jar","wordcount","/input/ /output/");
+    	
+    	}
     }
+    */
     
-    
+
+    /*
     @TestStep(order=7, timeout = 440000, range = "0")
     public void assertResult() throws Exception, InterruptedException {
     	
@@ -56,7 +77,7 @@ public class TestJobResult extends TestStartCluster {
     	
     	// Verify output
     	validateJobOutput("/output/", al);
-    	
+    */
     	/*
     	//Unit Test
     	if (jobResult != null) {
@@ -72,7 +93,7 @@ public class TestJobResult extends TestStartCluster {
     	}
     	*/
     	
-    }
+    //}
     
 
 }
