@@ -61,7 +61,7 @@ public class App {
             out.close();
             input.close();
             
-            //System.out.println(each);
+            System.out.println(each);
             
             i++;
         }        

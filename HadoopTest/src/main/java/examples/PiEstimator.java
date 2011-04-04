@@ -20,6 +20,7 @@
 * PiEstimator adapted to run on the PeerUnit.
 * @author albonico
 */
+package examples;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -401,16 +402,29 @@ public class PiEstimator extends Configured implements Tool {
     System.out.println("Number of Maps  = " + nMaps);
     System.out.println("Samples per Map = " + nSamples);
         
-   final JobConf jobConf = new JobConf(getCfg(), getClass());
+    final JobConf jobConf = new JobConf(getCfg(), getClass());
    
-   piresult = estimate(nMaps, nSamples, jobConf);
+    piresult = estimate(nMaps, nSamples, jobConf);
    
-  // System.out.println("Estimated value of Pi is " + piresult);
+    System.out.println("Estimated value of Pi is " + piresult);
    
-   System.out.println("PiEstimator is well finished!");
+    System.out.println("PiEstimator is well finished!");
 
    return 0;
 
+  }
+  
+  public void test(String args[]) {
+	  int a = 2;
+	  int b = 2;
+	  
+	  if ((a+b)==4) {	  
+	  	System.out.println("Testando: " + args[0] + " " + args[1]);
+	  } else {
+		 
+		  System.out.println("Else...");
+		 
+	  }
   }
   
   /**
