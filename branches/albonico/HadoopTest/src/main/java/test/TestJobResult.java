@@ -28,7 +28,7 @@ public class TestJobResult extends TestStartCluster {
 	/**
 	 * Start at TestSteps 5
 	 */
-	
+	/*
 	 @TestStep(order=5, timeout = 440000, range = "0")
 	 public void sendFile() throws Exception, InterruptedException {
 	    	
@@ -36,32 +36,34 @@ public class TestJobResult extends TestStartCluster {
 	   	putFileHDFS("/home/michel/workspace-eclipse/albonico/HadoopTest/teste","/input/");
 	    
 	 }
-	
+	*/
     @TestStep(order=6, timeout = 440000, range = "0")
     public void jobSubmit() throws Exception, InterruptedException {
     	
-    	//runJob();
-    	log.info("Sending job!");	
-    	sendJob("/home/michel/hadoop-0.20.2/hadoop-0.20.2-examples.jar","wordcount","/input/ /output/");
+    	runJob();
+    	//log.info("Sending job!");	
+    	//sendJob("/home/michel/hadoop-0.20.2/hadoop-0.20.2-examples.jar","wordcount","/input/ /output/");
     	
     }
     
     
     @TestStep(order=7, timeout = 440000, range = "0")
     public void assertResult() throws Exception, InterruptedException {
-    	
+    	/*
     	ArrayList al = new ArrayList();
     	al.add("michel	2");
     	al.add("albonico	1");
     	
     	// Verify output
     	validateJobOutput("/output/", al);
+    	*/
     	
-    	/*
     	//Unit Test
     	if (jobResult != null) {
     	
-    		double estimatedresult = 3.20000000000000000000;
+    		//double estimatedresult = 3.20000000000000000000;
+    		String pivalue = (String) get(-20);
+    		double estimatedresult = Double.valueOf(pivalue);
     		
     		Assert.assertTrue(estimatedresult == jobResult.doubleValue());
 
@@ -70,7 +72,7 @@ public class TestJobResult extends TestStartCluster {
     		Assert.fail();
     		
     	}
-    	*/
+    	
     	
     }
     

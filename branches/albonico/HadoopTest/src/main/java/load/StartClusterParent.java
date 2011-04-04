@@ -10,7 +10,7 @@ package load;
 // My classes
 //import org.apache.hadoop.examples.BaileyBorweinPlouffe;
 //import examples.BaileyBorweinPlouffe;
-//import examples.PiEstimator;
+import examples.PiEstimator;
 
 // Hadoop classes
 import org.apache.hadoop.mapred.JobTracker;
@@ -71,10 +71,12 @@ import java.io.InputStreamReader;
 // Java reflection
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.lang.ClassLoader;
 import java.lang.ClassNotFoundException;
 import java.net.MalformedURLException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
   
 public class StartClusterParent {
 
@@ -173,7 +175,7 @@ public class StartClusterParent {
 
 	    setLogger();
 	    
-	    readPropertiesHadoop();
+	  //  readPropertiesHadoop();
 
     }
 
@@ -223,6 +225,9 @@ public class StartClusterParent {
 		String hadoopdir = properties.getProperty("hadoop.dir.install");
 		String mutantclass = properties.getProperty("mutant.class");
 		String mutantoutputdir = properties.getProperty("mutant.output.dir");
+		String pivalue = properties.getProperty("pi.value");
+		String pinmaps = properties.getProperty("pi.nMaps");
+		String pinsamples = properties.getProperty("pi.nSamples");
 		
 		this.put(-5, dfsname);
 		this.put(-6, dfsdata);
@@ -239,6 +244,11 @@ public class StartClusterParent {
 		// 17 - parameters;
 		this.put(-18, mutantclass);
 		this.put(-19, mutantoutputdir);
+		
+		// PiEstimator arguments
+		this.put(-20, pivalue);
+		this.put(-21, pinmaps);
+		this.put(-22, pinsamples);
 
     } 
 
@@ -306,7 +316,7 @@ public class StartClusterParent {
     	
 		log.info("Starting NameNode!"); 
 	
-	//	readPropertiesHadoop();
+		readPropertiesHadoop();
 		
 		nnode = new startNameNode();
 	    nnThread = new Thread(nnode);
@@ -379,14 +389,13 @@ public class StartClusterParent {
     
     public void runJob() throws IOException, InterruptedException {
 
-    	/*
 		log.info("Running Job!"); 
 
 		runPiEstimator pi = new runPiEstimator();
 		jobThread = new Thread(pi);
 		jobThread.start();
 		jobThread.join();
-	    */
+	    
 	}
     
     public void runJob(int stopid) throws IOException, InterruptedException {
@@ -482,48 +491,48 @@ public class StartClusterParent {
     	
     }
     
-    public void classLoader(String classPath, String className, String method, String arg[]) {
+    public void classLoader(String classPath, String className, String method, String[] arg) {
     
     	File file = new File(classPath); // .class dir
         
     	try {
     	
+	    	//URL classUrl = ClassLoader.getSystemResource(classPath);//file.toURL();  
 	    	URL classUrl = file.toURL();  
 	    	URL[] classUrls = { classUrl };
-	    	URLClassLoader ucl = new URLClassLoader(classUrls);  
-	    	              
+	    	URLClassLoader ucl = new URLClassLoader(classUrls);
 	    	Class c = ucl.loadClass(className);
 	    	
+	    	for (Method m : c.getDeclaredMethods()) {  
+	    		  System.out.println(m.getName());  
+	    	}
+	   
+	    	//ClassLoader loader = URLClassLoader.newInstance(classUrls, this.getClass().getClassLoader());    
+	    	//Class c = loader.loadClass(className);
+	    	
+	    	System.out.println("Teste antes");
 	    	Object o = c.forName(className).newInstance();
+	    	System.out.println("Teste depois");
+	
+	    	if (arg == null) {
+	    		
+	    		Method m = o.getClass().getMethod(method, null);	
+		    	m.invoke(o, null);
+	    		
+	    	} else {
 	    	
-	    	Method m = o.getClass().getMethod(method, null);
-	    	
-	    	m.invoke(o, null, arg);
-    	
-    	} catch (MalformedURLException mue) {
-    		System.out.println(mue.toString());
+	    		//Method m = o.getClass().getMethod(method, new Class[] {String[].class});	
+		    	//m.invoke(o, new Object[] {arg});
+		    
+	    	}
+	    
+    	//} catch (MalformedURLException mue) {
+    	//	System.out.println(mue.toString());
     	} catch (ClassNotFoundException cnfe) {
     		System.out.println(cnfe.toString());
     	} catch (Exception e) {
     		System.out.println(e.toString());
     	}
-    	
-    //	PiEstimator pi = new PiEstimator();
-    	
-    	/*
-    	try {  
-            Object o = c.forName("PiEstimator").newInstance();  
-            Method m = o.getClass().getMethod("method", null);  
-            m.invoke(c, null);  
-        } catch (Exception e) {  
-            e.printStackTrace();  
-        }   
-    	
-    	for(Field f: c.getDeclaredFields()) {  
-    	     System.out.println("Atributo - " + f.getName());  
-    	}
-    	*/
-    	
     }
     
     public void sendJob(String jarFile, String jobClass, String parameters) throws InterruptedException, RemoteException {
@@ -867,18 +876,21 @@ public class StartClusterParent {
 
 	   public void run() {
 
-		   /*
-		   
 		   try {
 			   
 			    log.info("Starting PiEstimator!");
 			    
 				PiEstimator pi = new PiEstimator();
+				
 		       	String masteraddr = (String) get(-2);
 		       	String masterport = (String) get(-4);
-		       	pi.setCfg(masteraddr,masterport);
+		       	pi.setCfg(masteraddr, masterport);
 		       	//pi.setCfg(config); (This is correct)
-		       	String[] argumentos = {"4","20"};
+		       	
+		       	//String arg1 = (String) get(-21);
+		       	//String arg2 = (String) get(-22);
+		       	
+		       	String[] argumentos = {(String) get(-21), (String) get(-22)};
 		        pi.run(argumentos);
 		        
 		        jobResult = pi.getResult();
@@ -893,7 +905,7 @@ public class StartClusterParent {
 			} catch (Exception e) {
 				
 			}
-			*/
+			
 	   }
 	
 

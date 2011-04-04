@@ -5,7 +5,7 @@ package test;
  */
 
 // My classes
-//import examples.PiEstimator;
+import examples.PiEstimator;
 import load.StartClusterParent;
 
 // PeerUnit classes
@@ -26,21 +26,33 @@ import java.util.ArrayList;
 //public class TestJobResultWithMutations extends TestStartCluster {
 public class TestJobResultWithMutations extends TestStartCluster {
 
+	PiEstimator pi = new PiEstimator();
 	
 	/**
 	 * Start at TestSteps 5
 	 */
 	 
 	@TestStep(order=5, timeout=50000, range="0")
-	public void testeReflection() {
+	public void testeReflection()  throws Exception {
+	
+		String[] arg = {"4", "20"};
+		//pi.run(arg);
+		pi.test(arg);
 		
-		String path = "/home/michel/workspace-eclipse/albonico/HadoopTest/target/mutants/0/PiEstimator.class";
-		String className = "PiEstimator";
-		String methodName = "run";
-		String[] arguments = {"2", "20"};
-		
-		classLoader(path, className, methodName, arguments);
-		
+		/*
+		String path = "/home/michel/workspace-eclipse/albonico/HadoopTest/target/mutants/0/";
+		String className = "TesteMutation";
+		String methodName = "test";
+		classLoader(path, className, methodName, null);
+		*/
+	}
+	
+	@TestStep(order=5, timeout=50000, range="0")
+	public void getPiResult() {
+	
+    		double estimatedresult = 3.20000000000000000000;
+    		Assert.assertTrue(estimatedresult == pi.getResult().doubleValue());
+    		
 	}
 	
 	/*
