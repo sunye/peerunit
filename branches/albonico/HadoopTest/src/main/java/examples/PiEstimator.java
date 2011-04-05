@@ -247,7 +247,6 @@ public class PiEstimator extends Configured implements Tool {
     }
   }
 
-
   /**
   * Set JobConf to same started on the JobTracker.
   * albonico

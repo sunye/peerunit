@@ -11,7 +11,6 @@ package load;
 //import org.apache.hadoop.examples.BaileyBorweinPlouffe;
 //import examples.BaileyBorweinPlouffe;
 import examples.PiEstimator;
-import examples.WordCount;
 
 // Hadoop classes
 import org.apache.hadoop.mapred.JobTracker;
@@ -399,17 +398,6 @@ public class StartClusterParent {
 	    
 	}
     
-    public void runJob(String wordcount) throws IOException, InterruptedException {
-
-		log.info("Running Job!"); 
-
-		runWordCount wc = new runWordCount();
-		jobThread = new Thread(wc);
-		jobThread.start();
-		jobThread.sleep(20000);
-	    
-	}
-    
     public void runJob(int stopid) throws IOException, InterruptedException {
     	/*
 		log.info("Running Job!"); 
@@ -738,13 +726,7 @@ public class StartClusterParent {
 				    		" -Dhadoop.log.file=hadoop-jobtracker.log" +
 				    		" -Dhadoop.home.dir="+hadoopdir+
 				    		" -Dhadoop.id.str=michel -Dhadoop.root.logger=INFO,DRFA" +
-				 
-			        jobResult = pi.getResult();
-			        
-				    //BaileyBorweinPlouffe pi = new BaileyBorweinPlouffe();
-				    //String[] args = {"1","6","4","/pi"};
-				    //pi.run(args);
-			           		" -Djava.library.path="+hadoopdir+"/lib/native/Linux-i386-32" +
+				    		" -Djava.library.path="+hadoopdir+"/lib/native/Linux-i386-32" +
 				    		" -Dhadoop.policy.file=hadoop-policy.xml" +
 				    		" -classpath "+hadoopdir+"/conf:" +
 				    		"/usr/lib/jvm/java-6-sun/lib/tools.jar:"+hadoopdir+":" +
@@ -925,36 +907,8 @@ public class StartClusterParent {
 			}
 			
 	   }
-
-   }
 	
-   public class runWordCount implements Runnable {
 
-   public void run() {
-
-	   	try {
-				   
-			    log.info("Starting WordCount!");
-				    
-				WordCount wc = new WordCount();
-					
-		       	String masteraddr = (String) get(-2);
-		       	String masterport = (String) get(-4);
-		       	wc.setCfg(masteraddr, masterport);
-			       	
-			    String[] argumentos = {"/input/", "/output/"};
-			       	
-			    wc.run(argumentos);
-			        
-		    } catch (IOException ioe) {
-					
-			} catch (Exception e) {
-					
-			}
-				
-   }
-		 
-   
-   }
+  }
    
 }
