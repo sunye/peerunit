@@ -405,8 +405,6 @@ public class PiEstimator extends Configured implements Tool {
    
     piresult = estimate(nMaps, nSamples, jobConf);
    
-    System.out.println("Estimated value of Pi is " + piresult);
-   
     System.out.println("PiEstimator is well finished!");
 
    return 0;
