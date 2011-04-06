@@ -13,10 +13,6 @@ then
 
 		mv $3 bkp/$4
 
-	else
-
-		echo "File $3 could not be read!"
-		exit 0
 	fi
 
 
