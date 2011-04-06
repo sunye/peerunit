@@ -65,11 +65,13 @@ public class TestJobResult extends TestStartCluster {
     		String pivalue = (String) get(-20);
     		double estimatedresult = Double.valueOf(pivalue);
     		
-    		log.info("Resultado do Pi: " + pivalue);
+    		log.info("Pi result: " + jobResult);
     		
     		Assert.assertTrue(estimatedresult == jobResult.doubleValue());
 
     	} else {
+    		
+    		log.info("Pi result is NULL!");
     		
     		Assert.fail();
     		
