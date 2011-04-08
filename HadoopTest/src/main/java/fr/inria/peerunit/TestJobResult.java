@@ -64,10 +64,9 @@ public class TestJobResult extends TestStartCluster {
             //double estimatedresult = 3.20000000000000000000;
             String pivalue = (String) get(-20);
             double estimatedresult = Double.valueOf(pivalue);
-
+            log.log(Level.INFO, "Expected:{0} Calculated: {1}", new Object[]{pivalue, jobResult});
+            LOG.log(Level.INFO, "Expected: {0}", estimatedresult);
             LOG.log(Level.INFO, "Pi result: {0}", jobResult);
-            LOG.log(Level.FINE, "finePi result: {0}", jobResult);
-            LOG.log(Level.FINER, "finerPi result: {0}", jobResult);
             Assert.assertTrue(estimatedresult == jobResult.doubleValue());
 
         } else {
