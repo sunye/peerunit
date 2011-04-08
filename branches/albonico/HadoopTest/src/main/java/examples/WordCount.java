@@ -63,13 +63,8 @@ public class WordCount {
 		String hostport = address+":"+port;
 
 		cfg.set("mapred.job.tracker",hostport);
-		//cfg.set("jobclient.output.filter","ALL");
 
 		config = cfg;
-
-		// JobTracker Address
-		//jtaddress = address;
-	 	//jtport = Integer.parseInt(port);
 
   }
   

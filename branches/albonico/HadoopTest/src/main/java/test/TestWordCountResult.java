@@ -33,14 +33,19 @@ public class TestWordCountResult extends TestStartCluster {
 	 public void sendFile() throws Exception, InterruptedException {
 	    	
 		log.info("Putting file!");
-	   	putFileHDFS("/home/michel/workspace-eclipse/albonico/HadoopTest/teste","/input/");
+	   	putFileHDFS((String) get(-25),(String) get(-23));
 	    
 	 }
 	
     @TestStep(order=6, timeout = 440000, range = "0")
     public void runWCount() throws Exception, InterruptedException {
-    	
-    	runJob("wordcount");
+       
+    		log.info("Running Job!"); 
+
+    		runWordCount wc = new runWordCount();
+    		jobThread = new Thread(wc);
+    		jobThread.start();
+    		jobThread.sleep(20000);
     	
     }
     
@@ -53,7 +58,7 @@ public class TestWordCountResult extends TestStartCluster {
     	al.add("albonico	1");
     	
     	// Verify output
-    	validateJobOutput("/output/", al);    	
+    	validateJobOutput((String) get(-24), al);    	
     	
     }
     
