@@ -81,7 +81,8 @@ import java.lang.reflect.InvocationTargetException;
   
 public class StartClusterParent {
 
-    protected static final Logger log = Logger.getLogger(StartClusterParent.class.getName());
+    protected static Logger log = Logger.getLogger(StartClusterParent.class.getName());
+
     protected FileHandler fh;
 
     private int id;
@@ -153,11 +154,10 @@ public class StartClusterParent {
     }
 
     public void setLogger() throws IOException {
-
-/*	    fh = new FileHandler("hadoop.log"); 
-        log.addHandler(fh);
-        System.setOut(new PrintStream("testelog.txt"));
-*/ 
+    	
+//	    fh = new FileHandler("hadooptest.log");
+//        log.addHandler(fh);
+ 
     }
 
    @BeforeClass(range = "*", timeout = 100000)
@@ -229,6 +229,9 @@ public class StartClusterParent {
 		String pivalue = properties.getProperty("pi.value");
 		String pinmaps = properties.getProperty("pi.nMaps");
 		String pinsamples = properties.getProperty("pi.nSamples");
+		String inputdir = properties.getProperty("wordcount.input");
+		String outputdir = properties.getProperty("wordcount.output");
+		String wfile = properties.getProperty("wordcount.file");
 		
 		this.put(-5, dfsname);
 		this.put(-6, dfsdata);
@@ -250,6 +253,11 @@ public class StartClusterParent {
 		this.put(-20, pivalue);
 		this.put(-21, pinmaps);
 		this.put(-22, pinsamples);
+		
+		//WordCount
+		this.put(-23, inputdir);
+		this.put(-24, outputdir);
+		this.put(-25, wfile);
 
     } 
 
@@ -387,29 +395,7 @@ public class StartClusterParent {
     }
     
     // runJob
-    
-    public void runJob() throws IOException, InterruptedException {
-
-		log.info("Running Job!"); 
-
-		runPiEstimator pi = new runPiEstimator();
-		jobThread = new Thread(pi);
-		jobThread.start();
-		jobThread.join();
-	    
-	}
-    
-    public void runJob(String wordcount) throws IOException, InterruptedException {
-
-		log.info("Running Job!"); 
-
-		runWordCount wc = new runWordCount();
-		jobThread = new Thread(wc);
-		jobThread.start();
-		jobThread.sleep(20000);
-	    
-	}
-    
+     
     public void runJob(int stopid) throws IOException, InterruptedException {
     	/*
 		log.info("Running Job!"); 
@@ -422,30 +408,6 @@ public class StartClusterParent {
 		//jobThread.join();
 	    */
 	}
-    
-    /*
-    public void runJob(class Mut) throws IOException, InterruptedException {
-
-    	try {  
-            Object c = Class.forName("example.").newInstance();  
-            Method m = c.getClass().getMethod("method", null);  
-            m.invoke(c, null);  
-        } catch (Exception e) {  
-            e.printStackTrace();  
-        }   
-    	
-    	
-		log.info("Running Job!"); 
-
-		runPiEstimator pi = new runPiEstimator();
-		jobThread = new Thread(pi);
-		jobThread.start();
-		Thread.sleep(2000);
-		jobThread.yield();
-		//jobThread.join();
-	    
-	}
-    */
     
     // runMutation
     
@@ -626,32 +588,6 @@ public class StartClusterParent {
 	            }
 	            
     		}
-    		
-    		// Files to ArrayList
-    		// Create a new condition - ArrayList to files
-    		
-	    	
-	    	/*
-	    	FileSystem hdfs = output.getFileSystem(getConfHDFS());
-      
-            if(hdfs.isFile(output)){
-            
-            		FSDataInputStream fis = hdfs.open(output);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-                    
-                    int n = expectedResults.size();
-        	        for (int i=0; i<n; i++) {import java.lang.reflect.Method; 
-        	        	Assert.assertTrue(expectedResults.get(i).toString().equals((String) reader.readLine()));
-        	        }
-        	        
-                    reader.close();
-                    fis.close();
-                    
-            } else {
-            	log.info("File " + outPath + "not found!");
-            	Assert.fail();
-            }
-            */
 	    	
 	        
     	} catch (IOException ioe) {
@@ -942,7 +878,7 @@ public class StartClusterParent {
 		       	String masterport = (String) get(-4);
 		       	wc.setCfg(masteraddr, masterport);
 			       	
-			    String[] argumentos = {"/input/", "/output/"};
+			    String[] argumentos = {(String) get(-23),(String) get(-24)};
 			       	
 			    wc.run(argumentos);
 			        
