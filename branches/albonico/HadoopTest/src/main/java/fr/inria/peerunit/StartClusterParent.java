@@ -14,6 +14,7 @@ package fr.inria.peerunit;
 //import examples.WordCount;
 
 // Hadoop classes
+import java.util.logging.Level;
 import org.apache.hadoop.mapred.JobTracker;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TaskTracker;
@@ -21,26 +22,16 @@ import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.hdfs.server.datanode.DataNode;
 import org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapred.JobStatus;
 import org.apache.hadoop.mapred.OutputLogFilter;
-import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileUtil;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.mapred.ClusterStatus;
 
 // PeerUnit classes
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
-import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.tester.Assert;
 import fr.inria.psychedelic.base.App;
@@ -49,21 +40,13 @@ import fr.inria.psychedelic.base.App;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.rmi.RemoteException;
-import java.net.BindException;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.net.InetAddress;
 import java.util.logging.Logger;
 import java.util.logging.FileHandler;
 import java.util.Map;
 import java.util.Properties;
 import java.math.BigDecimal;
-import java.util.Vector;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -72,13 +55,8 @@ import java.io.InputStreamReader;
 // Java reflection
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.lang.ClassLoader;
-import java.lang.ClassNotFoundException;
-import java.net.MalformedURLException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-  
+
 public class StartClusterParent {
 
     protected static Logger log = Logger.getLogger(StartClusterParent.class.getName());
@@ -553,7 +531,7 @@ public class StartClusterParent {
     	try {
     		
     		log.info("Validating the Job output result!");
-    		log.info("Reading " + outPath + "...");
+    		log.log(Level.INFO, "Reading {0}...", outPath);
     		
 	    	Path outputdir = new Path(outPath);
     		
@@ -565,7 +543,7 @@ public class StartClusterParent {
     		   
     			Path file = outputFiles[ii];
     	
-    			log.info("Reading file " + file + "...");
+    			log.log(Level.INFO, "Reading file {0}...", file);
 		 
 		    	FileSystem hdfs = outputdir.getFileSystem(getConfHDFS());
 		    	
@@ -583,7 +561,7 @@ public class StartClusterParent {
 	                    is.close();
 	                    
 	            } else {
-	            	log.info("File " + outPath + "not found!");
+	            	log.log(Level.INFO, "File {0}not found!", outPath);
 	            	Assert.fail();
 	            }
 	            
@@ -814,7 +792,7 @@ public class StartClusterParent {
 				dn = DataNode.createDataNode(args,cfg);
 		
 				String serveraddr = dn.getNamenode();
-				log.info("DataNode connected with NameNode: " + serveraddr); 
+				log.log(Level.INFO, "DataNode connected with NameNode: {0}", serveraddr);
 				
 			} catch (IOException ioe) {
 			
