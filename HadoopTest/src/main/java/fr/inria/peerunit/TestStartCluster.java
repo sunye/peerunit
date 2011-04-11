@@ -14,7 +14,6 @@ import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.tester.Assert;
 
 // Java classes
-import fr.inria.peerunit.StartClusterParent;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -25,7 +24,7 @@ import java.math.BigDecimal;
 public class TestStartCluster extends StartClusterParent {
 
 	
-	@TestStep(order=1, timeout = 60000, range = "0")
+	@TestStep(order=1, timeout = 10000, range = "0")
     public void startNameNode() throws IOException, InterruptedException {
 
     	initNN();
@@ -57,18 +56,19 @@ public class TestStartCluster extends StartClusterParent {
    @TestStep(order=15, timeout=10000, range="*")
     public void stopSlaveServices() throws IOException, InterruptedException {
     
-
-       if (ttThread.isAlive()) {
-           log.info("Stopping TaskTracker...");
-           // ttProcess.destroy();
-           TTracker.shutdown();
-           ttThread.interrupt();
-       }
-       if (dnThread.isAlive()) {
-           log.info("Stopping Datanode...");
-           dn.shutdown();
-           dnThread.interrupt();
-       }
+    	//if (dnThread.isAlive()) {
+	    	log.info("Stopping Datanode...");
+	    	dn.shutdown();
+	    	dnThread.interrupt();
+    	//}
+    	
+    	if (ttThread.isAlive()) {
+		    log.info("Stopping TaskTracker...");
+		   // ttProcess.destroy();
+		    TTracker.shutdown();
+		    ttThread.interrupt();
+    	}
+    	
     }
     	
     @TestStep(order=16, timeout=10000, range="0")

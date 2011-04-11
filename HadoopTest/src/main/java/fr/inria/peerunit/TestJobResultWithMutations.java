@@ -6,7 +6,7 @@ package fr.inria.peerunit;
 
 // My classes
 //import examples.PiEstimator;
-import fr.inria.peerunit.StartClusterParent;
+//import load.StartClusterParent;
 
 // PeerUnit classes
 import fr.inria.peerunit.parser.TestStep;
@@ -36,7 +36,7 @@ public class TestJobResultWithMutations extends TestStartCluster {
 	public void testeReflection()  throws Exception {
 	
 		String[] arg = {"4", "20"};
-		pi.run(arg);
+		//pi.run(arg);
 		//pi.test(arg);
 		
 		/*
