@@ -1,4 +1,4 @@
-package examples;
+package fr.inria.peerunit;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -14,8 +14,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-public class WordCount {
 
+public class WordCount {
+	
   private static Configuration config;
 	
   public static class TokenizerMapper 
@@ -69,6 +70,7 @@ public class WordCount {
   }
   
   public void run(String[] args) throws Exception {
+	  
     Configuration conf = getCfg();// new Configuration();
     String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
     if (otherArgs.length != 2) {

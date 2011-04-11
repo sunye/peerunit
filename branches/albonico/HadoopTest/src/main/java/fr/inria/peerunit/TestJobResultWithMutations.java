@@ -5,7 +5,7 @@ package fr.inria.peerunit;
  */
 
 // My classes
-import examples.PiEstimator;
+//import examples.PiEstimator;
 import fr.inria.peerunit.StartClusterParent;
 
 // PeerUnit classes
@@ -36,8 +36,8 @@ public class TestJobResultWithMutations extends TestStartCluster {
 	public void testeReflection()  throws Exception {
 	
 		String[] arg = {"4", "20"};
-		//pi.run(arg);
-		pi.test(arg);
+		pi.run(arg);
+		//pi.test(arg);
 		
 		/*
 		String path = "/home/michel/workspace-eclipse/albonico/HadoopTest/target/mutants/0/";

@@ -10,8 +10,8 @@ package fr.inria.peerunit;
 // My classes
 //import org.apache.hadoop.examples.BaileyBorweinPlouffe;
 //import examples.BaileyBorweinPlouffe;
-import examples.PiEstimator;
-import examples.WordCount;
+//import examples.PiEstimator;
+//import examples.WordCount;
 
 // Hadoop classes
 import org.apache.hadoop.mapred.JobTracker;
