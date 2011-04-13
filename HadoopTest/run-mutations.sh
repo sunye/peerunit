@@ -32,15 +32,27 @@ echo "INFO: Please do not use ./path!"
 
 		echo "Applying mutation number $mut!"
 
-		. apply-mutation-classes.sh $nmutclasspath $mutpath/$mut/ $codeclass $nmutclass
+		. apply-mutation-classes.sh $nmutclasspath $mutpath/$mut/$nmutclass $codeclass $nmutclass
 
-		scp target/HadoopTest-1.0-SNAPSHOT-jar-with-dependencies.jar michel@micro:/home/michel/HadoopTest/target/
+		slaves=`cat slaves`
+
+                for slv in $slaves;
+		do
+
+			echo "Sinc jar - $slv"
+			scp target/HadoopTest-1.0-SNAPSHOT-jar-with-dependencies.jar michel@$slv:/home/michel/HadoopTest/target/
+		done
 
 		. run-coordinator.sh &
 		. run-master-tester.sh &
 		sleep 10
-		. run-remote-tester.sh micro &
 
+		for slv in $slaves;
+		do
+
+			. run-remote-tester.sh $slv &
+
+		done
 		#echo "Job lists: "
 		coordid=`jobs -l | grep run-coordinator.sh | grep -v grep | awk '{print $2}'`
 		#coordid=`ps ax | grep CoordinatorRunner | grep -v grep | awk '{print $1}'`
@@ -61,6 +73,12 @@ echo "INFO: Please do not use ./path!"
 		echo "" > Tester0.log
 	
 		pkill java
+		
+		for slv in $slaves;
+		do
+			. kill-remote-jvm.sh $slv
+		done
+
 		pkill ssh
 
 #		if [ -e $mut/$nmutclass ]

@@ -1,4 +1,4 @@
-# ./apply-mutation-classes.sh /path/to/without/mutations/class /path/to/mutation/class classname
+# ./apply-mutation-classes.sh /path/to/without/mutations/class /path/to/mutation/class class.java class
 
 if [ $4 ]
 then 
@@ -11,7 +11,7 @@ then
 	if [ -e $3 ]
 	then
 
-		mv $3 bkp/$4
+		mv $3 bkp/
 
 	fi
 
@@ -28,6 +28,8 @@ then
 	fi
 
 	mvn install
+
+	mv bkp/*.java $3
 
 else
 	echo "Please use the follow command: ./apply-mutation-classes.sh /path/to/without/mutations/class /path/to/mutation/class /path/to/class/file/java classname"
