@@ -3,17 +3,23 @@ echo "INFO: Please do not use ./path!"
 #if [ $1 ] 
 #then
 
-	mn=$1
+#	mn=$1
 
-	echo "Path to class to mutate:"
-	read nmutclasspath
-	nmutclass=`echo $nmutclasspath | awk -F/ '{print $NF}'`
+#	echo "Path to class to mutate:"
+#	read nmutclasspath
+#	nmutclass=`echo $nmutclasspath | awk -F/ '{print $NF}'`
 
-	echo "Path to code class .java:"
-	read codeclass
+	nmutclasspath=target/classes/fr/inria/peerunit/PiEstimator.class
+	nmutclass=PiEstimator.class
 
-	echo "Path to mutations:"
-	read mutpath
+#	echo "Path to code class .java:"
+#	read codeclass
+
+	codeclass=src/main/java/fr/inria/peerunit/PiEstimator.java
+
+#	echo "Path to mutations:"
+#	read mutpath
+	mutpath=target/mutants/
 
 	#i=0
 
