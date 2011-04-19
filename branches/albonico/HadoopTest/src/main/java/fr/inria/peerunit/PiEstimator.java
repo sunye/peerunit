@@ -273,8 +273,8 @@ public class PiEstimator extends Configured implements Tool {
         config = cfg;
 
         // JobTracker Address
-        jtaddress = address;
-        jtport = Integer.parseInt(port);
+      //  jtaddress = address;
+       // jtport = Integer.parseInt(port);
 
     }
 
@@ -382,14 +382,16 @@ public class PiEstimator extends Configured implements Tool {
      */
     // public int run(String[] args) throws Exception {
     public int run(String[] args) throws Exception {
-        if (args.length < 2) {
-            System.err.println("Usage: " + getClass().getName() + " <nMaps> <nSamples>");
+        if (args.length < 4) {
+            System.err.println("Usage: " + getClass().getName() + " <nMaps> <nSamples> <jtName> <jtPort>");
             ToolRunner.printGenericCommandUsage(System.err);
             return -1;
         }
 
         final int nMaps = Integer.parseInt(args[0]);
         final long nSamples = Long.parseLong(args[1]);
+
+        setCfg(args[2], args[3]);
 
         System.out.println("Number of Maps  = " + nMaps);
         System.out.println("Samples per Map = " + nSamples);

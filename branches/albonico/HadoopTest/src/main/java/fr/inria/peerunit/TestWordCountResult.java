@@ -42,10 +42,14 @@ public class TestWordCountResult extends TestStartCluster {
        
     		log.info("Running Job!"); 
 
-    		runWordCount wc = new runWordCount();
-    		jobThread = new Thread(wc);
-    		jobThread.start();
-    		jobThread.sleep(20000);
+                runWordCount();
+
+                Thread.currentThread().sleep(20000);
+
+    	//	runWordCount wc = new runWordCount();
+    	//	jobThread = new Thread(wc);
+    	//	jobThread.start();
+    	//	jobThread.sleep(20000);
     	
     }
     
