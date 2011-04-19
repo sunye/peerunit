@@ -146,11 +146,9 @@ public class StartClusterParent {
 
         setLogger();
 
-        //  readPropertiesHadoop();
-
     }
 
-    public void readPropertiesHadoop() throws IOException, InterruptedException {
+    synchronized public void readPropertiesHadoop() throws IOException, InterruptedException {
 
         log.info("Starting Cluster Hadoop!");
 
@@ -373,6 +371,7 @@ public class StartClusterParent {
     }
 
     // runMutation
+    /*
     public void runMutation() throws FileNotFoundException, IOException {
 
         App mutationApp = new App();
@@ -388,6 +387,8 @@ public class StartClusterParent {
         mutationOutputList = mutationApp.getOutputList();
 
     }
+     * 
+     */
 
     public void putFileHDFS(String file, String dir) {
 
@@ -401,8 +402,11 @@ public class StartClusterParent {
             putProcess.waitFor();
 
         } catch (RemoteException re) {
+            log.info(re.toString());
         } catch (IOException ioe) {
+            log.info(ioe.toString());
         } catch (InterruptedException ie) {
+            log.info(ie.toString());
         }
 
     }
@@ -417,7 +421,9 @@ public class StartClusterParent {
             putProcess.waitFor();
 
         } catch (IOException ioe) {
+            log.info(ioe.toString());
         } catch (InterruptedException ie) {
+            log.info(ie.toString());
         }
 
     }
@@ -458,9 +464,9 @@ public class StartClusterParent {
             //} catch (MalformedURLException mue) {
             //	System.out.println(mue.toString());
         } catch (ClassNotFoundException cnfe) {
-            System.out.println(cnfe.toString());
+            log.info(cnfe.toString());
         } catch (Exception e) {
-            System.out.println(e.toString());
+            log.info(e.toString());
         }
     }
 
@@ -493,8 +499,11 @@ public class StartClusterParent {
                 jobProcess.waitFor();
 
             } catch (RemoteException re) {
+                log.info(re.toString());
             } catch (IOException ioe) {
+                log.info(ioe.toString());
             } catch (InterruptedException ie) {
+                log.info(ie.toString());
             }
         }
     }
@@ -601,7 +610,9 @@ public class StartClusterParent {
                 SecondaryNameNode snn = new SecondaryNameNode(conf);
 
             } catch (IOException ioe) {
+                log.info(ioe.toString());
             } catch (InterruptedException ie) {
+                log.info(ie.toString());
             }
 
         }
@@ -681,7 +692,9 @@ public class StartClusterParent {
 
         
             } catch (IOException ioe) {
+                log.info(ioe.toString());
             } catch (InterruptedException ie) {
+                log.info(ie.toString());
             }
         }
          
@@ -750,7 +763,9 @@ public class StartClusterParent {
 
 
             } catch (IOException ioe) {
+                log.info(ioe.toString());
             } catch (InterruptedException ie) {
+                log.info(ie.toString());
             }
 
         }
