@@ -59,33 +59,33 @@ public class TestStartCluster extends StartClusterParent {
     	//if (dnThread.isAlive()) {
 	    	log.info("Stopping Datanode...");
 	    	dn.shutdown();
-	    	dnThread.interrupt();
+	 //   	dnThread.interrupt();
     	//}
     	
-    	if (ttThread.isAlive()) {
-		    log.info("Stopping TaskTracker...");
-		   // ttProcess.destroy();
-		    TTracker.shutdown();
-		    ttThread.interrupt();
-    	}
+    	//if (ttThread.isAlive()) {
+		log.info("Stopping TaskTracker...");
+		// ttProcess.destroy();
+		TTracker.shutdown();
+	//	    ttThread.interrupt();
+    	//}
     	
     }
     	
     @TestStep(order=16, timeout=10000, range="0")
     public void stopMasterServices() throws IOException, InterruptedException {
     	
-    	if (jtThread.isAlive()) {
+    	//if (jtThread.isAlive()) {
 	    	log.info("Stopping JobTracker...");
 	    	//jtProcess.destroy();
 	    	JTracker.stopTracker();
-	    	jtThread.interrupt();
-    	}
+	//    	jtThread.interrupt();
+    	//}
     	
-    	if (nnThread.isAlive()) {
+    	//if (nnThread.isAlive()) {
 	    	log.info("Stopping NameNode...");
 	    	nn.stop();
-	    	nnThread.interrupt();
-    	}
+	  //  	nnThread.interrupt();
+    //	}
     }
     
     @AfterClass(range="*", timeout = 100000)

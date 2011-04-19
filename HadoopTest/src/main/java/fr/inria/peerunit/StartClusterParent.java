@@ -81,8 +81,8 @@ public class StartClusterParent {
     protected static DataNode dn;
     protected static Process jtProcess;
     protected static Process ttProcess;
-    protected static startNameNode nnode;
-    protected static startDataNode dnode;
+//    protected static startNameNode nnode;
+//    protected static startDataNode dnode;
     protected static ArrayList mutationOutputList;
 
     @SetId
@@ -288,6 +288,8 @@ public class StartClusterParent {
      * Methods to initialize Hadoop Cluster / Create Threads
      *
      */
+
+    /*
     public void initNN() throws IOException, InterruptedException {
 
         log.info("Starting NameNode!");
@@ -299,15 +301,20 @@ public class StartClusterParent {
         nnThread.start();
         nnThread.join();
 
-    }
+     }
+     */
 
+    /*
     public void stopNN() throws IOException, InterruptedException {
 
         log.info("Stopping NameNode!");
         nnode.done();
 
     }
+     * 
+     */
 
+    /*
     public void initDN() throws IOException, InterruptedException {
 
         log.info("Starting DataNode!");
@@ -318,6 +325,8 @@ public class StartClusterParent {
         dnThread.join();
 
     }
+     */
+
 
     /*
     public void initSNN() throws IOException, InterruptedException {
@@ -332,6 +341,7 @@ public class StartClusterParent {
     } 
      */
 
+    
     public void initJT() throws IOException, InterruptedException {
 
         //readPropertiesHadoop();
@@ -347,6 +357,7 @@ public class StartClusterParent {
 
     }
 
+    
     public void initTT() throws IOException, InterruptedException {
 
         log.info("Starting TaskTracker!");
@@ -545,32 +556,39 @@ public class StartClusterParent {
      * Classes to create Runnable Objects
      *
      */
+   
+    /*
     public class startNameNode implements Runnable {
 
-        private boolean threadDone = false;
-
-        public void done() {
-            threadDone = true;
-        }
+     
 
         public void run() {
 
-            //while (!threadDone) {
+           try {
+     */
 
-            try {
+    public void initNN() throws IOException, InterruptedException {
+
+                readPropertiesHadoop();
 
                 Configuration conf = getConfHDFS();
 
                 nn = new NameNode(conf);
                 NNode = nn;
 
+                Thread.sleep(5000);
+
+              //  Thread.currentThread().join();
+
+        /*
             } catch (IOException ioe) {
             } catch (InterruptedException ie) {
             }
 
             //}
 
-        }
+         }
+         */
     }
 
     public class startSecondaryNameNode implements Runnable {
@@ -589,13 +607,14 @@ public class StartClusterParent {
         }
     }
 
+    
     public class startJobTracker implements Runnable {
 
         public void run() {
 
             try {
-
-                //log.info("Starting JobTracker!");
+     
+                log.info("Starting JobTracker!");
 
                 /*
                 String hadoopdir = (String) get(-14);
@@ -647,25 +666,36 @@ public class StartClusterParent {
                 jtProcess = Runtime.getRuntime().exec(command);
                  */
 
+  //  public void initJT() throws IOException, InterruptedException {
 
                 Configuration conf = getConfMR();
                 job = new JobConf(conf);
                 JTracker = JobTracker.startTracker(job);
                 JTracker.offerService();
 
+            //    Thread.sleep(5000);
+
+             //   Thread.currentThread().join();
+
+             //   Thread.currentThread().yield();
+
+        
             } catch (IOException ioe) {
             } catch (InterruptedException ie) {
             }
         }
+         
     }
 
+    
     public class startTaskTracker implements Runnable {
 
         public void run() {
 
             try {
 
-                //log.info("Starting TaskTracker!");
+  
+                log.info("Starting TaskTracker!");
 
                 /*
                 String hadoopdir = (String) get(-14);
@@ -710,11 +740,14 @@ public class StartClusterParent {
                 " org.apache.hadoop.mapred.TaskTracker";
                 ttProcess = Runtime.getRuntime().exec(command);
                  */
+    //public void initTT() throws IOException, InterruptedException {
 
                 Configuration conf = getConfMR();
                 JobConf job = new JobConf(conf);
                 TTracker = new TaskTracker(job);
                 TTracker.run();
+
+
 
             } catch (IOException ioe) {
             } catch (InterruptedException ie) {
@@ -723,11 +756,15 @@ public class StartClusterParent {
         }
     }
 
+    /*
     public class startDataNode implements Runnable {
 
         public void run() {
 
             try {
+   */
+
+    public void initDN() throws IOException, InterruptedException {
 
                 Configuration cfg = getConfHDFS();
                 String dirname = (String) get(-5);
@@ -742,11 +779,15 @@ public class StartClusterParent {
                 String serveraddr = dn.getNamenode();
                 log.log(Level.INFO, "DataNode connected with NameNode: {0}", serveraddr);
 
+                Thread.currentThread().join();
+    /*
             } catch (IOException ioe) {
             } catch (InterruptedException ie) {
             }
 
         }
+     */
+
     }
 
  /*   public class runPiEstimator implements Runnable {
@@ -761,15 +802,15 @@ public class StartClusterParent {
 
                 PiEstimator pi = new PiEstimator();
 
-                String masteraddr = (String) get(-2);
-                String masterport = (String) get(-4);
-                pi.setCfg(masteraddr, masterport);
+                //String masterAddr = (String) get(-2);
+                //String masterPort = (String) get(-4);
+                //pi.setCfg(masteraddr, masterport);
                 //pi.setCfg(config); (This is correct)
 
                 //String arg1 = (String) get(-21);
                 //String arg2 = (String) get(-22);
 
-                String[] argumentos = {(String) get(-21), (String) get(-22)};
+                String[] argumentos = {(String) get(-21), (String) get(-22), (String) get(-2), (String) get(-4)};
                 pi.run(argumentos);
 
                 jobResult = pi.getResult();
@@ -788,11 +829,15 @@ public class StartClusterParent {
         } */
     }
 
+    /*
     public class runWordCount implements Runnable {
 
         public void run() {
 
             try {
+    */
+
+    public void runWordCount() throws IOException, Exception {
 
                 log.info("Starting WordCount!");
 
@@ -806,10 +851,11 @@ public class StartClusterParent {
 
                 wc.run(argumentos);
 
+           /*
             } catch (IOException ioe) {
             } catch (Exception e) {
             }
 
-        }
+        } */
     }
 }
