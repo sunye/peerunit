@@ -404,19 +404,6 @@ public class PiEstimator extends Configured implements Tool {
 
     }
 
-    public void test(String args[]) {
-        int a = 2;
-        int b = 2;
-
-        if ((a + b) == 4) {
-            System.out.println("Testando: " + args[0] + " " + args[1]);
-        } else {
-
-            System.out.println("Else...");
-
-        }
-    }
-
     /**
      * main method for running it as a stand alone command.
      */
