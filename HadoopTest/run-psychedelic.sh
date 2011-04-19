@@ -8,7 +8,7 @@ then
 
 	# Execution
 	java=/usr/lib/jvm/java-6-sun/bin/java
-	$java -classpath ./target/HadoopTest-1.0-SNAPSHOT-jar-with-dependencies.jar fr.inria.psychedelic.base.App $1 $2 &
+	$java -classpath ./target/HadoopTest-1.0-SNAPSHOT-jar-with-dependencies.jar fr.inria.psychedelic.base.App $1 $2 
 
 else
 
