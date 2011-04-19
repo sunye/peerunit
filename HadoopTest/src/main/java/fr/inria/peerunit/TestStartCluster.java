@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 public class TestStartCluster extends StartClusterParent {
 
 	
-	@TestStep(order=1, timeout = 10000, range = "0")
+	@TestStep(order=1, timeout = 100000, range = "0")
     public void startNameNode() throws IOException, InterruptedException {
 
     	initNN();
@@ -53,7 +53,7 @@ public class TestStartCluster extends StartClusterParent {
 
     }
    
-   @TestStep(order=15, timeout=10000, range="*")
+   @TestStep(order=15, timeout=100000, range="*")
     public void stopSlaveServices() throws IOException, InterruptedException {
     
     	//if (dnThread.isAlive()) {
@@ -71,7 +71,7 @@ public class TestStartCluster extends StartClusterParent {
     	
     }
     	
-    @TestStep(order=16, timeout=10000, range="0")
+    @TestStep(order=16, timeout=100000, range="0")
     public void stopMasterServices() throws IOException, InterruptedException {
     	
     	//if (jtThread.isAlive()) {

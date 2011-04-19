@@ -26,7 +26,7 @@ public class TestJobResult extends TestStartCluster {
     /**
      * Start at TestSteps 5
      */
-    @TestStep(order = 5, timeout = 440000, range = "0")
+    @TestStep(order = 5, timeout = 1000000, range = "0")
     public void jobSubmit() throws Exception, InterruptedException {
 
         log.info("Running Job!");
@@ -39,7 +39,7 @@ public class TestJobResult extends TestStartCluster {
 
     }
 
-    @TestStep(order = 6, timeout = 440000, range = "0")
+    @TestStep(order = 6, timeout = 100000, range = "0")
     public void assertResult() throws Exception, InterruptedException {
         /*
         ArrayList al = new ArrayList();
@@ -60,6 +60,8 @@ public class TestJobResult extends TestStartCluster {
             expected = BigDecimal.valueOf(Double.valueOf(pivalue));
 
             //double expected = Double.valueOf(pivalue);
+            System.out.println("expected:" + expected + "  jobResult:" + jobResult
+                    + "  duration:" + jobDuration);
             log.info("expected:" + expected + "  jobResult:" + jobResult
                     + "  duration:" + jobDuration);
             Assert.assertTrue(expected == jobResult);
@@ -67,6 +69,7 @@ public class TestJobResult extends TestStartCluster {
 
         } else {
 
+            System.out.println("jobResult is NULL!");
             log.info("jobResult is NULL!");
 
             Assert.fail();
