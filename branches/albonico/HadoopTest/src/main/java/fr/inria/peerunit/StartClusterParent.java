@@ -331,6 +331,7 @@ public class StartClusterParent {
 
     } 
      */
+
     public void initJT() throws IOException, InterruptedException {
 
         //readPropertiesHadoop();
@@ -358,20 +359,6 @@ public class StartClusterParent {
         Thread.sleep(5000);
         ttThread.yield();
 
-    }
-
-    // runJob
-    public void runJob(int stopid) throws IOException, InterruptedException {
-        /*
-        log.info("Running Job!");
-
-        runPiEstimator pi = new runPiEstimator();
-        jobThread = new Thread(pi);
-        jobThread.start();
-        Thread.sleep(2000);
-        jobThread.yield();
-        //jobThread.join();
-         */
     }
 
     // runMutation
@@ -762,11 +749,13 @@ public class StartClusterParent {
         }
     }
 
-    public class runPiEstimator implements Runnable {
+ /*   public class runPiEstimator implements Runnable {
 
         public void run() {
+*/
+    public void runPiEstimator() throws IOException, Exception {
 
-            try {
+            //try {
 
                 log.info("Starting PiEstimator!");
 
@@ -790,12 +779,13 @@ public class StartClusterParent {
                 //String[] args = {"1","6","4","/pi"};
                 //pi.run(args);
 
+                /*
 
             } catch (IOException ioe) {
             } catch (Exception e) {
             }
 
-        }
+        } */
     }
 
     public class runWordCount implements Runnable {

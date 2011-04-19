@@ -23,10 +23,11 @@ public class PiTest extends TestStartCluster {
 
         log.info("Running Job!");
 
-        runPiEstimator pi = new runPiEstimator();
-        jobThread = new Thread(pi);
-        jobThread.start();
-        jobThread.join();
+        runPiEstimator();
+       // runPiEstimator pi = new runPiEstimator();
+       // jobThread = new Thread(pi);
+       // jobThread.start();
+       // jobThread.join();
 
     }
 
