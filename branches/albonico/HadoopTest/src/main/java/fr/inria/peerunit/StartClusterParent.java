@@ -233,7 +233,7 @@ public class StartClusterParent {
 
         log.info("Reading MR configuration!");
 
-        Thread.sleep(sleep);
+     //   Thread.sleep(sleep);
         Configuration conf = new Configuration();
         String jthost = this.get(-2) + ":" + this.get(-4);
 
@@ -255,7 +255,7 @@ public class StartClusterParent {
 
         log.info("Reading HDFS configuration!");
 
-        Thread.sleep(sleep);
+       // Thread.sleep(sleep);
         Configuration conf = new Configuration();
 
         String nnhost = "hdfs://" + this.get(-1) + ":" + this.get(-3);
