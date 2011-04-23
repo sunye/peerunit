@@ -37,34 +37,41 @@ public class TestWordCountResult extends TestStartCluster {
 	    
 	 }
 	
-    @TestStep(order=6, timeout = 440000, range = "0")
-    public void runWCount() throws Exception, InterruptedException {
-       
-    		log.info("Running Job!"); 
+        @TestStep(order=6, timeout = 440000, range = "0")
+        public void runWCount() throws Exception, InterruptedException {
 
-                runWordCount();
+                    log.info("Running Job!");
 
-                Thread.currentThread().sleep(20000);
+                    sendJob();
+                    // Wordcount
+                    //runWordCount rwc = new runWordCount();
+                    //Thread rwcThread= new Thread(rwc);
+                    //rwcThread.start();
+                    //rwcThread.join();
 
-    	//	runWordCount wc = new runWordCount();
-    	//	jobThread = new Thread(wc);
-    	//	jobThread.start();
-    	//	jobThread.sleep(20000);
-    	
-    }
-    
-    
-    @TestStep(order=7, timeout = 440000, range = "0")
-    public void assertResult() throws Exception, InterruptedException {
-    	
-    	ArrayList al = new ArrayList();
-    	al.add("michel	2");
-    	al.add("albonico	1");
-    	
-    	// Verify output
-    	validateJobOutput((String) get(-24), al);    	
-    	
-    }
+      //              runWordCount();
+
+             //       Thread.currentThread().sleep(5000);
+
+            //	runWordCount wc = new runWordCount();
+            //	jobThread = new Thread(wc);
+            //	jobThread.start();
+            //	jobThread.sleep(20000);
+
+        }
+
+
+        @TestStep(order=7, timeout = 440000, range = "0")
+        public void assertResult() throws Exception, InterruptedException {
+
+            ArrayList al = new ArrayList();
+            al.add("michel	2");
+            al.add("albonico	1");
+
+            // Verify output
+            validateJobOutput((String) get(-24), al);
+
+        }
     
 
 }
