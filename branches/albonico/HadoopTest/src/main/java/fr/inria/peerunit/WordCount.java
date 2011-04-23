@@ -50,14 +50,8 @@ public class WordCount {
       context.write(key, result);
     }
   }
-  
-  public Configuration getCfg() {
 
-		return config;
-
-  }
-
-  public void setCfg(String address, String port) {
+  public static Configuration setCfg(String address, String port) {
 
 		Configuration cfg = new Configuration();
 
@@ -65,16 +59,23 @@ public class WordCount {
 
 		cfg.set("mapred.job.tracker",hostport);
 
-		config = cfg;
+		return cfg;
+
+  }
+
+  public static void main(String[] arg) throws Exception {
+
+      run(arg);
 
   }
   
-  public void run(String[] args) throws Exception {
-	  
-    Configuration conf = getCfg();// new Configuration();
-    String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-    if (otherArgs.length != 2) {
-      System.err.println("Usage: wordcount <in> <out>");
+  public static void run(String[] args) throws Exception {
+
+    Configuration conf = setCfg(args[2],args[3]);
+
+    //String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
+    if (args.length <4) {
+      System.err.println("Usage: wordcount <in> <out> <jtAddr> <jtPort>");
       System.exit(2);
     }
     
@@ -85,8 +86,8 @@ public class WordCount {
     job.setReducerClass(IntSumReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
-    FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
-    FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
+    FileInputFormat.addInputPath(job, new Path(args[0])); //m0
+    FileOutputFormat.setOutputPath(job, new Path(args[1])); //m1
     System.exit(job.waitForCompletion(true) ? 0 : 1);
   }
 }

@@ -9,13 +9,13 @@ echo "INFO: Please do not use ./path!"
 #	read nmutclasspath
 #	nmutclass=`echo $nmutclasspath | awk -F/ '{print $NF}'`
 
-	nmutclasspath=target/classes/fr/inria/peerunit/PiEstimator.class
-	nmutclass=PiEstimator.class
+	nmutclasspath=target/classes/fr/inria/peerunit/WordCount.class
+	nmutclass=WordCount.class
 
 #	echo "Path to code class .java:"
 #	read codeclass
 
-	codeclass=src/main/java/fr/inria/peerunit/PiEstimator.java
+	codeclass=src/main/java/fr/inria/peerunit/WordCount.java
 
 #	echo "Path to mutations:"
 #	read mutpath

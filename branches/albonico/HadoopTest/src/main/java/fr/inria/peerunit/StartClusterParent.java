@@ -32,7 +32,6 @@ import fr.inria.peerunit.parser.SetGlobals;
 import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.tester.Assert;
-import fr.inria.psychedelic.base.App;
 
 // Java classes
 import java.io.IOException;
@@ -81,9 +80,10 @@ public class StartClusterParent {
     protected static DataNode dn;
     protected static Process jtProcess;
     protected static Process ttProcess;
-//    protected static startNameNode nnode;
-//    protected static startDataNode dnode;
+    protected static startNameNode nnode;
+    protected static startDataNode dnode;
     protected static ArrayList mutationOutputList;
+    protected static Thread rwcThread;
 
     @SetId
     public void setId(int i) {
@@ -198,6 +198,11 @@ public class StartClusterParent {
         String inputdir = properties.getProperty("wordcount.input");
         String outputdir = properties.getProperty("wordcount.output");
         String wfile = properties.getProperty("wordcount.file");
+        String wcsleep = properties.getProperty("wordcount.sleep");
+
+        String jobJar = properties.getProperty("job.jar");
+        String jobClass = properties.getProperty("job.class");
+        String jobParameters = properties.getProperty("job.parameters");
 
         this.put(-5, dfsname);
         this.put(-6, dfsdata);
@@ -209,9 +214,9 @@ public class StartClusterParent {
         this.put(-12, memtask);
         this.put(-13, version);
         this.put(-14, hadoopdir);
-        // 15 - jarFile;
-        // 16 - jobClass;
-        // 17 - parameters;
+        this.put(-15, jobJar);
+        this.put(-16, jobClass);
+        this.put(-17, jobParameters);
         this.put(-18, mutantclass);
         this.put(-19, mutantoutputdir);
 
@@ -224,6 +229,8 @@ public class StartClusterParent {
         this.put(-23, inputdir);
         this.put(-24, outputdir);
         this.put(-25, wfile);
+        this.put(-26, wcsleep);
+
 
     }
 
@@ -287,7 +294,7 @@ public class StartClusterParent {
      *
      */
 
-    /*
+    
     public void initNN() throws IOException, InterruptedException {
 
         log.info("Starting NameNode!");
@@ -300,9 +307,8 @@ public class StartClusterParent {
         nnThread.join();
 
      }
-     */
-
     /*
+
     public void stopNN() throws IOException, InterruptedException {
 
         log.info("Stopping NameNode!");
@@ -312,7 +318,7 @@ public class StartClusterParent {
      * 
      */
 
-    /*
+    
     public void initDN() throws IOException, InterruptedException {
 
         log.info("Starting DataNode!");
@@ -323,7 +329,7 @@ public class StartClusterParent {
         dnThread.join();
 
     }
-     */
+     
 
 
     /*
@@ -470,11 +476,7 @@ public class StartClusterParent {
         }
     }
 
-    public void sendJob(String jarFile, String jobClass, String parameters) throws InterruptedException, RemoteException {
-
-        this.put(-15, jarFile);
-        this.put(-16, jobClass);
-        this.put(-17, parameters);
+    public void sendJob() throws InterruptedException, RemoteException {
 
         runSendJob sjob = new runSendJob();
         Thread sjThread = new Thread(sjob);
@@ -495,6 +497,7 @@ public class StartClusterParent {
                 String param = (String) get(-17);
 
                 String command = hadoopdir + "/bin/hadoop jar " + jar + " " + job + " " + param;
+                log.info("Running " + command + "!" );
                 Process jobProcess = Runtime.getRuntime().exec(command);
                 jobProcess.waitFor();
 
@@ -512,7 +515,7 @@ public class StartClusterParent {
 
         try {
 
-            log.info("Validating the Job output result!");
+            log.info("Validating Job output result!");
             log.log(Level.INFO, "Reading {0}...", outPath);
 
             Path outputdir = new Path(outPath);
@@ -521,32 +524,40 @@ public class StartClusterParent {
 
             int countexpres = 0;
 
-            for (int ii = 0; ii < outputFiles.length; ii++) {
+            if (outputFiles.length > 0) {
 
-                Path file = outputFiles[ii];
 
-                log.log(Level.INFO, "Reading file {0}...", file);
+                for (int ii = 0; ii < outputFiles.length; ii++) {
 
-                FileSystem hdfs = outputdir.getFileSystem(getConfHDFS());
+                    Path file = outputFiles[ii];
 
-                if (hdfs.isFile(file)) {
+                    log.log(Level.INFO, "Reading file {0}...", file);
 
-                    InputStream is = outputdir.getFileSystem(getConfHDFS()).open(file);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                    FileSystem hdfs = outputdir.getFileSystem(getConfHDFS());
 
-                    while (reader.ready()) {
-                        Assert.assertTrue(expectedResults.get(countexpres).toString().equals((String) reader.readLine()));
-                        countexpres++;
+                    if (hdfs.isFile(file)) {
+
+                        InputStream is = outputdir.getFileSystem(getConfHDFS()).open(file);
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+                        while (reader.ready()) {
+                            Assert.assertTrue(expectedResults.get(countexpres).toString().equals((String) reader.readLine()));
+                            countexpres++;
+                            log.info("Line " + countexpres + ": " + (String) reader.readLine());
+                        }
+
+                        reader.close();
+                        is.close();
+
+                    } else {
+                        log.log(Level.INFO, "File {0} not found!", file);
+                        Assert.fail();
                     }
-
-                    reader.close();
-                    is.close();
-
-                } else {
-                    log.log(Level.INFO, "File {0}not found!", outPath);
-                    Assert.fail();
                 }
 
+            } else {
+                log.info("No files in " + outPath + "!");
+                Assert.fail();
             }
 
 
@@ -566,7 +577,7 @@ public class StartClusterParent {
      *
      */
    
-    /*
+    
     public class startNameNode implements Runnable {
 
      
@@ -574,10 +585,7 @@ public class StartClusterParent {
         public void run() {
 
            try {
-     */
-
-    public void initNN() throws IOException, InterruptedException {
-
+    
                 readPropertiesHadoop();
 
                 Configuration conf = getConfHDFS();
@@ -589,16 +597,14 @@ public class StartClusterParent {
 
               //  Thread.currentThread().join();
 
-        /*
+        
             } catch (IOException ioe) {
             } catch (InterruptedException ie) {
             }
 
-            //}
+       }
 
-         }
-         */
-    }
+     }
 
     public class startSecondaryNameNode implements Runnable {
 
@@ -771,15 +777,15 @@ public class StartClusterParent {
         }
     }
 
-    /*
+    
     public class startDataNode implements Runnable {
 
         public void run() {
 
             try {
-   */
+   
 
-    public void initDN() throws IOException, InterruptedException {
+   // public void initDN() throws IOException, InterruptedException {
 
                 Configuration cfg = getConfHDFS();
                 String dirname = (String) get(-5);
@@ -795,13 +801,13 @@ public class StartClusterParent {
                 log.log(Level.INFO, "DataNode connected with NameNode: {0}", serveraddr);
 
                 Thread.currentThread().join();
-    /*
+    
             } catch (IOException ioe) {
             } catch (InterruptedException ie) {
             }
 
-        }
-     */
+       }
+     
 
     }
 
@@ -844,33 +850,27 @@ public class StartClusterParent {
         } */
     }
 
-    /*
+    
     public class runWordCount implements Runnable {
 
         public void run() {
 
             try {
-    */
-
-    public void runWordCount() throws IOException, Exception {
 
                 log.info("Starting WordCount!");
 
                 WordCount wc = new WordCount();
 
-                String masteraddr = (String) get(-2);
-                String masterport = (String) get(-4);
-                wc.setCfg(masteraddr, masterport);
-
-                String[] argumentos = {(String) get(-23), (String) get(-24)};
-
+              //  String[] argumentos = {(String) get(-23), (String) get(-24), (String) get(-2), (String) get(-4)};
+                String[] argumentos = {"/input/","/output/","note","9001"};
                 wc.run(argumentos);
 
-           /*
             } catch (IOException ioe) {
+                log.info(ioe.toString());
             } catch (Exception e) {
+                log.info(e.toString());
             }
 
-        } */
+        }
     }
 }
