@@ -23,17 +23,15 @@ public class App {
 	private static String source;
 	private static String target;
 	private static ArrayList outputList = new ArrayList();
-        private static String mutClass;
 	
-	public void runMutation(String src, String targ, String mClass) throws FileNotFoundException, IOException {
+	public void runMutation(String src, String targ) throws FileNotFoundException, IOException {
 		
 		source = src;
 		target = targ;
-                mutClass = mClass;
 		
 		// Get class for mutation
-		//String[] tokens = source.split("/");
-		//String mutClass = tokens[tokens.length - 1];
+		String[] tokens = source.split("/");
+		String mutClass = tokens[tokens.length - 1];
 		
 		// Step 1
         // Generate prospects
@@ -78,14 +76,9 @@ public class App {
 	
 	public static void main(String[] args) {
 	
-                if (args.length < 3) {
-                    System.out.println("Please use arguments: <FileToMut> <MutDestination> <ClassName>");
-                    System.exit(0);
-                }
-
 		try {
 			App mutationApp = new App();
-	    	mutationApp.runMutation(args[0], args[1], args[2]);
+	    	mutationApp.runMutation(args[0], args[1]);
 	    	System.out.println("Mutations successfully generated!");
 		} catch (FileNotFoundException fnfe) {
 			System.out.println(fnfe.toString());
