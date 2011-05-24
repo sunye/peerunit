@@ -86,8 +86,8 @@ public class WordCount {
     job.setReducerClass(IntSumReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
-    FileInputFormat.addInputPath(job, new Path(args[0])); //m0
-    FileOutputFormat.setOutputPath(job, new Path(args[1])); //m1
-    System.exit(job.waitForCompletion(true) ? 0 : 1);
+    FileInputFormat.addInputPath(job, new Path(args[0])); //m2
+    FileOutputFormat.setOutputPath(job, new Path(args[1])); //m3
+    System.exit(job.waitForCompletion(true) ? 0 : 1); //m4
   }
 }
