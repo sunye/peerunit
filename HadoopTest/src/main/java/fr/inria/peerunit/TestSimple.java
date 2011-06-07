@@ -49,7 +49,5 @@ public class TestSimple extends AbstractMR {
         System.out.println("Count is: " + count);
         
     }
-
-
    
 }
