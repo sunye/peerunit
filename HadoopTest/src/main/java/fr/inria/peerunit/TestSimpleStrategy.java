@@ -74,9 +74,12 @@ public class TestSimpleStrategy implements CoordinationStrategy {
 
         for (int i=0;i<10;i++) {
             testers.execute("incrementCount");
+            testers.execute("increment2Count");
         }
 
-        testers.execute("lastStep");
+        testers.execute("lastStep1");
+        testers.execute("lastStep2");
+
     }
 
 }
