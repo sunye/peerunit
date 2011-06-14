@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  *
  * @author sunye
  */
-public class TestSimple extends AbstractMR {
+public class TestParallelActions extends AbstractMR {
 
     /**
      * Logger
@@ -36,34 +36,26 @@ public class TestSimple extends AbstractMR {
        
     }
 
-    @TestStep(range = "0", order = 3, timeout = 40000)
+    @TestStep(range = "*", order = 3, timeout = 40000)
     public void incrementCount() {
         
         count++;
 
     }
 
-    @TestStep(range = "1", order = 3, timeout = 40000)
+    @TestStep(range = "*", order = 3, timeout = 40000)
     public void increment2Count() {
 
         count2 = count2 + 2;
 
     }
 
-    @TestStep(range = "0", order = 4, timeout = 40000)
-    public void lastStep1() {
+    @TestStep(range = "1", order = 4, timeout = 40000)
+    public void lastStep() {
 
         System.out.println("Count is: " + count);
         System.out.println("Count2 is: " + count2);
         
-    }
-
-    @TestStep(range = "1", order = 4, timeout = 40000)
-    public void lastStep2() {
-
-        System.out.println("Count is: " + count);
-        System.out.println("Count2 is: " + count2);
-
     }
    
 }
