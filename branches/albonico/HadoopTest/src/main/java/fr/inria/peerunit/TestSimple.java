@@ -5,6 +5,7 @@
 package fr.inria.peerunit;
 
 import fr.inria.peerunit.parser.TestStep;
+import fr.inria.peerunit.tester.Assert;
 
 import java.rmi.registry.Registry;
 import java.util.logging.Logger;
@@ -29,7 +30,7 @@ public class TestSimple extends AbstractMR {
     private static int count = 0;
     private static int count2 = 0;
 
-    @TestStep(range = "*", order = 2, timeout = 40000)
+    @TestStep(range = "0", order = 2, timeout = 40000)
     public void firstStep() {
 
        System.out.println("Hello!!!");
@@ -43,27 +44,32 @@ public class TestSimple extends AbstractMR {
 
     }
 
-    @TestStep(range = "1", order = 3, timeout = 40000)
-    public void increment2Count() {
+    @TestStep(range = "0", order = 3, timeout = 40000)
+    public void increment2Count() throws InterruptedException {
 
-        count2 = count2 + 2;
+      //  Assert.fail();
+
+      int a = 2 / 0;
+
+    }
+    
+    @TestStep(range = "0", order = 4, timeout = 40000, depend = 3)
+    public void test() throws InterruptedException {
+
+      System.out.println("Test...");
 
     }
 
-    @TestStep(range = "0", order = 4, timeout = 40000)
-    public void lastStep1() {
+    @TestStep(range = "0", order = 5, timeout = 40000, depend = 2)
+    public void lastStep() throws InterruptedException {
 
+        //int i = 2 / 0;
+        //Assert.fail();
         System.out.println("Count is: " + count);
         System.out.println("Count2 is: " + count2);
-        
-    }
-
-    @TestStep(range = "1", order = 4, timeout = 40000)
-    public void lastStep2() {
-
-        System.out.println("Count is: " + count);
-        System.out.println("Count2 is: " + count2);
 
     }
+
    
 }
+    
