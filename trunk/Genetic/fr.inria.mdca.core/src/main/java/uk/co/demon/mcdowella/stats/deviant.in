@@ -1,0 +1,7 @@
+# Input for Deviant
+# Since this is read by a StreamTokenizer you can
+# put comments in here
+# Large offset to test robustness to floating point error
+1000001
+1000002
+1000003

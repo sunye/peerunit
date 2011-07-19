@@ -1,0 +1,125 @@
+package uk.co.demon.mcdowella.algorithms;
+
+import java.io.IOException;
+import java.io.Writer;
+
+/** This class allows you to string together objects that
+ *  can later be used to write out text or produce strings. In
+ *  the mean time they can be appended to quickly, and those
+ *  appends undone or accepted.
+ */
+public abstract class StringChunk implements StackedState
+{
+  private StringChunk next;
+  private StringChunk tail;
+  private Record appended;
+  /** Append this chunk and everything appended to it to a
+   *  stringBuffer
+   */
+  public void append(StringBuffer sb)
+  {
+    for (StringChunk sc = this; sc != null; sc = sc.next)
+    {
+      sc.appendChunk(sb);
+    }
+  }
+  /** Convert this chunk and everything appended to it to a
+   *  single string
+   */
+  public String toString()
+  {
+    StringBuffer sb = new StringBuffer();
+    append(sb);
+    return sb.toString();
+  }
+  /** Append only the string provided by this chunk */
+  public abstract void appendChunk(StringBuffer sb);
+  /** Write out this chunk and everything appended to it */
+  public void print(Writer w) throws IOException
+  {
+    for (StringChunk sc = this; sc != null; sc = sc.next)
+    {
+      sc.printChunk(w);
+    }
+  }
+  /** Write out only the string provided by this chunk */
+  public abstract void printChunk(Writer w) throws IOException;
+  /** Append another StringChunk to this */
+  public void appendChunk(StringChunk sc)
+  {
+    if (tail == null)
+    {
+      tail = next = sc;
+    }
+    else
+    {
+      tail.next = sc;
+      tail = sc;
+    }
+    if (tail.tail != null)
+    {
+      tail = tail.tail;
+    }
+  }
+  public void mark()
+  {
+    appended = new Record(appended, tail);
+  }
+  public void reject()
+  {
+    if (appended == null)
+    {
+      throw new IllegalStateException("No nested mark");
+    }
+    tail = appended.getChunk();
+    if (tail == null)
+    {
+      next = null;
+    }
+    else
+    {
+      tail.next = tail.tail = null;
+    }
+    appended = appended.getPrevious();
+  }
+  /** accept the result of the last nested mark */
+  public void accept()
+  {
+    appended = appended.getPrevious();
+  }
+  private static class Record
+  {
+    private Record previous;
+    Record getPrevious()
+    {
+      return previous;
+    }
+    private StringChunk appendedTo;
+    Record(Record p, StringChunk sc)
+    {
+      previous = p;
+      appendedTo = sc;
+    }
+    StringChunk getChunk()
+    {
+      return appendedTo;
+    }
+  }
+  /** A StringChunk that contains a string */
+  public static class StringCarrier extends StringChunk
+  {
+    private String contents;
+    public StringCarrier(String s)
+    {
+      contents = s;
+    }
+    public void appendChunk(StringBuffer sb)
+    {
+      sb.append(contents);
+    }
+    public void printChunk(Writer w) throws IOException
+    {
+      w.write(contents);
+    }
+  }
+}

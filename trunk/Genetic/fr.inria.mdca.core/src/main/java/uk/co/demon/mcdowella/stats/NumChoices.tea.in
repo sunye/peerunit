@@ -1,0 +1,44 @@
+# Look to see if Teapot is better overall, assuming tea brand
+# and amount act according to logistic model. So score 1 for teapot
+# better and 0 for infuser better, and enforce marginal total for
+# tea brand and amount. First column is 1 for teapot win, 0 for
+# infuser win. Next column is 1 for Twinings 0 for PG Tips. Next
+# column is 0 for flat 1 for heaped. Actual score was 16. We want
+# probability of getting 16 or more where probability of winning
+# is 50%, given that the marginals are correct. So set left column
+# to identically 1.
+16 11 4
+1 0 0
+1 1 0
+1 1 0
+1 0 1
+1 0 0
+1 0 1
+1 0 0
+1 1 0
+1 1 1
+1 0 0
+1 1 1
+1 1 1
+1 1 0
+1 0 0
+1 0 0
+1 0 1
+1 1 0
+1 1 0
+1 1 0
+1 0 1
+1 1 0
+1 1 0
+# The model under the null hypothesis is that the odds of the teapot
+# being better/not better value are exp(a.x) where a is a coefficient
+# vector of weights and x is the choice of tea quantity and type,
+# expressed as +/-1. Given an observation value y as +/-1 then the
+# odds of the observation are exp(y * a.x). So the odds of the
+# entire experiment are exp(SUM_i y_i * a.x_i) =
+# exp(a . SUM_i y_i * x_i). So this depends on the marginals only
+# through their totals. Even though we don't know the vector a we know
+# that any assignment of better/worse that wins the same number of
+# times under tea quantity 1 and the same number of times with tea type
+# 1 has the same probability, under the null hypothesis that we have
+# constant 0 - no bias from teapot.

@@ -1,0 +1,21 @@
+# First line is score achieved, then required marginals
+# Test case - marginals are # Corsham # Lacock # morning # evening
+0 4 4 4 4
+# Subsequent lines are contribution to score, then to marginals
+## Test case is 12 data points evenly split
+0 1 0 1 0 # Corsham morning
+0 1 0 1 0 # Corsham morning
+0 1 0 1 0 # Corsham morning
+0 1 0 1 0 # Corsham morning
+0 1 0 0 1 # Corsham evening
+0 1 0 0 1 # Corsham evening
+0 1 0 0 1 # Corsham evening
+0 1 0 0 1 # Corsham evening
+0 0 1 1 0 # Lacock morning
+1 0 1 1 0 # Lacock morning
+1 0 1 1 0 # Lacock morning
+1 0 1 1 0 # Lacock morning
+0 0 1 0 1 # Lacock evening
+0 0 1 0 1 # Lacock evening
+0 0 1 0 1 # Lacock evening
+0 0 1 0 1 # Lacock evening

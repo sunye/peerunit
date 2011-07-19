@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" name="bacteriologicFramework_2" size="1075,598" id="bacteriologicFramework" metadata="nsuml-1.4" initialized="true" scrolledY="156" tag="5" key="3230303530323238206C6F6164656467756E">
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.6/@sourceConnections.2" name="MutationFunction" location="9,273" size="153,67" id="bacteriologicFramework/MutationFunction" runTimeClassModel="run()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="47,18">
+      <children xsi:type="editmodel:MethodEditModel" name="run" id="bacteriologicFramework/MutationFunction#run()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.6/@sourceConnections.4" name="FitnessFunction" location="820,228" size="235,126" id="bacteriologicFramework/FitnessFunction" runTimeClassModel="run([LbacteriologicFramework.Bacterium;),updateSolutionSet(LbacteriologicFramework.BacteriologicAlgorithm;),relativeFitness(LbacteriologicFramework.Bacterium;),fitness([LbacteriologicFramework.Bacterium;),FitnessFunction(),fitnessCache">
+    <children xsi:type="editmodel:CompartmentEditModel" size="135,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="fitnessCache" id="bacteriologicFramework/FitnessFunction#fitnessCache"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="215,90">
+      <children xsi:type="editmodel:MethodEditModel" name="relativeFitness" id="bacteriologicFramework/FitnessFunction#relativeFitness(LbacteriologicFramework.Bacterium;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="fitness" id="bacteriologicFramework/FitnessFunction#fitness([LbacteriologicFramework.Bacterium;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="run" id="bacteriologicFramework/FitnessFunction#run([LbacteriologicFramework.Bacterium;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="updateSolutionSet" id="bacteriologicFramework/FitnessFunction#updateSolutionSet(LbacteriologicFramework.BacteriologicAlgorithm;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.6/@sourceConnections.0" name="FilteringFunction" location="10,395" size="151,67" id="bacteriologicFramework/FilteringFunction" runTimeClassModel="run()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="47,18">
+      <children xsi:type="editmodel:MethodEditModel" name="run" id="bacteriologicFramework/FilteringFunction#run()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.6/@sourceConnections.3" name="MemorizationFunction" location="392,500" size="166,78" id="bacteriologicFramework/MemorizationFunction" runTimeClassModel="run([LbacteriologicFramework.Bacterium;),memorizationThreshold,MemorizationFunction(F)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="158,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="memorizationThreshold" id="bacteriologicFramework/MemorizationFunction#memorizationThreshold"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="135,36">
+      <children xsi:type="editmodel:MethodEditModel" name="run" id="bacteriologicFramework/MemorizationFunction#run([LbacteriologicFramework.Bacterium;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" showMethodsParameterTypes="true" showMethodsReturnType="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.6/@sourceConnections.6 //@children.6/@sourceConnections.5" name="Bacterium" location="385,35" size="181,39" id="bacteriologicFramework/Bacterium" runTimeClassModel="">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.6/@sourceConnections.1" name="StoppingCriterion" location="8,160" size="155,67" id="bacteriologicFramework/StoppingCriterion" runTimeClassModel="run()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="47,18">
+      <children xsi:type="editmodel:MethodEditModel" name="run" id="bacteriologicFramework/StoppingCriterion#run()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="BacteriologicAlgorithm" location="400,178" size="189,256" id="bacteriologicFramework/BacteriologicAlgorithm" runTimeClassModel="mutate(),filter(),BacteriologicAlgorithm(Ljava.util.ArrayList;LbacteriologicFramework.FitnessFunction;LbacteriologicFramework.MemorizationFunction;LbacteriologicFramework.MutationFunction;LbacteriologicFramework.FilteringFunction;LbacteriologicFramework.StoppingCriterion;),computeOneGeneration(),computeFitness(),memorize(),run()">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="145,126">
+      <children xsi:type="editmodel:MethodEditModel" name="BacteriologicAlgorithm" id="bacteriologicFramework/BacteriologicAlgorithm#BacteriologicAlgorithm(Ljava.util.ArrayList;LbacteriologicFramework.FitnessFunction;LbacteriologicFramework.MemorizationFunction;LbacteriologicFramework.MutationFunction;LbacteriologicFramework.FilteringFunction;LbacteriologicFramework.StoppingCriterion;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="computeFitness" id="bacteriologicFramework/BacteriologicAlgorithm#computeFitness()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="computeOneGeneration" id="bacteriologicFramework/BacteriologicAlgorithm#computeOneGeneration()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="filter" id="bacteriologicFramework/BacteriologicAlgorithm#filter()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="memorize" id="bacteriologicFramework/BacteriologicAlgorithm#memorize()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="mutate" id="bacteriologicFramework/BacteriologicAlgorithm#mutate()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="run" id="bacteriologicFramework/BacteriologicAlgorithm#run()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/FilteringFunction@filteringFunction" source="//@children.6" target="//@children.2" targetEnd="//@children.6/@sourceConnections.0/@children.2" label="//@children.6/@sourceConnections.0/@children.0" sourceEnd="//@children.6/@sourceConnections.0/@children.1" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:WireLabelEditModel" size="1,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="bacteriologicAlgorithm" location="0,236" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/FilteringFunction@filteringFunction|bacteriologicFramework/BacteriologicAlgorithm#bacteriologicAlgorithm" attachSource="true" multiplicityLabel="//@children.6/@sourceConnections.0/@children.1/@children.1" roleLabel="//@children.6/@sourceConnections.0/@children.1/@children.0" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" - bacteriologicAlgorithm" location="276,393" size="117,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="386,421" size="7,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="filteringFunction" location="151,19" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/FilteringFunction@filteringFunction|bacteriologicFramework/FilteringFunction#filteringFunction" multiplicityLabel="//@children.6/@sourceConnections.0/@children.2/@children.1" roleLabel="//@children.6/@sourceConnections.0/@children.2/@children.0" aggregationKind="Composition" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" + filteringFunction" location="168,393" size="89,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="168,421" size="7,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/StoppingCriterion@stoppingCriterion" source="//@children.6" target="//@children.5" targetEnd="//@children.6/@sourceConnections.1/@children.2" label="//@children.6/@sourceConnections.1/@children.0" sourceEnd="//@children.6/@sourceConnections.1/@children.1" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:WireLabelEditModel" size="1,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="bacteriologicAlgorithm" location="0,24" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/StoppingCriterion@stoppingCriterion|bacteriologicFramework/BacteriologicAlgorithm#bacteriologicAlgorithm" attachSource="true" multiplicityLabel="//@children.6/@sourceConnections.1/@children.1/@children.1" roleLabel="//@children.6/@sourceConnections.1/@children.1/@children.0" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" - bacteriologicAlgorithm" location="276,181" size="117,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="386,209" size="7,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="stoppingCriterion" location="155,42" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/StoppingCriterion@stoppingCriterion|bacteriologicFramework/StoppingCriterion#stoppingCriterion" multiplicityLabel="//@children.6/@sourceConnections.1/@children.2/@children.1" roleLabel="//@children.6/@sourceConnections.1/@children.2/@children.0" aggregationKind="Composition" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" + stoppingCriterion" location="170,181" size="94,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="170,209" size="7,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="bacteriologicFramework/MutationFunction@mutationFunction+bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm" source="//@children.6" target="//@children.0" targetEnd="//@children.6/@sourceConnections.2/@children.2" label="//@children.6/@sourceConnections.2/@children.0" sourceEnd="//@children.6/@sourceConnections.2/@children.1" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:WireLabelEditModel" size="1,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="bacteriologicAlgorithm" location="0,128" id="bacteriologicFramework/MutationFunction@mutationFunction+bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm|bacteriologicFramework/BacteriologicAlgorithm#bacteriologicAlgorithm" attachSource="true" multiplicityLabel="//@children.6/@sourceConnections.2/@children.1/@children.1" roleLabel="//@children.6/@sourceConnections.2/@children.1/@children.0" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" + bacteriologicAlgorithm" location="274,285" size="119,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="386,313" size="7,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="mutationFunction" location="153,33" id="bacteriologicFramework/MutationFunction@mutationFunction+bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm|bacteriologicFramework/MutationFunction#mutationFunction" multiplicityLabel="//@children.6/@sourceConnections.2/@children.2/@children.1" roleLabel="//@children.6/@sourceConnections.2/@children.2/@children.0" aggregationKind="Composition" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" - mutationFunction" location="169,285" size="92,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="169,313" size="7,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/MemorizationFunction@memorizationFunction" source="//@children.6" target="//@children.3" targetEnd="//@children.6/@sourceConnections.3/@children.2" label="//@children.6/@sourceConnections.3/@children.0" sourceEnd="//@children.6/@sourceConnections.3/@children.1" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:WireLabelEditModel" size="1,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="bacteriologicAlgorithm" location="78,256" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/MemorizationFunction@memorizationFunction|bacteriologicFramework/BacteriologicAlgorithm#bacteriologicAlgorithm" attachSource="true" multiplicityLabel="//@children.6/@sourceConnections.3/@children.1/@children.1" roleLabel="//@children.6/@sourceConnections.3/@children.1/@children.0" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" - bacteriologicAlgorithm" location="485,441" size="117,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="464,441" size="7,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="memorizationFunction" location="86,0" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/MemorizationFunction@memorizationFunction|bacteriologicFramework/MemorizationFunction#memorizationFunction" multiplicityLabel="//@children.6/@sourceConnections.3/@children.2/@children.1" roleLabel="//@children.6/@sourceConnections.3/@children.2/@children.0" aggregationKind="Composition" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" + memorizationFunction" location="485,479" size="117,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="464,479" size="7,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" autoLocated="true" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/FitnessFunction@fitnessFunction" source="//@children.6" target="//@children.1" targetEnd="//@children.6/@sourceConnections.4/@children.2" label="//@children.6/@sourceConnections.4/@children.0" sourceEnd="//@children.6/@sourceConnections.4/@children.1" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:WireLabelEditModel" size="1,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="bacteriologicAlgorithm" location="189,112" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/FitnessFunction@fitnessFunction|bacteriologicFramework/BacteriologicAlgorithm#bacteriologicAlgorithm" attachSource="true" multiplicityLabel="//@children.6/@sourceConnections.4/@children.1/@children.1" roleLabel="//@children.6/@sourceConnections.4/@children.1/@children.0" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" - bacteriologicAlgorithm" location="596,269" size="117,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="596,297" size="7,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="fitnessFunction" location="0,62" id="bacteriologicFramework/BacteriologicAlgorithm@bacteriologicAlgorithm+bacteriologicFramework/FitnessFunction@fitnessFunction|bacteriologicFramework/FitnessFunction#fitnessFunction" multiplicityLabel="//@children.6/@sourceConnections.4/@children.2/@children.1" roleLabel="//@children.6/@sourceConnections.4/@children.2/@children.0" aggregationKind="Composition" navigable="true">
+        <children xsi:type="editmodel:LabelEditModel" name=" + fitnessFunction" location="726,269" size="87,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="1" location="806,297" size="7,14" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="bacteriologicFramework/Bacterium@bacteriologicMedium+bacteriologicFramework/BacteriologicAlgorithm@" source="//@children.6" target="//@children.4" targetEnd="//@children.6/@sourceConnections.5/@children.2" label="//@children.6/@sourceConnections.5/@children.0" sourceEnd="//@children.6/@sourceConnections.5/@children.1" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:WireLabelEditModel" size="1,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="143,0" id="bacteriologicFramework/Bacterium@bacteriologicMedium+bacteriologicFramework/BacteriologicAlgorithm@|bacteriologicFramework/BacteriologicAlgorithm#" attachSource="true" roleLabel="//@children.6/@sourceConnections.5/@children.1/@children.0">
+        <children xsi:type="editmodel:LabelEditModel" location="550,157" size="1,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="bacteriologicMedium" location="158,39" id="bacteriologicFramework/Bacterium@bacteriologicMedium+bacteriologicFramework/BacteriologicAlgorithm@|bacteriologicFramework/Bacterium#bacteriologicMedium" multiplicityLabel="//@children.6/@sourceConnections.5/@children.2/@children.1" roleLabel="//@children.6/@sourceConnections.5/@children.2/@children.0" aggregationKind="Aggregration" navigable="true" orderingKind="1">
+        <children xsi:type="editmodel:LabelEditModel" name=" - bacteriologicMedium" location="551,80" size="108,14" fontInfo="Arial-8-0" automaticRelocationAllowed="false" locationOnWireFromSource="39.0" distanceFromWire="-62.00000000000001" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="*" location="526,80" size="5,14" fontInfo="Arial-8-0" automaticRelocationAllowed="false" locationOnWireFromSource="39.0" distanceFromWire="15.0" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="bacteriologicFramework/Bacterium@solutionSet+bacteriologicFramework/BacteriologicAlgorithm@" source="//@children.6" target="//@children.4" targetEnd="//@children.6/@sourceConnections.6/@children.2" label="//@children.6/@sourceConnections.6/@children.0" sourceEnd="//@children.6/@sourceConnections.6/@children.1" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:WireLabelEditModel" size="1,14" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="18,0" id="bacteriologicFramework/Bacterium@solutionSet+bacteriologicFramework/BacteriologicAlgorithm@|bacteriologicFramework/BacteriologicAlgorithm#" attachSource="true" roleLabel="//@children.6/@sourceConnections.6/@children.1/@children.0">
+        <children xsi:type="editmodel:LabelEditModel" location="425,157" size="1,14" fontInfo="Arial-8-0" anchorKind="FirstPart"/>
+      </children>
+      <children xsi:type="editmodel:AssociationEndEditModel" name="solutionSet" location="33,38" id="bacteriologicFramework/Bacterium@solutionSet+bacteriologicFramework/BacteriologicAlgorithm@|bacteriologicFramework/Bacterium#solutionSet" multiplicityLabel="//@children.6/@sourceConnections.6/@children.2/@children.1" roleLabel="//@children.6/@sourceConnections.6/@children.2/@children.0" aggregationKind="Aggregration" navigable="true" orderingKind="1">
+        <children xsi:type="editmodel:LabelEditModel" name=" - solutionSet" location="350,80" size="64,14" fontInfo="Arial-8-0" automaticRelocationAllowed="false" locationOnWireFromSource="39.0" distanceFromWire="35.00000000000001" anchorKind="LastPart"/>
+        <children xsi:type="editmodel:LabelEditModel" name="*" location="436,80" size="5,14" fontInfo="Arial-8-0" automaticRelocationAllowed="false" locationOnWireFromSource="39.0" distanceFromWire="-20.000000000000007" anchorKind="LastPart"/>
+      </children>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showAttributeProperty="true"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" properties="wireOptions=0" autoName="false"/>
+  <boardSetting snapToGeometry="true" gridEnabled="true" gridSpacing="10,10" gridOrigin="0,0" rulerUnit="pixel">
+    <leftRuler/>
+    <topRuler/>
+  </boardSetting>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" showMethodsParameterTypes="true" attributeSorter="Natural" methodSorter="Natural" showClassStereotype="true" showPackageStereotype="true" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showInterfaceStereotype="true" showAttributeProperty="true"/>
+</editmodel:ClassDiagramEditModel>
