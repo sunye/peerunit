@@ -1,0 +1,41 @@
+# Reading season 2007-2008. 0 = loss 0.5 = draw 1 = win
+# all weights are 1. x values are match number
+
+1 1 0.5 # Man United away 11 August
+1 2 0.0 # Chelsea home 14 August
+1 3 1.0 # Everton home 18 August
+1 4 0.0 # Bolton away 25 August
+1 5 0.0 # West Ham home 1 September
+1 6 0.0 # Sunderland away 15 September
+1 7 1.0 # Wigan home 22 September
+1 8 0.0 # Portsmouth away 29 September
+1 9 1.0 # Derby home 6 October
+1 10 0.0 # Blackburn away 20 October
+1 11 1.0 # Newcastle home 27 October
+1 12 0.0 # Fulham away 3 November
+1 13 0.0 # Arsenal home 10 November
+1 14 0.0 # Man City away 24 November
+1 15 0.5 # Middlesborough home 1 December
+1 16 1.0 # Liverpool home 8 December
+1 17 0.5 # Birmingham away 15 December
+1 18 1.0 # Sunderland home 22 December
+1 19 0.5 # West Ham away 26 December
+1 20 0.0 # Tottenham away 29 December
+1 21 0.0 # Portsmouth home 1 January
+1 22 0.0 # Aston Villa away 12 January
+1 23 0.0 # Man United home 19 January
+1 24 0.0 # Chelsea away 30 January
+1 25 0.0 # Bolton home 2 Feburary
+1 26 0.0 # Everton away 9 Feburary
+1 27 0.0 # Aston Villa home 23 February
+1 28 1.0 # Middlesborough away 1 March
+1 29 1.0 # Man City home 8 March
+1 30 0.0 # Liverpool away 15 March
+1 31 1.0 # Birmingham home 22 March
+1 32 0.5 # Blackburn home 29 March
+1 33 0.0 # Newcastle away 5 April
+1 34 0.0 # Fulham home 12 April
+1 35 0.0 # Arsenal home 19 April
+1 36 0.5 # Wigan away 26 April
+1 37 0.0 # Tottenham Hotspur home 3 May
+1 38 1.0 # Derby away 11 May

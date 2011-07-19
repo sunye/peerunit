@@ -1,0 +1,13 @@
+# Tricky simplex case stumbled upon when using for set cover
+# Objective
+1.0 1.0 1.0 1.0 0.0 0.0 0.0 8.0
+# Variables included in starting position
+# (leads to answer with only rightmost variable set, cost 8, and
+#  infinitely long path considering minor variations)
+1.0 1.0 0.0 0.0 0.0 0.0 0.0 1.0
+# (Leads to a claimed solution at x0 = x1 = x2 = 0.5 cost 1.5)
+# 1.0 1.0 0.0 0.0 1.0 0.0 0.0 0.0
+# Equations with RHS on far right
+1.0 1.0 0.0 0.0 -1.0 0.0 0.0 1.0 1.0
+1.0 0.0 1.0 0.0 0.0 -1.0 0.0 1.0 1.0
+0.0 1.0 1.0 0.0 0.0 0.0 -1.0 1.0 1.0

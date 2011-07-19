@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/fr.inria.mdca.model/src"
+    modelPluginID="fr.inria.mdca.model" modelName="Mdca" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="6.0" copyrightFields="false">
+  <foreignModel>mdca.ecore</foreignModel>
+  <genPackages prefix="Mdca" basePackage="fr.inria" disposableProviderFactory="true"
+      ecorePackage="mdca.ecore#/">
+    <genClasses ecoreClass="mdca.ecore#//NamedElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdca.ecore#//NamedElement/name"/>
+    </genClasses>
+    <genClasses ecoreClass="mdca.ecore#//Variable">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdca.ecore#//Variable/upperbound"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mdca.ecore#//Variable/values"/>
+    </genClasses>
+    <genClasses ecoreClass="mdca.ecore#//ElementModel">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference mdca.ecore#//ElementModel/variables"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

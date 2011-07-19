@@ -1,0 +1,24 @@
+AA
+first
+AA
+second
+AA
+third
+AA
+fourth
+BB
+b was here
+CC
+c was here
+DD
+d was here
+EE
+e was here
+*EOF*
+%:release(%:repeat(This is the %$AA% repeat of the original template %
+%:release(%$template%%)%)%)
+%:try(%:release(%$BB% %$CC% %$DD%%)%) %< No error if BB CC DD not there >%
+%:release(%$BB% %$CC% %$DD%%)
+%$BB% %$CC% %$DD%%
+%:try(We see this because this expands: %$EE%%)
+%:try(But not this because the expand fails: %$EE%%)
