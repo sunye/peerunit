@@ -6,6 +6,20 @@ package fr.inria.peerunit;
  */
 
 // Hadoop classes
+import com.sun.jdi.Field;
+import com.sun.jdi.ReferenceType;
+import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.event.ClassPrepareEvent;
+import com.sun.jdi.event.Event;
+import com.sun.jdi.event.EventQueue;
+import com.sun.jdi.event.EventSet;
+import com.sun.jdi.event.ModificationWatchpointEvent;
+import com.sun.jdi.event.VMDeathEvent;
+import com.sun.jdi.event.VMDisconnectEvent;
+import com.sun.jdi.request.ClassPrepareRequest;
+import com.sun.jdi.request.EventRequestManager;
+import com.sun.jdi.request.ModificationWatchpointRequest;
+
 import java.util.logging.Level;
 import org.apache.hadoop.mapred.JobTracker;
 import org.apache.hadoop.mapred.JobConf;
@@ -47,6 +61,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class AbstractMR {
 
@@ -77,6 +92,10 @@ public class AbstractMR {
     protected static startDataNode dnode;
     protected static ArrayList mutationOutputList;
     protected static Thread rwcThread;
+
+    // Lower Tester vars
+    protected static String CLASS_NAME;
+    protected static String FIELD_NAME;
 
     @SetId
     public void setId(int i) {
@@ -196,6 +215,10 @@ public class AbstractMR {
         String jobClass = properties.getProperty("job.class");
         String jobParameters = properties.getProperty("job.parameters");
 
+        String ltPort = properties.getProperty("lower.tester.port");
+        String ltClass = properties.getProperty("lower.tester.class");
+        String ltField = properties.getProperty("lower.tester.field");
+
         this.put(-5, dfsname);
         this.put(-6, dfsdata);
         this.put(-7, hadooptmp);
@@ -222,6 +245,11 @@ public class AbstractMR {
         this.put(-24, outputdir);
         this.put(-25, wfile);
         this.put(-26, wcsleep);
+
+        //JPDA - Lower Tester
+        this.put(-30, ltPort);
+        this.put(-31, ltClass);
+        this.put(-32, ltField);
 
 
     }
@@ -445,13 +473,109 @@ public class AbstractMR {
         }
     }
 
-    public void sendJob() throws InterruptedException, RemoteException {
+    /*
+     * Loading the Lower Tester
+     */
+    public void lowerTester() throws InterruptedException, RemoteException, IOException {
 
-        runSendJob sjob = new runSendJob();
-        Thread sjThread = new Thread(sjob);
-        sjThread.start();
+	readPropertiesHadoop();
 
+	log.info("Starting lower tester...");
+
+         // Connect
+        String ltPort = (String) this.get(-30);
+
+        VMAcquirer vma = new VMAcquirer();
+
+	log.info("Trying to connect at remote JPDA server on port " + ltPort);
+        vma.connect(Integer.parseInt(ltPort));
+	log.info("Debugger connected!");
+
+        // Select class to monitor
+        CLASS_NAME = (String) this.get(-31);
+        FIELD_NAME = (String) this.get(-32);
+
+	log.info("Class: " + CLASS_NAME + " e Field: " + FIELD_NAME);
+
+        VirtualMachine vm = vma.getVM();
+        log.info("aaaa" + vm.name()); 
+        List<ReferenceType> referenceTypes = vm.classesByName(CLASS_NAME);
+
+        // Select fields
+        for (ReferenceType refType : referenceTypes) {
+          addFieldWatch(vm, refType);
+        }
+
+        // watch for loaded classes
+        addClassWatch(vm);
+
+        log.info("Class " + CLASS_NAME + " has been watching!");
+
+        // resume the vm
+        vm.resume();
+
+         // process events
+        EventQueue eventQueue = vm.eventQueue();
+        while (true) {
+          EventSet eventSet = eventQueue.remove();
+          for (Event event : eventSet) {
+            if (event instanceof VMDeathEvent || event instanceof VMDisconnectEvent) {
+              // exit
+              return;
+            } else if (event instanceof ClassPrepareEvent) {
+              // watch field on loaded class
+              ClassPrepareEvent classPrepEvent = (ClassPrepareEvent) event;
+              ReferenceType refType = classPrepEvent.referenceType();
+              addFieldWatch(vm, refType);
+            } else if (event instanceof ModificationWatchpointEvent) {
+              // a Test.foo has changed
+              ModificationWatchpointEvent modEvent = (ModificationWatchpointEvent) event;
+              System.out.println("old=" + modEvent.valueCurrent());
+              System.out.println("new=" + modEvent.valueToBe());
+              System.out.println();
+              String num = modEvent.valueToBe().toString();
+
+              System.out.println("hahahahahaha");
+
+              int comp = Integer.valueOf(num);
+
+              if (comp == 10) {
+                    System.out.println("Suspendendo a execução!");
+                    vm.suspend();
+              }
+            }
+          }
+          eventSet.resume();
+        }
+        
     }
+
+    private static void addClassWatch(VirtualMachine vm) {
+        EventRequestManager erm = vm.eventRequestManager();
+        ClassPrepareRequest classPrepareRequest = erm.createClassPrepareRequest();
+        classPrepareRequest.addClassFilter(CLASS_NAME);
+        classPrepareRequest.setEnabled(true);
+    }
+
+    private static void addFieldWatch(VirtualMachine vm,
+        ReferenceType refType) {
+        EventRequestManager erm = vm.eventRequestManager();
+        Field field = refType.fieldByName(FIELD_NAME);
+        ModificationWatchpointRequest modificationWatchpointRequest = erm.createModificationWatchpointRequest(field);
+        modificationWatchpointRequest.setEnabled(true);
+   }
+
+  /*
+   *  Fim Lower Tester
+   */
+
+  public void sendJob() throws InterruptedException, RemoteException {
+
+    runSendJob sjob = new runSendJob();
+    Thread sjThread = new Thread(sjob);
+    sjThread.start();
+
+  }
 
     public class runSendJob implements Runnable {
 

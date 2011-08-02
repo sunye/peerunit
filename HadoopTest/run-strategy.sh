@@ -7,3 +7,6 @@ $java -classpath ./target/HadoopTest-1.0-SNAPSHOT-jar-with-dependencies.jar fr.i
 $java -classpath ./target/HadoopTest-1.0-SNAPSHOT-jar-with-dependencies.jar fr.inria.peerunit.TestRunner fr.inria.peerunit.TestSimple &
 
 $java -classpath ./target/HadoopTest-1.0-SNAPSHOT-jar-with-dependencies.jar fr.inria.peerunit.TestRunner fr.inria.peerunit.TestSimple &
+#echo "Running remote command on $1"
+
+#ssh $1 "cd ~/HadoopTest/ && ./run-local-tester.sh"

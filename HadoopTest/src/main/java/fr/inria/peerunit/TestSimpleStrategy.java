@@ -70,14 +70,19 @@ public class TestSimpleStrategy implements CoordinationStrategy {
 
         LOG.entering("TestSimpleStrategy", "testCaseExecution()");
 
+        int order = 2;
+
+//        testers.execute(order);
+
         testers.execute("firstStep");
 
-        for (int i=0;i<10;i++) {
-            testers.execute("incrementCount");
-            testers.execute("increment2Count");
-        }
-
+        Thread.sleep(500);
+        testers.execute("incrementCount");
+        Thread.sleep(500);
+        testers.execute("increment2Count");
+     
         testers.execute("lastStep");
+        
     }
 
 }

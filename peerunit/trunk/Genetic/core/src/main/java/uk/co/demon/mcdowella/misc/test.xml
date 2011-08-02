@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!DOCTYPE test SYSTEM "test.dtd">
+<test at="b" at2="c">
+<a></a><b><c hello="world"/>
+</b>
+</test>

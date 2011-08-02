@@ -1,0 +1,27 @@
+# See NumChoices.tea.in for rationale. This is to test teaType
+# subject to quantity and method. So first column is constant 1
+# second column is quantity used with Twinings and third column
+# is whether teapot used with Twinings
+16 5 11
+1 1 0
+1 0 1
+1 0 1
+1 0 0 
+1 1 0
+1 0 0
+1 1 0
+1 0 1
+1 1 1
+1 1 0
+1 1 1
+1 1 1 
+1 0 1
+1 1 0
+1 1 0
+1 0 0
+1 0 1
+1 0 1
+1 0 1
+1 0 0 
+1 0 1
+1 0 1

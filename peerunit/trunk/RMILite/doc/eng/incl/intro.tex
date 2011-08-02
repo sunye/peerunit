@@ -1,0 +1,22 @@
+\chapter{Introduction}
+
+\section{Objectives}
+
+RMILite is an API entirely written in pure Java. RMILite do not replace RMI, you can write your code using RMILite and then, make your application use RMI or our specific protocol depending of what is possible. It is similar to standard RMI available in the standard JDK but has a limited however sufficient features (think RMI Light). This implementation don't require any external compilation tool (like rmic) : stubs are generated on-the-fly. Sockets are used to permit distant communication.\\
+\\
+By using RMILite, you can make distant call. The distant call, depending how you use configure RMILite, will be made using RMI, our new protocol based on socket programming implemented by IO or this same protocol, implemented with New IO (better performance).
+
+\section{Conventions}
+We consider that a distant call is a method call on a distant object (an instance on a different VM), this call may have arguments.
+\medskip
+Every interface may be implemented by different classes : those classes have their name following this pattern : nameOfTheInterface followed by the technology used ("\_RMI", "\_IO" ...).
+
+\section{Target audience}
+This document will help users and future developers of RMILite.
+
+\section{Scope of document}
+This file is intended to supplement the information already provided in the code.
+
+\section{Organization of this document}
+Fist, you will learn how to use the different available modes. Secondly, we will see the global architecture of the project and the interactions between the different classes. Finally, we will see how the proposed implementation can be extended or improved.
+
