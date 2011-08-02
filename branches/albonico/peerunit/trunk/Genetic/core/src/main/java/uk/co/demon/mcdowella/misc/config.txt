@@ -1,8 +1,0 @@
-Digit44 1.0 4 4 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-Caps55 1.0 4 4 A B C D E F G H I J K L M N O P Q R S T U V W X Y
-Digit55 1.0 5 5 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-Letter44 1.0 4 4 a b c d e f g h i j k l m n o p
-Word44 0.5 4 4 am an as at be by do go he if in is it no of on
-Pair55 0.5 5 5 00 01 02 03 04 10 11 12 13 14 20 21 22 23 24 30 31 32 33 34 40 41 42 43 44
-Letter55 0.5 5 5 a b c d e f g h i j k l m n o p q r s t u v w x y
-punct44 0.5 4 4 ! " £ $ % ^ & * ( ) _ + { } @ #
