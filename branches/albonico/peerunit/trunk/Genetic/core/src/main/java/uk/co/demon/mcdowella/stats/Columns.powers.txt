@@ -1,0 +1,29 @@
+# Find out which binoculars see the most birds. In order they are
+# B&L Discoverer 7x42
+# Nikon E2 8x30
+# Swift Audubon 820ED 8.5x44
+# Optolyth Alpin 10x40
+# First row is from Devizes
+# 28 May 10 July 3 July 12 June
+19 16 13 12
+# Coate Water
+# 9 July 6 Aug 16 July 20 July
+16 18 19 20
+# Devizes
+# 31 July 17 July 7 August 14 August
+15 17 13 13
+# Towards Lacock
+# 13 August 25 August 24 August 23 August
+16 19 10 13
+# Corsham
+# 27 August 26 August 3 Sep 31 August
+14 12 17 20
+# Devizes
+# 29 August 25 September 2 October 17 September
+15 11 13 14
+# Slimbridge
+# 8 October 15 October 1 October 10 September
+27 25 22 20
+# Devizes
+# 30 October 29 October 12 November 5 November
+# 11 13 16 13

@@ -1,0 +1,319 @@
+JAVA PROFILE 1.0.1, created Sat Dec 06 07:09:25 2008
+
+Header for -agentlib:hprof (or -Xrunhprof) ASCII Output (J2SE 1.5 JVMTI based)
+
+@(#)jvm.hprof.txt	1.3 04/02/09
+
+ Copyright (c) 2004 Sun Microsystems, Inc. All  Rights Reserved.
+
+WARNING!  This file format is under development, and is subject to
+change without notice.
+
+This file contains the following types of records:
+
+THREAD START
+THREAD END      mark the lifetime of Java threads
+
+TRACE           represents a Java stack trace.  Each trace consists
+                of a series of stack frames.  Other records refer to
+                TRACEs to identify (1) where object allocations have
+                taken place, (2) the frames in which GC roots were
+                found, and (3) frequently executed methods.
+
+HEAP DUMP       is a complete snapshot of all live objects in the Java
+                heap.  Following distinctions are made:
+
+                ROOT    root set as determined by GC
+                CLS     classes 
+                OBJ     instances
+                ARR     arrays
+
+SITES           is a sorted list of allocation sites.  This identifies
+                the most heavily allocated object types, and the TRACE
+                at which those allocations occurred.
+
+CPU SAMPLES     is a statistical profile of program execution.  The VM
+                periodically samples all running threads, and assigns
+                a quantum to active TRACEs in those threads.  Entries
+                in this record are TRACEs ranked by the percentage of
+                total quanta they consumed; top-ranked TRACEs are
+                typically hot spots in the program.
+
+CPU TIME        is a profile of program execution obtained by measuring
+                the time spent in individual methods (excluding the time
+                spent in callees), as well as by counting the number of
+                times each method is called. Entries in this record are
+                TRACEs ranked by the percentage of total CPU time. The
+                "count" field indicates the number of times each TRACE 
+                is invoked.
+
+MONITOR TIME    is a profile of monitor contention obtained by measuring
+                the time spent by a thread waiting to enter a monitor.
+                Entries in this record are TRACEs ranked by the percentage
+                of total monitor contention time and a brief description
+                of the monitor.  The "count" field indicates the number of 
+                times the monitor was contended at that TRACE.
+
+MONITOR DUMP    is a complete snapshot of all the monitors and threads in 
+                the System.
+
+HEAP DUMP, SITES, CPU SAMPLES|TIME and MONITOR DUMP|TIME records are generated 
+at program exit.  They can also be obtained during program execution by typing 
+Ctrl-\ (on Solaris) or by typing Ctrl-Break (on Win32).
+
+--------
+
+THREAD START (obj=50000113, id = 200003, name="Signal Dispatcher", group="system")
+THREAD START (obj=50000113, id = 200000, name="main", group="main")
+THREAD END (id = 200000)
+THREAD START (obj=50000113, id = 200005, name="DestroyJavaVM", group="main")
+THREAD END (id = 200005)
+THREAD END (id = 200001)
+TRACE 300045:
+	uk.co.demon.mcdowella.stats.LU.solve(LU.java:193)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:176)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300044:
+	uk.co.demon.mcdowella.stats.LU.solve(LU.java:207)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:176)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300088:
+	uk.co.demon.mcdowella.stats.LU.<init>(LU.java:51)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:135)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300046:
+	uk.co.demon.mcdowella.stats.LU.<init>(LU.java:112)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:135)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300097:
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:426)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+TRACE 300099:
+	uk.co.demon.mcdowella.algorithms.MatWrapper.dot(MatWrapper.java:29)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:311)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300107:
+	uk.co.demon.mcdowella.algorithms.MatWrapper.dot(MatWrapper.java:29)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:485)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300092:
+	uk.co.demon.mcdowella.stats.LU.solve(LU.java:214)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:176)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300102:
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:127)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+TRACE 300047:
+	uk.co.demon.mcdowella.algorithms.MatWrapper.dot(MatWrapper.java:29)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:214)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300114:
+	uk.co.demon.mcdowella.algorithms.MatWrapper.dot(MatWrapper.java:17)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:214)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300116:
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:115)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+TRACE 300098:
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:178)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+TRACE 300090:
+	uk.co.demon.mcdowella.algorithms.MatWrapper.dot(MatWrapper.java:17)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:485)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300089:
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:226)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+TRACE 300104:
+	uk.co.demon.mcdowella.stats.LU.solve(LU.java:188)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:176)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300093:
+	uk.co.demon.mcdowella.algorithms.MatWrapper.dot(MatWrapper.java:17)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:247)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300094:
+	java.lang.Object.clone(<Unknown Source>:Unknown line)
+	uk.co.demon.mcdowella.algorithms.Simplex.<init>(Simplex.java:72)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:636)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+TRACE 300110:
+	uk.co.demon.mcdowella.stats.LU.solve(LU.java:213)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:176)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300115:
+	uk.co.demon.mcdowella.stats.LU.<init>(LU.java:89)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:135)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300091:
+	uk.co.demon.mcdowella.algorithms.MatWrapper.dot(MatWrapper.java:17)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:311)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300113:
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:146)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+TRACE 300100:
+	uk.co.demon.mcdowella.stats.LU.solve(LU.java:185)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:142)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300007:
+	sun.misc.URLClassPath$3.run(<Unknown Source>:Unknown line)
+	java.security.AccessController.doPrivileged(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getLoader(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getLoader(<Unknown Source>:Unknown line)
+TRACE 300096:
+	uk.co.demon.mcdowella.algorithms.MaxInRange.getMaxIndex(MaxInRange.java:185)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:425)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:450)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:450)
+TRACE 300095:
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:482)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:450)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:450)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:450)
+TRACE 300112:
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:556)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:450)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:450)
+TRACE 300103:
+	uk.co.demon.mcdowella.stats.LU.solve(LU.java:203)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:176)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300105:
+	java.util.HashMap.get(<Unknown Source>:Unknown line)
+	uk.co.demon.mcdowella.algorithms.SetCover$2.callback(SetCover.java:569)
+	uk.co.demon.mcdowella.algorithms.InOutSet.callMe(InOutSet.java:121)
+	uk.co.demon.mcdowella.algorithms.SetCover$Possibility.callFromCover(SetCover.java:151)
+TRACE 300106:
+	uk.co.demon.mcdowella.stats.LU.<init>(LU.java:25)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:135)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300111:
+	java.io.FileOutputStream.writeBytes(<Unknown Source>:Unknown line)
+	java.io.FileOutputStream.write(<Unknown Source>:Unknown line)
+	java.io.BufferedOutputStream.flushBuffer(<Unknown Source>:Unknown line)
+	java.io.BufferedOutputStream.flush(<Unknown Source>:Unknown line)
+TRACE 300108:
+	uk.co.demon.mcdowella.stats.LU.<init>(LU.java:26)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:135)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300109:
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:170)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+TRACE 300087:
+	uk.co.demon.mcdowella.algorithms.SetCover.callback(SetCover.java:320)
+	uk.co.demon.mcdowella.algorithms.InOutSet.callMe(InOutSet.java:121)
+	uk.co.demon.mcdowella.algorithms.SetCover.recomputeScores(SetCover.java:326)
+	uk.co.demon.mcdowella.algorithms.SetCover.choosePossibility(SetCover.java:340)
+TRACE 300119:
+	uk.co.demon.mcdowella.algorithms.MatWrapper.dot(MatWrapper.java:29)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:247)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300118:
+	uk.co.demon.mcdowella.stats.LU.solve(LU.java:185)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:176)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300117:
+	uk.co.demon.mcdowella.stats.LU.solve(LU.java:193)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:142)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300101:
+	uk.co.demon.mcdowella.stats.LU.<init>(LU.java:108)
+	uk.co.demon.mcdowella.algorithms.Simplex.searchFrom(Simplex.java:135)
+	uk.co.demon.mcdowella.algorithms.Simplex.driver(Simplex.java:691)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:639)
+TRACE 300120:
+	java.lang.Object.clone(<Unknown Source>:Unknown line)
+	uk.co.demon.mcdowella.algorithms.Simplex.<init>(Simplex.java:71)
+	uk.co.demon.mcdowella.algorithms.SetCover.possibleLp(SetCover.java:636)
+	uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack(SetCover.java:448)
+TRACE 300042:
+	java.io.File.<init>(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath$FileLoader.getResource(<Unknown Source>:Unknown line)
+	sun.misc.URLClassPath.getResource(<Unknown Source>:Unknown line)
+	java.net.URLClassLoader$1.run(<Unknown Source>:Unknown line)
+TRACE 300041:
+	uk.co.demon.mcdowella.algorithms.SetCover.<init>(SetCover.java:41)
+	uk.co.demon.mcdowella.algorithms.TripleCoverage.backtrack(TripleCoverage.java:156)
+	uk.co.demon.mcdowella.algorithms.TripleCoverage.main(TripleCoverage.java:216)
+CPU SAMPLES BEGIN (total = 278) Sat Dec 06 07:09:42 2008
+rank   self  accum   count trace method
+   1 23.02% 23.02%      64 300045 uk.co.demon.mcdowella.stats.LU.solve
+   2 17.99% 41.01%      50 300044 uk.co.demon.mcdowella.stats.LU.solve
+   3 16.55% 57.55%      46 300088 uk.co.demon.mcdowella.stats.LU.<init>
+   4 13.67% 71.22%      38 300046 uk.co.demon.mcdowella.stats.LU.<init>
+   5  2.16% 73.38%       6 300097 uk.co.demon.mcdowella.algorithms.Simplex.searchFrom
+   6  2.16% 75.54%       6 300099 uk.co.demon.mcdowella.algorithms.MatWrapper.dot
+   7  2.16% 77.70%       6 300107 uk.co.demon.mcdowella.algorithms.MatWrapper.dot
+   8  2.16% 79.86%       6 300092 uk.co.demon.mcdowella.stats.LU.solve
+   9  1.80% 81.65%       5 300102 uk.co.demon.mcdowella.algorithms.Simplex.searchFrom
+  10  1.80% 83.45%       5 300047 uk.co.demon.mcdowella.algorithms.MatWrapper.dot
+  11  1.08% 84.53%       3 300114 uk.co.demon.mcdowella.algorithms.MatWrapper.dot
+  12  1.08% 85.61%       3 300116 uk.co.demon.mcdowella.algorithms.Simplex.searchFrom
+  13  1.08% 86.69%       3 300098 uk.co.demon.mcdowella.algorithms.Simplex.searchFrom
+  14  1.08% 87.77%       3 300090 uk.co.demon.mcdowella.algorithms.MatWrapper.dot
+  15  0.72% 88.49%       2 300089 uk.co.demon.mcdowella.algorithms.Simplex.searchFrom
+  16  0.72% 89.21%       2 300104 uk.co.demon.mcdowella.stats.LU.solve
+  17  0.72% 89.93%       2 300093 uk.co.demon.mcdowella.algorithms.MatWrapper.dot
+  18  0.72% 90.65%       2 300094 java.lang.Object.clone
+  19  0.72% 91.37%       2 300110 uk.co.demon.mcdowella.stats.LU.solve
+  20  0.72% 92.09%       2 300115 uk.co.demon.mcdowella.stats.LU.<init>
+  21  0.72% 92.81%       2 300091 uk.co.demon.mcdowella.algorithms.MatWrapper.dot
+  22  0.36% 93.17%       1 300113 uk.co.demon.mcdowella.algorithms.Simplex.searchFrom
+  23  0.36% 93.53%       1 300100 uk.co.demon.mcdowella.stats.LU.solve
+  24  0.36% 93.88%       1 300007 sun.misc.URLClassPath$3.run
+  25  0.36% 94.24%       1 300096 uk.co.demon.mcdowella.algorithms.MaxInRange.getMaxIndex
+  26  0.36% 94.60%       1 300095 uk.co.demon.mcdowella.algorithms.SetCover.innerBacktrack
+  27  0.36% 94.96%       1 300112 uk.co.demon.mcdowella.algorithms.SetCover.possibleLp
+  28  0.36% 95.32%       1 300103 uk.co.demon.mcdowella.stats.LU.solve
+  29  0.36% 95.68%       1 300105 java.util.HashMap.get
+  30  0.36% 96.04%       1 300106 uk.co.demon.mcdowella.stats.LU.<init>
+  31  0.36% 96.40%       1 300111 java.io.FileOutputStream.writeBytes
+  32  0.36% 96.76%       1 300108 uk.co.demon.mcdowella.stats.LU.<init>
+  33  0.36% 97.12%       1 300109 uk.co.demon.mcdowella.algorithms.Simplex.searchFrom
+  34  0.36% 97.48%       1 300087 uk.co.demon.mcdowella.algorithms.SetCover.callback
+  35  0.36% 97.84%       1 300119 uk.co.demon.mcdowella.algorithms.MatWrapper.dot
+  36  0.36% 98.20%       1 300118 uk.co.demon.mcdowella.stats.LU.solve
+  37  0.36% 98.56%       1 300117 uk.co.demon.mcdowella.stats.LU.solve
+  38  0.36% 98.92%       1 300101 uk.co.demon.mcdowella.stats.LU.<init>
+  39  0.36% 99.28%       1 300120 java.lang.Object.clone
+  40  0.36% 99.64%       1 300042 java.io.File.<init>
+  41  0.36% 100.00%       1 300041 uk.co.demon.mcdowella.algorithms.SetCover.<init>
+CPU SAMPLES END

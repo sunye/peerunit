@@ -1,0 +1,11 @@
+Goes 100000 seed 424 sigmage 0.1
+Class uk.co.demon.mcdowella.stats.SeqDriver$WaldSeqTotal samples 0 correct 99106 wrong 894 mean samples 230.78209999999984 sd 145.59356776471944
+Class uk.co.demon.mcdowella.stats.SeqDriver$WaldSignSeqTotal samples 0 correct 99017 wrong 983 mean samples 356.3278399999993 sd 224.9654719630773
+Class uk.co.demon.mcdowella.stats.SeqDriver$DoubleSeqTotal samples 0 correct 99746 wrong 254 mean samples 2352.0646000000143 sd 1476.5669222644865
+Class uk.co.demon.mcdowella.stats.SeqDriver$DoubleScoreSeqTotal samples 0 correct 99960 wrong 40 mean samples 2618.712279999959 sd 1249.219293721326
+Class uk.co.demon.mcdowella.stats.SeqDriver$DoubleFractSeqTotal samples 0 correct 99965 wrong 35 mean samples 3405.2377400000287 sd 1811.3400030159466
+Class uk.co.demon.mcdowella.stats.SeqDriver$DoubleKnownSeqTotal samples 0 correct 99150 wrong 850 mean samples 470.3403000000006 sd 335.0407702341398
+Class uk.co.demon.mcdowella.stats.SeqDriver$DoubleKnownScoreSeqTotal samples 0 correct 99803 wrong 197 mean samples 506.74747000000406 sd 284.4891266801453
+Class uk.co.demon.mcdowella.stats.SeqDriver$DoubleKnownFractTotal samples 0 correct 99827 wrong 173 mean samples 690.0755300000094 sd 414.0499853871788
+Class uk.co.demon.mcdowella.stats.SeqDriver$DoublePackSeqTotal samples 0 correct 99468 wrong 532 mean samples 1085.5907999999954 sd 575.164633039018
+Class uk.co.demon.mcdowella.stats.SeqDriver$NonSeqTotal samples 0 correct 99041 wrong 959 mean samples 542.0 sd 0.0

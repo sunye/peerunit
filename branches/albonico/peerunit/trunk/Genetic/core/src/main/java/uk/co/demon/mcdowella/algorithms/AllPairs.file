@@ -1,0 +1,7 @@
+# Test input file for AllPairs
+one two
+three four # this is a comment
+five six# As is this
+
+# That was a blank line ##
+seven eight nine

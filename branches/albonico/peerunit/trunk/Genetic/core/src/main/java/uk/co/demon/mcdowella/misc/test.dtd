@@ -1,0 +1,7 @@
+<!ELEMENT test ((a|b)*)>
+<!ATTLIST test at CDATA #IMPLIED
+               at2 CDATA #IMPLIED>
+<!ELEMENT a (b*)>
+<!ELEMENT b (c*)>
+<!ELEMENT c EMPTY>
+<!ATTLIST c hello CDATA #IMPLIED>

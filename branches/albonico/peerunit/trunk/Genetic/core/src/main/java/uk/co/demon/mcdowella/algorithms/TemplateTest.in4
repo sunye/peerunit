@@ -1,0 +1,14 @@
+<html>
+<head>
+<title>%:release(%$title%%)</title>
+</head>
+<body>
+<h1>%$title%</h1>
+<form method="post">
+<table summary="Table of input elements to fill in " width="100%%">%
+%:repeat(%$fragment%
+%)%
+</table>
+</form>
+</body>
+</html>
