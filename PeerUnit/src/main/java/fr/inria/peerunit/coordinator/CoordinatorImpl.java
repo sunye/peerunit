@@ -174,7 +174,7 @@ public class CoordinatorImpl implements Runnable {
      * @param chrono
      */
     public void printVerdict() {
-        LOG.fine(verdict.toString());
+        LOG.info(verdict.toString());
         System.out.println(verdict);
     }
 
