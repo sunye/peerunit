@@ -222,6 +222,54 @@ public class CoordinatorImpl implements Runnable {
         LOG.fine("Method " + md + " executed in " + result.getDelay() + " msec");
     }
 
+    public void execute(Integer order) throws InterruptedException {
+
+        LOG.entering("CoordinatorImpl", "execute()", order);
+
+        Collection<MethodDescription> orderMd = schedule.methodsFor(order);
+
+        int count = 0;
+
+        for(MethodDescription md : orderMd) {
+
+            System.out.println("Teste: " + md.getName());
+
+            Collection<Tester> testers = schedule.testersFor(md);
+
+            for (Tester orderTester : testers) {
+
+                executor.submit(new MethodExecute(orderTester, md));
+
+                count++;
+            }
+
+        }
+
+       // runningTesters.set(count);
+
+       // waitForExecutionFinished();
+
+        /*
+        ResultSet result = new ResultSet(md);
+        verdict.putResult(md, result);
+        result.start();
+
+        Collection<Tester> testers = schedule.testersFor(md);
+        String message = String.format("Method %s will be executed by %d testers", md, testers.size());
+        LOG.fine(message);
+        //System.out.println(message);
+        runningTesters.set(testers.size());
+        for (Tester each : testers) {
+            //LOG.finest("Dispatching " + md + " to tester " + each);
+            executor.submit(new MethodExecute(each, md));
+        }
+        waitForExecutionFinished();
+        result.stop();
+        LOG.fine("Method " + md + " executed in " + result.getDelay() + " msec");
+
+        */
+    }
+
     public void setResult(MethodDescription md, ResultSet rs) throws InterruptedException {
         //assert (status = RUNNING) == RUNNING;
         assert md != null : "Null MethodDescription";

@@ -1,4 +1,4 @@
-/*
+    /*
 This file is part of PeerUnit.
 
 PeerUnit is free software: you can redistribute it and/or modify
@@ -18,23 +18,34 @@ package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
+import java.util.logging.Logger;
 
 /**
  *
- * @author sunye
+ * @author albonico
  */
-public interface TesterSet {
+class OrderStrategy implements CoordinationStrategy {
 
-    void execute(String str) throws InterruptedException;
+    private static final Logger LOG = Logger.getLogger(OrderStrategy.class.getName());
+    private TesterSet testers;
 
-    void execute(MethodDescription md) throws InterruptedException;
+    public void init(TesterSet ts) {
+        testers = ts;
+    }
 
-    void execute(Integer order) throws InterruptedException;
+    /**
+     * Sequencial execution of test steps.
+     * 
+     * @param schedule
+     * @throws InterruptedException
+     */
+    
+    public void testcaseExecution() throws InterruptedException {
+        LOG.entering("SequencialStrategy", "testCaseExecution()");
 
-    Schedule getSchedule();
+        Schedule scd = testers.getSchedule();
 
-    public ResultSet getResult(MethodDescription md);
-
-    public void setResult(MethodDescription md, ResultSet rs) throws InterruptedException;
-
+        testers.execute(1);
+        
+    }
 }
