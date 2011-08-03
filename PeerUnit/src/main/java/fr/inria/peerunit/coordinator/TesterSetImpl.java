@@ -59,6 +59,10 @@ public class TesterSetImpl implements TesterSet {
         coordinator.execute(md);
     }
 
+    public void execute(Integer order) throws InterruptedException {
+        coordinator.execute(order);
+    }
+
     public Schedule getSchedule() {
         return coordinator.getSchedule();
     }

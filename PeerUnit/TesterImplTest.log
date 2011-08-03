@@ -1,4 +1,4 @@
-2011-08-02 17:02:00.725|FINEST|fr.inria.peerunit.coordinator.CoordinatorImpl|<init>|Creating a CoordinatorImpl for 3 testers.
-2011-08-02 17:02:00.735|FINEST|fr.inria.peerunit.coordinator.CoordinatorImpl|<init>|Coordination strategy: fr.inria.peerunit.coordinator.SequencialStrategy
-2011-08-02 17:02:00.740|FINER|CoordinatorIml|register(Tester)|ENTRY
-2011-08-02 17:02:03.058|FINE|fr.inria.peerunit.coordinator.CoordinatorImpl|waitForTesterRegistration|Waiting for registration. Expecting 3 testers.
+2011-08-03 18:17:14.151|FINEST|fr.inria.peerunit.coordinator.CoordinatorImpl|<init>|Creating a CoordinatorImpl for 3 testers.
+2011-08-03 18:17:14.160|FINEST|fr.inria.peerunit.coordinator.CoordinatorImpl|<init>|Coordination strategy: fr.inria.peerunit.coordinator.SequencialStrategy
+2011-08-03 18:17:14.166|FINER|CoordinatorIml|register(Tester)|ENTRY
+2011-08-03 18:17:16.498|FINE|fr.inria.peerunit.coordinator.CoordinatorImpl|waitForTesterRegistration|Waiting for registration. Expecting 3 testers.

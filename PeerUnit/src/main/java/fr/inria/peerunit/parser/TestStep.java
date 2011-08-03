@@ -43,5 +43,7 @@ public @interface TestStep {
     int timeout() default -1;
 
     String depend() default "*";
+
+    String teste() default "teste";
     
 }
