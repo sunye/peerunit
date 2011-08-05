@@ -17,6 +17,7 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultListenner;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,6 +77,11 @@ public class CoordinatorImpl implements Runnable {
      * Strategy for test step execution.
      */
     private CoordinationStrategy strategy;
+
+    /*
+     * List of tester for each order.
+     */
+    private ArrayList<Tester> compareTester = new ArrayList<Tester>();
 
     /**
      * @param testerNbr Number of expected testers. The Coordinator will wait for
@@ -226,48 +232,52 @@ public class CoordinatorImpl implements Runnable {
 
         LOG.entering("CoordinatorImpl", "execute()", order);
 
+        // Get the methods list
         Collection<MethodDescription> orderMd = schedule.methodsFor(order);
 
-        int count = 0;
+        ArrayList<Object> result = new ArrayList<Object>();
 
         for(MethodDescription md : orderMd) {
 
-            System.out.println("Teste: " + md.getName());
+            ResultSet res = new ResultSet(md);
+            result.add(res);
+            int index = result.indexOf(res);
+            verdict.putResult(md, (ResultSet) result.get(index));
+            res.start();
 
             Collection<Tester> testers = schedule.testersFor(md);
+
+            String message = String.format("Method %s will be executed by %d testers", md, testers.size());
+            LOG.fine(message);
 
             for (Tester orderTester : testers) {
 
                 executor.submit(new MethodExecute(orderTester, md));
 
-                count++;
+                // Set of testers (unused)
+                if (!compareTester.isEmpty()) {
+                      if(!compareTester.contains(orderTester)) {
+                          compareTester.add(orderTester);
+                      }
+                } else {
+                    compareTester.add(orderTester);
+                }
+
             }
 
         }
+        
+        // Set the testers executing number.
+        runningTesters.set(orderMd.size());
 
-       // runningTesters.set(count);
-
-       // waitForExecutionFinished();
-
-        /*
-        ResultSet result = new ResultSet(md);
-        verdict.putResult(md, result);
-        result.start();
-
-        Collection<Tester> testers = schedule.testersFor(md);
-        String message = String.format("Method %s will be executed by %d testers", md, testers.size());
-        LOG.fine(message);
-        //System.out.println(message);
-        runningTesters.set(testers.size());
-        for (Tester each : testers) {
-            //LOG.finest("Dispatching " + md + " to tester " + each);
-            executor.submit(new MethodExecute(each, md));
-        }
+        // Waiting for executions finish
         waitForExecutionFinished();
-        result.stop();
-        LOG.fine("Method " + md + " executed in " + result.getDelay() + " msec");
 
-        */
+        for(Object r : result) {
+            ResultSet rs = (ResultSet) r;
+            rs.stop();
+            LOG.fine("Method " + rs.getMethodDescription() + " executed in " + rs.getDelay() + " msec");
+        }
     }
 
     public void setResult(MethodDescription md, ResultSet rs) throws InterruptedException {
