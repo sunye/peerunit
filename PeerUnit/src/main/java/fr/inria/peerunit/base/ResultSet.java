@@ -90,6 +90,7 @@ public class ResultSet implements Serializable {
         }
     }
 
+    // Michel
     public void addSimulatedError() {
         errors.incrementAndGet();
     }
