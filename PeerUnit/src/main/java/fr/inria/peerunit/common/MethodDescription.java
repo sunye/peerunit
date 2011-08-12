@@ -21,10 +21,11 @@ import java.io.Serializable;
 import fr.inria.peerunit.tester.AfterClassMethod;
 import fr.inria.peerunit.tester.BeforeClassMethod;
 import fr.inria.peerunit.tester.TestStepMethod;
+import java.util.ArrayList;
 
 /**
  * @author sunye
- * 
+ *
  */
 public class MethodDescription implements Comparable<MethodDescription>,
         Serializable {
@@ -42,7 +43,6 @@ public class MethodDescription implements Comparable<MethodDescription>,
      * Method execution timeout (in milliseconds).
      */
     private int timeout;
-
     /**
      *
      * @param depend
@@ -118,9 +118,9 @@ public class MethodDescription implements Comparable<MethodDescription>,
             return false;
         } else {
             MethodDescription other = (MethodDescription) o;
-            return name.equals(other.name) &&
-                    order == other.order &&
-                    timeout == other.timeout;
+            return name.equals(other.name)
+                    && order == other.order
+                    && timeout == other.timeout;
         }
     }
 
@@ -155,5 +155,18 @@ public class MethodDescription implements Comparable<MethodDescription>,
 
     public String getDepend() {
         return depend;
+    }
+
+    public ArrayList<String> getDepends() {
+        ArrayList<String> depends = new ArrayList<String>();
+        // depend is null in before and after class methods.
+        if (depend != null) {
+            String[] tmp = depend.split(",");
+            //depends.addAll(Arrays.asList(tmp));
+            for (String token : tmp) {
+                depends.add(token.trim());
+            }
+        }
+        return depends;
     }
 }
