@@ -32,6 +32,7 @@ public class Schedule {
     }
 
     public void put(MethodDescription md, Tester t) {
+        
         if (!testerMap.containsKey(md)) {
             testerMap.put(md, new HashSet<Tester>());
         }
@@ -65,6 +66,10 @@ public class Schedule {
 
     public Collection<MethodDescription> methods() {
         return new ArrayList<MethodDescription>(testerMap.keySet());
+    }
+
+    public Collection<Integer> orders() {
+        return new ArrayList<Integer>(orderMethodsMap.keySet());
     }
 
     public Collection<Tester> testersFor(MethodDescription md) {

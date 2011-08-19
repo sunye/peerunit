@@ -18,6 +18,7 @@ package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
+import java.util.ArrayList;
 
 /**
  *
@@ -30,6 +31,8 @@ public interface TesterSet {
     void execute(MethodDescription md) throws InterruptedException;
 
     void execute(Integer order) throws InterruptedException;
+
+    ArrayList<String> execute(Integer order, TesterSet testers, ArrayList<String> errors) throws InterruptedException;
 
     Schedule getSchedule();
 

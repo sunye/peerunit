@@ -18,15 +18,19 @@ package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author sunye
+ * @author albonico
  */
-class SequencialStrategy implements CoordinationStrategy {
+class GlobalStrategy implements CoordinationStrategy {
 
-    private static final Logger LOG = Logger.getLogger(SequencialStrategy.class.getName());
+    private static final Logger LOG = Logger.getLogger(GlobalStrategy.class.getName());
     private TesterSet testers;
 
     public void init(TesterSet ts) {
@@ -34,18 +38,22 @@ class SequencialStrategy implements CoordinationStrategy {
     }
 
     /**
-     * Sequencial execution of test steps.
+     * Global execution of test steps.
      * 
      * @param schedule
      * @throws InterruptedException
      */
     
     public void testcaseExecution() throws InterruptedException {
+        LOG.entering("GlobalStrategy", "testCaseExecution()");
 
-        LOG.entering("SequencialStrategy", "testCaseExecution()");
+        boolean error = false;
+        ArrayList<String> errors = new ArrayList<String>();
+        
+        for (Integer order : testers.getSchedule().orders()) {
 
-        for (MethodDescription each : testers.getSchedule().methods()) {
-                testers.execute(each);
+            errors = testers.execute(order, testers, errors);
+
         }
         
     }

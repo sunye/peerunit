@@ -18,6 +18,7 @@ package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -61,6 +62,13 @@ public class TesterSetImpl implements TesterSet {
 
     public void execute(Integer order) throws InterruptedException {
         coordinator.execute(order);
+    }
+
+    public ArrayList<String> execute(Integer order, TesterSet testers, ArrayList<String> errors) throws InterruptedException {
+
+        errors = coordinator.execute(order, testers, errors);
+        return(errors);
+        
     }
 
     public Schedule getSchedule() {
