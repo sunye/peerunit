@@ -17,7 +17,6 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultListenner;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -129,8 +128,14 @@ public class CoordinatorImpl implements Runnable {
         verdict = new GlobalVerdict(relaxIndex);
         remoteCoordinator = rci;
 
-        if (strategyClass == null) {
+       /* if (strategyClass == null) {
             strategyClass = SequencialStrategy.class;
+        }
+        *
+        */
+
+        if (strategyClass == null) {
+            strategyClass = GlobalStrategy.class;
         }
 
         LOG.log(Level.FINEST, "Coordination strategy: {0}", strategyClass.getName());
@@ -142,7 +147,8 @@ public class CoordinatorImpl implements Runnable {
             LOG.warning("Error while initializing class: " + strategyClass.getName());
             LOG.log(Level.WARNING, null, e);
             e.printStackTrace();
-            strategy = new SequencialStrategy();
+        //    strategy = new SequencialStrategy();
+            strategy = new GlobalStrategy();
             strategy.init(ts);
         }
     }
@@ -254,15 +260,6 @@ public class CoordinatorImpl implements Runnable {
 
                 executor.submit(new MethodExecute(orderTester, md));
 
-                // Set of testers (unused)
-                if (!compareTester.isEmpty()) {
-                      if(!compareTester.contains(orderTester)) {
-                          compareTester.add(orderTester);
-                      }
-                } else {
-                    compareTester.add(orderTester);
-                }
-
             }
 
         }
@@ -279,6 +276,87 @@ public class CoordinatorImpl implements Runnable {
             LOG.fine("Method " + rs.getMethodDescription() + " executed in " + rs.getDelay() + " msec");
         }
     }
+
+    public ArrayList<String> execute(Integer order, TesterSet testerSet, ArrayList<String> errors) throws InterruptedException {
+
+        LOG.entering("CoordinatorImpl", "executeGlobal()", order);
+
+        boolean error;
+        ArrayList<String> errorActions = errors;
+
+        // Get the methods list
+        Collection<MethodDescription> orderMd = schedule.methodsFor(order);
+
+        ArrayList<Object> result = new ArrayList<Object>();
+
+        for (MethodDescription action : orderMd) {
+
+            ResultSet res = new ResultSet(action);
+            result.add(res);
+          //  int index = result.indexOf(res);
+          //  verdict.putResult(action, (ResultSet) result.get(index));
+            verdict.putResult(action, res);
+            res.start();
+
+            error = false;
+            for (String depend: action.getDepends()){
+                if (errorActions.contains(depend)){
+                    error = true;
+                    
+                //    res = new ResultSet(action);
+                    res.addSimulatedError();
+                    testerSet.setResult(action, res);
+                    errorActions.add(action.getName());
+                    LOG.log(Level.FINEST, "Action {0} was not executed due to its dependence!", action.getName());
+                    res.stop();
+                    
+                    break;
+                }
+            }
+            
+            if (!error) {
+
+                Collection<Tester> testers = schedule.testersFor(action);
+
+                String message = String.format("Method %s will be executed by %d testers", action, testers.size());
+                LOG.fine(message);
+
+                for (Tester orderTester : testers) {
+
+                    executor.submit(new MethodExecute(orderTester, action));
+
+                }
+            }
+
+        }
+
+        // Set the testers executing number.
+        runningTesters.set(orderMd.size());
+
+        // Waiting for executions finish
+        waitForExecutionFinished();
+
+        for(Object r : result) {
+           ResultSet rs = (ResultSet) r;
+           ResultSet res = verdict.getResultFor(rs.getMethodDescription());
+
+           rs.stop();
+
+           // Errors
+           ResultSet tRes = testerSet.getResult(rs.getMethodDescription());
+           if (rs.getErrors() > 0
+                   ||rs.getInconclusives() > 0
+                   ||rs.getfailures() > 0) {
+                   errorActions.add(rs.getMethodDescription().getName());
+           }
+
+           LOG.fine("Method " + rs.getMethodDescription() + " executed in " + rs.getDelay() + " msec");
+
+        }
+
+       return(errorActions);
+
+   }
 
     public void setResult(MethodDescription md, ResultSet rs) throws InterruptedException {
         //assert (status = RUNNING) == RUNNING;

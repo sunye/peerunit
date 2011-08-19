@@ -16,13 +16,11 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.coordinator;
 
-import fr.inria.peerunit.base.ResultSet;
-import fr.inria.peerunit.common.MethodDescription;
 import java.util.logging.Logger;
 
 /**
  *
- * @author albonico
+ * @author albonico, jeugenio
  */
 class OrderStrategy implements CoordinationStrategy {
 
@@ -41,11 +39,13 @@ class OrderStrategy implements CoordinationStrategy {
      */
     
     public void testcaseExecution() throws InterruptedException {
-        LOG.entering("SequencialStrategy", "testCaseExecution()");
+        LOG.entering("OrderStrategy", "testCaseExecution()");
 
-        Schedule scd = testers.getSchedule();
+        for (Integer order : testers.getSchedule().orders()) {
 
-        testers.execute(1);
+            testers.execute(order);
+
+        }
         
     }
 }
