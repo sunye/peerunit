@@ -263,26 +263,30 @@ public class CoordinatorImpl implements Runnable {
             }
 
         }
-        
-        // Set the testers executing number.
-        runningTesters.set(orderMd.size());
-
-        // Waiting for executions finish
-        waitForExecutionFinished();
 
         for(Object r : result) {
             ResultSet rs = (ResultSet) r;
+
+            // Set the testers executing number.
+            runningTesters.set(schedule.testersFor(rs.getMethodDescription()).size());
+
+            // Waiting for executions finish
+            waitForExecutionFinished();
+
             rs.stop();
             LOG.fine("Method " + rs.getMethodDescription() + " executed in " + rs.getDelay() + " msec");
         }
+
     }
 
     public ArrayList<String> execute(Integer order, TesterSet testerSet, ArrayList<String> errors) throws InterruptedException {
 
         LOG.entering("CoordinatorImpl", "executeGlobal()", order);
 
-        boolean error;
+        boolean error = false;
         ArrayList<String> errorActions = errors;
+
+        ArrayList<Tester> testersExecuting = new ArrayList<Tester>();
 
         // Get the methods list
         Collection<MethodDescription> orderMd = schedule.methodsFor(order);
@@ -293,8 +297,6 @@ public class CoordinatorImpl implements Runnable {
 
             ResultSet res = new ResultSet(action);
             result.add(res);
-          //  int index = result.indexOf(res);
-          //  verdict.putResult(action, (ResultSet) result.get(index));
             verdict.putResult(action, res);
             res.start();
 
@@ -302,9 +304,10 @@ public class CoordinatorImpl implements Runnable {
             for (String depend: action.getDepends()){
                 if (errorActions.contains(depend)){
                     error = true;
-                    
-                //    res = new ResultSet(action);
+
+                //  res = new ResultSet(action);
                     res.addSimulatedError();
+
                     testerSet.setResult(action, res);
                     errorActions.add(action.getName());
                     LOG.log(Level.FINEST, "Action {0} was not executed due to its dependence!", action.getName());
@@ -320,40 +323,52 @@ public class CoordinatorImpl implements Runnable {
 
                 String message = String.format("Method %s will be executed by %d testers", action, testers.size());
                 LOG.fine(message);
+                
+                testersExecuting.clear();
 
                 for (Tester orderTester : testers) {
 
                     executor.submit(new MethodExecute(orderTester, action));
+
+                    if (!testersExecuting.contains(orderTester)) {
+                        
+                        testersExecuting.add(orderTester);
+                        
+                    }
 
                 }
             }
 
         }
 
-        // Set the testers executing number.
-        runningTesters.set(orderMd.size());
+        // Stopping result sets
+        if (!error) {
 
-        // Waiting for executions finish
-        waitForExecutionFinished();
+            for(Object r : result) {
+               // Casting
+               ResultSet rs = (ResultSet) r;
 
-        for(Object r : result) {
-           ResultSet rs = (ResultSet) r;
-           ResultSet res = verdict.getResultFor(rs.getMethodDescription());
+               // Set the testers executing number.
+               runningTesters.set(schedule.testersFor(rs.getMethodDescription()).size());
 
-           rs.stop();
+               // Waiting for executions finish
+               waitForExecutionFinished();
 
-           // Errors
-           ResultSet tRes = testerSet.getResult(rs.getMethodDescription());
-           if (rs.getErrors() > 0
-                   ||rs.getInconclusives() > 0
-                   ||rs.getfailures() > 0) {
-                   errorActions.add(rs.getMethodDescription().getName());
-           }
+               rs.stop();
 
-           LOG.fine("Method " + rs.getMethodDescription() + " executed in " + rs.getDelay() + " msec");
+               // Errors
+                if (rs.getErrors() > 0
+                       ||rs.getInconclusives() > 0
+                       ||rs.getfailures() > 0) {
+                       errorActions.add(rs.getMethodDescription().getName());
+               }
+
+               LOG.fine("Method " + rs.getMethodDescription() + " executed in " + rs.getDelay() + " msec");
+
+            }
 
         }
-
+        
        return(errorActions);
 
    }
@@ -411,14 +426,19 @@ public class CoordinatorImpl implements Runnable {
      */
     private void waitForExecutionFinished() throws InterruptedException {
         LOG.fine("Waiting for the end of the execution.");
+
         while (runningTesters.intValue() > 0) {
+
             ResultSet rs = remoteCoordinator.results().take();
             ResultSet result = verdict.getResultFor(rs.getMethodDescription());
             result.add(rs);
+
             for (ResultListenner each : listenners) {
                 each.newResult(rs);
             }
+
             runningTesters.decrementAndGet();
+
         }
     }
 

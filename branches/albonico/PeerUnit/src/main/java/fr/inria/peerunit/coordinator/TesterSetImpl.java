@@ -40,6 +40,7 @@ public class TesterSetImpl implements TesterSet {
     }
 
     public void execute(String str) throws InterruptedException {
+        
         if (methods == null) {
             // Lazy initialization of methods Map.
             LOG.log(Level.FINE, "Method map initialization.");
