@@ -22,9 +22,9 @@ import java.util.logging.Logger;
  *
  * @author albonico, jeugenio
  */
-class OrderStrategy implements CoordinationStrategy {
+class HierarchicalStrategy implements CoordinationStrategy {
 
-    private static final Logger LOG = Logger.getLogger(OrderStrategy.class.getName());
+    private static final Logger LOG = Logger.getLogger(HierarchicalStrategy.class.getName());
     private TesterSet testers;
 
     public void init(TesterSet ts) {
@@ -32,20 +32,15 @@ class OrderStrategy implements CoordinationStrategy {
     }
 
     /**
-     * Sequencial execution of test steps.
+     * Hierarchical execution of test steps.
      * 
-     * @param schedule
      * @throws InterruptedException
      */
-    
     public void testcaseExecution() throws InterruptedException {
-        LOG.entering("OrderStrategy", "testCaseExecution()");
+        LOG.entering("HierarchicalStrategy", "testcaseExecution()");
 
         for (Integer order : testers.getSchedule().orders()) {
-
             testers.execute(order);
-
         }
-        
     }
 }
