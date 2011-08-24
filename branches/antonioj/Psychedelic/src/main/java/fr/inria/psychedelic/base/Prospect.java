@@ -1,20 +1,8 @@
-
-/*
-* To change this template, choose Tools | Templates
-* and open the template in the editor.
- */
 package fr.inria.psychedelic.base;
-
-//~--- non-JDK imports --------------------------------------------------------
-
-import org.objectweb.asm.tree.MethodNode;
-
-//~--- JDK imports ------------------------------------------------------------
 
 import java.io.Serializable;
 
 /**
- *
  * @author sunye
  */
 public class Prospect implements Serializable {
@@ -23,36 +11,33 @@ public class Prospect implements Serializable {
      * Class name.  The name of a class is its fully qualified name
      * (as returned by Class.getName(), where '.' are replaced by '/'.
      */
-    final private String classname;
-    final private String description;
-    final private int    linenumber;
-    final private String methodname;
-    final public int     operation;
-    final private int    order;
+    private final String className;
+    private final String methodName;
+    private final String description;
+    private final int lineNumber;
+    private final int operation;
+    private final int order;
 
     public Prospect(String cn, String mn, String desc, int i, int o, int odr) {
-        classname   = cn;
-        methodname  = mn;
+        className = cn;
+        methodName = mn;
         description = desc;
-        linenumber  = i;
-        operation   = o;
-        order       = odr;
+        lineNumber = i;
+        operation = o;
+        order = odr;
     }
 
     @Override
     public String toString() {
-        return classname + "::" + methodname + " description: " + description + " line: " + linenumber + " operation: "
-               + operation + " order: " + order;
+        return className + "::" + methodName + " description: " + description + " line: " + lineNumber + " operation: "
+                + operation + " order: " + order;
     }
 
     public boolean matchesMethod(String name, String desc) {
-        return methodname.equals(name) && description.equals(desc);
+        return methodName.equals(name) && description.equals(desc);
     }
 
     public boolean matchesInstruction(int line, int op, int od) {
-        return (linenumber == line) && (operation == op) && (order == od);
+        return (lineNumber == line) && (operation == op) && (order == od);
     }
 }
-
-
-//~ Formatted by Jindent --- http://www.jindent.com
