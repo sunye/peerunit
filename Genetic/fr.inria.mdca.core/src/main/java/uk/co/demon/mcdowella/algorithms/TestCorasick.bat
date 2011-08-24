@@ -1,1 +1,0 @@
-java -Djava.compiler=NONE uk.co.demon.mcdowella.algorithms.TestCorasick a ab abc abcd abab ababab abababab ababababa < AhoCorasick.in > tc.out
