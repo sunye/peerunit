@@ -4,26 +4,21 @@
  */
 package fr.inria.psychedelic.gathering;
 
-import fr.inria.psychedelic.base.*;
+import fr.inria.psychedelic.base.Mutations;
+import fr.inria.psychedelic.base.Prospect;
+import org.objectweb.asm.*;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import org.objectweb.asm.ClassAdapter;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodAdapter;
-import org.objectweb.asm.MethodVisitor;
 
 /**
- *
  * @author sunye
  */
 public class ProspectGatheringClassAdapter extends ClassAdapter {
 
-    private List<Prospect> prospects =
-            new LinkedList<Prospect>();
-
-    private String classname;
+    private final List<Prospect> prospects = new LinkedList<Prospect>();
+    private String className;
 
     public ProspectGatheringClassAdapter(ClassVisitor cv) {
         super(cv);
@@ -35,16 +30,15 @@ public class ProspectGatheringClassAdapter extends ClassAdapter {
 
     @Override
     public void visit(int version, int access, String name, String signature,
-            String superName, String[] interfaces) {
+                      String superName, String[] interfaces) {
 
         cv.visit(version, access, name, signature, superName, interfaces);
-        classname = name;
-
+        className = name;
     }
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc,
-            String signature, String[] exceptions) {
+                                     String signature, String[] exceptions) {
 
         MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
         if (mv != null) {
@@ -53,41 +47,43 @@ public class ProspectGatheringClassAdapter extends ClassAdapter {
         return mv;
     }
 
-    class ProspectGatheringMethodAdapter extends MethodAdapter {
+    private class ProspectGatheringMethodAdapter extends MethodAdapter {
 
         /**
-         * The name of the method that is beeing visited.
+         * The name of the method that is being visited.
          */
-        private String methodname;
-
-        private String description;
+        private final String methodName;
+        private final String description;
 
         /**
          * The number of the last visited line;
          */
-        private int linenumber = -1;
-
+        private int lineNumber = -1;
         private int order = 0;
 
         public ProspectGatheringMethodAdapter(MethodVisitor mv, String name, String desc) {
             super(mv);
-            methodname = name;
+            methodName = name;
             description = desc;
         }
 
         @Override
         public void visitInsn(int opcode) {
             order++;
-            if (Mutations.canMutate(opcode)) {
-                prospects.add(new Prospect(classname, methodname, description, linenumber, opcode, order));
+            /**
+             * Method run on main Job class should not be mutated.
+             * At this moment this check will prevent any method
+             * named run of being mutated.
+             */
+            if (Mutations.canMutate(opcode) && !methodName.equals("run")) {
+                prospects.add(new Prospect(className, methodName, description, lineNumber, opcode, order));
             }
-
             mv.visitInsn(opcode);
         }
 
         @Override
         public void visitLineNumber(int i, Label label) {
-            linenumber = i;
+            lineNumber = i;
             mv.visitLineNumber(i, label);
         }
 

@@ -5,18 +5,17 @@
 package fr.inria.psychedelic.sample;
 
 /**
- *
  * @author sunye
  */
-public class PanisCircenses {
+class PanisCircenses {
 
     public int soma(int x, int y) {
 
-        return x + y + 8 *35;
+        return x + y + 8 * 35;
     }
 
     public int soma(int x, int y, int z) {
-        return x+y+z;
+        return x + y + z;
     }
 
     public int subtracao(int x, int y) {
@@ -25,6 +24,6 @@ public class PanisCircenses {
     }
 
     public boolean is() {
-        return !true;
+        return false;
     }
 }

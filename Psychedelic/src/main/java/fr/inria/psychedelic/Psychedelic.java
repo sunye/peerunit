@@ -5,29 +5,27 @@
 
 package fr.inria.psychedelic;
 
-import fr.inria.psychedelic.gathering.ProspectGatheringClassAdapter;
 import fr.inria.psychedelic.base.Prospect;
 import fr.inria.psychedelic.gathering.ClassMutator;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.List;
+import fr.inria.psychedelic.gathering.ProspectGatheringClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.util.CheckClassAdapter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+
 /**
- *
  * @author sunye
  */
 public class Psychedelic {
 
     public static List<Prospect> prospectsFor(InputStream is) throws IOException {
-        
+
         ClassReader reader = new ClassReader(is);
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         ClassVisitor visitor = new CheckClassAdapter(writer);
@@ -52,5 +50,4 @@ public class Psychedelic {
         os.write(byteArray);
         os.flush();
     }
-
 }
