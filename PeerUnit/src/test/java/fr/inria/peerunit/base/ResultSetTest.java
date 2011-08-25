@@ -6,14 +6,14 @@
 package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.common.MethodDescription;
-
-import org.junit.Test;
 import org.junit.Before;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
- *
  * @author sunye
  */
 public class ResultSetTest {
@@ -47,15 +47,15 @@ public class ResultSetTest {
         SingleResult sr1 = new SingleResult(1, md);
         SingleResult sr2 = new SingleResult(1, md);
 
-        sr1.addError(new Exception());
+        sr1.addError();
         sr2.addFailure(null);
 
         result.add(sr1);
         result.add(sr2);
 
         assertTrue(result.getErrors() == 1);
-        assertTrue(result.getfailures() == 1);
-        assertTrue(result.getInconclusives() == 0);
+        assertTrue(result.getFailures() == 1);
+        assertTrue(result.getInconclusive() == 0);
         assertTrue(result.getPass() == 0);
         assertTrue(result.size() == 2);
 
@@ -63,7 +63,7 @@ public class ResultSetTest {
         sr3.addInconclusive(new Exception());
 
         result.add(sr3);
-        assertTrue(result.getInconclusives() == 1);
+        assertTrue(result.getInconclusive() == 1);
 
         SingleResult sr4 = new SingleResult(1, md);
 
@@ -104,7 +104,7 @@ public class ResultSetTest {
         result.stop();
         long stop = System.currentTimeMillis();
         assertTrue(result.getDelay() >= 0);
-        assertTrue(stop-start >= result.getDelay());
+        assertTrue(stop - start >= result.getDelay());
     }
 
     /**
@@ -134,20 +134,20 @@ public class ResultSetTest {
     }
 
     /**
-     * Test of getfailures method, of class ResultSet.
+     * Test of getFailures method, of class ResultSet.
      */
     @Test
     public void testGetfailures() {
-        System.out.println("getfailures");
+        System.out.println("getFailures");
 
     }
 
     /**
-     * Test of getInconclusives method, of class ResultSet.
+     * Test of getInconclusive method, of class ResultSet.
      */
     @Test
     public void testGetInconclusives() {
-        System.out.println("getInconclusives");
+        System.out.println("getInconclusive");
 
     }
 

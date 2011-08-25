@@ -18,11 +18,9 @@ package fr.inria.peerunit.tester;
 
 
 /**
- * 
  * @author Eduardo Almeida
  * @version 1.0
  * @since 1.0
- *
  */
 public class InconclusiveFailure extends TestException {
 
@@ -31,17 +29,8 @@ public class InconclusiveFailure extends TestException {
     /**
      * Constructs an inclusive failure.
      *
-     * @since 1.0
-     */
-    public InconclusiveFailure() {
-        super();
-    }
-
-    /**
-     * Constructs an inclusive failure.
-     *
-     * @since 1.0
      * @param message is the message corresponding to the failure.
+     * @since 1.0
      */
     public InconclusiveFailure(String message) {
         super(message);

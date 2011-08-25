@@ -23,11 +23,11 @@ import java.lang.reflect.Array;
  *
  * @author sunye
  */
-public class HTree<K,V> {
+public class HTree<K, V> {
 
     private final int order;
 
-    private HNodeImpl head;
+    private HNodeImpl head = null;
 
     private int size = 0;
 
@@ -36,17 +36,18 @@ public class HTree<K,V> {
     }
 
     /**
-     *
      * @return the head of this HTree. Returns null if empty.
      */
-    public HNode<K,V> head() {
+    public HNode<K, V> head() {
         return head;
     }
 
     /**
      * Inserts an element into the tree.
      * The first inserted element becomes the header.
-     * @param e
+     *
+     * @param key   Key
+     * @param value Value
      */
     public void put(K key, V value) {
         if (head == null) {
@@ -59,11 +60,12 @@ public class HTree<K,V> {
 
     /**
      * Checks if an element belongs to this Tree
-     * @param e the element to check
+     *
+     * @param key Key.
      * @return true, if the tree contains the element.
      */
     public boolean containsKey(K key) {
-        return (head == null) ? false : head.containsKey(key);
+        return (head != null) && head.containsKey(key);
     }
 
     public int size() {
@@ -75,14 +77,14 @@ public class HTree<K,V> {
         size = 0;
     }
 
-    class HNodeImpl implements HNode<K,V> {
+    class HNodeImpl implements HNode<K, V> {
         private int position = 0;
 
-        private K key;
-        private V value;
+        private final K key;
+        private final V value;
 
-        private HNodeImpl[] children = (HNodeImpl[]) Array.newInstance(HNodeImpl.class, order);
-        
+        private final HNodeImpl[] children = (HNodeImpl[]) Array.newInstance(HNodeImpl.class, order);
+
         public HNodeImpl(K k, V v) {
             key = k;
             value = v;
@@ -91,7 +93,7 @@ public class HTree<K,V> {
         public K key() {
             return key;
         }
-        
+
         public V value() {
             return value;
         }
@@ -99,12 +101,13 @@ public class HTree<K,V> {
         /**
          * Returns an array containing the children of this node.
          * If this node is a leaf, an empty array will be returned.
-         * @return
+         *
+         * @return HNode array.
          */
-        public HNode<K,V>[] children() {
+        public HNode<K, V>[] children() {
             int i = 0;
-            HNode<K,V>[] result;
-            while(i < children.length && children[i] != null ) {
+            HNode<K, V>[] result;
+            while (i < children.length && children[i] != null) {
                 i++;
             }
             result = (HNodeImpl[]) Array.newInstance(HNodeImpl.class, i);
@@ -114,23 +117,26 @@ public class HTree<K,V> {
 
         /**
          * Checks if this node is a leaf.
+         *
          * @return true, if this node has no child.
          */
         public boolean isLeaf() {
-            return  children[0] == null;
+            return children[0] == null;
         }
 
         /**
          * Inserts an element into this node.
          * When this node is full (no more null child), elements
          * are inserted in the children in a equilibrated way.
-         * @param e
+         *
+         * @param k Key
+         * @param v Value
          */
         public void put(K k, V v) {
-            if(children[position] == null) {
-                children[position] = new HNodeImpl(k,v);
+            if (children[position] == null) {
+                children[position] = new HNodeImpl(k, v);
             } else {
-                children[position].put(k,v);
+                children[position].put(k, v);
             }
             position = (position + 1) % order;
         }
@@ -138,15 +144,16 @@ public class HTree<K,V> {
         /**
          * Looks up for an element, returns true if found.
          * Uses a breadth-first search (BFS) algorithm.
-         * @param e the searched element
+         *
+         * @param k Key
          * @return true if found, false otherwise
          */
         public boolean containsKey(K k) {
             boolean result = false;
-            if(k == key) {
+            if (k == key) {
                 result = true;
             } else {
-                for (int i = 0; i < children.length && ! result && children[i] != null; i++) {
+                for (int i = 0; i < children.length && !result && children[i] != null; i++) {
                     result = children[i].containsKey(k);
                 }
             }
@@ -158,5 +165,4 @@ public class HTree<K,V> {
             return String.format("HNode<%s,%s>", key, value);
         }
     }
-
 }

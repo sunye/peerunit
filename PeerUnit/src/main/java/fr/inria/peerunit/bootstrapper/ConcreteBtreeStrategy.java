@@ -16,16 +16,16 @@
  */
 package fr.inria.peerunit.bootstrapper;
 
+import fr.inria.peerunit.remote.DistributedTester;
+import fr.inria.peerunit.util.HNode;
+import fr.inria.peerunit.util.HTree;
+import fr.inria.peerunit.util.TesterUtil;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import fr.inria.peerunit.remote.DistributedTester;
-import fr.inria.peerunit.util.HNode;
-import fr.inria.peerunit.util.HTree;
-import fr.inria.peerunit.util.TesterUtil;
 
 /**
  * @author Veronique Pelleau
@@ -35,35 +35,22 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
 
     private static final Logger LOG = Logger.getLogger(ConcreteBtreeStrategy.class.getName());
     /**
-     * default values for global variables
-     */
-    private TesterUtil defaults;
-    /**
      * Tree containing Tester Id X Tester
      */
     private final HTree<Integer, DistributedTester> testers;
-    /**
-     * Number of expected testers.
-     */
-    private final int expectedTesters;
 
     public ConcreteBtreeStrategy(TesterUtil tu) {
-        defaults = tu;
-        testers = new HTree<Integer, DistributedTester>(defaults.getTreeOrder());
-        expectedTesters = defaults.getExpectedTesters();
+        testers = new HTree<Integer, DistributedTester>(tu.getTreeOrder());
     }
 
     /**
-     *
-     * @param tester
-     * @return
-     * @throws RemoteException
+     * @param tester The tester.
      */
     public void register(DistributedTester tester) {
         LOG.entering("ConcreteBtreeStrategy", "register(Tester)");
 
         int id = testers.size();
-        testers.put(new Integer(id), tester);
+        testers.put(id, tester);
         LOG.exiting("ConcreteBtreeStrategy", "register(Tester)");
 
     }
@@ -97,7 +84,7 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
         }
 
         try {
-            DistributedTester c =  n.value();
+            DistributedTester c = n.value();
             c.registerTesters(nodes);
         } catch (RemoteException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -124,5 +111,3 @@ public class ConcreteBtreeStrategy implements TreeStrategy {
         testers.clear();
     }
 }
-
-

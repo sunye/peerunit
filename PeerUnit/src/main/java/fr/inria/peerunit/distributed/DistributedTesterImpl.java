@@ -16,36 +16,31 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.distributed;
 
+import fr.inria.peerunit.coordinator.CoordinatorImpl;
+import fr.inria.peerunit.coordinator.RemoteCoordinatorImpl;
+import fr.inria.peerunit.remote.*;
+import fr.inria.peerunit.tester.TesterImpl;
+import fr.inria.peerunit.util.PeerUnitLogger;
+import fr.inria.peerunit.util.TesterUtil;
+
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.coordinator.CoordinatorImpl;
-import fr.inria.peerunit.coordinator.RemoteCoordinatorImpl;
-import fr.inria.peerunit.remote.Bootstrapper;
-import fr.inria.peerunit.remote.Coordinator;
-import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.remote.Tester;
-import fr.inria.peerunit.tester.TesterImpl;
-import fr.inria.peerunit.util.TesterUtil;
-import fr.inria.peerunit.remote.DistributedTester;
-import fr.inria.peerunit.util.PeerUnitLogger;
-import java.io.IOException;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.logging.FileHandler;
-
 /**
  * The DistributedTester is both, a Tester and a Coordinator.
- * As a Tester, it has a Coordinator, it registers a test case and executes 
+ * As a Tester, it has a Coordinator, it registers a test case and executes
  * test steps when requested by its Coordinator.
- * 
+ * <p/>
  * As a coordinator, it accepts the registration of several testers
  * and asks its testers to execute test steps.
- * 
+ *
  * @author sunye
  */
-public class DistributedTesterImpl { //implements Serializable {
+public class DistributedTesterImpl {
     // - Register with bootstrapper and get an Id
     // 1. Wait for coordinator;
     // 2. Register with coordinator;
@@ -59,46 +54,42 @@ public class DistributedTesterImpl { //implements Serializable {
     // this -------- setCoordinator(this) ---------> testers
     // bootstrapper -----start() -----> this[root]
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 11L;
     private static final Logger LOG = Logger.getLogger(TesterImpl.class.getName());
     /**
      * Set of testers that are coordinated by this tester.
      */
-    private transient List<DistributedTester> children;
+    private transient List<DistributedTester> children = null;
     /**
      * The bootstrapper, that will help me to find my parent and my children.
      */
-    private transient Bootstrapper bootstrapper;
+    private final transient Bootstrapper bootstrapper;
     /**
-     * The test case that whill be executed
+     * The test case that will be executed
      */
-    private transient Class<?> testCaseClass;
+    private final transient Class<?> testCaseClass;
     /**
      * Remote interface for distributed testers.
      * RMI implementation.
      */
-    private RemoteDistributedTesterImpl remoteDistributedTester;
+    private final RemoteDistributedTesterImpl remoteDistributedTester;
     /**
      * Thread for the distributed testers.
      */
-    private Thread thread = new Thread(new DistributedTesterThread());
+    private final Thread thread = new Thread(new DistributedTesterThread());
     /**
-     * Default profperties.
+     * Default properties.
      */
-    private TesterUtil defaults;
+    private final TesterUtil defaults;
     /**
      * GlobalVariables.
      */
-    private GlobalVariables globals;
+    private final GlobalVariables globals;
 
-    public DistributedTesterImpl(Class<?> klass, Bootstrapper boot,
-            GlobalVariables gv, TesterUtil tu) throws RemoteException {
+    public DistributedTesterImpl(Class<?> clazz, Bootstrapper boot,
+                                 GlobalVariables gv, TesterUtil tu) {
         defaults = tu;
         bootstrapper = boot;
-        testCaseClass = klass;
+        testCaseClass = clazz;
         remoteDistributedTester = new RemoteDistributedTesterImpl(tu);
         globals = gv;
     }
@@ -108,7 +99,6 @@ public class DistributedTesterImpl { //implements Serializable {
     }
 
     /**
-     *
      * @return The remote distributed tester interface.
      */
     public DistributedTester getRemoteDistributedTester() {
@@ -123,9 +113,11 @@ public class DistributedTesterImpl { //implements Serializable {
         return remoteDistributedTester.getParent();
     }
 
-   /**
+    /**
      * Registers this distributed tester with the bootstrapper and
      * receives an id.
+     *
+     * @throws java.rmi.RemoteException Remote exception
      */
     public void startThread() throws RemoteException {
         // registration cannot be done in the constructor because
@@ -145,9 +137,11 @@ public class DistributedTesterImpl { //implements Serializable {
 
     /**
      * Starts the distributed tester thread.
-     * @throws InterruptedException
+     *
+     * @throws InterruptedException     Thread exception
+     * @throws java.rmi.RemoteException Remote exception
      */
-    public void start() throws RemoteException, InterruptedException {
+    void start() throws RemoteException, InterruptedException {
         LOG.entering("DistributedTester", "start()");
 
         // 1 - Build the tree.
@@ -175,19 +169,11 @@ public class DistributedTesterImpl { //implements Serializable {
         LOG.exiting("DistributedTester", "start()");
     }
 
-    private void cleanUp() {
-        LOG.entering("DistributedTesterImpl", "cleanup()");
-
-        children.clear();
-        bootstrapper = null;
-        globals = null;
-        LOG.exiting("DistributedTesterImpl", "cleanup()");
-    }
-
     /**
      * Execution for leaf testers.
-     * @throws RemoteException
-     * @throws InterruptedException
+     *
+     * @throws RemoteException      Remote exception
+     * @throws InterruptedException Thread exception
      */
     private void runLeafTester() throws RemoteException, InterruptedException {
         LOG.entering("DistributedTesterImpl", "runLeafTester()");
@@ -198,7 +184,7 @@ public class DistributedTesterImpl { //implements Serializable {
         Tester remoteTester = localTester.getRemoteTester();
         UnicastRemoteObject.exportObject(remoteTester);
         //localTester.startThread();
-        
+
         LOG.finest("Waiting for coordinator");
         Coordinator c = remoteDistributedTester.takeCoordinator();
         LOG.finest("DT got a coordinator and will set local tester");
@@ -213,10 +199,10 @@ public class DistributedTesterImpl { //implements Serializable {
 
     /**
      * Execution for root tester (coordinator)
-     * @throws InterruptedException
-     * @throws RemoteException
+     *
+     * @throws RemoteException Remote exception
      */
-    private void runRootTester() throws InterruptedException, RemoteException {
+    private void runRootTester() throws RemoteException {
         LOG.entering("DistributedTesterImpl", "runRootTester()");
 
         // Coordinator
@@ -272,9 +258,8 @@ public class DistributedTesterImpl { //implements Serializable {
         LOG.exiting("DistributedTesterImpl", "runRootTester()");
     }
 
-    protected void initializeLogger() {
+    void initializeLogger() {
 
-        FileHandler handler;
         try {
             PeerUnitLogger.createLogger(defaults,
                     String.format("Tester%d.log", getId()));

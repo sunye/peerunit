@@ -22,44 +22,43 @@ import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
 /**
- * 
  * This objects of this class format the logging messages in conformity with
  * the values of properties file.
- * 
+ *
  * @author Eduardo Almeida
- * @author Aboubakar Koïta 
+ * @author Aboubakar Koïta
  * @version 1.0
- * @since 1.0
  * @see PeerUnitLogger
+ * @since 1.0
  */
 public class LogFormat extends Formatter {
 
     /**
      * The delimiter used for the logging.
      */
-    private static String delimiter = TesterUtil.instance.getDelimiter();
+    private static final String delimiter = TesterUtil.instance.getDelimiter();
     /**
      * The date format used for the logging.
      */
-    private static String dateformat = TesterUtil.instance.getDateformat();
+    private static final String dateFormat = TesterUtil.instance.getDateFormat();
     /**
      * The time format used for the logging.
      */
-    private static String timeformat = TesterUtil.instance.getTimeformat();
+    private static final String timeFormat = TesterUtil.instance.getTimeFormat();
 
     /**
-     *  This method is overridden to apply our own formatting
+     * This method is overridden to apply our own formatting
      *
-     *  @param rec  the content to format
-     *  @return the string resulting from formatting
+     * @param rec the content to format
+     * @return the string resulting from formatting
      */
     @Override
     public String format(LogRecord rec) {
-        StringBuffer buf = new StringBuffer(1000);
+        StringBuilder buf = new StringBuilder(1000);
 
         Timestamp time = new Timestamp(System.currentTimeMillis());
 
-        SimpleDateFormat format = new SimpleDateFormat(dateformat + "' '" + timeformat);
+        SimpleDateFormat format = new SimpleDateFormat(dateFormat + "' '" + timeFormat);
 
         buf.append(format.format(time));
         buf.append(delimiter);

@@ -20,6 +20,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 /**
  * Meta-annotation Retention indicate that this annotation must be retained
  * in runtime
@@ -33,7 +34,7 @@ public @interface TestStep {
 
     /**
      * Range of peers where the test step should be executed.
-     * 
+     *
      * @return a String in the form: "*", "54" or "4-17".
      */
     String range() default "*";
@@ -44,6 +45,5 @@ public @interface TestStep {
 
     String depend() default "";
 
-    String teste() default "teste";
-    
+    String test() default "test";
 }

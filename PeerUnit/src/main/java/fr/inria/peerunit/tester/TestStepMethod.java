@@ -16,24 +16,19 @@
  */
 package fr.inria.peerunit.tester;
 
-import java.lang.reflect.Method;
-
 import fr.inria.peerunit.parser.TestStep;
 
+import java.lang.reflect.Method;
+
 /**
- *
  * @author sunye
  */
 public class TestStepMethod extends TestMethod {
 
-    /**
-     *
-     */
-    private int order;
+    private final int order;
 
     /**
-     *
-     * @param m
+     * @param m Method instance.
      */
     public TestStepMethod(final Method m) {
         TestStep ts = m.getAnnotation(fr.inria.peerunit.parser.TestStep.class);
@@ -46,11 +41,9 @@ public class TestStepMethod extends TestMethod {
     }
 
     /**
-     *
-     * @return
+     * @return order.
      */
     public final int order() {
         return order;
     }
-
 }

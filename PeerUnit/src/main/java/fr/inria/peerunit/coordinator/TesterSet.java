@@ -18,10 +18,10 @@ package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
+
 import java.util.ArrayList;
 
 /**
- *
  * @author sunye
  */
 public interface TesterSet {
@@ -38,6 +38,6 @@ public interface TesterSet {
 
     public ResultSet getResult(MethodDescription md);
 
-    public void setResult(MethodDescription md, ResultSet rs) throws InterruptedException;
+    public void setResult(MethodDescription md, ResultSet rs);
 
 }

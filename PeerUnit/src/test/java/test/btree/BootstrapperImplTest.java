@@ -17,24 +17,19 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package test.btree;
 
 import fr.inria.peerunit.base.Data;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
+import fr.inria.peerunit.bootstrapper.BootstrapperImpl;
+import fr.inria.peerunit.distributed.DistributedTesterImpl;
+import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.util.TesterUtil;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import fr.inria.peerunit.bootstrapper.BootstrapperImpl;
-import fr.inria.peerunit.distributed.DistributedTesterImpl;
-import fr.inria.peerunit.remote.Bootstrapper;
-import fr.inria.peerunit.remote.DistributedTester;
-import fr.inria.peerunit.util.TesterUtil;
+import static org.junit.Assert.assertTrue;
 
 public class BootstrapperImplTest {
 

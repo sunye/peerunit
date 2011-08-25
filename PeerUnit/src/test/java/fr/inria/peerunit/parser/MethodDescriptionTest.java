@@ -5,17 +5,13 @@
 
 package fr.inria.peerunit.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import fr.inria.peerunit.common.MethodDescription;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.peerunit.common.MethodDescription;
+import static org.junit.Assert.*;
 
 /**
- *
  * @author sunye
  */
 public class MethodDescriptionTest {
@@ -59,7 +55,7 @@ public class MethodDescriptionTest {
      */
     @Test
     public void testGetName() {
-       assertEquals(m1.getName(), "setup");
+        assertEquals(m1.getName(), "setup");
     }
 
     /**

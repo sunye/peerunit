@@ -21,10 +21,10 @@ import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.util.TesterUtil;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author sunye
  */
 public class TesterNodeTest {
@@ -57,6 +57,6 @@ public class TesterNodeTest {
 
     @Test
     public void non() {
-        
+
     }
 }

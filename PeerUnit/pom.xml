@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>fr.inria.peerunit</groupId>
         <artifactId>PeerUnitProject</artifactId>
@@ -20,19 +21,18 @@
         </license>
     </licenses>
 
-	<properties>
-   			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-            <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-            <cobertura.maxmem>1024M</cobertura.maxmem>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <cobertura.maxmem>1024M</cobertura.maxmem>
     </properties>
 
     <distributionManagement>
         <site>
-        <id>peerunit.gforge.inria.fr</id>
-        <url>sftp://scm.gforge.inria.fr:/home/groups/peerunit/htdocs/</url>
+            <id>peerunit.gforge.inria.fr</id>
+            <url>sftp://scm.gforge.inria.fr:/home/groups/peerunit/htdocs/</url>
         </site>
     </distributionManagement>
-
 
 
     <build>
@@ -40,7 +40,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
@@ -63,40 +63,40 @@
                     <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                 </configuration>
             </plugin>
-                <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
-               </plugin>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.0</version>
             </plugin>
-<!--
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <instrumentation>
-                        <excludes>
-                            <exclude>fr/inria/**/*_Stub.class</exclude>
-                        </excludes>
-                    </instrumentation>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
- -->           
+            <!--
+                       <plugin>
+                           <groupId>org.codehaus.mojo</groupId>
+                           <artifactId>cobertura-maven-plugin</artifactId>
+                           <version>2.3</version>
+                           <configuration>
+                               <instrumentation>
+                                   <excludes>
+                                       <exclude>fr/inria/**/*_Stub.class</exclude>
+                                   </excludes>
+                               </instrumentation>
+                           </configuration>
+                           <executions>
+                               <execution>
+                                   <goals>
+                                       <goal>clean</goal>
+                                   </goals>
+                               </execution>
+                           </executions>
+                       </plugin>
+            -->
         </plugins>
     </build>
 
@@ -123,7 +123,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.6</version>
+                <version>2.6</version>
                 <configuration>
                     <configLocation>config/sun_checks.xml</configLocation>
                 </configuration>
@@ -132,21 +132,21 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>emma-maven-plugin</artifactId>
-				<version>1.0-alpha-3</version>
+                <version>1.0-alpha-3</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
                 <version>2.4</version>
             </plugin>
-			
-			<!--
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.3</version>
-            </plugin>
-			-->
+
+            <!--
+               <plugin>
+                   <groupId>org.codehaus.mojo</groupId>
+                   <artifactId>cobertura-maven-plugin</artifactId>
+                   <version>2.3</version>
+               </plugin>
+               -->
         </plugins>
     </reporting>
 
@@ -171,10 +171,10 @@
     </dependencies>
 
 
-  <scm>
-    <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</connection>
-    <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</developerConnection>
-    <url>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</url>
-  </scm>
+    <scm>
+        <connection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</connection>
+        <developerConnection>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</developerConnection>
+        <url>scm:svn:svn+ssh://scm.gforge.inria.fr/svn/peerunit/tags/PeerUnit-1.0</url>
+    </scm>
 </project>
 

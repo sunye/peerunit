@@ -20,36 +20,36 @@ import fr.inria.peerunit.Globals;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.util.PeerUnitLogger;
 import fr.inria.peerunit.util.TesterUtil;
+
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author sunye
  */
 public abstract class AbstractTester {
 
     private static final Logger LOG = Logger.getLogger(AbstractTester.class.getName());
-    protected int id;
-    protected transient GlobalVariables globals;
-    protected transient TesterUtil defaults = TesterUtil.instance;
+    int id = 0;
+    transient GlobalVariables globals = null;
+    transient TesterUtil defaults = TesterUtil.instance;
 
     /**
      * No arguments constructor.
      * Needed for serialization/deserialization of subclasses.
      */
-    public AbstractTester() {
+    AbstractTester() {
     }
 
-    public AbstractTester(GlobalVariables gv) {
+    AbstractTester(GlobalVariables gv) {
         this.globals = gv;
     }
 
     /**
      * Returns this tester's id
+     *
      * @return the tester's id
      */
     public int getId() {
@@ -58,11 +58,12 @@ public abstract class AbstractTester {
 
     /**
      * Sets the tester id.
-     * @param i
+     *
+     * @param i Id.
      */
-    public void setId(int i) {
+    void setId(int i) {
         this.id = i;
-        this.initialzeGlobals();
+        this.initializeGlobals();
     }
 
     @Override
@@ -74,27 +75,15 @@ public abstract class AbstractTester {
         this.globalTable().put(key, object);
     }
 
-    public Map<Integer, Object> getCollection() throws RemoteException {
-        return this.globalTable().getCollection();
-    }
-
     public Object get(Integer key) throws RemoteException {
         return this.globalTable().get(key);
     }
 
-    public boolean containsKey(Integer key) throws RemoteException {
-        return this.globalTable().containsKey(key);
-    }
-
-    public void clear() throws RemoteException {
-        this.globalTable().clearCollection();
-    }
-
-    protected final GlobalVariables globalTable() {
+    final GlobalVariables globalTable() {
         return globals;
     }
 
-    protected void initializeLogger() {
+    void initializeLogger() {
         try {
             PeerUnitLogger.createLogger(defaults, String.format("Tester%d.log", id));
         } catch (IOException ex) {
@@ -104,7 +93,7 @@ public abstract class AbstractTester {
         }
     }
 
-    private void initialzeGlobals() {
+    private void initializeGlobals() {
         Globals.setId(id);
     }
 }

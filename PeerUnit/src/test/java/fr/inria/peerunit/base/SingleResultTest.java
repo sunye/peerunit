@@ -5,25 +5,17 @@
 
 package fr.inria.peerunit.base;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.Verdicts;
+import org.junit.*;
+
+import static org.junit.Assert.*;
 
 /**
- *
  * @author sunye
  */
 public class SingleResultTest {
-    private MethodDescription md = new MethodDescription("n", 1 ,0, "*");
+    private MethodDescription md = new MethodDescription("n", 1, 0, "*");
 
     private SingleResult result = new SingleResult(1, md);
 
@@ -63,7 +55,7 @@ public class SingleResultTest {
         result.stop();
         long stop = System.currentTimeMillis();
         assertTrue(result.getDelay() >= 0);
-        assertTrue(stop-start >= result.getDelay());
+        assertTrue(stop - start >= result.getDelay());
     }
 
     /**
@@ -71,7 +63,7 @@ public class SingleResultTest {
      */
     @Test
     public void testAddError() {
-        result.addError(new Exception("Exception"));
+        result.addError();
         assertTrue(result.getVerdict() == Verdicts.ERROR);
     }
 
@@ -120,15 +112,15 @@ public class SingleResultTest {
      */
     @Test
     public void testAsResultSet() {
-        result.addError(new Exception());
+        result.addError();
 
         ResultSet rs = result.asResultSet();
 
         assertTrue(rs.getMethodDescription() == md);
         assertTrue(rs.size() == 1);
         assertTrue(rs.getErrors() == 1);
-        assertTrue(rs.getInconclusives() == 0);
-        assertTrue(rs.getfailures() == 0);
+        assertTrue(rs.getInconclusive() == 0);
+        assertTrue(rs.getFailures() == 0);
     }
 
 }

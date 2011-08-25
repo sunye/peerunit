@@ -16,12 +16,6 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.tester;
 
-import java.io.Serializable;
-import java.rmi.RemoteException;
-import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.base.SingleResult;
 import fr.inria.peerunit.common.MethodDescription;
@@ -30,23 +24,25 @@ import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.util.TesterUtil;
+
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.nio.channels.ClosedByInterruptException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Eduardo Almeida
  * @author Jeremy Masson
  * @author sunye
  * @version 1.0
- * @since 1.0
- * @see fr.inria.peerunit.remote.peerUnit.Tester
- * @see fr.inria.peerunit.VolatileTester
- * @see fr.inria.peerunit.remote.StorageTester
  * @see fr.inria.peerunit.remote.Coordinator
  * @see java.util.concurrent.BlockingQueue<Object>
+ * @since 1.0
  */
 public class TesterImpl extends AbstractTester implements Serializable {
 
@@ -56,35 +52,36 @@ public class TesterImpl extends AbstractTester implements Serializable {
      * The tester remote interface, RMI implementation
      */
     private final RemoteTesterImpl remoteTester;
-    private Coordinator coord;
+    private Coordinator coordinator = null;
     private TestCaseWrapper testCase;
-    private Class<?> testCaseClass;
-    private List<MethodDescription> remainingMethods =
+    private Class<?> testCaseClass = null;
+    private final List<MethodDescription> remainingMethods =
             new ArrayList<MethodDescription>(20);
     /**
      * Thread used to invoke @TestStep methods
      */
-    private Thread invocationThread;
+    private Thread invocationThread = null;
     /**
      * Thread used to run this tester.
      */
-    private Thread testerThread;
+    private Thread testerThread = null;
     /**
      * Thread used to quit this tester.
      */
-    private Thread quitThread;
+    private Thread quitThread = null;
 
     /**
      * Used to give the identifier of the tester.
      *
-     * @param klass the coordinator which give the tester's identifier.
-     * @throws RemoteException
+     * @param boot the coordinator which give the tester's identifier.
+     * @param gv   GlobalVariables instance.
+     * @throws RemoteException Remote exception.
      */
     public TesterImpl(Coordinator boot, GlobalVariables gv) throws RemoteException {
         super(gv);
-        remoteTester = new RemoteTesterImpl ();
-        coord = boot;
-        int i = coord.register(remoteTester);
+        remoteTester = new RemoteTesterImpl();
+        coordinator = boot;
+        int i = coordinator.register();
         this.setId(i);
         remoteTester.setId(i);
         testCase = new TestCaseWrapper(this);
@@ -100,7 +97,7 @@ public class TesterImpl extends AbstractTester implements Serializable {
         this(gv, i, tu, new RemoteTesterImpl());
     }
 
-    public TesterImpl(GlobalVariables gv, int i, TesterUtil tu, RemoteTesterImpl remote) {
+    private TesterImpl(GlobalVariables gv, int i, TesterUtil tu, RemoteTesterImpl remote) {
         super(gv);
         remoteTester = remote;
         defaults = tu;
@@ -122,13 +119,13 @@ public class TesterImpl extends AbstractTester implements Serializable {
     }
 
 
-    public void execute() throws InterruptedException, RemoteException {
+    void execute() throws InterruptedException, RemoteException {
         LOG.entering("TesterImpl", "execute()");
 
         // 1 - Get Coordinator;
-        coord = remoteTester.takeCoordinator();
+        coordinator = remoteTester.takeCoordinator();
         LOG.finest("Got a coordinator");
-        assert coord != null : "Null coordinator";
+        assert coordinator != null : "Null coordinator";
 
         // 2 - Wait for start message;
         remoteTester.waitForStart();
@@ -140,11 +137,11 @@ public class TesterImpl extends AbstractTester implements Serializable {
                 remainingMethods.size());
 
         // 4 - Register my test steps.
-        coord.registerMethods(new TesterRegistration(remoteTester, remainingMethods));
+        coordinator.registerMethods(new TesterRegistration(remoteTester, remainingMethods));
         // 5 - Execute all test steps.
         this.testCaseExecution();
         // 6 - Leave;
-        LOG.fine("Waiting for invokation thread");
+        LOG.fine("Waiting thread invoke the method");
 
         invocationThread.join();
 
@@ -155,7 +152,7 @@ public class TesterImpl extends AbstractTester implements Serializable {
 
         try {
             while (true) {
-                MethodDescription md = null;
+                MethodDescription md;
                 md = remoteTester.takeMethodDescription();
                 runInvocationThread(md);
                 remainingMethods.remove(md);
@@ -182,30 +179,26 @@ public class TesterImpl extends AbstractTester implements Serializable {
      * Creates the peer and the test testCase.
      * Sends the actions to be executed to the testCase.
      *
-     * @param klass the Test Case Class.
-     * @throws RemoteException
-     * @throws SecurityException
+     * @param clazz the Test Case Class.
+     * @throws SecurityException Security exception.
      */
-    public void registerTestCase(Class<?> klass) {
+    public void registerTestCase(Class<?> clazz) {
         LOG.entering("TesterImpl", "registerTestCase(CLass)");
-        testCaseClass = klass;
+        testCaseClass = clazz;
     }
 
     /**
-     *  Used to signal the finish of an method execution. If the method is
-     *  the last action of the test case, the execution of this test case
-     *  is interrupted.
-     *  @param methodAnnotation the method which was executed
+     * Used to signal the finish of an method execution. If the method is
+     * the last action of the test case, the execution of this test case
+     * is interrupted.
+     *
+     * @param r ResultSet instance.
      */
     private void executionFinished(ResultSet r) {
-        assert coord != null : "Null coordinator";
+        assert coordinator != null : "Null coordinator";
 
         try {
-            coord.methodExecutionFinished(r);
-//            if (testCase.isLastMethod()) {
-//                LOG.log(Level.FINEST, "Test Case finished");
-//                quit();
-//            }
+            coordinator.methodExecutionFinished(r);
         } catch (RemoteException e) {
             for (StackTraceElement each : e.getStackTrace()) {
                 LOG.severe(each.toString());
@@ -215,21 +208,24 @@ public class TesterImpl extends AbstractTester implements Serializable {
     }
 
     /**
-     *  Used to interrupt actions's execution. 
-     *  Cleans the action list and asks coordinator to quit.
+     * Used to interrupt actions execution.
+     * Cleans the action list and asks coordinator to quit.
+     *
+     * @throws java.rmi.RemoteException Remote exception.
      */
     public void quit() throws RemoteException {
         LOG.entering("TesterImpl", "quit()");
-        assert coord != null : "Null coordinator";
+        assert coordinator != null : "Null coordinator";
 
-        coord.quit(remoteTester);
+        coordinator.quit(remoteTester);
         this.cleanUp();
 
         LOG.exiting("TesterImpl", "quit()");
     }
 
     /**
-     *  Used to invoke an action
+     * Used to invoke an action
+     *
      * @param md the action will be invoked
      */
     private synchronized void invoke(MethodDescription md) {
@@ -265,7 +261,7 @@ public class TesterImpl extends AbstractTester implements Serializable {
             pw.flush();
             writer.flush();
             LOG.log(Level.WARNING, writer.toString());
-            result.addError(e);
+            result.addError();
         } finally {
             result.stop();
         }
@@ -274,14 +270,13 @@ public class TesterImpl extends AbstractTester implements Serializable {
         this.executionFinished(result.asResultSet());
     }
 
-    public void cleanUp() {
+    void cleanUp() {
         LOG.fine("Tester cleaning up.");
         globals = null;
-        coord = null;
+        coordinator = null;
     }
 
     /**
-     *
      * @return The Tester remote implementation.
      */
     public Tester getRemoteTester() {
@@ -296,12 +291,12 @@ public class TesterImpl extends AbstractTester implements Serializable {
     /**
      * @author Eduardo Almeida.
      * @version 1.0
-     * @since 1.0
      * @see java.lang.Runnable
+     * @since 1.0
      */
     private class Invoke implements Runnable {
 
-        MethodDescription md;
+        final MethodDescription md;
 
         public Invoke(MethodDescription md) {
             this.md = md;
@@ -344,9 +339,9 @@ public class TesterImpl extends AbstractTester implements Serializable {
                 quit();
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, "QuitThread interrupted exception", ex);
-            } catch(RemoteException re) {
+            } catch (RemoteException re) {
                 LOG.log(Level.SEVERE, "QuitThread remote exception", re);
-            }finally {
+            } finally {
                 LOG.exiting("QuitThread", "run()");
             }
         }

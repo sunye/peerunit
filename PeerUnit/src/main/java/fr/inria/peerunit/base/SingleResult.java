@@ -18,19 +18,19 @@ package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.Verdicts;
+
 import java.io.Serializable;
 
 /**
- *
  * @author sunye
  */
 public class SingleResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private MethodDescription md;
-    private int testerId;
-    private long start;
-    private long stop;
+    private final MethodDescription md;
+    private final int testerId;
+    private long start = 0L;
+    private long stop = 0L;
 
     private Verdicts verdict = Verdicts.PASS;
 
@@ -47,14 +47,14 @@ public class SingleResult implements Serializable {
         stop = System.currentTimeMillis();
     }
 
-    public void addError(Throwable t) {
+    public void addError() {
         verdict = Verdicts.ERROR;
     }
 
     public void addFailure(AssertionError ae) {
         verdict = Verdicts.FAIL;
     }
-    
+
     public void addInconclusive(Throwable t) {
         verdict = Verdicts.INCONCLUSIVE;
     }
@@ -62,7 +62,7 @@ public class SingleResult implements Serializable {
     public long getDelay() {
         return stop - start;
     }
-    
+
     public MethodDescription getMethodDescription() {
         return md;
     }
@@ -70,7 +70,7 @@ public class SingleResult implements Serializable {
     public int getTesterId() {
         return testerId;
     }
-    
+
     public Verdicts getVerdict() {
         return verdict;
     }

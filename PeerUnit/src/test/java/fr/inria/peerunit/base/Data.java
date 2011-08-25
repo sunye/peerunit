@@ -16,21 +16,17 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.base;
 
-import fr.inria.peerunit.parser.AfterClass;
-import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.SetGlobals;
-import fr.inria.peerunit.parser.SetId;
-import fr.inria.peerunit.parser.TestStep;
+import fr.inria.peerunit.parser.*;
 import fr.inria.peerunit.remote.GlobalVariables;
 
 /**
  * @author sunye
- *
- * This is not a test case !!!
- *
- * This class is only used to test the class ParserImpl
+ *         <p/>
+ *         This is not a test case !!!
+ *         <p/>
+ *         This class is only used to test the class ParserImpl
  */
-public class Data  {
+public class Data {
 
     private int id = -1;
 
@@ -60,7 +56,7 @@ public class Data  {
     public void get() {
     }
 
-    @TestStep(range = "42", timeout = 1000000,  order = 6)
+    @TestStep(range = "42", timeout = 1000000, order = 6)
     public void notHere() {
     }
 

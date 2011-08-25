@@ -25,36 +25,35 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *
  * @author sunye
  */
 public class ResultSet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<SingleResult> results;
+    private final List<SingleResult> results;
 
     private final MethodDescription method;
 
-    private AtomicInteger errors;
-    private AtomicInteger failures;
-    private AtomicInteger inconclusives;
-    private AtomicInteger passes;
+    private final AtomicInteger errors;
+    private final AtomicInteger failures;
+    private final AtomicInteger inconclusive;
+    private final AtomicInteger passes;
 
     /**
      * Accumulated value of local execution delay.
      */
-    private long accumulatedDelay = 0;
-    private long start;
-    private long stop;
-    
-    public ResultSet (MethodDescription md) {
+    private long accumulatedDelay = 0L;
+    private long start = 0L;
+    private long stop = 0L;
+
+    public ResultSet(MethodDescription md) {
         results = Collections.synchronizedList(new LinkedList<SingleResult>());
         method = md;
-	errors = new AtomicInteger(0);
-	failures = new AtomicInteger(0);
-	inconclusives = new AtomicInteger(0);
-	passes = new AtomicInteger(0);
+        errors = new AtomicInteger(0);
+        failures = new AtomicInteger(0);
+        inconclusive = new AtomicInteger(0);
+        passes = new AtomicInteger(0);
     }
 
     public void add(ResultSet other) {
@@ -62,7 +61,7 @@ public class ResultSet implements Serializable {
 
         errors.addAndGet(other.errors.intValue());
         failures.addAndGet(other.failures.intValue());
-        inconclusives.addAndGet(other.inconclusives.intValue());
+        inconclusive.addAndGet(other.inconclusive.intValue());
         passes.addAndGet(other.passes.intValue());
         accumulatedDelay += other.accumulatedDelay;
 
@@ -74,8 +73,8 @@ public class ResultSet implements Serializable {
 
         results.add(r);
         accumulatedDelay += r.getDelay();
-        switch(r.getVerdict()) {
-            case PASS: 
+        switch (r.getVerdict()) {
+            case PASS:
                 passes.incrementAndGet();
                 break;
             case ERROR:
@@ -85,7 +84,7 @@ public class ResultSet implements Serializable {
                 failures.incrementAndGet();
                 break;
             case INCONCLUSIVE:
-                inconclusives.incrementAndGet();
+                inconclusive.incrementAndGet();
                 break;
         }
     }
@@ -97,11 +96,11 @@ public class ResultSet implements Serializable {
 
     @Override
     public String toString() {
-        long average = this.size() == 0 ? 0 : accumulatedDelay/size();
+        long average = this.size() == 0 ? 0 : accumulatedDelay / size();
         return String.format("Step: %d. Pass: %d. Fails: %d. Errors: %d. " +
-			     "Inconclusive: %d.  Time elapsed: %d msec. Average: %d msec. \t Method: %s",
-			     method.getOrder(), passes.intValue(), failures.intValue(), errors.intValue(), 
-                             inconclusives.intValue(), getDelay(), average, method.getName());
+                "Inconclusive: %d.  Time elapsed: %d ms. Average: %d ms. \t Method: %s",
+                method.getOrder(), passes.intValue(), failures.intValue(), errors.intValue(),
+                inconclusive.intValue(), getDelay(), average, method.getName());
     }
 
     public void start() {
@@ -128,12 +127,12 @@ public class ResultSet implements Serializable {
         return errors.intValue();
     }
 
-    public int getfailures() {
+    public int getFailures() {
         return failures.intValue();
     }
 
-    public int getInconclusives() {
-        return inconclusives.intValue();
+    public int getInconclusive() {
+        return inconclusive.intValue();
     }
 
     public int getPass() {

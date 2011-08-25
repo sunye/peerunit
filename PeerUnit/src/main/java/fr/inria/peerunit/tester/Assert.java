@@ -19,27 +19,28 @@ package fr.inria.peerunit.tester;
 import java.util.List;
 
 /**
- * 
  * @author Eduardo Almeida
  * @version 1.0
  * @since 1.0
- *
  */
 public class Assert {
 
     /**
      * Asserts that a condition is true.
      *
+     * @param message   Message.
+     * @param condition Condition.
      */
-    static public void assertTrue(String message, boolean condition) {
+    private static void assertTrue(String message, boolean condition) {
         if (!condition) {
             fail(message);
         }
     }
 
     /**
-     * Asserts that a condition is true. 
+     * Asserts that a condition is true.
      *
+     * @param condition Condition.
      */
     static public void assertTrue(boolean condition) {
         assertTrue("", condition);
@@ -48,6 +49,7 @@ public class Assert {
     /**
      * Fails a test with the given message.
      *
+     * @param message Message.
      */
     static public void fail(String message) {
         throw new Failure(message);
@@ -55,38 +57,34 @@ public class Assert {
 
     /**
      * Fails a test with an inconclusive verdict.
+     *
+     * @param message Message.
      */
     static public void inconclusive(String message) {
         throw new InconclusiveFailure(message);
     }
 
     /**
-     * Fails a test with no message.
-     */
-    static public void fail() {
-        fail("");
-    }
-
-    /**
-     * Asserts that two objects are equal. 
+     * Asserts that two objects are equal.
      * If they are not, an {@link ComparisonFailure} is thrown with the given message.
      * If <code>expected</code> and <code>actual</code>are <code>null</code>,
      * they are considered equal.
-     * @param message the identifying message or <code>null</code> for the {@link ComparisonFailure}
-     * @param expected expected value
-     * @param actual actual value
      *
+     * @param message  the identifying message or <code>null</code> for the {@link ComparisonFailure}
+     * @param expected expected value
+     * @param actual   actual value
      */
-    static public void assertEquals(String message, Object expected, Object actual) {
-        if (expected != actual && (expected == null || ! expected.equals(actual))) {
+    private static void assertEquals(String message, Object expected, Object actual) {
+        if (expected != actual && (expected == null || !expected.equals(actual))) {
             throw new ComparisonFailure(message, expected, actual);
         }
     }
 
     /**
-     * Asserts that two objects are equal. 
+     * Asserts that two objects are equal.
+     *
      * @param expected expected value
-     * @param actual actual value
+     * @param actual   actual value
      */
     static public void assertEquals(Object expected, Object actual) {
         assertEquals("", expected, actual);
@@ -95,13 +93,13 @@ public class Assert {
     /**
      * Asserts that two lists are the same. If they are not equal,
      * an {@link AssertionError} with the given message is thrown.
-     * @param expected list of expected values.
-     * @param actual list of actual values.
-     * @param message is the message corresponding to the error.
      *
+     * @param expected list of expected values.
+     * @param actual   list of actual values.
+     * @param message  is the message corresponding to the error.
      * @since 1.0
      */
-    public static void assertListEquals(String message, List<?> expected, List<?> actual) {
+    private static void assertListEquals(String message, List<?> expected, List<?> actual) {
         if ((expected == null || actual == null) ||
                 expected.size() != actual.size() ||
                 !expected.containsAll(actual)) {

@@ -1,23 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.peerunit.tester;
 
 import fr.inria.peerunit.base.Range;
+
 import java.lang.reflect.Method;
 
 /**
- *
  * @author sunye
  */
 public abstract class TestMethod {
-    
-    protected Range range;
-    protected Method method;
-    protected int timeout;
-    protected String depend;
+
+    Range range = null;
+    Method method = null;
+    int timeout = 0;
+    String depend = null;
 
     public Range range() {
         return range;
@@ -31,12 +26,11 @@ public abstract class TestMethod {
         return timeout;
     }
 
-    protected Range newRange(String str) {
+    Range newRange(String str) {
         return Range.fromString(str);
     }
 
     public String depend() {
         return depend;
     }
-
 }

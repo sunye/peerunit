@@ -21,7 +21,6 @@ import java.rmi.RemoteException;
 
 
 /**
- *
  * @author sunye
  */
 public interface Bootstrapper extends Remote {
@@ -31,7 +30,7 @@ public interface Bootstrapper extends Remote {
      *
      * @param t The Tester to be registered.
      * @return the generated ID for the added node, or Integer.MAX_VALUE
-     * if all nodes have already been registered
+     *         if all nodes have already been registered
      * @throws java.rmi.RemoteException When a communication error occurs.
      */
     int register(DistributedTester t) throws RemoteException;
@@ -39,7 +38,7 @@ public interface Bootstrapper extends Remote {
     /**
      * Makes the boostrapper leave the system.
      *
-     * @throws RemoteException
+     * @throws RemoteException Remote exception.
      */
     void quit() throws RemoteException;
 }

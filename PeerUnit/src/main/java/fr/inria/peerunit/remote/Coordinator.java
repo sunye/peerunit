@@ -17,16 +17,14 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.remote;
 
 import fr.inria.peerunit.base.ResultSet;
-
 import fr.inria.peerunit.coordinator.TesterRegistration;
-import java.rmi.RemoteException;
-
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 public interface Coordinator extends Remote {
 
-    int register(Tester t) throws RemoteException;
+    int register() throws RemoteException;
 
     void registerMethods(TesterRegistration tr)
             throws RemoteException;
@@ -37,9 +35,8 @@ public interface Coordinator extends Remote {
     /**
      * Finish the test case and calculates the global oracle
      *
-     * @param Tester
-     * @param Verdict
-     *
+     * @param t The tester.
+     * @throws java.rmi.RemoteException Remote exception.
      */
-    void quit(Tester t) throws RemoteException;
+    public void quit(Tester t) throws RemoteException;
 }

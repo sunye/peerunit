@@ -16,36 +16,37 @@
  */
 package fr.inria.peerunit.remote;
 
+import fr.inria.peerunit.common.MethodDescription;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import fr.inria.peerunit.common.MethodDescription;
-
 /**
- * This interface represent a <i>tester/i>. A <i>tester</i> is a component who control a peer 
+ * This interface represent a <i>tester/i>. A <i>tester</i> is a component who control a peer
  * to test and executes on him the <i>actions</i> of a <i>test case</i>.
+ *
  * @author Eduardo Almeida
  * @author Aboubakar Koita
  * @version 1.0
- * @since 1.0 
  * @see fr.inria.peerunit.tester.TesterImpl
+ * @since 1.0
  */
 public interface Tester extends Remote {
 
     /**
      * Sets the coordinator for this tester.
      *
-     * @param coord
+     * @param coordinator The coordinator.
+     * @throws java.rmi.RemoteException Remote exception.
      */
-    public void setCoordinator(Coordinator coord) throws RemoteException;
+    public void setCoordinator(Coordinator coordinator) throws RemoteException;
 
     /**
      * Execute a <i>test case action</i> thanks to it description.
      *
-     * @param m is a instance of <tt>MathodDescription</tt> class containing 
-     * all informations allowing the correct execution of the <i>test case
-     * action</i> that it describes.
-     * 
+     * @param m is a instance of <tt>MethodDescription</tt> class containing
+     *          all information allowing the correct execution of the <i>test case
+     *          action</i> that it describes.
      * @throws RemoteException because the method is distant
      */
     public void execute(MethodDescription m) throws RemoteException;
@@ -53,27 +54,22 @@ public interface Tester extends Remote {
     /**
      * Return the <i>tester's</i> id.
      *
-     * @throws RemoteException
+     * @return Id.
+     * @throws RemoteException Remote exception.
      */
     public int getId() throws RemoteException;
 
     /**
-     * Stop the <i>tester</i>.
-     */
-    public void kill() throws RemoteException;
-
-    /**
      * Starts the tester.
      *
-     * @throws RemoteException
+     * @throws RemoteException Remote exception.
      */
     public void start() throws RemoteException;
 
     /**
      * Asks the tester to leave the system.
-     * 
-     * @throws RemoteException
+     *
+     * @throws RemoteException Remote exception.
      */
     public void quit() throws RemoteException;
-
 }

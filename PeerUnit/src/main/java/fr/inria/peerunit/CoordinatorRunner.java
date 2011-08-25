@@ -16,6 +16,14 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit;
 
+import fr.inria.peerunit.bootstrapper.BootstrapperImpl;
+import fr.inria.peerunit.coordinator.CoordinatorImpl;
+import fr.inria.peerunit.remote.Bootstrapper;
+import fr.inria.peerunit.remote.Coordinator;
+import fr.inria.peerunit.remote.GlobalVariables;
+import fr.inria.peerunit.util.PeerUnitLogger;
+import fr.inria.peerunit.util.TesterUtil;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,22 +34,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.bootstrapper.BootstrapperImpl;
-import fr.inria.peerunit.coordinator.CoordinatorImpl;
-import fr.inria.peerunit.remote.Bootstrapper;
-import fr.inria.peerunit.remote.Coordinator;
-import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.util.LogFormat;
-import fr.inria.peerunit.util.PeerUnitLogger;
-import fr.inria.peerunit.util.TesterUtil;
-
 /**
  * @author sunye
- * 
  */
 public class CoordinatorRunner {
 
@@ -49,11 +46,11 @@ public class CoordinatorRunner {
 
     private static final GlobalVariablesImpl globals = new GlobalVariablesImpl();
 
-    private TesterUtil defaults;
-    private static Registry registry;
+    private final TesterUtil defaults;
+    private static Registry registry = null;
 
     /**
-     * @param defaults
+     * @param tu TesterUtil instance.
      */
     public CoordinatorRunner(TesterUtil tu) {
         defaults = tu;
@@ -67,8 +64,7 @@ public class CoordinatorRunner {
     }
 
     /**
-     * @param defaults
-     * @throws IOException
+     * @throws IOException IO exception.
      */
     private void initializeLogger() throws IOException {
         PeerUnitLogger.createLogger(defaults, "coordination.log");
@@ -86,7 +82,7 @@ public class CoordinatorRunner {
     }
 
     private void start() throws RemoteException, AlreadyBoundException,
-            InterruptedException, NotBoundException {
+            InterruptedException {
 
         LOG.entering("CoordinatorRunner", "start()");
         this.bindGlobals();
@@ -102,11 +98,11 @@ public class CoordinatorRunner {
         System.exit(0);
     }
 
-    public void startCoordinator() throws RemoteException, AlreadyBoundException, InterruptedException {
+    void startCoordinator() throws RemoteException, AlreadyBoundException, InterruptedException {
         LOG.info("Using the centralized architecture");
         CoordinatorImpl cii = new CoordinatorImpl(defaults);
         Coordinator stub = (Coordinator) UnicastRemoteObject.exportObject(cii.getRemoteCoordinator(), 0);
-        LOG.info("New Coordinator address is : " + defaults.getServerAddr());
+        LOG.info("New Coordinator address is : " + defaults.getServerAddress());
         registry.bind("Coordinator", stub);
 
         Thread coordination = new Thread(cii, "Coordinator");
@@ -115,7 +111,7 @@ public class CoordinatorRunner {
         LOG.info("Coordination thread finished");
     }
 
-    public void startBootstrapper() throws RemoteException, AlreadyBoundException, InterruptedException {
+    void startBootstrapper() throws RemoteException, AlreadyBoundException, InterruptedException {
         LOG.info("Using the distributed architecture");
         BootstrapperImpl bootstrapper = new BootstrapperImpl(defaults);
 
@@ -128,10 +124,10 @@ public class CoordinatorRunner {
     }
 
     /**
-     *  Bind the remote object's stub in the registry
+     * Bind the remote object's stub in the registry
      *
-     * @throws RemoteException
-     * @throws AlreadyBoundException
+     * @throws RemoteException       Remote exception.
+     * @throws AlreadyBoundException Already bound exception.
      */
     public void bindGlobals() throws RemoteException, AlreadyBoundException {
         assert registry != null;
@@ -147,11 +143,11 @@ public class CoordinatorRunner {
             registry.unbind("Globals");
         } catch (NotBoundException e) {
             // Do nothing
-        } 
+        }
     }
 
     /**
-     * @param args
+     * @param args Arguments.
      */
     public static void main(String[] args) {
         TesterUtil defaults;
@@ -180,9 +176,6 @@ public class CoordinatorRunner {
             LOG.log(Level.SEVERE, null, ex);
             ex.printStackTrace();
         } catch (InterruptedException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
-        } catch (NotBoundException ex) {
             LOG.log(Level.SEVERE, null, ex);
             ex.printStackTrace();
         } catch (FileNotFoundException e) {

@@ -16,22 +16,6 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package test.remote;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.rmi.RemoteException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import fr.inria.peerunit.GlobalVariablesImpl;
 import fr.inria.peerunit.base.Sample;
 import fr.inria.peerunit.common.MethodDescription;
@@ -43,7 +27,20 @@ import fr.inria.peerunit.tester.TestCaseWrapper;
 import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.LogFormat;
 import fr.inria.peerunit.util.TesterUtil;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.*;
 
 public class TesterImplTest {
 
@@ -55,7 +52,6 @@ public class TesterImplTest {
     private static TesterImpl tester0, tester1, tester2;
 
     /**
-     * 
      * @throws InterruptedException
      */
     @BeforeClass
@@ -164,7 +160,7 @@ public class TesterImplTest {
     //@Test
     public void testExecute() {
         try {
-            
+
             TesterImpl tester = new TesterImpl(remoteCoordinator, globals);
             tester.getRemoteTester().setCoordinator(remoteCoordinator);
             tester.registerTestCase(Sample.class);

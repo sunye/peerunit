@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 /**
  * Meta-annotation Retention indicate that this annotation must be retained in runtime
  * Meta-annotation Target indicates that this annotation type can be used to annotate only method declarations.
@@ -28,34 +29,31 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface BeforeClass  {
+public @interface BeforeClass {
     /**
      * Range of peers where the test step should be executed.
-     * 
+     *
      * @return a String in the form: "*", "54" or "4-17".
      */
     String range() default "*";
-	
+
     /**
-     * @deprecated  As of release 1.0, replaced by {@link #range()}
-     * @return
+     * @return Int
+     * @deprecated As of release 1.0, replaced by {@link #range()}
      */
-    @Deprecated
-	int place() default -1;
-	
+    @Deprecated int place() default -1;
+
     /**
-     * @deprecated  As of release 1.0, replaced by {@link #range()}
-     * @return
+     * @return Int
+     * @deprecated As of release 1.0, replaced by {@link #range()}
      */
-    @Deprecated
-	int from() default -1;
-	
+    @Deprecated int from() default -1;
+
     /**
-     * @deprecated  As of release 1.0, replaced by {@link #range()}
-     * @return
+     * @return Int
+     * @deprecated As of release 1.0, replaced by {@link #range()}
      */
-    @Deprecated
-	int to() default -1;
-	
-	int timeout() default -1;
+    @Deprecated int to() default -1;
+
+    int timeout() default -1;
 }

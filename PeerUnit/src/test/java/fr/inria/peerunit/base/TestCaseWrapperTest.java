@@ -8,24 +8,24 @@ import fr.inria.peerunit.GlobalVariablesImpl;
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.coordinator.CoordinatorImpl;
 import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.tester.ComparisonFailure;
 import fr.inria.peerunit.tester.Failure;
 import fr.inria.peerunit.tester.TestCaseWrapper;
 import fr.inria.peerunit.tester.TesterImpl;
 import fr.inria.peerunit.util.TesterUtil;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
- *
  * @author sunye
  */
 public class TestCaseWrapperTest {
@@ -78,14 +78,14 @@ public class TestCaseWrapperTest {
      */
     @Test
     public void testRegister() {
-        Method[] methods =  Data.class.getMethods();
+        Method[] methods = Data.class.getMethods();
         List<String> names = new ArrayList<String>(methods.length);
         List<MethodDescription> l = wrapper.register(fr.inria.peerunit.base.Data.class);
 
         // Only 8 methods should be registered for tester 0
-        assertTrue("Only "+l.size()+" methods found.", l.size() == 8);
+        assertTrue("Only " + l.size() + " methods found.", l.size() == 8);
 
-        for(Method each : methods) {
+        for (Method each : methods) {
             names.add(each.getName());
         }
 
@@ -101,7 +101,7 @@ public class TestCaseWrapperTest {
     @Test
     public void testGetMethod() {
         List<MethodDescription> listMethodDesc = wrapper.register(Data.class);
-        List<Method> methods =  java.util.Arrays.asList(Data.class.getMethods());
+        List<Method> methods = java.util.Arrays.asList(Data.class.getMethods());
 
         for (MethodDescription each : listMethodDesc) {
             Method m = wrapper.getMethod(each);
@@ -128,6 +128,7 @@ public class TestCaseWrapperTest {
             fail("Wrong exception thrown");
         }
     }
+
     /**
      * Test of invoke method, of class TestCaseWrapper.
      */
@@ -149,18 +150,18 @@ public class TestCaseWrapperTest {
         }
     }
 
-     /**
+    /**
      * Test of invoke method, of class TestCaseWrapper.
      */
     @Test
     public void testInvokePass() throws Exception {
         wrapper.register(Sample.class);
         MethodDescription md = new MethodDescription("first", 1, 1000, "*");
-        
+
         assertNotNull(wrapper.getMethod(md));
         try {
             wrapper.invoke(md);
-            
+
         } catch (Throwable t) {
             fail("Exception thrown");
         }
@@ -182,18 +183,17 @@ public class TestCaseWrapperTest {
 //        }
 //        assertTrue(wrapper.isLastMethod());
 //    }
-
     @Test
     public void testSetId() {
         wrapper.register(fr.inria.peerunit.base.Data.class);
-        Data d = (Data) wrapper.getTestcase();
-        assertTrue (d.getId() == 0) ;
+        Data d = (Data) wrapper.getTestCase();
+        assertTrue(d.getId() == 0);
     }
 
     @Test
     public void testSetGlobals() {
         wrapper.register(fr.inria.peerunit.base.Data.class);
-        Data d = (Data) wrapper.getTestcase();
-        assertTrue (d.getGlobals() == globals) ;
+        Data d = (Data) wrapper.getTestCase();
+        assertTrue(d.getGlobals() == globals);
     }
 }

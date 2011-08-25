@@ -24,6 +24,7 @@ import fr.inria.peerunit.coordinator.TesterRegistration;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.Tester;
 import fr.inria.peerunit.tester.RemoteTesterImpl;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,16 +35,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author sunye
  */
-public class MiddleTester {
+class MiddleTester {
 
-    private static Logger LOG = Logger.getLogger(MiddleTester.class.getName());
+    private static final Logger LOG = Logger.getLogger(MiddleTester.class.getName());
     /**
      * Coordinator of this tester.
      */
-    private Coordinator parent;
+    private Coordinator parent = null;
     /**
      * Testers registered to this coordinator
      */
@@ -56,7 +56,7 @@ public class MiddleTester {
     private final RemoteTesterImpl tester;
     /**
      * Coordinator interface, RMI implementation.
-     * Used to communicate with the childre (Testers), which think this is a
+     * Used to communicate with the children (Testers), which think this is a
      * coordinator.
      */
     private final RemoteCoordinatorImpl coordinator;
@@ -71,23 +71,23 @@ public class MiddleTester {
     /**
      * Schedule (Methods X Testers)
      */
-    private Schedule schedule = new Schedule();
+    private final Schedule schedule = new Schedule();
     /**
      * Number of running testers in a given moment.
      */
-    private AtomicInteger runningTesters = new AtomicInteger(0);
+    private final AtomicInteger runningTesters = new AtomicInteger(0);
     /**
      * Result set for a method execution.
      */
-    private ResultSet executionResult;
+    private ResultSet executionResult = null;
     /**
      * Thread used to run this tester.
      */
-    private Thread testerThread;
+    private Thread testerThread = null;
     /**
      * Thread used to quit this tester.
      */
-    private Thread quitThread;
+    private Thread quitThread = null;
 
     public MiddleTester(int testerNbr) {
         tester = new RemoteTesterImpl();
@@ -99,6 +99,7 @@ public class MiddleTester {
 
     /**
      * Accessor to the tester interface
+     *
      * @return the Tester interface
      */
     public Tester getTester() {
@@ -107,6 +108,7 @@ public class MiddleTester {
 
     /**
      * Accessor to the coordinator interface
+     *
      * @return the Coordinator interface
      */
     public Coordinator getCoordinator() {
@@ -116,20 +118,22 @@ public class MiddleTester {
     /**
      * MiddleTester main execution behavior, which mixes coordination and
      * testers.
-     * @throws InterruptedException
-     * @throws RemoteException
+     *
+     * @throws InterruptedException Thread exception.
+     * @throws RemoteException      Remote exception.
      */
-    public void execute() throws InterruptedException, RemoteException {
+    void execute() throws InterruptedException, RemoteException {
         LOG.entering("ManInTheMiddle", "execute()");
         this.waitForTesterRegistration();
         this.registerWithParent();
         this.testCaseExecution();
-        //this.waitAllTestersToQuit();
         LOG.exiting("ManInTheMiddle", "execute()");
     }
 
     /**
      * Waits for all expected testers to register their methods (TestSteps).
+     *
+     * @throws InterruptedException Thread exception.
      */
     private void waitForTesterRegistration() throws InterruptedException {
         LOG.entering("ManInTheMiddle", "execute()");
@@ -147,13 +151,13 @@ public class MiddleTester {
     }
 
     /**
-     * Registers methods with parent tester. The registerd methods is a Set,
+     * Registers methods with parent tester. The registered methods is a Set,
      * union of all children methods.
      * For instance, if child 1 must execute 2 methods (a, b) and child 2
      * must execute methods (a, c), methods (a, b, c) will be registered.
-     * 
-     * @throws InterruptedException
-     * @throws RemoteException
+     *
+     * @throws InterruptedException Thread exception.
+     * @throws RemoteException      Remote exception.
      */
     private void registerWithParent() throws InterruptedException, RemoteException {
         parent = tester.takeCoordinator();
@@ -162,30 +166,25 @@ public class MiddleTester {
 
     /**
      * Waits for execution messages from parent and dispatches to children.
-     * 
-     * @throws InterruptedException
-     * @throws RemoteException
+     *
+     * @throws InterruptedException Thread exception.
+     * @throws RemoteException      Remote exception.
      */
     private void testCaseExecution() throws InterruptedException, RemoteException {
         LOG.entering("ManInTheMiddle", "testCaseExecution()");
-
-        //Collection<MethodDescription> remainingMethods = schedule.methods();
-
-        //while (remainingMethods.size() > 0) {
-        while(true) {
+        // needs a exception to terminate.
+        while (true) {
             MethodDescription md = tester.takeMethodDescription();
             this.methodExecution(md);
             this.waitForExecutionFinished();
-            //remainingMethods.remove(md);
         }
-        //LOG.exiting("ManInTheMiddle", "testCaseExecution()");
     }
 
     /**
      * Dispatches a execution message to all concerned children.
-     * 
-     * @param md
-     * @throws RemoteException
+     *
+     * @param md Method description.
+     * @throws RemoteException Remote exception.
      */
     private void methodExecution(MethodDescription md) throws RemoteException {
         LOG.entering("ManInTheMiddle", "methodExecution()");
@@ -210,8 +209,8 @@ public class MiddleTester {
     /**
      * Waits for a response from all children that executed a method.
      *
-     * @throws InterruptedException
-     * @throws RemoteException
+     * @throws InterruptedException Thread exception.
+     * @throws RemoteException      Remote exception.
      */
     private void waitForExecutionFinished() throws InterruptedException, RemoteException {
         LOG.entering("ManInTheMiddle", "waitForExecutionFinished()");
@@ -228,9 +227,9 @@ public class MiddleTester {
 
     /**
      * Waits for all children to quit and then quits with parent.
-     * 
-     * @throws InterruptedException
-     * @throws RemoteException
+     *
+     * @throws InterruptedException Thread exception
+     * @throws RemoteException      Remote exception
      */
     private void waitAllTestersToQuit() throws InterruptedException, RemoteException {
         LOG.entering("ManInTheMiddle", "waitAllTestersToQuit()");

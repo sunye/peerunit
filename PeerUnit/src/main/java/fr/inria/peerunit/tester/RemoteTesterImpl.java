@@ -16,14 +16,12 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.tester;
 
-import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.common.MethodDescription;
-
-
+import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.Tester;
+
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -31,11 +29,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 /**
- *
  * @author sunye
  */
 public class RemoteTesterImpl implements Tester, Serializable {
-    private static Logger LOG = Logger.getLogger(RemoteTesterImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(RemoteTesterImpl.class.getName());
 
     private static final long serialVersionUID = 1L;
     /**
@@ -45,17 +42,17 @@ public class RemoteTesterImpl implements Tester, Serializable {
     /**
      * The (remote) Coordinator for this tester
      */
-    private transient Coordinator coordinator;
+    private transient Coordinator coordinator = null;
     /**
      * The next TestStep to be executed.
      */
-    private transient MethodDescription action;
-    private transient AtomicBoolean start = new AtomicBoolean(false);
+    private transient MethodDescription action = null;
+    private final transient AtomicBoolean start = new AtomicBoolean(false);
 
     /**
      * Quit status. When set to true, makes the Tester leave the system.
      */
-    private transient AtomicBoolean quit = new AtomicBoolean(false);
+    private final transient AtomicBoolean quit = new AtomicBoolean(false);
     /**
      * Locks for blocking multi-threaded methods.
      */
@@ -66,12 +63,12 @@ public class RemoteTesterImpl implements Tester, Serializable {
     private final Condition mayQuit = lock.newCondition();
 
     /**
-     * 
+     *
      */
-    public void setCoordinator(Coordinator coord) throws RemoteException {
+    public void setCoordinator(Coordinator coordinator) throws RemoteException {
         lock.lock();
         try {
-            this.coordinator = coord;
+            this.coordinator = coordinator;
             hasCoordinator.signal();
         } finally {
             lock.unlock();
@@ -79,7 +76,7 @@ public class RemoteTesterImpl implements Tester, Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void execute(MethodDescription m) throws RemoteException {
         LOG.entering("RemoteTesterImpl", "execute()");
@@ -96,7 +93,7 @@ public class RemoteTesterImpl implements Tester, Serializable {
     }
 
     /**
-     * 
+     *
      */
     public int getId() throws RemoteException {
         assert id != -1 : "Id not set";
@@ -105,7 +102,7 @@ public class RemoteTesterImpl implements Tester, Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void quit() throws RemoteException {
         lock.lock();
@@ -114,11 +111,11 @@ public class RemoteTesterImpl implements Tester, Serializable {
             mayQuit.signal();
         } finally {
             lock.unlock();
-        } 
+        }
     }
-    
+
     /**
-     * @see 
+     * @see
      */
     public void start() throws RemoteException {
         lock.lock();
@@ -133,9 +130,9 @@ public class RemoteTesterImpl implements Tester, Serializable {
     /**
      * Returns the next TestStep to execute.
      * Blocks until a new TestStep is available.
-     * 
+     *
      * @return The description of the TestStep to be executed
-     * @throws InterruptedException
+     * @throws InterruptedException Thread exception.
      */
     public MethodDescription takeMethodDescription() throws InterruptedException {
         MethodDescription md;
@@ -156,9 +153,9 @@ public class RemoteTesterImpl implements Tester, Serializable {
     /**
      * Returns the coordinator for this tester.
      * Blocks until the coordinator is available.
-     * 
+     *
      * @return The Coordinator for this tester.
-     * @throws InterruptedException
+     * @throws InterruptedException Thread exception.
      */
     public Coordinator takeCoordinator() throws InterruptedException {
         lock.lock();
@@ -176,8 +173,8 @@ public class RemoteTesterImpl implements Tester, Serializable {
     /**
      * Waits for the arrival of a start message.
      * Blocks the current thread until the start attribute becomes true;
-     * 
-     * @throws InterruptedException
+     *
+     * @throws InterruptedException Thread exception.
      */
     public void waitForStart() throws InterruptedException {
         lock.lock();
@@ -193,8 +190,8 @@ public class RemoteTesterImpl implements Tester, Serializable {
     /**
      * Returns true if the current tester should quit
      * and false for any other case.
-     * 
-     * @return teh quit status.
+     *
+     * @throws InterruptedException Thread exception.
      */
     public void waitForQuit() throws InterruptedException {
         lock.lock();
@@ -214,29 +211,5 @@ public class RemoteTesterImpl implements Tester, Serializable {
     @Override
     public String toString() {
         return String.format("RemoteTesterImpl %d", id);
-    }
-
-    public void kill() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void put(Integer key, Object object) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Map<Integer, Object> getCollection() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Object get(Integer key) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean containsKey(Integer key) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void clear() throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

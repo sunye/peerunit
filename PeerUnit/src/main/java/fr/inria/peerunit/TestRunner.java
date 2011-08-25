@@ -16,6 +16,12 @@
  */
 package fr.inria.peerunit;
 
+import fr.inria.peerunit.distributed.DistributedTesterImpl;
+import fr.inria.peerunit.remote.*;
+import fr.inria.peerunit.tester.TesterImpl;
+import fr.inria.peerunit.util.LogFormat;
+import fr.inria.peerunit.util.TesterUtil;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,22 +35,12 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.distributed.DistributedTesterImpl;
-import fr.inria.peerunit.remote.Bootstrapper;
-import fr.inria.peerunit.remote.Coordinator;
-import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.remote.Tester;
-import fr.inria.peerunit.remote.DistributedTester;
-import fr.inria.peerunit.tester.TesterImpl;
-import fr.inria.peerunit.util.LogFormat;
-import fr.inria.peerunit.util.TesterUtil;
-
 /**
  * A <i>test</i> on a peer is launched by a instance of the <tt>TestRunner</tt> class. Its role consists
  * to launch the right implementation of <i>Tester</i> interface, i.e centralized or distributed (the type
  * is set in the framework property file ), passing it as argument the <tt>Class</tt> instance corresponding
  * to the <i>test case</i> to perform.
- * 
+ *
  * @author sunye
  * @author Aboubakar Koita
  * @version 1.0
@@ -52,47 +48,34 @@ import fr.inria.peerunit.util.TesterUtil;
  */
 public class TestRunner {
 
-    /**
-     * The test case that will be excuted and those name was
-     * passed at the command line.
-     */
-    private Class<?> testcase;
-    private TesterUtil defaults;
-    private Registry registry;
+    private final TesterUtil defaults;
     private static final Logger LOG = Logger.getLogger(TestRunner.class.getName());
 
     /**
      * Launch the right implementation of <i>tester</i> passing it as argument the <tt>Class</tt>
      * instance corresponding to the <i>test case</i> to execute.
      *
-     * @param klass the<tt>Class</tt> instance corresponding to the <i>test case</i> to execute
+     * @param clazz the<tt>Class</tt> instance corresponding to the <i>test case</i> to execute
+     * @param tu    TesterUtil instance.
      */
-    public TestRunner(Class<?> klass, TesterUtil tu) {
+    private TestRunner(Class<?> clazz, TesterUtil tu) {
 
         defaults = tu;
-        testcase = klass;
 
         Bootstrapper boot = null;
         Coordinator coordinator = null;
 
-        registry = null;
+        Registry registry = null;
         int times = 0;
         boolean centralized = true;
 
-        this.initializeLogger();
+        initializeLogger();
+
         try {
-            registry = LocateRegistry.getRegistry(defaults.getServerAddr(),
-                    defaults.getRegistryPort());
+            registry = LocateRegistry.getRegistry(defaults.getServerAddress(), defaults.getRegistryPort());
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
-
-        /**
-        try {
-            registry = LocateRegistry.getRegistry(defaults.getRegistryPort());
-        } catch (RemoteException ex) {
-            ex.printStackTrace();
-        }*/
 
         while (times < 5 && boot == null) {
             try {
@@ -103,22 +86,25 @@ public class TestRunner {
                 try {
                     coordinator = (Coordinator) registry.lookup("Coordinator");
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } catch (AccessException ex) {
+                ex.printStackTrace();
             } catch (RemoteException ex) {
+                ex.printStackTrace();
             }
             times++;
             if (boot == null) {
                 try {
-                    Thread.sleep(300*times);
+                    Thread.sleep(300 * times);
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-            
         }
 
         if (boot == null && coordinator == null) {
-            LOG.severe("Unable to bind server: "+defaults.getServerAddr()+
+            LOG.severe("Unable to bind server: " + defaults.getServerAddress() +
                     " at port " + defaults.getRegistryPort());
             System.exit(1);
         }
@@ -132,7 +118,7 @@ public class TestRunner {
                 UnicastRemoteObject.exportObject(remoteTester);
                 remoteTester.setCoordinator(coordinator);
 
-                tester.registerTestCase(testcase);
+                tester.registerTestCase(clazz);
                 tester.startThread();
                 remoteTester.start();
                 tester.join();
@@ -142,7 +128,7 @@ public class TestRunner {
 
             } else {
                 LOG.fine("Bootstrapper found, using the distributed architecture.");
-                DistributedTesterImpl tester = new DistributedTesterImpl(testcase, boot, globals, defaults);
+                DistributedTesterImpl tester = new DistributedTesterImpl(clazz, boot, globals, defaults);
                 DistributedTester remoteTester = tester.getRemoteDistributedTester();
                 UnicastRemoteObject.exportObject(remoteTester);
                 tester.startThread();
@@ -154,7 +140,7 @@ public class TestRunner {
         } catch (Exception e) {
             LOG.warning(e.getLocalizedMessage());
             e.printStackTrace(System.err);
-        } 
+        }
 
     }
 
@@ -187,7 +173,7 @@ public class TestRunner {
         } else {
             String name = args[0];
             try {
-                Class<?> klass = Class.forName(name);
+                Class<?> clazz = Class.forName(name);
 
                 if (args.length > 1) {
                     filename = args[1];
@@ -201,7 +187,7 @@ public class TestRunner {
                     defaults = TesterUtil.instance;
                 }
 
-                new TestRunner(klass, defaults);
+                new TestRunner(clazz, defaults);
 
             } catch (FileNotFoundException e) {
                 System.err.println("Error: Unable to open properties file");
