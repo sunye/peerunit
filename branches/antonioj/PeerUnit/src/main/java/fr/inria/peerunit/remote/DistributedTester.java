@@ -9,15 +9,15 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 /**
- *
  * @author sunye
  */
-public interface DistributedTester extends Remote {// extends Tester, Coordinator {
+public interface DistributedTester extends Remote {
 
     /**
      * Register several (child) testers.
-     * @param testers
-     * @throws RemoteException
+     *
+     * @param testers Distributed testers.
+     * @throws RemoteException Remote exception.
      */
     void registerTesters(List<DistributedTester> testers)
             throws RemoteException;
@@ -29,6 +29,6 @@ public interface DistributedTester extends Remote {// extends Tester, Coordinato
     void setCoordinator(Coordinator c) throws RemoteException;
 
     int getId() throws RemoteException;
-    
+
     String getAddress() throws RemoteException;
 }

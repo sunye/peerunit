@@ -5,17 +5,16 @@
 
 package fr.inria.peerunit.tester;
 
-import java.lang.reflect.Method;
-
 import fr.inria.peerunit.parser.AfterClass;
 
+import java.lang.reflect.Method;
+
 /**
- *
  * @author sunye
  */
 public class AfterClassMethod extends TestMethod {
 
-    public  AfterClassMethod(Method m) {
+    public AfterClassMethod(Method m) {
         AfterClass ac = m.getAnnotation(AfterClass.class);
         timeout = ac.timeout();
         method = m;

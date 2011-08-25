@@ -19,6 +19,7 @@ package fr.inria.peerunit.distributed;
 import fr.inria.peerunit.remote.Coordinator;
 import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.util.TesterUtil;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -33,31 +34,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author sunye
  */
 public class RemoteDistributedTesterImpl implements DistributedTester, Serializable {
 
-    private static Logger LOG =
-            Logger.getLogger(RemoteDistributedTesterImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(RemoteDistributedTesterImpl.class.getName());
 
-    private int id;
+    private int id = 0;
 
-    private List<DistributedTester> children;
+    private final List<DistributedTester> children;
 
-    private DistributedTester parent;
+    private DistributedTester parent = null;
     /**
      * The (remote) Coordinator for this tester
      */
-    private Coordinator coordinator;
-    private String  address;
+    private Coordinator coordinator = null;
+    private String address = null;
 
-    /**
-     * Number of expected testers for this coordinator.
-     * Only used for distributed testers.
-     * TODO: refactoring needed.
-     */
-    //private int expectedTesters = 0;
     /**
      * Locks for blocking multi-threaded methods.
      */
@@ -65,12 +58,12 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
     private final Condition mayStart = lock.newCondition();
     private final Condition hasCoordinator = lock.newCondition();
 
-    private transient AtomicBoolean start = new AtomicBoolean(false);
+    private final transient AtomicBoolean start = new AtomicBoolean(false);
 
     public RemoteDistributedTesterImpl(TesterUtil tu) {
         this.children = new ArrayList<DistributedTester>(tu.getTreeOrder());
         try {
-            address = InetAddress.getLocalHost().getHostAddress() ;
+            address = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException ex) {
             LOG.log(Level.SEVERE, "UnknownHost", ex);
         }
@@ -80,11 +73,11 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
     /**
      *
      */
-    public void setCoordinator(Coordinator coord) throws RemoteException {
+    public void setCoordinator(Coordinator coordinator) throws RemoteException {
         LOG.entering("RemoteDistributedTesterImpl", "setCoordinator");
         lock.lock();
         try {
-            this.coordinator = coord;
+            this.coordinator = coordinator;
             hasCoordinator.signal();
         } finally {
             lock.unlock();
@@ -97,7 +90,7 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
      * Blocks until the coordinator is available.
      *
      * @return The Coordinator for this tester.
-     * @throws InterruptedException
+     * @throws InterruptedException Thread exception.
      */
     public Coordinator takeCoordinator() throws InterruptedException {
         lock.lock();
@@ -111,20 +104,20 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
 
         return coordinator;
     }
-    
+
     /**
      * Tester interface.
-     * @param coord
+     *
+     * @param testers Distributed testers.
      * @throws RemoteException
      */
     public void registerTesters(List<DistributedTester> testers) throws RemoteException {
-        LOG.finest("Registering "+testers.size() + " testers.");
+        LOG.finest("Registering " + testers.size() + " testers.");
         //expectedTesters = testers.size();
         this.children.addAll(testers);
     }
 
     /**
-     *
      * @return The local IP address of this tester.
      * @throws RemoteException
      */
@@ -152,7 +145,7 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
     int id() {
         return id;
     }
-    
+
     DistributedTester getParent() {
         return this.parent;
     }
@@ -175,7 +168,7 @@ public class RemoteDistributedTesterImpl implements DistributedTester, Serializa
      * Waits for the arrival of a start message.
      * Blocks the current thread until the start attribute becomes true;
      *
-     * @throws InterruptedException
+     * @throws InterruptedException Thread exception.
      */
     void waitForStart() throws InterruptedException {
         lock.lock();

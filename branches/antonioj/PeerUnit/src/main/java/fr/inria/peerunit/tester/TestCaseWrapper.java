@@ -16,6 +16,10 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.tester;
 
+import fr.inria.peerunit.common.MethodDescription;
+import fr.inria.peerunit.parser.*;
+import fr.inria.peerunit.remote.GlobalVariables;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,25 +29,14 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.inria.peerunit.TestCase;
-import fr.inria.peerunit.common.MethodDescription;
-import fr.inria.peerunit.parser.AfterClass;
-import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.SetGlobals;
-import fr.inria.peerunit.parser.SetId;
-import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.remote.GlobalVariables;
-
 /**
- *
  * @author sunye
  */
 public class TestCaseWrapper {
 
-    private static Logger LOG = Logger.getLogger(TestCaseWrapper.class.getName());
-    private Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
-    private List<MethodDescription> remainingMethods;
-    private Object testcase;
+    private static final Logger LOG = Logger.getLogger(TestCaseWrapper.class.getName());
+    private final Map<MethodDescription, Method> methods = new TreeMap<MethodDescription, Method>();
+    private Object testCase = null;
     private int testerId = -1;
     private TesterImpl tester;
 
@@ -57,6 +50,7 @@ public class TestCaseWrapper {
 
     /**
      * Get the method following methodDescription
+     *
      * @param md Method Description
      * @return the method
      */
@@ -74,41 +68,29 @@ public class TestCaseWrapper {
 
         assert methods.containsKey(md) : "Method should be registered";
         //assert remainingMethods.contains(md) : "Method already executed";
-        assert testcase != null : "Test Case instance should not be null";
+        assert testCase != null : "Test Case instance should not be null";
 
         Method m = methods.get(md);
         try {
-            m.invoke(testcase, (Object[]) null);
+            m.invoke(testCase, (Object[]) null);
         } catch (IllegalAccessException e) {
             e.fillInStackTrace();
             throw e.getCause();
         } catch (InvocationTargetException e) {
             e.fillInStackTrace();
             throw e.getCause();
-        } finally {
-            //remainingMethods.remove(md);
         }
     }
 
     /**
-     * Verifies if no more methods remain.
-     * 
-     * @return true if the method is the last one to be executed
-     */
-    @Deprecated
-    private boolean isLastMethod() {
-
-        return remainingMethods.isEmpty();
-    }
-
-    /**
      * Parse the test case to extract the methods to be executed
-     * @param class
-     * @return List of methods to be executed
+     *
+     * @param clazz Test case class.
+     * @return List of methods to be executed.
      */
-    public List<MethodDescription> register(Class<?> klass) {
+    public List<MethodDescription> register(Class<?> clazz) {
 
-        ClassFilter filter = new ClassFilter(klass);
+        ClassFilter filter = new ClassFilter(clazz);
         methods.clear();
 
         //TestStep
@@ -136,17 +118,14 @@ public class TestCaseWrapper {
 
         //TestCase instantiation
         try {
-            testcase = klass.newInstance();
-//            if (TestCase.class.isAssignableFrom(klass)) {
-//                ((TestCase) testcase).setTester(tester);
-//            }
+            testCase = clazz.newInstance();
 
             if (filter.setId() != null) {
-                filter.setId().invoke(testcase, testerId);
+                filter.setId().invoke(testCase, testerId);
             }
 
             if (filter.setGlobals() != null) {
-                filter.setGlobals().invoke(testcase, tester.globalTable());
+                filter.setGlobals().invoke(testCase, tester.globalTable());
             }
 
         } catch (InstantiationException e) {
@@ -159,26 +138,22 @@ public class TestCaseWrapper {
             LOG.log(Level.SEVERE, "Invocation Target Exception", ex);
         }
 
-        remainingMethods = new ArrayList<MethodDescription>(methods.keySet());
-        return remainingMethods;
+        return new ArrayList<MethodDescription>(methods.keySet());
     }
 
-    public Object getTestcase() {
-        return testcase;
+    public Object getTestCase() {
+        return testCase;
     }
 
-    public Map<MethodDescription, Method> getMethods() {
-        return methods;
-    }
 }
 
 class ClassFilter {
 
-    private List<TestStepMethod> stepMethods = new ArrayList<TestStepMethod>();
-    private List<BeforeClassMethod> beforeMethods = new ArrayList<BeforeClassMethod>();
-    private List<AfterClassMethod> afterMethods = new ArrayList<AfterClassMethod>();
-    private Method setId;
-    private Method setGlobals;
+    private final List<TestStepMethod> stepMethods = new ArrayList<TestStepMethod>();
+    private final List<BeforeClassMethod> beforeMethods = new ArrayList<BeforeClassMethod>();
+    private final List<AfterClassMethod> afterMethods = new ArrayList<AfterClassMethod>();
+    private Method setId = null;
+    private Method setGlobals = null;
 
     public ClassFilter(Class<?> c) {
 

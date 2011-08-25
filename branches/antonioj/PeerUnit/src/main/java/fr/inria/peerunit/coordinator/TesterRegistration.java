@@ -18,17 +18,19 @@ package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.remote.Tester;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class TesterRegistration implements Serializable {
 
     private final Tester tester;
-    private final Collection<MethodDescription> methods;
+    private final Collection<MethodDescription> methods = new ArrayList<MethodDescription>();
 
     public TesterRegistration(Tester t, Collection<MethodDescription> coll) {
         tester = t;
-        methods = coll;
+        methods.addAll(coll);
     }
 
     public Tester tester() {

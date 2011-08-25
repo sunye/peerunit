@@ -16,24 +16,16 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.bootstrapper;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.util.HNode;
 import fr.inria.peerunit.util.HTree;
 import fr.inria.peerunit.util.TesterUtil;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+
+import java.rmi.RemoteException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author sunye
@@ -42,10 +34,6 @@ public class GridStrategy implements TreeStrategy {
 
     private static final Logger LOG = Logger.getLogger(GridStrategy.class.getName());
     /**
-     * default values for global variables
-     */
-    private TesterUtil defaults;
-    /**
      * Map containing IP Address X Tester
      */
     private final HTree<String, TesterNode> testerTree;
@@ -53,9 +41,8 @@ public class GridStrategy implements TreeStrategy {
 
 
     public GridStrategy(TesterUtil tu) {
-        defaults = tu;
         testerMap = new TesterMap();
-        testerTree = new HTree<String, TesterNode>(defaults.getTreeOrder());
+        testerTree = new HTree<String, TesterNode>(tu.getTreeOrder());
     }
 
     public void register(DistributedTester tester) {
@@ -63,7 +50,7 @@ public class GridStrategy implements TreeStrategy {
         String address = "Unknown";
         try {
             address = tester.getAddress();
-        } catch (RemoteException ex) {
+        } catch (RemoteException ignored) {
         }
         LOG.info("New tester:" + address);
 
@@ -78,7 +65,7 @@ public class GridStrategy implements TreeStrategy {
         LOG.fine("Ready to build the tester tree");
         LOG.fine(testerMap.toString());
         for (Map.Entry<String, Collection<DistributedTester>> each : testerMap.entrySet()) {
-            DistributedTester[] aux  = each.getValue().toArray(new DistributedTester[]{});
+            DistributedTester[] aux = each.getValue().toArray(new DistributedTester[]{});
             testerTree.put(each.getKey(), new TesterNode(aux));
         }
     }
@@ -118,9 +105,9 @@ public class GridStrategy implements TreeStrategy {
         }
     }
 
-    private void register(TesterNode tn, List<TesterNode> children) 
+    private void register(TesterNode tn, List<TesterNode> children)
             throws RemoteException {
-        
+
         List<DistributedTester> list = new LinkedList<DistributedTester>();
         list.addAll(tn.dependents());
         for (TesterNode each : children) {
@@ -130,10 +117,10 @@ public class GridStrategy implements TreeStrategy {
     }
 
     private void register(TesterNode tn) throws RemoteException {
-        if (! tn.dependents().isEmpty()) {
+        if (!tn.dependents().isEmpty()) {
             tn.head().registerTesters(tn.dependents());
         }
-        
+
     }
 
     public int getRegistered() {
@@ -151,14 +138,14 @@ public class GridStrategy implements TreeStrategy {
 
     class TesterMap {
 
-        private AtomicInteger size = new AtomicInteger(0);
-        private Map<String, Collection<DistributedTester>> testers;
+        private final AtomicInteger size = new AtomicInteger(0);
+        private final Map<String, Collection<DistributedTester>> testers;
 
         public TesterMap() {
-            testers =  Collections.synchronizedMap(
+            testers = Collections.synchronizedMap(
                     new HashMap<String, Collection<DistributedTester>>());
         }
-        
+
         void put(String address, DistributedTester tester) {
             if (!testers.containsKey(address)) {
                 testers.put(address, Collections.synchronizedList(
@@ -176,20 +163,16 @@ public class GridStrategy implements TreeStrategy {
             testers.clear();
         }
 
-        Collection<Collection<DistributedTester>> values() {
-            return testers.values();
-        }
-
         Set<Map.Entry<String, Collection<DistributedTester>>> entrySet() {
             return testers.entrySet();
         }
 
         @Override
         public String toString() {
-            StringBuffer result = new StringBuffer("TesterMap[size="+size+"]\n");
+            StringBuilder result = new StringBuilder("TesterMap[size=" + size + "]\n");
             for (Map.Entry<String, Collection<DistributedTester>> each : testers.entrySet()) {
-                result.append("Key: " + each.getKey());
-                result.append(" Nodes: " + each.getValue().size());
+                result.append("Key: ").append(each.getKey());
+                result.append(" Nodes: ").append(each.getValue().size());
                 result.append("\n");
             }
             return result.toString();

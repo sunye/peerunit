@@ -1,4 +1,4 @@
-    /*
+/*
 This file is part of PeerUnit.
 
 PeerUnit is free software: you can redistribute it and/or modify
@@ -13,20 +13,19 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 package fr.inria.peerunit.coordinator;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
- *
  * @author albonico
  */
 class GlobalStrategy implements CoordinationStrategy {
 
     private static final Logger LOG = Logger.getLogger(GlobalStrategy.class.getName());
-    private TesterSet testers;
+    private TesterSet testers = null;
 
     public void init(TesterSet ts) {
         testers = ts;
@@ -38,18 +37,13 @@ class GlobalStrategy implements CoordinationStrategy {
      *
      * @throws InterruptedException
      */
-    
-    public void testcaseExecution() throws InterruptedException {
+    public void testCaseExecution() throws InterruptedException {
         LOG.entering("GlobalStrategy", "testCaseExecution()");
 
-        boolean error = false;
         ArrayList<String> errors = new ArrayList<String>();
-        
+
         for (Integer order : testers.getSchedule().orders()) {
-
             errors = testers.execute(order, testers, errors);
-
         }
-        
     }
 }

@@ -16,20 +16,19 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.bootstrapper;
 
-import java.io.Serializable;
-import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.DistributedTester;
 import fr.inria.peerunit.util.TesterUtil;
+
+import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * 
  * @author Eduardo Almeida, Veronique PELLEAU
  * @version 1.0
  * @since 1.0
@@ -38,8 +37,7 @@ public class BootstrapperImpl implements Serializable, Runnable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(BootstrapperImpl.class.getName());
-    private TreeStrategy context;
-    private TesterUtil defaults;
+    private final TreeStrategy context;
     private final int expectedTesters;
     private final RemoteBootstrapperImpl remoteBootstrapper;
     /**
@@ -48,18 +46,17 @@ public class BootstrapperImpl implements Serializable, Runnable {
     final private List<DistributedTester> registeredTesters;
 
     public BootstrapperImpl(TesterUtil tu) {
-        defaults = tu;
         remoteBootstrapper = new RemoteBootstrapperImpl();
-        expectedTesters = defaults.getExpectedTesters();
+        expectedTesters = tu.getExpectedTesters();
         registeredTesters = Collections.synchronizedList(
                 new ArrayList<DistributedTester>(expectedTesters));
 
-        if (defaults.getCoordinationType() == 1) {
+        if (tu.getCoordinationType() == 1) {
             LOG.fine("Using the HTree strategy");
-            context = new ConcreteBtreeStrategy(defaults);
+            context = new ConcreteBtreeStrategy(tu);
         } else {
             LOG.fine("Using the Grid strategy");
-            context = new GridStrategy(defaults);
+            context = new GridStrategy(tu);
         }
     }
 
@@ -85,16 +82,9 @@ public class BootstrapperImpl implements Serializable, Runnable {
     }
 
     /**
-     * Returns the current number of registered nodes
-     * @return the current number of registered nodes
-     */
-    public int getRegistered() {
-        LOG.entering("BootstrapperImpl", "getRegistered()");
-        return context.getRegistered();
-    }
-
-    /**
      * Waits for all expected testers to register.
+     *
+     * @throws InterruptedException Thread exception.
      */
     private void waitForTesterRegistration() throws InterruptedException {
         LOG.entering("RemoteBoostrapperImpl", "waitForTesterRegistration()");

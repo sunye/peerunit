@@ -16,16 +16,15 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.common;
 
-import java.io.Serializable;
-
 import fr.inria.peerunit.tester.AfterClassMethod;
 import fr.inria.peerunit.tester.BeforeClassMethod;
 import fr.inria.peerunit.tester.TestStepMethod;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * @author sunye
- *
  */
 public class MethodDescription implements Comparable<MethodDescription>,
         Serializable {
@@ -37,17 +36,16 @@ public class MethodDescription implements Comparable<MethodDescription>,
     /**
      * Method name
      */
-    private String name;
-    private int order;
+    private final String name;
+    private final int order;
     /**
      * Method execution timeout (in milliseconds).
      */
-    private int timeout;
+    private final int timeout;
     /**
-     *
-     * @param depend
+     * depend
      */
-    private String depend;
+    private final String depend;
 
     /*
      * Create a method description
@@ -153,16 +151,10 @@ public class MethodDescription implements Comparable<MethodDescription>,
         return order;
     }
 
-    public String getDepend() {
-        return depend;
-    }
-
     public ArrayList<String> getDepends() {
         ArrayList<String> depends = new ArrayList<String>();
-        // depend is null in before and after class methods.
         if (depend != null) {
             String[] tmp = depend.split(",");
-            //depends.addAll(Arrays.asList(tmp));
             for (String token : tmp) {
                 depends.add(token.trim());
             }

@@ -19,6 +19,7 @@ package fr.inria.peerunit.bootstrapper;
 
 import fr.inria.peerunit.remote.Bootstrapper;
 import fr.inria.peerunit.remote.DistributedTester;
+
 import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 /**
- *
  * @author sunye
  */
 public class RemoteBootstrapperImpl implements Bootstrapper {
@@ -38,7 +38,6 @@ public class RemoteBootstrapperImpl implements Bootstrapper {
             new LinkedBlockingQueue<DistributedTester>();
 
     private final AtomicInteger idCounter = new AtomicInteger(0);
-
 
 
     private final AtomicBoolean shouldILeave = new AtomicBoolean(false);
@@ -72,5 +71,4 @@ public class RemoteBootstrapperImpl implements Bootstrapper {
     public DistributedTester takeTester() throws InterruptedException {
         return registrations.take();
     }
-
 }

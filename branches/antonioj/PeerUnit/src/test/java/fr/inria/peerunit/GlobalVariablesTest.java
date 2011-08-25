@@ -18,19 +18,16 @@ package fr.inria.peerunit;
 
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.util.TesterUtil;
+import org.junit.*;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author sunye
  */
 public class GlobalVariablesTest {

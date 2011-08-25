@@ -16,22 +16,21 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.coordinator;
 
-import java.rmi.RemoteException;
-import java.util.logging.Logger;
 import fr.inria.peerunit.remote.Tester;
+
+import java.rmi.RemoteException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
  * @author sunye
  */
-public class TesterQuit implements Runnable {
+class TesterQuit implements Runnable {
 
     private static final Logger LOG = Logger.getLogger(TesterQuit.class.getName());
     private Tester tester;
 
     /**
-     *
      * @param t the tester.
      */
     public TesterQuit(Tester t) {

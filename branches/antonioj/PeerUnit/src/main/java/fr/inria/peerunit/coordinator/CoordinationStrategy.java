@@ -17,14 +17,10 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.coordinator;
 
 /**
- *
  * @author sunye
  */
 public interface CoordinationStrategy {
-
     void init(TesterSet ts);
 
-    void testcaseExecution() throws InterruptedException;
-
-    
+    void testCaseExecution() throws InterruptedException;
 }

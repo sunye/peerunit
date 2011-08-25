@@ -16,23 +16,22 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.coordinator;
 
-import java.rmi.RemoteException;
-
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.remote.Tester;
 
+import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * @author Eduardo Almeida.
  * @version 1.0
- * @since 1.0
  * @see java.lang.Runnable
  * @see fr.inria.peerunit.remote.Tester
  * @see fr.inria.peerunit.common.MethodDescription
+ * @since 1.0
  */
-public class MethodExecute implements Runnable {
+class MethodExecute implements Runnable {
 
     private static final Logger LOG = Logger.getLogger(MethodExecute.class.getName());
 
@@ -40,14 +39,13 @@ public class MethodExecute implements Runnable {
     private MethodDescription md;
 
     /**
-     *
      * @param t the tester.
      * @param m the method to be executed by the tester.
      */
     public MethodExecute(Tester t, MethodDescription m) {
         assert t != null : "Null Tester";
         assert m != null : "Null MethodDescription";
-        
+
         tester = t;
         md = m;
     }
@@ -60,7 +58,7 @@ public class MethodExecute implements Runnable {
         try {
             tester.execute(md);
         } catch (RemoteException e) {
-            LOG.log(Level.SEVERE,null, e);
+            LOG.log(Level.SEVERE, null, e);
             for (StackTraceElement each : e.getStackTrace()) {
                 LOG.severe(each.toString());
             }

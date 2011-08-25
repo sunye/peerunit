@@ -18,6 +18,7 @@ package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,24 +26,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author sunye
  */
 public class TesterSetImpl implements TesterSet {
 
-    private static final Logger LOG =
-            Logger.getLogger(TesterSetImpl.class.getName());
-    private CoordinatorImpl coordinator;
-    private Map<String, MethodDescription> methods;
+    private static final Logger LOG = Logger.getLogger(TesterSetImpl.class.getName());
+
+    private final CoordinatorImpl coordinator;
+    private Map<String, MethodDescription> methods = null;
 
     public TesterSetImpl(CoordinatorImpl ci) {
         coordinator = ci;
     }
 
     public void execute(String str) throws InterruptedException {
-        
+
         if (methods == null) {
-            // Lazy initialization of methods Map.
             LOG.log(Level.FINE, "Method map initialization.");
             methods = new HashMap<String, MethodDescription>();
             for (MethodDescription each : coordinator.getSchedule().methods()) {
@@ -66,21 +65,18 @@ public class TesterSetImpl implements TesterSet {
     }
 
     public ArrayList<String> execute(Integer order, TesterSet testers, ArrayList<String> errors) throws InterruptedException {
-
-        errors = coordinator.execute(order, testers, errors);
-        return(errors);
-        
+        return coordinator.execute(order, testers, errors);
     }
 
     public Schedule getSchedule() {
         return coordinator.getSchedule();
     }
-    
+
     public ResultSet getResult(MethodDescription md) {
         return coordinator.getResultFor(md);
     }
 
-    public void setResult(MethodDescription md, ResultSet rs) throws InterruptedException {
-            coordinator.setResult(md, rs);
+    public void setResult(MethodDescription md, ResultSet rs) {
+        coordinator.setResult(md, rs);
     }
 }

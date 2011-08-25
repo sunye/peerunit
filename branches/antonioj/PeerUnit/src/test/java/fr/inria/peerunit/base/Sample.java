@@ -17,14 +17,15 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.base;
 
 import fr.inria.peerunit.parser.TestStep;
-import static fr.inria.peerunit.tester.Assert.*;
+
+import static fr.inria.peerunit.tester.Assert.assertTrue;
 
 /**
  * @author sunye
- * 
- * This is not a test case !!!
- * 
- * This class is only used to test TesterImpl and CoordinatorImpl
+ *         <p/>
+ *         This is not a test case !!!
+ *         <p/>
+ *         This class is only used to test TesterImpl and CoordinatorImpl
  */
 public class Sample {
 

@@ -17,25 +17,23 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.base;
 
 /**
- *
  * @author sunye
  */
 public abstract class Range {
 
-    public final static Range ALL = new AllValues();
-    private static String RANGE_SEPARATOR = "-";
-    private static String UNION_SEPARATOR = ",";
+    private final static Range ALL = new AllValues();
 
     public abstract boolean includes(int i);
 
     public static Range fromString(String str) {
+        String UNION_SEPARATOR = ",";
         String[] values = str.split(UNION_SEPARATOR);
         Range[] ranges = new Range[values.length];
-        
+
         for (int i = 0; i < values.length; i++) {
             ranges[i] = fromUnion(values[i].trim());
         }
-        
+
         if (values.length == 1) {
             return ranges[0];
         } else {
@@ -43,10 +41,11 @@ public abstract class Range {
         }
     }
 
-    protected static Range fromUnion(String str) {
+    private static Range fromUnion(String str) {
         if (str.equals("*")) {
             return ALL;
         }
+        String RANGE_SEPARATOR = "-";
         String[] values = str.split(RANGE_SEPARATOR);
         if (values.length == 1) {
             return newInstance(Integer.parseInt(values[0]));
@@ -60,21 +59,17 @@ public abstract class Range {
                 end = Integer.parseInt(values[1]);
             }
 
-            return newInstance(start,end);
+            return newInstance(start, end);
         }
 
         return null;
     }
 
-    public static Range newInstance() {
-        return ALL;
-    }
-
-    public static Range newInstance(int i) {
+    private static Range newInstance(int i) {
         return new SingleValue(i);
     }
 
-    public static Range newInstance(int v1, int v2) {
+    private static Range newInstance(int v1, int v2) {
         return v1 > v2 ? new Interval(v2, v1) : new Interval(v1, v2);
     }
 
@@ -93,7 +88,7 @@ class Interval extends Range {
     private int from;
     private int to;
 
-    protected Interval(int from, int to) {
+    Interval(int from, int to) {
         assert to > from;
 
         this.from = from;
@@ -110,7 +105,7 @@ class SingleValue extends Range {
 
     private final int value;
 
-    protected SingleValue(int i) {
+    SingleValue(int i) {
         assert i >= 0;
 
         value = i;
@@ -124,9 +119,9 @@ class SingleValue extends Range {
 
 class Union extends Range {
 
-    private Range[] ranges;
+    private final Range[] ranges;
 
-    protected Union(Range[] r) {
+    Union(Range[] r) {
         ranges = r;
     }
 
@@ -134,7 +129,7 @@ class Union extends Range {
     public boolean includes(int i) {
         boolean result = false;
         int cc = 0;
-        while(!result && cc < ranges.length) {
+        while (!result && cc < ranges.length) {
             result = ranges[cc].includes(i);
             cc++;
         }

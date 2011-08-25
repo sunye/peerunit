@@ -16,15 +16,15 @@
  */
 package test.util;
 
+import fr.inria.peerunit.util.HTree;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import fr.inria.peerunit.util.HTree;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author sunye
  */
 public class HTreeTest {
@@ -54,22 +54,22 @@ public class HTreeTest {
      */
     @Test
     public void testInsert() {
-        HTree<Integer,String> tree = new HTree<Integer, String>(5);
+        HTree<Integer, String> tree = new HTree<Integer, String>(5);
 
         for (int i = 0; i < 1000; i++) {
             Integer e = new Integer(i);
-            tree.put(e,e.toString());
+            tree.put(e, e.toString());
             assertTrue(tree.containsKey(e));
         }
     }
 
     @Test
     public void testHead() {
-         HTree<Integer, String> tree = new HTree<Integer,String>(5);
+        HTree<Integer, String> tree = new HTree<Integer, String>(5);
 
         for (int i = 0; i < 1000; i++) {
             Integer e = new Integer(i);
-            tree.put(e,e.toString());
+            tree.put(e, e.toString());
         }
 
         assertEquals(tree.head().key(), new Integer(0));

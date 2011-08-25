@@ -1,20 +1,5 @@
-
 package openchord.test;
 
-import static fr.inria.peerunit.test.assertion.Assert.assertTrue;
-
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Logger;
-
-import openchord.DbCallback;
-import openchord.StringKey;
-import util.FreeLocalPort;
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.AsynChord;
 import de.uniba.wiai.lspi.chord.service.Key;
@@ -25,208 +10,224 @@ import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
+import openchord.DbCallback;
+import openchord.StringKey;
+import util.FreeLocalPort;
 
-public class TestUpdateOnShrink extends TestCaseImpl{
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Logger;
 
-	private static final long serialVersionUID = 1L;
+import static fr.inria.peerunit.test.assertion.Assert.assertTrue;
 
-	StringKey key=null;
+public class TestUpdateOnShrink extends TestCaseImpl {
 
-	String data="";
+    private static final long serialVersionUID = 1L;
 
-	private static AsynChord chord=null;
+    StringKey key = null;
 
-	static ChordImpl chordPrint = null;
+    String data = "";
 
-	private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
+    private static AsynChord chord = null;
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+    static ChordImpl chordPrint = null;
 
-	private static DbCallback callback= new DbCallback();
+    private static Logger log = Logger.getLogger(TestUpdateOnShrink.class.getName());
 
-	int sleep=TesterUtil.getSleep();
+    private static final int OBJECTS = TesterUtil.getObjects();
 
-	int actualResults=0;
+    private static DbCallback callback = new DbCallback();
 
-	int expectedResults=0;
+    int sleep = TesterUtil.getSleep();
 
-	private Collection<Key> insertedKeys= new ArrayList<Key>(OBJECTS);
+    int actualResults = 0;
 
-	URL localURL = null;
-	public TestUpdateOnShrink() {
-		super();callback.setCallback(OBJECTS, log);
-		// TODO Auto-generated constructor stub
-	}
+    int expectedResults = 0;
 
-	@BeforeClass(place=-1,timeout=1000000)
-	public void bc(){
-		log.info("Starting test DHT ");
-	}
+    private Collection<Key> insertedKeys = new ArrayList<Key>(OBJECTS);
 
-	@TestStep(name="action1",measure=true,step=1,timeout=10000000, place=-1)
-	public void init() {
-		try{
-			Thread.sleep(sleep);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		log.info("Peer name "+this.getName());
+    URL localURL = null;
 
-		de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
-		String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
+    public TestUpdateOnShrink() {
+        super();
+        callback.setCallback(OBJECTS, log);
+        // TODO Auto-generated constructor stub
+    }
 
-		try {
-			String address = InetAddress.getLocalHost().toString();
-			address = address.substring(address.indexOf("/")+1,address.length());
-			FreeLocalPort port= new FreeLocalPort();
-			log.info("Address: "+address+" on port "+port.getPort());
-			localURL = new URL(protocol + "://"+address+":"+port.getPort()+"/");
-		} catch (MalformedURLException e){
-			throw new RuntimeException(e);
-		} catch (UnknownHostException e) {
-			throw new RuntimeException(e);
-		}
-		URL bootstrapURL=null;
-		try {
-			bootstrapURL = new URL(protocol + "://"+TesterUtil.getBootstrap()+":"+TesterUtil.getBootstrapPort()+"/");
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		}
+    @BeforeClass(place = -1, timeout = 1000000)
+    public void bc() {
+        log.info("Starting test DHT ");
+    }
 
-		chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
-		try {
-			Thread.sleep(100*this.getName());
-			log.info("LocalURL: "+localURL.toString());
-			chord.join(localURL,bootstrapURL);
+    @TestStep(name = "action1", measure = true, step = 1, timeout = 10000000, place = -1)
+    public void init() {
+        try {
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        log.info("Peer name " + this.getName());
 
-			log.info("Joining Chord DHT: "+chord.toString());
-		} catch (ServiceException e) {
-			e.printStackTrace();
-			log.severe("Peer init exception");
-		} catch (Exception e){
-			e.printStackTrace();
-			log.severe("Peer init exception");
-		}
+        de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
+        String protocol = URL.KNOWN_PROTOCOLS[URL.SOCKET_PROTOCOL];
 
-		log.info("Peer init");
-	}
+        try {
+            String address = InetAddress.getLocalHost().toString();
+            address = address.substring(address.indexOf("/") + 1, address.length());
+            FreeLocalPort port = new FreeLocalPort();
+            log.info("Address: " + address + " on port " + port.getPort());
+            localURL = new URL(protocol + "://" + address + ":" + port.getPort() + "/");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        URL bootstrapURL = null;
+        try {
+            bootstrapURL = new URL(protocol + "://" + TesterUtil.getBootstrap() + ":" + TesterUtil.getBootstrapPort() + "/");
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        }
 
-	@TestStep(name="action2",measure=true,step=1,timeout=10000000, place=-1)
-	public void find() {
+        chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
+        try {
+            Thread.sleep(100 * this.getName());
+            log.info("LocalURL: " + localURL.toString());
+            chord.join(localURL, bootstrapURL);
 
-		chordPrint=(ChordImpl)chord;
-		try{
-			Thread.sleep(sleep);
-			log.info("My ID is "+chord.getID());
-			String[] succ=chordPrint.printSuccessorList().split("\n");
-			for (String succList : succ) {
-				log.info("Successor List "+succList+" size "+succ.length );
-			}
+            log.info("Joining Chord DHT: " + chord.toString());
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            log.severe("Peer init exception");
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe("Peer init exception");
+        }
 
-		}catch (RuntimeException e) {
-			log.severe("Could not find !"+e);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+        log.info("Peer init");
+    }
 
-	@TestStep(name="action4",measure=true,step=1,timeout=10000000,place=-1)
-	public void testLeave() {
-		try {
+    @TestStep(name = "action2", measure = true, step = 1, timeout = 10000000, place = -1)
+    public void find() {
 
-			if(this.getName()%2==0){
-				log.info("Leaving early");
-				chord.leave();
-				String insertValue=chord.getID().toString().substring(0,2)+" "+localURL.toString();
-				this.put(this.getName(), insertValue);
-				log.info("Cached "+ insertValue);
-			}
+        chordPrint = (ChordImpl) chord;
+        try {
+            Thread.sleep(sleep);
+            log.info("My ID is " + chord.getID());
+            String[] succ = chordPrint.printSuccessorList().split("\n");
+            for (String succList : succ) {
+                log.info("Successor List " + succList + " size " + succ.length);
+            }
 
-			// little time to cache the variables
-			Thread.sleep(sleep);
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+        } catch (RuntimeException e) {
+            log.severe("Could not find !" + e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-	@TestStep(name="action5",measure=true,step=1,timeout=10000000,place=-1)
-	public void testRetrieve() {
+    @TestStep(name = "action4", measure = true, step = 1, timeout = 10000000, place = -1)
+    public void testLeave() {
+        try {
 
-		if(this.getName()%2!=0){
-			String[] immediateSuccessor=chordPrint.printSuccessorList().split("\n");
-			String successor=null;
-			for (int i = 0; i < immediateSuccessor.length; i++) {
-				if(i==1)
-					successor=immediateSuccessor[i].toString();
-			}
+            if (this.getName() % 2 == 0) {
+                log.info("Leaving early");
+                chord.leave();
+                String insertValue = chord.getID().toString().substring(0, 2) + " " + localURL.toString();
+                this.put(this.getName(), insertValue);
+                log.info("Cached " + insertValue);
+            }
 
-			log.info("Immediate successor "+successor);
+            // little time to cache the variables
+            Thread.sleep(sleep);
+        } catch (ServiceException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-			List<String> listQuitPeers = new ArrayList<String>();
-			String quitPeer;
-			for(int i=0;i< TesterUtil.getExpectedPeers();i++){
-				if(i%2==0){
-					if(this.get(i)!=null){
-						quitPeer=this.get(i).toString().trim();
-						listQuitPeers.add(quitPeer);
-						log.info("Quit peer "+quitPeer);
-					}
-				}
-			}
-			int timeToClean=0;
-			boolean tableUpdated=false;
-			while(timeToClean < TesterUtil.getLoopToFail()){
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				if(!listQuitPeers.contains(successor.trim())){
-					tableUpdated=true;
-					break;
-				}
-				timeToClean++;
-			}
+    @TestStep(name = "action5", measure = true, step = 1, timeout = 10000000, place = -1)
+    public void testRetrieve() {
 
-			if(tableUpdated){
-				log.info("Contains in GV " + successor);
-				assertTrue("Successor updated correctly ",true);
-			}else{
-				log.info("Not Contains in GV " + successor);
-				assertTrue("Successor didn't updated correctly ",false);
-			}
-		}
-	}
+        if (this.getName() % 2 != 0) {
+            String[] immediateSuccessor = chordPrint.printSuccessorList().split("\n");
+            String successor = null;
+            for (int i = 0; i < immediateSuccessor.length; i++) {
+                if (i == 1)
+                    successor = immediateSuccessor[i].toString();
+            }
 
-	@AfterClass(timeout=100000,place=-1)
-	public void end() {
-		if(this.getName()%2!=0){
-			try {
-				Thread.sleep(sleep);
-				chord.leave();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ServiceException e) {
-				e.printStackTrace();
-			}
+            log.info("Immediate successor " + successor);
 
-			log.info("Peer bye bye");
-		}
-	}
+            List<String> listQuitPeers = new ArrayList<String>();
+            String quitPeer;
+            for (int i = 0; i < TesterUtil.getExpectedPeers(); i++) {
+                if (i % 2 == 0) {
+                    if (this.get(i) != null) {
+                        quitPeer = this.get(i).toString().trim();
+                        listQuitPeers.add(quitPeer);
+                        log.info("Quit peer " + quitPeer);
+                    }
+                }
+            }
+            int timeToClean = 0;
+            boolean tableUpdated = false;
+            while (timeToClean < TesterUtil.getLoopToFail()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (!listQuitPeers.contains(successor.trim())) {
+                    tableUpdated = true;
+                    break;
+                }
+                timeToClean++;
+            }
 
-	private int getName(){
-		int peerName=0;
-		try {
-			peerName= super.getPeerName();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		return peerName;
-	}
+            if (tableUpdated) {
+                log.info("Contains in GV " + successor);
+                assertTrue("Successor updated correctly ", true);
+            } else {
+                log.info("Not Contains in GV " + successor);
+                assertTrue("Successor didn't updated correctly ", false);
+            }
+        }
+    }
+
+    @AfterClass(timeout = 100000, place = -1)
+    public void end() {
+        if (this.getName() % 2 != 0) {
+            try {
+                Thread.sleep(sleep);
+                chord.leave();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ServiceException e) {
+                e.printStackTrace();
+            }
+
+            log.info("Peer bye bye");
+        }
+    }
+
+    private int getName() {
+        int peerName = 0;
+        try {
+            peerName = super.getPeerName();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return peerName;
+    }
 
 }
 

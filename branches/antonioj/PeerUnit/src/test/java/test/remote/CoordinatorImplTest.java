@@ -16,11 +16,16 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package test.remote;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
+import fr.inria.peerunit.base.SingleResult;
+import fr.inria.peerunit.common.MethodDescription;
+import fr.inria.peerunit.coordinator.CoordinatorImpl;
+import fr.inria.peerunit.coordinator.TesterRegistration;
+import fr.inria.peerunit.remote.Tester;
+import fr.inria.peerunit.util.TesterUtil;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -29,21 +34,12 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.InOrder;
-
-import fr.inria.peerunit.base.SingleResult;
-import fr.inria.peerunit.common.MethodDescription;
-import fr.inria.peerunit.coordinator.CoordinatorImpl;
-import fr.inria.peerunit.coordinator.TesterRegistration;
-import fr.inria.peerunit.remote.Tester;
-import fr.inria.peerunit.util.TesterUtil;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author sunye
- *
  */
 public class CoordinatorImplTest {
 

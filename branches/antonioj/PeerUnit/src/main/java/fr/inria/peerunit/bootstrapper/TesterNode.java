@@ -17,9 +17,8 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.bootstrapper;
 
 import fr.inria.peerunit.remote.DistributedTester;
-import java.rmi.RemoteException;
+
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class TesterNode {
@@ -33,21 +32,6 @@ public class TesterNode {
         head = coll[0];
         dependents = new DistributedTester[coll.length - 1];
         System.arraycopy(coll, 1, dependents, 0, coll.length - 1);
-    }
-
-    void register(List<TesterNode> l) throws RemoteException {
-        List<DistributedTester> list = new LinkedList<DistributedTester>();
-        list.addAll(Arrays.asList(dependents));
-        for (TesterNode each : l) {
-            list.add(each.head);
-        }
-        head.registerTesters(list);
-    }
-
-    void register() throws RemoteException {
-        if (dependents.length > 0) {
-            head.registerTesters(Arrays.asList(dependents));
-        }
     }
 
     public DistributedTester head() {

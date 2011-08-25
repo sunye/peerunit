@@ -19,14 +19,13 @@ package test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-
 import test.remote.CoordinatorImplTest;
 import test.remote.TesterImplTest;
 
 @RunWith(Suite.class)
-@SuiteClasses(value={
-TesterImplTest.class,
-CoordinatorImplTest.class
+@SuiteClasses(value = {
+        TesterImplTest.class,
+        CoordinatorImplTest.class
 })
-public class AllTests{
+public class AllTests {
 }

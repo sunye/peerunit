@@ -16,22 +16,19 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.test.assertion;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import fr.inria.peerunit.tester.Assert;
 import fr.inria.peerunit.tester.ComparisonFailure;
 import fr.inria.peerunit.tester.Failure;
 import fr.inria.peerunit.tester.InconclusiveFailure;
-import static org.junit.Assert.*;
+import org.junit.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
- *
  * @author sunye
  */
 public class AssertTest {
@@ -63,7 +60,7 @@ public class AssertTest {
         try {
             Assert.assertTrue(false);
             fail("Exception not thrown");
-        } catch(Failure e) {
+        } catch (Failure e) {
             // OK
         }
     }
@@ -76,7 +73,7 @@ public class AssertTest {
         try {
             Assert.fail("ok");
             fail("Exception not thrown");
-        } catch(Failure e) {
+        } catch (Failure e) {
             assertEquals(e.getMessage(), "ok");
             //
         }
@@ -91,7 +88,7 @@ public class AssertTest {
         try {
             Assert.inconclusive("ok");
             fail("Exception not thrown");
-        } catch(InconclusiveFailure e) {
+        } catch (InconclusiveFailure e) {
             assertEquals(e.getMessage(), "ok");
             //
         }
@@ -125,7 +122,7 @@ public class AssertTest {
         } catch (ComparisonFailure c) {
             // OK
         }
-        
+
         try {
             Assert.assertEquals(other, null);
             fail("comparison error");
@@ -174,7 +171,7 @@ public class AssertTest {
             other.add("bbb");
             Assert.assertListEquals(list, other);
             fail("comparison error");
-        } catch(ComparisonFailure c) {
+        } catch (ComparisonFailure c) {
             // OK
         }
     }

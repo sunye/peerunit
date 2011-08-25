@@ -1,15 +1,5 @@
 package freepastry.test;
-import static fr.inria.peerunit.test.assertion.Assert.fail;
-import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
-import rice.pastry.Id;
-import rice.pastry.NodeHandle;
 import fr.inria.peerunit.TestCaseImpl;
 import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.parser.BeforeClass;
@@ -17,152 +7,164 @@ import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.util.TesterUtil;
 import freepastry.Network;
 import freepastry.Peer;
+import rice.pastry.Id;
+import rice.pastry.NodeHandle;
+
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+import static fr.inria.peerunit.test.assertion.Assert.fail;
+import static fr.inria.peerunit.test.assertion.Assert.inconclusive;
 
 /**
  * Test routing table update in an expanding system
- * @author almeida
  *
+ * @author almeida
  */
-public class TestNewJoin extends TestCaseImpl{
-	private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
+public class TestNewJoin extends TestCaseImpl {
+    private static Logger log = Logger.getLogger(TestNewJoin.class.getName());
 
-	private static final int OBJECTS=TesterUtil.getObjects();
+    private static final int OBJECTS = TesterUtil.getObjects();
 
-	Peer peer=new Peer();
+    Peer peer = new Peer();
 
-	int sleep=TesterUtil.getSleep();
+    int sleep = TesterUtil.getSleep();
 
-	List<Id> firstSuccessors=new ArrayList<Id>();
-
-
-	@BeforeClass(place=-1,timeout=1000000)
-	public void bc(){
-		log.info("[PastryTest] Starting test peer  ");
-	}
+    List<Id> firstSuccessors = new ArrayList<Id>();
 
 
-	@TestStep(place=-1,timeout=1000000, name = "action2", step = 0)
-	public void startingHalfNet(){
+    @BeforeClass(place = -1, timeout = 1000000)
+    public void bc() {
+        log.info("[PastryTest] Starting test peer  ");
+    }
 
-		try {
 
-			if(this.getPeerName()%2!=0){
-				log.info("Joining in first");
-				Network net= new Network();
-				Thread.sleep(this.getPeerName()*1000);
+    @TestStep(place = -1, timeout = 1000000, name = "action2", step = 0)
+    public void startingHalfNet() {
 
-				if(!net.joinNetwork(peer, null,false, log)){
-					inconclusive("I couldn't join, sorry");
-				}
-				log.info("Getting cached boot "+net.getInetSocketAddress().toString());
-				log.info("Running on port "+peer.getPort());
-				log.info("Time to bootstrap");
+        try {
 
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+            if (this.getPeerName() % 2 != 0) {
+                log.info("Joining in first");
+                Network net = new Network();
+                Thread.sleep(this.getPeerName() * 1000);
 
-	@TestStep(place=-1,timeout=1000000, name = "action4", step = 0)
-	public void testFind(){
-		try {
-			Thread.sleep(sleep);
-			if(this.getPeerName()%2!=0){
-				log.info("My ID "+peer.getId());
-				for(NodeHandle nd: peer.getRoutingTable()){
-					log.info("Successor NodeId "+nd.getId());
-					firstSuccessors.add(nd.getNodeId());
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+                if (!net.joinNetwork(peer, null, false, log)) {
+                    inconclusive("I couldn't join, sorry");
+                }
+                log.info("Getting cached boot " + net.getInetSocketAddress().toString());
+                log.info("Running on port " + peer.getPort());
+                log.info("Time to bootstrap");
 
-	}
-	@TestStep(place=-1,timeout=1000000, name = "action5", step = 0)
-	public void startingOtherHalfNet(){
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-		try {
+    @TestStep(place = -1, timeout = 1000000, name = "action4", step = 0)
+    public void testFind() {
+        try {
+            Thread.sleep(sleep);
+            if (this.getPeerName() % 2 != 0) {
+                log.info("My ID " + peer.getId());
+                for (NodeHandle nd : peer.getRoutingTable()) {
+                    log.info("Successor NodeId " + nd.getId());
+                    firstSuccessors.add(nd.getNodeId());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-			if(this.getPeerName()%2==0){
-				log.info("Joining in first");
-				Network net= new Network();
-				Thread.sleep(this.getPeerName()*1000);
+    }
 
-				if(!net.joinNetwork(peer, null,false, log)){
-					inconclusive("I couldn't join, sorry");
-				}
-				log.info("Getting cached boot "+net.getInetSocketAddress().toString());
-				log.info("Running on port "+peer.getPort());
-				log.info("Time to bootstrap");
+    @TestStep(place = -1, timeout = 1000000, name = "action5", step = 0)
+    public void startingOtherHalfNet() {
 
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        try {
 
-	@TestStep(place=-1,timeout=1000000, name = "action7", step = 0)
-	public void testFindAgain(){
-		try {
-			if((this.getPeerName()%2!=0)){
-				List<NodeHandle> actuals;
+            if (this.getPeerName() % 2 == 0) {
+                log.info("Joining in first");
+                Network net = new Network();
+                Thread.sleep(this.getPeerName() * 1000);
 
-				//Iterations to clean the volatiles from the routing table
-				int timeToUpdate=0;
-				Id obj=null;
-				boolean tableUpdated=false;
-				while(!tableUpdated &&	timeToUpdate < TesterUtil.getLoopToFail()){
-					log.info("Verifying the "+timeToUpdate+" time ");
-					try {
-						Thread.sleep(1000);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					actuals= peer.getRoutingTable();
+                if (!net.joinNetwork(peer, null, false, log)) {
+                    inconclusive("I couldn't join, sorry");
+                }
+                log.info("Getting cached boot " + net.getInetSocketAddress().toString());
+                log.info("Running on port " + peer.getPort());
+                log.info("Time to bootstrap");
 
-					for(NodeHandle nd: actuals){
-						obj=nd.getNodeId();
-						log.info(" Successor NodeId "+obj);
-						if(!firstSuccessors.contains(obj)){
-							log.info("List updated, the verdict may be PASS ");
-							tableUpdated=true;
-						}
-					}
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-					//Demanding the routing table update
-					peer.pingNodes();
+    @TestStep(place = -1, timeout = 1000000, name = "action7", step = 0)
+    public void testFindAgain() {
+        try {
+            if ((this.getPeerName() % 2 != 0)) {
+                List<NodeHandle> actuals;
 
-					timeToUpdate++;
-				}
-				if(!tableUpdated)
-					fail("Routing Table wasn't updated. Still finding all volatiles. Increase qty of loops.");
-				else
-					log.info("List updated, the verdict may be PASS. Table updated "+timeToUpdate+" times.");
+                //Iterations to clean the volatiles from the routing table
+                int timeToUpdate = 0;
+                Id obj = null;
+                boolean tableUpdated = false;
+                while (!tableUpdated && timeToUpdate < TesterUtil.getLoopToFail()) {
+                    log.info("Verifying the " + timeToUpdate + " time ");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    actuals = peer.getRoutingTable();
 
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+                    for (NodeHandle nd : actuals) {
+                        obj = nd.getNodeId();
+                        log.info(" Successor NodeId " + obj);
+                        if (!firstSuccessors.contains(obj)) {
+                            log.info("List updated, the verdict may be PASS ");
+                            tableUpdated = true;
+                        }
+                    }
 
-	@AfterClass(timeout=100000,place=-1)
-	public void end() {
-		log.info("[PastryTest] Peer bye bye");
-	}
+                    //Demanding the routing table update
+                    peer.pingNodes();
+
+                    timeToUpdate++;
+                }
+                if (!tableUpdated)
+                    fail("Routing Table wasn't updated. Still finding all volatiles. Increase qty of loops.");
+                else
+                    log.info("List updated, the verdict may be PASS. Table updated " + timeToUpdate + " times.");
+
+            }
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @AfterClass(timeout = 100000, place = -1)
+    public void end() {
+        log.info("[PastryTest] Peer bye bye");
+    }
 }
 

@@ -7,24 +7,17 @@ package fr.inria.peerunit.coordinator;
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.remote.Tester;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
- *
  * @author sunye
  */
 public class Schedule {
 
-    private Map<MethodDescription, Set<Tester>> testerMap;
+    private final Map<MethodDescription, Set<Tester>> testerMap;
 
     // Michel
-    private Map<Integer, Set<MethodDescription>> orderMethodsMap;
+    private final Map<Integer, Set<MethodDescription>> orderMethodsMap;
 
     public Schedule() {
         testerMap = Collections.synchronizedMap(new TreeMap<MethodDescription, Set<Tester>>());
@@ -32,7 +25,7 @@ public class Schedule {
     }
 
     public void put(MethodDescription md, Tester t) {
-        
+
         if (!testerMap.containsKey(md)) {
             testerMap.put(md, new HashSet<Tester>());
         }
@@ -48,8 +41,8 @@ public class Schedule {
     }
 
     public void put(TesterRegistration tr) {
-        for(MethodDescription each : tr.methods()) {
-            this.put(each,tr.tester());
+        for (MethodDescription each : tr.methods()) {
+            this.put(each, tr.tester());
         }
     }
 
@@ -60,6 +53,7 @@ public class Schedule {
     public boolean containsMethod(MethodDescription md) {
         return testerMap.containsKey(md);
     }
+
     public int size() {
         return testerMap.size();
     }
@@ -76,13 +70,12 @@ public class Schedule {
         return testerMap.get(md);
     }
 
-    // Michel
+    /**
+     * @param order The method order.
+     * @return A collection of methods with the given order.
+     * @author Michel
+     */
     public Collection<MethodDescription> methodsFor(Integer order) {
         return orderMethodsMap.get(order);
-    }
-
-    // Michel
-    public int sizeOrderMap() {
-        return orderMethodsMap.size();
     }
 }

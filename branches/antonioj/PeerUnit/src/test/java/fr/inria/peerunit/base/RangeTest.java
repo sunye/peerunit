@@ -6,10 +6,10 @@ package fr.inria.peerunit.base;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author sunye
  */
 public class RangeTest {
@@ -55,9 +55,9 @@ public class RangeTest {
     @Test
     public void testSimpleUnion() {
         Range r = Range.fromString("1, 5");
-        int[] right = {1,5};
+        int[] right = {1, 5};
 
-        for(int each : right) {
+        for (int each : right) {
             assertTrue(r.includes(each));
         }
     }
@@ -68,11 +68,11 @@ public class RangeTest {
         int[] right = {1, 5, 10, 13, 15};
         int[] wrong = {0, 6, 9, 16, Integer.MAX_VALUE, -1};
 
-        for(int each : right) {
+        for (int each : right) {
             assertTrue(r.includes(each));
         }
 
-        for(int each : wrong) {
+        for (int each : wrong) {
             assertFalse(r.includes(each));
         }
     }
@@ -83,11 +83,11 @@ public class RangeTest {
         int[] right = {1, 5, 15};
         int[] wrong = {0, 6, 9, 16, Integer.MAX_VALUE, -1};
 
-        for(int each : right) {
+        for (int each : right) {
             assertTrue(r.includes(each));
         }
 
-        for(int each : wrong) {
+        for (int each : wrong) {
             assertFalse(r.includes(each));
         }
     }

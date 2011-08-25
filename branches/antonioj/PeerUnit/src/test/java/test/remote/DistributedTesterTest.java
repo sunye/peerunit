@@ -16,18 +16,16 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package test.remote;
 
+import fr.inria.peerunit.distributed.DistributedTesterImpl;
+import fr.inria.peerunit.remote.DistributedTester;
+import fr.inria.peerunit.util.TesterUtil;
+import org.junit.Test;
+
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-
-import org.junit.Test;
-
-
-import fr.inria.peerunit.distributed.DistributedTesterImpl;
-import fr.inria.peerunit.remote.DistributedTester;
-import fr.inria.peerunit.util.TesterUtil;
 
 public class DistributedTesterTest {
 

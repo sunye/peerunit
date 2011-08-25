@@ -17,16 +17,16 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
 package fr.inria.peerunit.bootstrapper;
 
 import fr.inria.peerunit.remote.DistributedTester;
+
 import java.rmi.RemoteException;
 
 /**
  * The classes that implement a concrete strategy should implement this The
  * context class uses this to call the concrete strategy
- * 
+ *
  * @author Veronique Pelleau
  * @author Jeremy Masson
  * @author Aboubakar Koïta
- * 
  */
 public interface TreeStrategy {
 
