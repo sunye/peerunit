@@ -86,10 +86,14 @@ public class AbstractMR {
     protected static double jobDuration;
     protected static NameNode nn;
     protected static DataNode dn;
+    protected static Process nnProcess;
+    protected static Process dnProcess;
     protected static Process jtProcess;
     protected static Process ttProcess;
     protected static startNameNode nnode;
     protected static startDataNode dnode;
+    protected static startNameNodeByHadoop nnodeHadoop;
+    protected static startDataNodeByHadoop dnodeHadoop;
     protected static ArrayList mutationOutputList;
     protected static Thread rwcThread;
 
@@ -141,6 +145,8 @@ public class AbstractMR {
     public void bc() throws IOException, FileNotFoundException, InterruptedException {
 
     	setEnvironmentProperties();
+
+        readPropertiesHadoop();
 
     }
 
@@ -309,6 +315,367 @@ public class AbstractMR {
 
     }
 
+     /**
+     * Classes to create Runnable Objects
+     *
+     */
+   public class startNameNodeByHadoop implements Runnable {
+
+       public void run() {
+
+           try {
+
+                // Hadoop dir
+                String hadoopdir = (String) get(-14);
+
+                String command = "java -Xmx1000m -Dcom.sun.management.jmxremote" +
+                " -Dcom.sun.management.jmxremote" +
+                " -Dhadoop.log.dir="+hadoopdir+"/logs" +
+                " -Dhadoop.log.file=hadoop-jobtracker.log" +
+                " -Dhadoop.home.dir="+hadoopdir+
+                " -Dhadoop.id.str=michel -Dhadoop.root.logger=INFO,DRFA" +
+                " -Djava.library.path="+hadoopdir+"/lib/native/Linux-i386-32" +
+                " -Dhadoop.policy.file=hadoop-policy.xml" +
+                " -classpath "+hadoopdir+"/conf:" +
+                "/usr/lib/jvm/java-6-sun/lib/tools.jar:"+hadoopdir+":" +
+                hadoopdir+"/hadoop-0.20.2-core.jar:" +
+                hadoopdir+"/lib/commons-cli-1.2.jar:" +
+                hadoopdir+"/lib/commons-codec-1.3.jar:" +
+                hadoopdir+"/lib/commons-el-1.0.jar:" +
+                hadoopdir+"/lib/commons-httpclient-3.0.1.jar:" +
+                hadoopdir+"/lib/commons-logging-1.0.4.jar:" +
+                hadoopdir+"/lib/commons-logging-api-1.0.4.jar:" +
+                hadoopdir+"/lib/commons-net-1.4.1.jar:" +
+                hadoopdir+"/lib/core-3.1.1.jar:" +
+                hadoopdir+"/lib/hsqldb-1.8.0.10.jar:" +
+                hadoopdir+"/lib/jasper-compiler-5.5.12.jar:" +
+                hadoopdir+"/lib/jasper-runtime-5.5.12.jar:" +
+                hadoopdir+"/lib/jets3t-0.6.1.jar:" +
+                hadoopdir+"/lib/jetty-6.1.14.jar:" +
+                hadoopdir+"/lib/jetty-util-6.1.14.jar:" +
+                hadoopdir+"/lib/junit-3.8.1.jar:" +
+                hadoopdir+"/lib/kfs-0.2.2.jar:" +
+                hadoopdir+"/lib/log4j-1.2.15.jar:" +
+                hadoopdir+"/lib/mockito-all-1.8.0.jar:" +
+                hadoopdir+"/lib/oro-2.0.8.jar:" +
+                hadoopdir+"/lib/servlet-api-2.5-6.1.14.jar:" +
+                hadoopdir+"/lib/slf4j-api-1.4.3.jar:" +
+                hadoopdir+"/lib/slf4j-log4j12-1.4.3.jar:" +
+                hadoopdir+"/lib/xmlenc-0.52.jar:" +
+                hadoopdir+"/lib/jsp-2.1/jsp-2.1.jar:" +
+                hadoopdir+"/lib/jsp-2.1/jsp-api-2.1.jar " +
+                "org.apache.hadoop.hdfs.server.namenode.NameNode";
+
+                nnProcess = Runtime.getRuntime().exec(command);
+
+            } catch (IOException ioe) {
+                log.warning(ioe.toString());
+            }
+
+       }
+
+    }
+
+    public class startNameNode implements Runnable {
+
+        public void run() {
+
+           try {
+
+                readPropertiesHadoop();
+
+                Configuration conf = getConfHDFS();
+
+                nn = new NameNode(conf);
+                NNode = nn;
+
+                Thread.sleep(5000);
+
+              //  Thread.currentThread().join();
+
+            } catch (IOException ioe) {
+
+            } catch (InterruptedException ie) {
+
+            }
+
+       }
+
+     }
+
+    public class startDataNodeByHadoop implements Runnable {
+
+        public void run() {
+
+            try {
+
+                // Hadoop dir
+                String hadoopdir = (String) get(-14);
+
+                String command = "java -Xmx1000m -Dcom.sun.management.jmxremote" +
+                " -Dcom.sun.management.jmxremote" +
+                " -Dhadoop.log.dir="+hadoopdir+"/logs" +
+                " -Dhadoop.log.file=hadoop-jobtracker.log" +
+                " -Dhadoop.home.dir="+hadoopdir+
+                " -Dhadoop.id.str=michel -Dhadoop.root.logger=INFO,DRFA" +
+                " -Djava.library.path="+hadoopdir+"/lib/native/Linux-i386-32" +
+                " -Dhadoop.policy.file=hadoop-policy.xml" +
+                " -classpath "+hadoopdir+"/conf:" +
+                "/usr/lib/jvm/java-6-sun/lib/tools.jar:"+hadoopdir+":" +
+                hadoopdir+"/hadoop-0.20.2-core.jar:" +
+                hadoopdir+"/lib/commons-cli-1.2.jar:" +
+                hadoopdir+"/lib/commons-codec-1.3.jar:" +
+                hadoopdir+"/lib/commons-el-1.0.jar:" +
+                hadoopdir+"/lib/commons-httpclient-3.0.1.jar:" +
+                hadoopdir+"/lib/commons-logging-1.0.4.jar:" +
+                hadoopdir+"/lib/commons-logging-api-1.0.4.jar:" +
+                hadoopdir+"/lib/commons-net-1.4.1.jar:" +
+                hadoopdir+"/lib/core-3.1.1.jar:" +
+                hadoopdir+"/lib/hsqldb-1.8.0.10.jar:" +
+                hadoopdir+"/lib/jasper-compiler-5.5.12.jar:" +
+                hadoopdir+"/lib/jasper-runtime-5.5.12.jar:" +
+                hadoopdir+"/lib/jets3t-0.6.1.jar:" +
+                hadoopdir+"/lib/jetty-6.1.14.jar:" +
+                hadoopdir+"/lib/jetty-util-6.1.14.jar:" +
+                hadoopdir+"/lib/junit-3.8.1.jar:" +
+                hadoopdir+"/lib/kfs-0.2.2.jar:" +
+                hadoopdir+"/lib/log4j-1.2.15.jar:" +
+                hadoopdir+"/lib/mockito-all-1.8.0.jar:" +
+                hadoopdir+"/lib/oro-2.0.8.jar:" +
+                hadoopdir+"/lib/servlet-api-2.5-6.1.14.jar:" +
+                hadoopdir+"/lib/slf4j-api-1.4.3.jar:" +
+                hadoopdir+"/lib/slf4j-log4j12-1.4.3.jar:" +
+                hadoopdir+"/lib/xmlenc-0.52.jar:" +
+                hadoopdir+"/lib/jsp-2.1/jsp-2.1.jar:" +
+                hadoopdir+"/lib/jsp-2.1/jsp-api-2.1.jar " +
+                "org.apache.hadoop.hdfs.server.datanode.DataNode";
+
+                dnProcess = Runtime.getRuntime().exec(command);
+            } catch (IOException ioe) {
+                log.warning(ioe.toString());
+            }
+
+        }
+    }
+
+    public class startDataNode implements Runnable {
+
+        public void run() {
+
+            try {
+
+                Configuration cfg = getConfHDFS();
+                String dirname = (String) get(-5);
+                String dirdata = (String) get(-6);
+                cfg.set("dfs.name.dir", dirname);
+                cfg.set("dfs.data.dir", dirdata);
+
+                String[] args = {"-rollback"};
+
+                dn = DataNode.createDataNode(args, cfg);
+
+                String serveraddr = dn.getNamenode();
+                log.log(Level.INFO, "DataNode connected with NameNode: {0}", serveraddr);
+
+                Thread.currentThread().join();
+
+            } catch (IOException ioe) {
+            } catch (InterruptedException ie) {
+            }
+
+       }
+
+    }
+
+    // Is not used
+    /*
+    public class startSecondaryNameNode implements Runnable {
+
+        public void run() {
+
+            try {
+
+                Configuration conf = getConfHDFS();
+                SecondaryNameNode snn = new SecondaryNameNode(conf);
+
+            } catch (IOException ioe) {
+                log.info(ioe.toString());
+            } catch (InterruptedException ie) {
+                log.info(ie.toString());
+            }
+
+        }
+    }
+     *
+     */
+
+    // Start JobTraker by Hadoop
+    public class startJobTrackerByHadoop implements Runnable {
+
+        public void run() {
+
+            try {
+
+                log.info("Starting JobTracker!");
+
+                String hadoopdir = (String) get(-14);
+
+                String command = "java -Xmx1000m -Dcom.sun.management.jmxremote" +
+                " -Dcom.sun.management.jmxremote" +
+                " -Dhadoop.log.dir="+hadoopdir+"/logs" +
+                " -Dhadoop.log.file=hadoop-jobtracker.log" +
+                " -Dhadoop.home.dir="+hadoopdir+
+                " -Dhadoop.id.str=michel -Dhadoop.root.logger=INFO,DRFA" +
+                " -Djava.library.path="+hadoopdir+"/lib/native/Linux-i386-32" +
+                " -Dhadoop.policy.file=hadoop-policy.xml" +
+                " -classpath "+hadoopdir+"/conf:" +
+                "/usr/lib/jvm/java-6-sun/lib/tools.jar:"+hadoopdir+":" +
+                hadoopdir+"/hadoop-0.20.2-core.jar:" +
+                hadoopdir+"/lib/commons-cli-1.2.jar:" +
+                hadoopdir+"/lib/commons-codec-1.3.jar:" +
+                hadoopdir+"/lib/commons-el-1.0.jar:" +
+                hadoopdir+"/lib/commons-httpclient-3.0.1.jar:" +
+                hadoopdir+"/lib/commons-logging-1.0.4.jar:" +
+                hadoopdir+"/lib/commons-logging-api-1.0.4.jar:" +
+                hadoopdir+"/lib/commons-net-1.4.1.jar:" +
+                hadoopdir+"/lib/core-3.1.1.jar:" +
+                hadoopdir+"/lib/hsqldb-1.8.0.10.jar:" +
+                hadoopdir+"/lib/jasper-compiler-5.5.12.jar:" +
+                hadoopdir+"/lib/jasper-runtime-5.5.12.jar:" +
+                hadoopdir+"/lib/jets3t-0.6.1.jar:" +
+                hadoopdir+"/lib/jetty-6.1.14.jar:" +
+                hadoopdir+"/lib/jetty-util-6.1.14.jar:" +
+                hadoopdir+"/lib/junit-3.8.1.jar:" +
+                hadoopdir+"/lib/kfs-0.2.2.jar:" +
+                hadoopdir+"/lib/log4j-1.2.15.jar:" +
+                hadoopdir+"/lib/mockito-all-1.8.0.jar:" +
+                hadoopdir+"/lib/oro-2.0.8.jar:" +
+                hadoopdir+"/lib/servlet-api-2.5-6.1.14.jar:" +
+                hadoopdir+"/lib/slf4j-api-1.4.3.jar:" +
+                hadoopdir+"/lib/slf4j-log4j12-1.4.3.jar:" +
+                hadoopdir+"/lib/xmlenc-0.52.jar:" +
+                hadoopdir+"/lib/jsp-2.1/jsp-2.1.jar:" +
+                hadoopdir+"/lib/jsp-2.1/jsp-api-2.1.jar " +
+                "org.apache.hadoop.mapred.JobTracker";
+
+                jtProcess = Runtime.getRuntime().exec(command);
+
+            } catch (IOException ioe) {
+                log.warning(ioe.toString());
+            }
+
+        }
+
+    }
+
+    public class startJobTracker implements Runnable {
+
+        public void run() {
+
+            try {
+
+                log.info("Starting JobTracker!");
+
+                Configuration conf = getConfMR();
+                job = new JobConf(conf);
+                JTracker = JobTracker.startTracker(job);
+                JTracker.offerService();
+
+            //    Thread.sleep(5000);
+
+             //   Thread.currentThread().join();
+
+             //   Thread.currentThread().yield();
+
+
+            } catch (IOException ioe) {
+                log.info(ioe.toString());
+            } catch (InterruptedException ie) {
+                log.info(ie.toString());
+            }
+        }
+
+    }
+
+    public class startTaskTrackerByHadoop implements Runnable {
+
+        public void run() {
+
+            try {
+
+                String hadoopdir = (String) get(-14);
+
+                //String command = "/home/michel/hadoop-0.20.2/bin/start-track.sh";
+                String command = "java -Xmx1000m" +
+                " -Dhadoop.log.dir="+hadoopdir+"/logs" +
+                " -Dhadoop.log.file=hadoop-michel-tasktracker-note.log" +
+                " -Dhadoop.home.dir="+hadoopdir+
+                " -Dhadoop.id.str=michel -Dhadoop.root.logger=INFO,DRFA" +
+                " -Djava.library.path="+hadoopdir+"/lib/native/Linux-i386-32" +
+                " -Dhadoop.policy.file=hadoop-policy.xml" +
+                " -classpath "+hadoopdir+"/conf:" +
+                "/usr/lib/jvm/java-6-sun/lib/tools.jar:" +
+                hadoopdir+":" +
+                hadoopdir+"/hadoop-0.20.2-core.jar:" +
+                hadoopdir+"/lib/commons-cli-1.2.jar:" +
+                hadoopdir+"/lib/commons-codec-1.3.jar:" +
+                hadoopdir+"/lib/commons-el-1.0.jar:" +
+                hadoopdir+"/lib/commons-httpclient-3.0.1.jar:" +
+                hadoopdir+"/lib/commons-logging-1.0.4.jar:" +
+                hadoopdir+"/lib/commons-logging-api-1.0.4.jar:" +
+                hadoopdir+"/lib/commons-net-1.4.1.jar:" +
+                hadoopdir+"/lib/core-3.1.1.jar:" +
+                hadoopdir+"/lib/hsqldb-1.8.0.10.jar:" +
+                hadoopdir+"/lib/jasper-compiler-5.5.12.jar:" +
+                hadoopdir+"/lib/jasper-runtime-5.5.12.jar:" +
+                hadoopdir+"/lib/jets3t-0.6.1.jar:" +
+                hadoopdir+"/lib/jetty-6.1.14.jar:" +
+                hadoopdir+"/lib/jetty-util-6.1.14.jar:" +
+                hadoopdir+"/lib/junit-3.8.1.jar:" +
+                hadoopdir+"/lib/kfs-0.2.2.jar:" +
+                hadoopdir+"/lib/log4j-1.2.15.jar:" +
+                hadoopdir+"/lib/mockito-all-1.8.0.jar:" +
+                hadoopdir+"/lib/oro-2.0.8.jar:" +
+                hadoopdir+"/lib/servlet-api-2.5-6.1.14.jar:" +
+                hadoopdir+"/lib/slf4j-api-1.4.3.jar:" +
+                hadoopdir+"/lib/slf4j-log4j12-1.4.3.jar:" +
+                hadoopdir+"/lib/xmlenc-0.52.jar:" +
+                hadoopdir+"/lib/jsp-2.1/jsp-2.1.jar:" +
+                hadoopdir+"/lib/jsp-2.1/jsp-api-2.1.jar" +
+                " org.apache.hadoop.mapred.TaskTracker";
+                ttProcess = Runtime.getRuntime().exec(command);
+
+            } catch (IOException ioe) {
+                log.warning(ioe.toString());
+            }
+
+        }
+
+    }
+
+    public class startTaskTracker implements Runnable {
+
+        public void run() {
+
+            try {
+
+
+                log.info("Starting TaskTracker!");
+
+                Configuration conf = getConfMR();
+                JobConf job = new JobConf(conf);
+                TTracker = new TaskTracker(job);
+                TTracker.run();
+
+            } catch (IOException ioe) {
+                log.info(ioe.toString());
+            } catch (InterruptedException ie) {
+                log.info(ie.toString());
+            }
+
+        }
+    }
+
     /**
      * Methods to initialize Hadoop Cluster / Create Threads
      *
@@ -330,16 +697,17 @@ public class AbstractMR {
         //nnThread.join();
 
      }
-    /*
 
-    public void stopNN() throws IOException, InterruptedException {
+    public Thread initNNByHadoop() throws IOException, InterruptedException {
 
-        log.info("Stopping NameNode!");
-        nnode.done();
+        log.info("Starting NameNode!");
 
-    }
-     * 
-     */
+        nnodeHadoop = new startNameNodeByHadoop();
+        Thread nnT = new Thread(nnodeHadoop);
+
+        return nnT;
+
+     }
 
     
     public Thread initDN() throws IOException, InterruptedException {
@@ -351,15 +719,21 @@ public class AbstractMR {
 
         return dnT;
 
-      //  dnThread.start();
-      //  dnThread.join();
+    }
+
+    public Thread initDNByHadoop() throws IOException, InterruptedException {
+
+        log.info("Starting DataNode!");
+
+        startDataNodeByHadoop datanode = new startDataNodeByHadoop();
+        Thread dnT = new Thread(datanode);
+
+        return dnT;
 
     }
 
     
     public Thread initJT() throws IOException, InterruptedException {
-
-        //readPropertiesHadoop();
 
         log.info("Starting JobTracker!");
 
@@ -368,10 +742,16 @@ public class AbstractMR {
 
         return jtT;
 
-        //jtThread.start();
-        ///jtThread.join();
-        //Thread.sleep(5000);
-        //jtThread.yield();
+    }
+
+    public Thread initJTByHadoop() throws IOException, InterruptedException {
+
+        log.info("Starting JobTracker!");
+
+        startJobTrackerByHadoop jtracker = new startJobTrackerByHadoop();
+        Thread jtT = new Thread(jtracker);
+
+        return jtT;
 
     }
 
@@ -384,12 +764,19 @@ public class AbstractMR {
         // Thread ttThread = new Thread(ttracker);
         Thread ttT = new Thread(ttracker);
 
+
         return ttT;
 
-        //ttThread.start();
-        ///ttThread.join();
-        //Thread.sleep(5000);
-        //ttThread.yield();
+    }
+
+    public Thread initTTByHadoop() throws IOException, InterruptedException {
+
+        log.info("Starting TaskTracker!");
+
+        startTaskTrackerByHadoop ttracker = new startTaskTrackerByHadoop();
+        Thread ttT = new Thread(ttracker);
+
+        return ttT;
 
     }
 
@@ -472,6 +859,8 @@ public class AbstractMR {
             log.info(e.toString());
         }
     }
+
+
 
     /*
      * Loading the Lower Tester
@@ -602,6 +991,7 @@ public class AbstractMR {
                 log.info(ie.toString());
             }
         }
+        
     }
 
     public void validateJobOutput(String outPath, ArrayList expectedResults) {
@@ -665,244 +1055,7 @@ public class AbstractMR {
         }
     }
 
-    /**
-     * Classes to create Runnable Objects
-     *
-     */
    
-    
-    public class startNameNode implements Runnable {
-
-     
-
-        public void run() {
-
-           try {
-    
-                readPropertiesHadoop();
-
-                Configuration conf = getConfHDFS();
-
-                nn = new NameNode(conf);
-                NNode = nn;
-
-                Thread.sleep(5000);
-
-              //  Thread.currentThread().join();
-
-        
-            } catch (IOException ioe) {
-            } catch (InterruptedException ie) {
-            }
-
-       }
-
-     }
-
-    public class startSecondaryNameNode implements Runnable {
-
-        public void run() {
-
-            try {
-
-                Configuration conf = getConfHDFS();
-                SecondaryNameNode snn = new SecondaryNameNode(conf);
-
-            } catch (IOException ioe) {
-                log.info(ioe.toString());
-            } catch (InterruptedException ie) {
-                log.info(ie.toString());
-            }
-
-        }
-    }
-
-    
-    public class startJobTracker implements Runnable {
-
-        public void run() {
-
-            try {
-     
-                log.info("Starting JobTracker!");
-
-                /*
-                String hadoopdir = (String) get(-14);
-                //String command = "/home/michel/hadoop-0.20.2/bin/start-job.sh";
-                String command = "java -Xmx1000m -Dcom.sun.management.jmxremote" +
-                " -Dcom.sun.management.jmxremote" +
-                " -Dhadoop.log.dir="+hadoopdir+"/logs" +
-                " -Dhadoop.log.file=hadoop-jobtracker.log" +
-                " -Dhadoop.home.dir="+hadoopdir+
-                " -Dhadoop.id.str=michel -Dhadoop.root.logger=INFO,DRFA" +
-
-                jobResult = pi.getResult();
-
-                //BaileyBorweinPlouffe pi = new BaileyBorweinPlouffe();
-                //String[] args = {"1","6","4","/pi"};
-                //pi.run(args);
-                " -Djava.library.path="+hadoopdir+"/lib/native/Linux-i386-32" +
-                " -Dhadoop.policy.file=hadoop-policy.xml" +
-                " -classpath "+hadoopdir+"/conf:" +
-                "/usr/lib/jvm/java-6-sun/lib/tools.jar:"+hadoopdir+":" +
-                hadoopdir+"/hadoop-0.20.2-core.jar:" +
-                hadoopdir+"/lib/commons-cli-1.2.jar:" +
-                hadoopdir+"/lib/commons-codec-1.3.jar:" +
-                hadoopdir+"/lib/commons-el-1.0.jar:" +
-                hadoopdir+"/lib/commons-httpclient-3.0.1.jar:" +
-                hadoopdir+"/lib/commons-logging-1.0.4.jar:" +
-                hadoopdir+"/lib/commons-logging-api-1.0.4.jar:" +
-                hadoopdir+"/lib/commons-net-1.4.1.jar:" +
-                hadoopdir+"/lib/core-3.1.1.jar:" +
-                hadoopdir+"/lib/hsqldb-1.8.0.10.jar:" +
-                java.lang.NoClassDefFoundError: org/apache/hadoop/util/ProgramDriver		hadoopdir+"/lib/jasper-compiler-5.5.12.jar:" +
-                hadoopdir+"/lib/jasper-runtime-5.5.12.jar:" +
-                hadoopdir+"/lib/jets3t-0.6.1.jar:" +
-                hadoopdir+"/lib/jetty-6.1.14.jar:" +
-                hadoopdir+"/lib/jetty-util-6.1.14.jar:" +
-                hadoopdir+"/lib/junit-3.8.1.jar:" +
-                hadoopdir+"/lib/kfs-0.2.2.jar:" +
-                hadoopdir+"/lib/log4j-1.2.15.jar:" +
-                hadoopdir+"/lib/mockito-all-1.8.0.jar:" +
-                hadoopdir+"/lib/oro-2.0.8.jar:" +
-                hadoopdir+"/lib/servlet-api-2.5-6.1.14.jar:" +
-                hadoopdir+"/lib/slf4j-api-1.4.3.jar:" +
-                hadoopdir+"/lib/slf4j-log4j12-1.4.3.jar:" +
-                hadoopdir+"/lib/xmlenc-0.52.jar:" +
-                hadoopdir+"/lib/jsp-2.1/jsp-2.1.jar:" +
-                hadoopdir+"/lib/jsp-2.1/jsp-api-2.1.jar " +
-                "org.apache.hadoop.mapred.JobTracker";
-
-                jtProcess = Runtime.getRuntime().exec(command);
-                 */
-
-  //  public void initJT() throws IOException, InterruptedException {
-
-                Configuration conf = getConfMR();
-                job = new JobConf(conf);
-                JTracker = JobTracker.startTracker(job);
-                JTracker.offerService();
-
-            //    Thread.sleep(5000);
-
-             //   Thread.currentThread().join();
-
-             //   Thread.currentThread().yield();
-
-        
-            } catch (IOException ioe) {
-                log.info(ioe.toString());
-            } catch (InterruptedException ie) {
-                log.info(ie.toString());
-            }
-        }
-         
-    }
-
-    
-    public class startTaskTracker implements Runnable {
-
-        public void run() {
-
-            try {
-
-  
-                log.info("Starting TaskTracker!");
-
-                /*
-                String hadoopdir = (String) get(-14);
-
-                //String command = "/home/michel/hadoop-0.20.2/bin/start-track.sh";
-                String command = "java -Xmx1000m" +
-                " -Dhadoop.log.dir="+hadoopdir+"/logs" +
-                " -Dhadoop.log.file=hadoop-michel-tasktracker-note.log" +
-                " -Dhadoop.home.dir="+hadoopdir+
-                " -Dhadoop.id.str=michel -Dhadoop.root.logger=INFO,DRFA" +
-                " -Djava.library.path="+hadoopdir+"/lib/native/Linux-i386-32" +
-                " -Dhadoop.policy.file=hadoop-policy.xml" +
-                " -classpath "+hadoopdir+"/conf:" +
-                "/usr/lib/jvm/java-6-sun/lib/tools.jar:" +
-                hadoopdir+":" +
-                hadoopdir+"/hadoop-0.20.2-core.jar:" +
-                hadoopdir+"/lib/commons-cli-1.2.jar:" +
-                hadoopdir+"/lib/commons-codec-1.3.jar:" +
-                hadoopdir+"/lib/commons-el-1.0.jar:" +
-                hadoopdir+"/lib/commons-httpclient-3.0.1.jar:" +
-                hadoopdir+"/lib/commons-logging-1.0.4.jar:" +
-                hadoopdir+"/lib/commons-logging-api-1.0.4.jar:" +
-                hadoopdir+"/lib/commons-net-1.4.1.jar:" +
-                hadoopdir+"/lib/core-3.1.1.jar:" +
-                hadoopdir+"/lib/hsqldb-1.8.0.10.jar:" +
-                hadoopdir+"/lib/jasper-compiler-5.5.12.jar:" +
-                hadoopdir+"/lib/jasper-runtime-5.5.12.jar:" +
-                hadoopdir+"/lib/jets3t-0.6.1.jar:" +
-                hadoopdir+"/lib/jetty-6.1.14.jar:" +
-                hadoopdir+"/lib/jetty-util-6.1.14.jar:" +
-                hadoopdir+"/lib/junit-3.8.1.jar:" +
-                hadoopdir+"/lib/kfs-0.2.2.jar:" +
-                hadoopdir+"/lib/log4j-1.2.15.jar:" +
-                hadoopdir+"/lib/mockito-all-1.8.0.jar:" +
-                hadoopdir+"/lib/oro-2.0.8.jar:" +
-                hadoopdir+"/lib/servlet-api-2.5-6.1.14.jar:" +
-                hadoopdir+"/lib/slf4j-api-1.4.3.jar:" +
-                hadoopdir+"/lib/slf4j-log4j12-1.4.3.jar:" +
-                hadoopdir+"/lib/xmlenc-0.52.jar:" +
-                hadoopdir+"/lib/jsp-2.1/jsp-2.1.jar:" +
-                hadoopdir+"/lib/jsp-2.1/jsp-api-2.1.jar" +
-                " org.apache.hadoop.mapred.TaskTracker";
-                ttProcess = Runtime.getRuntime().exec(command);
-                 */
-    //public void initTT() throws IOException, InterruptedException {
-
-                Configuration conf = getConfMR();
-                JobConf job = new JobConf(conf);
-                TTracker = new TaskTracker(job);
-                TTracker.run();
-
-
-
-            } catch (IOException ioe) {
-                log.info(ioe.toString());
-            } catch (InterruptedException ie) {
-                log.info(ie.toString());
-            }
-
-        }
-    }
-
-    
-    public class startDataNode implements Runnable {
-
-        public void run() {
-
-            try {
-   
-
-   // public void initDN() throws IOException, InterruptedException {
-
-                Configuration cfg = getConfHDFS();
-                String dirname = (String) get(-5);
-                String dirdata = (String) get(-6);
-                cfg.set("dfs.name.dir", dirname);
-                cfg.set("dfs.data.dir", dirdata);
-
-                String[] args = {"-rollback"};
-
-                dn = DataNode.createDataNode(args, cfg);
-
-                String serveraddr = dn.getNamenode();
-                log.log(Level.INFO, "DataNode connected with NameNode: {0}", serveraddr);
-
-                Thread.currentThread().join();
-    
-            } catch (IOException ioe) {
-            } catch (InterruptedException ie) {
-            }
-
-       }
-     
-
-    }
 
     public class runPiEstimator implements Runnable {
 
@@ -915,25 +1068,11 @@ public class AbstractMR {
 
                 PiEstimator pi = new PiEstimator();
 
-                //String masterAddr = (String) get(-2);
-                //String masterPort = (String) get(-4);
-                //pi.setCfg(masteraddr, masterport);
-                //pi.setCfg(config); (This is correct)
-
-                //String arg1 = (String) get(-21);
-                //String arg2 = (String) get(-22);
-
                 String[] argumentos = {(String) get(-21), (String) get(-22), (String) get(-2), (String) get(-4)};
                 pi.run(argumentos);
 
                 jobResult = pi.getResult();
                 jobDuration = pi.duration;
-
-                //BaileyBorweinPlouffe pi = new BaileyBorweinPlouffe();
-                //String[] args = {"1","6","4","/pi"};
-                //pi.run(args);
-
-               
 
             } catch (IOException ioe) {
             } catch (Exception e) {
@@ -942,7 +1081,6 @@ public class AbstractMR {
         } 
     }
 
-    
     public class runWordCount implements Runnable {
 
         public void run() {
@@ -965,4 +1103,4 @@ public class AbstractMR {
 
         }
     }
-}
+    }
