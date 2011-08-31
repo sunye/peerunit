@@ -67,8 +67,12 @@ public class TestPiEstimator extends AbstractMR {
 
     }
 
+   @TestStep(order=5, timeout = 100000, range = "0")
    public void jobSubmit() throws Exception, InterruptedException {
 
+         sendJob();
+
+        /*
         try {
 
                 PiEstimator pi = new PiEstimator();
@@ -96,6 +100,7 @@ public class TestPiEstimator extends AbstractMR {
             } catch (IOException ioe) {
             } catch (Exception e) {
             }
+        */
 
     }
 
@@ -110,20 +115,17 @@ public class TestPiEstimator extends AbstractMR {
         validateJobOutput("/output/", al);
          */
 
-        //Unit Test
+       //Unit Test
         if (jobResult != null) {
-
-            //double estimatedresult = 3.20000000000000000000;
 
             String pivalue = (String) get(-20);
             BigDecimal expected;
             expected = BigDecimal.valueOf(Double.valueOf(pivalue));
 
             //double expected = Double.valueOf(pivalue);
-            log.info("expected:" + expected + "  jobResult:" + jobResult
-                    + "  duration:" + jobDuration);
-            Assert.assertTrue(expected == jobResult);
+            log.info("Expected job result: " + expected + "\n Returned job result: " + jobResult);
 
+            Assert.assertTrue(expected.equals(jobResult));
 
         } else {
 

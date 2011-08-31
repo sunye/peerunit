@@ -264,6 +264,8 @@ public class AbstractMR {
         this.put(-34, regexChar);
         String likeWord = properties.getProperty("job.result.like");
         this.put(-35, likeWord);
+        String resultPosition = properties.getProperty("job.result.position");
+        this.put(-36, resultPosition);
     }
 
     public Configuration getConfMR() throws IOException, InterruptedException {
@@ -1010,14 +1012,20 @@ public class AbstractMR {
                    StringBuffer sb = new StringBuffer();
                    String line;
                    String result = "";
+                   String[] lineSplitted;
 
                    while ((line = br.readLine()) != null) {
                         // Splitting the line
-                        String[] lineSplitted = line.split(" ");
+                        String regex = (String) get(-34);
+                        if (regex.isEmpty() || regex.equals("\" \"") || regex.equals("")) {
+                            lineSplitted = line.split(" ");
+                        } else {
+                            lineSplitted = line.split(regex);
+                        }
 
                         // Comparing the first line word
-                        if (lineSplitted[0].equals(new String("Estimated"))) {
-                            result = lineSplitted[5];
+                        if (lineSplitted[0].equals(new String((String) get(-35)))) {
+                            result = lineSplitted[Integer.valueOf((String) get(-36))];
                         }
 
                         // Append the line to String Buffer
