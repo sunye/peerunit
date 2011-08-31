@@ -26,6 +26,8 @@ public class TestPiEstimator extends AbstractMR {
     @TestStep(order=1, timeout = 150000, range = "0")
     public void startNameNode() throws IOException, InterruptedException {
 
+        dfsFormatting((String) get(-38));
+
     	nnThread = initNN();
 
         nnThread.start();
