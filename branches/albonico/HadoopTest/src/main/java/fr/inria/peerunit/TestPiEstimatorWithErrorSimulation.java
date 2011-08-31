@@ -19,7 +19,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 
 
-public class TestPiEstimatorByHadoop extends AbstractMR {
+public class TestPiEstimatorWithErrorSimulation extends AbstractMR {
     
     // Threads vars to Hadoop manipulation
     protected static Thread nnThread;
@@ -76,6 +76,16 @@ public class TestPiEstimatorByHadoop extends AbstractMR {
 
        sendJob();
        
+    }
+
+   @TestStep(order=5, timeout = 400000, range = "1", depend="startTaskTracker")
+   public void killTaskTrackerNode() throws Exception, InterruptedException {
+
+       // sendJob is sleeping for 60000 ms before start, so here we are waiting for job submition
+       Thread.sleep(80000);
+
+       ttProcess.destroy();
+
     }
 
    @TestStep(order=6, timeout = 400000, range = "0", depend="jobSubmit")

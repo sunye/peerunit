@@ -266,6 +266,13 @@ public class AbstractMR {
         this.put(-35, likeWord);
         String resultPosition = properties.getProperty("job.result.position");
         this.put(-36, resultPosition);
+
+
+        // Script to DFS format
+        String scriptFormat = properties.getProperty("hadoop.dir.format.script");
+        this.put(-37, scriptFormat);
+        String hadooptestDir = properties.getProperty("hadooptest.dir");
+        this.put(-38, hadooptestDir);
     }
 
     public Configuration getConfMR() throws IOException, InterruptedException {
@@ -321,6 +328,15 @@ public class AbstractMR {
 
         return conf;
 
+    }
+
+    public void dfsFormatting(String dirHadoopTest) throws RemoteException, IOException, InterruptedException {
+
+        log.info("Formatting DFS dir: " + dirHadoopTest + "!");
+        String scriptFormat = (String) get(-37) + " " + dirHadoopTest;
+        Process formatDFSProcess = Runtime.getRuntime().exec(scriptFormat);
+        formatDFSProcess.waitFor();
+        
     }
 
      /**
