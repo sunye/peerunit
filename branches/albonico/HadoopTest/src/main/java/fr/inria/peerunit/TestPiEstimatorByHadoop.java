@@ -10,7 +10,12 @@ import fr.inria.peerunit.parser.AfterClass;
 import fr.inria.peerunit.tester.Assert;
 
 // Java classes
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 
 
@@ -67,20 +72,32 @@ public class TestPiEstimatorByHadoop extends AbstractMR {
    @TestStep(order=5, timeout = 400000, range = "0", depend="startJobTracker")
    public void jobSubmit() throws Exception, InterruptedException {
 
+       sendJob();
+       
+    }
 
-       Thread.sleep(60000);
+   @TestStep(order=6, timeout = 400000, range = "0", depend="jobSubmit")
+   public void assertResult() throws Exception, InterruptedException {
+       
+        //Unit Test
+        if (jobResult != null) {
 
-       String hadoopdir = (String) get(-14);
+            String pivalue = (String) get(-20);
+            BigDecimal expected;
+            expected = BigDecimal.valueOf(Double.valueOf(pivalue));
 
-       String jar = (String) get(-15);
-       String job = (String) get(-16);
-       String param = (String) get(-17);
+            //double expected = Double.valueOf(pivalue);
+            log.info("Expected job result: " + expected + "\n Returned job result: " + jobResult);
 
-       String command = hadoopdir + "/bin/hadoop jar " + jar + " " + job + " " + param;
-       log.info("Running " + command + "!" );
-       Process jobProcess = Runtime.getRuntime().exec(command);
-       jobProcess.waitFor();     
+            Assert.assertTrue(expected.equals(jobResult));
 
+        } else {
+
+            log.info("jobResult is NULL!");
+
+            Assert.fail();
+
+        }
     }
 
    

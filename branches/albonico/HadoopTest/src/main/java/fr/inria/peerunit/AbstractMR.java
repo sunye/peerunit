@@ -257,7 +257,13 @@ public class AbstractMR {
         this.put(-31, ltClass);
         this.put(-32, ltField);
 
-
+        // File to logging results
+        String resultFile = properties.getProperty("job.result.logfile");
+        this.put(-33,resultFile);
+        String regexChar = properties.getProperty("job.result.regex");
+        this.put(-34, regexChar);
+        String likeWord = properties.getProperty("job.result.like");
+        this.put(-35, likeWord);
     }
 
     public Configuration getConfMR() throws IOException, InterruptedException {
@@ -963,6 +969,7 @@ public class AbstractMR {
     runSendJob sjob = new runSendJob();
     Thread sjThread = new Thread(sjob);
     sjThread.start();
+    sjThread.join();
 
   }
 
@@ -972,16 +979,57 @@ public class AbstractMR {
 
             try {
 
-                String hadoopdir = (String) get(-14);
+                   Thread.sleep(60000);
 
-                String jar = (String) get(-15);
-                String job = (String) get(-16);
-                String param = (String) get(-17);
+                   String hadoopdir = (String) get(-14);
 
-                String command = hadoopdir + "/bin/hadoop jar " + jar + " " + job + " " + param;
-                log.info("Running " + command + "!" );
-                Process jobProcess = Runtime.getRuntime().exec(command);
-                jobProcess.waitFor();
+                   String jar = (String) get(-15);
+                   String job = (String) get(-16);
+                   String param = (String) get(-17);
+                   String logFile = (String) get(-33);
+
+                  // String command = hadoopdir + "/bin/hadoop jar " + jar + " " + job + " " + param + " > " + logFile + " 2>";
+                   String command = hadoopdir + "/bin/hadoop jar " + jar + " " + job + " " + param;
+                   log.info("Running: " + command );
+                   Process jobProcess = Runtime.getRuntime().exec(command);
+                   jobProcess.waitFor();
+
+                   // Getting waht job output on stdout
+                   /*
+                   OutputStream ops = new FileOutputStream(logFile);
+                   ops = jobProcess.getOutputStream();
+                   ByteArrayOutputStream bArray = new ByteArrayOutputStream();
+                   ops.write(bArray.toByteArray());
+                   String s=bArray.toString();
+                   log.info("Job stdout: " + s);
+                    *
+                    */
+
+                   // Getting Result
+                   BufferedReader br = new BufferedReader(new InputStreamReader(jobProcess.getInputStream()));
+                   StringBuffer sb = new StringBuffer();
+                   String line;
+                   String result = "";
+
+                   while ((line = br.readLine()) != null) {
+                        // Splitting the line
+                        String[] lineSplitted = line.split(" ");
+
+                        // Comparing the first line word
+                        if (lineSplitted[0].equals(new String("Estimated"))) {
+                            result = lineSplitted[5];
+                        }
+
+                        // Append the line to String Buffer
+                        sb.append(line).append("\n");
+                   }
+
+                   String answer = sb.toString();
+
+                   log.info("Output: " + answer);
+                   log.info("Result: " + result);
+
+                   jobResult = BigDecimal.valueOf(Double.valueOf(result));
 
             } catch (RemoteException re) {
                 log.info(re.toString());
