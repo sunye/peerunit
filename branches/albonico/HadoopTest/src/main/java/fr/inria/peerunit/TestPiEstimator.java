@@ -3,7 +3,6 @@ package fr.inria.peerunit;
 /**
  * @author albonico  
  */
-
 // PeerUnit classes
 import fr.inria.peerunit.parser.TestStep;
 import fr.inria.peerunit.parser.AfterClass;
@@ -13,9 +12,7 @@ import fr.inria.peerunit.tester.Assert;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-
 public class TestPiEstimator extends AbstractMR {
-
 
     // Threads vars to Hadoop manipulation
     protected static Thread nnThread;
@@ -23,90 +20,90 @@ public class TestPiEstimator extends AbstractMR {
     protected static Thread jtThread;
     protected static Thread ttThread;
 
-    @TestStep(order=1, timeout = 150000, range = "0")
+    @TestStep(order = 1, timeout = 30000, range = "0")
     public void startNameNode() throws IOException, InterruptedException {
 
         dfsFormatting((String) get(-38));
 
-    	nnThread = initNN();
+        nnThread = initNN();
 
         nnThread.start();
         nnThread.join();
 
 
     }
-	
 
-    @TestStep(order=2, timeout = 100000, range = "*")
+    @TestStep(order = 2, timeout = 10000, range = "*")
     public void startDataNode() throws IOException, InterruptedException {
 
-    	dnThread = initDN();
+        System.out.println("startDataNode");
+        dnThread = initDN();
 
         dnThread.start();
         dnThread.join();
+        System.out.println("startDataNode - end");
 
     }
 
-    @TestStep(order=3, timeout = 100000, range = "0")
+    @TestStep(order = 3, timeout = 10000, range = "0")
     public void startJobTracker() throws Exception {
-    	
-    	jtThread = initJT();
-        
-        jtThread.start();
-        Thread.sleep(5000);
-        jtThread.yield();
-    	
-   } 
 
-   @TestStep(order=4, timeout = 100000, range = "*")
+        jtThread = initJT();
+
+        jtThread.start();
+        jtThread.yield();
+
+    }
+
+    @TestStep(order = 4, timeout = 10000, range = "*")
     public void startTaskTracker() throws Exception {
 
-	 ttThread = initTT();
-         
-         ttThread.start();
-         Thread.sleep(5000);
-         ttThread.yield();
+        ttThread = initTT();
+
+        ttThread.start();
+        ttThread.yield();
 
     }
 
-   @TestStep(order=5, timeout = 100000, range = "0")
-   public void jobSubmit() throws Exception, InterruptedException {
+    @TestStep(order = 5, range = "0", timeout = 120000)
+    public void jobSubmit() throws Exception, InterruptedException {
 
-         sendJob();
+        sendJob();
 
         /*
         try {
 
-                PiEstimator pi = new PiEstimator();
+        PiEstimator pi = new PiEstimator();
 
-                //String masterAddr = (String) get(-2);
-                //String masterPort = (String) get(-4);
-                //pi.setCfg(masteraddr, masterport);
-                //pi.setCfg(config); (This is correct)
+        //String masterAddr = (String) get(-2);
+        //String masterPort = (String) get(-4);
+        //pi.setCfg(masteraddr, masterport);
+        //pi.setCfg(config); (This is correct)
 
-                //String arg1 = (String) get(-21);
-                //String arg2 = (String) get(-22);
+        //String arg1 = (String) get(-21);
+        //String arg2 = (String) get(-22);
 
-                String[] argumentos = {(String) get(-21), (String) get(-22), (String) get(-2), (String) get(-4)};
-                pi.run(argumentos);
+        String[] argumentos = {(String) get(-21), (String) get(-22), (String) get(-2), (String) get(-4)};
+        pi.run(argumentos);
 
-                jobResult = pi.getResult();
-                jobDuration = pi.duration;
+        jobResult = pi.getResult();
+        jobDuration = pi.duration;
 
-                //BaileyBorweinPlouffe pi = new BaileyBorweinPlouffe();
-                //String[] args = {"1","6","4","/pi"};
-                //pi.run(args);
+        //BaileyBorweinPlouffe pi = new BaileyBorweinPlouffe();
+        //String[] args = {"1","6","4","/pi"};
+        //pi.run(args);
 
 
 
-            } catch (IOException ioe) {
-            } catch (Exception e) {
-            }
-        */
+        } catch (IOException ioe) {
+        } catch (Exception e) {
+        }
+         */
+
 
     }
 
-    @TestStep(order = 6, timeout = 440000, range = "0")
+    @TestStep(order = 6, timeout = 1000, range = "0")
     public void assertResult() throws Exception, InterruptedException {
         /*
         ArrayList al = new ArrayList();
@@ -117,7 +114,7 @@ public class TestPiEstimator extends AbstractMR {
         validateJobOutput("/output/", al);
          */
 
-       //Unit Test
+        //Unit Test
         if (jobResult != null) {
 
             String pivalue = (String) get(-20);
@@ -125,7 +122,11 @@ public class TestPiEstimator extends AbstractMR {
             expected = BigDecimal.valueOf(Double.valueOf(pivalue));
 
             //double expected = Double.valueOf(pivalue);
-            log.info("Expected job result: " + expected + "\n Returned job result: " + jobResult);
+            //log.info("Expected job result: " + expected + "\n Returned job result: " + jobResult);
+            System.out.println("expected:" + expected + "  jobResult:" + jobResult
+                    + "  duration:" + jobDuration);
+            log.info("expected:" + expected + "  jobResult:" + jobResult
+                    + "  duration:" + jobDuration);
 
             Assert.assertTrue(expected.equals(jobResult));
 
@@ -139,47 +140,26 @@ public class TestPiEstimator extends AbstractMR {
 
 
     }
-   
-   @TestStep(order=15, timeout=30000, range="*")
+
+    @TestStep(order = 15, timeout = 30000, range = "*")
     public void stopSlaveServices() throws IOException, InterruptedException {
-    
-    	if (dnThread.isAlive()) {
-	    	log.info("Stopping Datanode...");
-	    	dn.shutdown();
-	    	dnThread.interrupt();
-    	}
-    	
-    	if (ttThread.isAlive()) {
-		log.info("Stopping TaskTracker...");
-		TTracker.shutdown();
-		ttThread.interrupt();
-    	}
+        log.info("Stopping Datanode...");
+        //dn.shutdown();
+        dnThread.interrupt(); // takes too long to respond!
 
-    	
+        log.info("Stopping TaskTracker...");
+        //TTracker.shutdown();
+        ttThread.interrupt();
     }
-    	
-    @TestStep(order=16, timeout=30000, range="0")
+
+    @TestStep(order = 16, timeout = 30000, range = "0")
     public void stopMasterServices() throws IOException, InterruptedException {
-    	
-    	if (jtThread.isAlive()) {
-	    	log.info("Stopping JobTracker...");
-	    	JTracker.stopTracker();
-	    	jtThread.interrupt();
-    	}
-    	
-    	if (nnThread.isAlive()) {
-	    	log.info("Stopping NameNode...");
-	    	nn.stop();
-	    	nnThread.interrupt();
-    	}
+        log.info("Stopping JobTracker...");
+        JTracker.stopTracker();
+        //jtThread.interrupt();
 
+        log.info("Stopping NameNode...");
+        //nn.stop();
+        nnThread.interrupt();
     }
-    
-    @AfterClass(range="*", timeout = 100000)
-    public void ac() throws IOException {
-    	log.info("End of test case!");
-    	
-    }
-
-
 }

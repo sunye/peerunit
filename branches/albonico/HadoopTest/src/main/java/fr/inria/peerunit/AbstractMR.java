@@ -997,17 +997,18 @@ public class AbstractMR {
 
             try {
 
-                   Thread.sleep(60000);
+                   //Thread.sleep(30000);
 
                    String hadoopdir = (String) get(-14);
 
                    String jar = (String) get(-15);
                    String job = (String) get(-16);
-                   String param = (String) get(-17);
-                   String logFile = (String) get(-33);
+                   String param = get(-21) + " " + get(-22);
+                   //String logFile = hadoopdir + get(-33).toString();
 
                   // String command = hadoopdir + "/bin/hadoop jar " + jar + " " + job + " " + param + " > " + logFile + " 2>";
-                   String command = hadoopdir + "/bin/hadoop jar " + jar + " " + job + " " + param;
+                   String command = hadoopdir + "bin/hadoop jar " 
+                           + hadoopdir + jar + " " + job + " " + get(-21) + " " + get(-22);
                    log.info("Running: " + command );
                    Process jobProcess = Runtime.getRuntime().exec(command);
                    jobProcess.waitFor();
