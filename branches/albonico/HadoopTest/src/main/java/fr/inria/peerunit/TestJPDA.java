@@ -25,7 +25,7 @@ public class TestJPDA extends AbstractMR {
 
 	log.info("Starting Lower Tester...");
 
-        lowerTester();
+     //   lowerTester();
 
    }
 
@@ -33,7 +33,7 @@ public class TestJPDA extends AbstractMR {
    @TestStep(order=2, timeout = 100000, range = "*")
     public void startTaskTracker() throws Exception {
 
-	 ttThread = initTT();
+//	 ttThread = initTT();
          
          ttThread.start();
          Thread.sleep(5000);

@@ -4,7 +4,10 @@ package fr.inria.peerunit;
  * @author albonico
  *
  */
-// Hadoop classes
+
+/*
+ * JPDA Classes
+ */
 import com.sun.jdi.Field;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.VirtualMachine;
@@ -19,7 +22,9 @@ import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.ModificationWatchpointRequest;
 
-import java.util.logging.Level;
+/*
+ * MapReduce Classes
+ */
 import org.apache.hadoop.mapred.JobTracker;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TaskTracker;
@@ -31,7 +36,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileUtil;
 
-// PeerUnit classes
+/*
+ * PeerUnit Classes
+ */
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.parser.BeforeClass;
 import fr.inria.peerunit.parser.SetGlobals;
@@ -39,7 +46,9 @@ import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.util.TesterUtil;
 import fr.inria.peerunit.tester.Assert;
 
-// Java classes
+/*
+ * Java Classes
+ */
 import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,6 +64,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.logging.Level;
 
 public class AbstractMR {
 
@@ -145,6 +155,9 @@ public class AbstractMR {
         readPropertiesHadoop();
     }
 
+    /*
+     * PeerUnit Properties
+     */
     private void setEnvironmentProperties() throws FileNotFoundException, IOException, InterruptedException {
         if (new File("peerunit.properties").exists()) {
             String filename = "peerunit.properties";
@@ -162,16 +175,12 @@ public class AbstractMR {
      * Reading Hadoop Properties (hadoop.properties)
      *
      */
-
     synchronized private void readPropertiesHadoop() throws IOException, InterruptedException {
-        log.info("Starting Cluster Hadoop!");
-
+        log.info("Reading Hadoop properties!");
+        
         Properties properties = new Properties();
         File file = new File("hadoop.properties");
         FileInputStream fis = null;
-
-        log.info("Reading Hadoop configuration!");
-
         fis = new FileInputStream(file);
         properties.load(fis);
 
@@ -179,81 +188,99 @@ public class AbstractMR {
          * JobTracker and NameNode Properties
          */
         String nnaddr = properties.getProperty("hadoop.namenode");
-        String jtaddr = properties.getProperty("hadoop.jobtracker");
-
         this.put(-1, nnaddr);
+        String jtaddr = properties.getProperty("hadoop.jobtracker");
         this.put(-2, jtaddr);
-
         String nnport = properties.getProperty("hadoop.namenode.port");
-        String jtport = properties.getProperty("hadoop.jobtracker.port");
-
         this.put(-3, nnport);
+        String jtport = properties.getProperty("hadoop.jobtracker.port");
         this.put(-4, jtport);
 
         /**
-         * Other Properties
+         * DFS Properties
          */
         String dfsname = properties.getProperty("hadoop.dir.name");
-        String dfsdata = properties.getProperty("hadoop.dir.data");
-        String hadooptmp = properties.getProperty("hadoop.dir.tmp");
-        String dfssnn = properties.getProperty("hadoop.dir.secnn");
-        String hadooplog = properties.getProperty("hadoop.dir.log");
-        String hadooprep = properties.getProperty("hadoop.dfs.replication");
-        String javaopt = properties.getProperty("hadoop.java.options");
-        String memtask = properties.getProperty("mapred.child.java.opts");
-        String version = properties.getProperty("hadoop.version");
-        String hadoopdir = properties.getProperty("hadoop.dir.install");
-        String mutantclass = properties.getProperty("mutant.class");
-        String mutantoutputdir = properties.getProperty("mutant.output.dir");
-        String pivalue = properties.getProperty("pi.value");
-        String pinmaps = properties.getProperty("pi.nMaps");
-        String pinsamples = properties.getProperty("pi.nSamples");
-        String inputdir = properties.getProperty("wordcount.input");
-        String outputdir = properties.getProperty("wordcount.output");
-        String wfile = properties.getProperty("wordcount.file");
-        String wcsleep = properties.getProperty("wordcount.sleep");
-
-        String jobJar = properties.getProperty("job.jar");
-        String jobClass = properties.getProperty("job.class");
-        String jobParameters = properties.getProperty("job.parameters");
-
-        String ltPort = properties.getProperty("lower.tester.port");
-        String ltClass = properties.getProperty("lower.tester.class");
-        String ltField = properties.getProperty("lower.tester.field");
-
         this.put(-5, dfsname);
+        String dfsdata = properties.getProperty("hadoop.dir.data");
         this.put(-6, dfsdata);
+        String hadooptmp = properties.getProperty("hadoop.dir.tmp");
         this.put(-7, hadooptmp);
+        String dfssnn = properties.getProperty("hadoop.dir.secnn");
         this.put(-8, dfssnn);
+
+        /*
+         * Hadoop Properties
+         */
+        String hadooplog = properties.getProperty("hadoop.dir.log");
         this.put(-9, hadooplog);
+        String hadooprep = properties.getProperty("hadoop.dfs.replication");
         this.put(-10, hadooprep);
-        this.put(-11, javaopt);
-        this.put(-12, memtask);
+        String version = properties.getProperty("hadoop.version");
         this.put(-13, version);
+        String hadoopdir = properties.getProperty("hadoop.dir.install");
         this.put(-14, hadoopdir);
-        this.put(-15, jobJar);
-        this.put(-16, jobClass);
-        this.put(-17, jobParameters);
+
+        /*
+         * JVM Properties
+         */
+        String javaopt = properties.getProperty("hadoop.java.options");
+        this.put(-11, javaopt);
+        String memtask = properties.getProperty("mapred.child.java.opts");
+        this.put(-12, memtask);
+
+        /*
+         * Mutants Generation Properties
+         */
+        String mutantclass = properties.getProperty("mutant.class");
         this.put(-18, mutantclass);
+        String mutantoutputdir = properties.getProperty("mutant.output.dir");
         this.put(-19, mutantoutputdir);
 
-        // PiEstimator arguments
+        /*
+         * Custom PiEstimator Properties
+         */
+        String pivalue = properties.getProperty("pi.value");
         this.put(-20, pivalue);
+        String pinmaps = properties.getProperty("pi.nMaps");
         this.put(-21, pinmaps);
+        String pinsamples = properties.getProperty("pi.nSamples");
         this.put(-22, pinsamples);
 
-        //WordCount
+        /*
+         * Custom WordCount Properties
+         */
+        String inputdir = properties.getProperty("wordcount.input");
         this.put(-23, inputdir);
+        String outputdir = properties.getProperty("wordcount.output");
         this.put(-24, outputdir);
+        String wfile = properties.getProperty("wordcount.file");
         this.put(-25, wfile);
+        String wcsleep = properties.getProperty("wordcount.sleep");
         this.put(-26, wcsleep);
 
-        //JPDA - Lower Tester
+        /*
+         * External Classes Execution Properties
+         */
+        String jobJar = properties.getProperty("job.jar");
+        this.put(-15, jobJar);
+        String jobClass = properties.getProperty("job.class");
+        this.put(-16, jobClass);
+        String jobParameters = properties.getProperty("job.parameters");
+        this.put(-17, jobParameters);
+
+        /*
+         * Lower Tester Properties
+         */
+        String ltPort = properties.getProperty("lower.tester.port");
         this.put(-30, ltPort);
+        String ltClass = properties.getProperty("lower.tester.class");
         this.put(-31, ltClass);
+        String ltField = properties.getProperty("lower.tester.field");
         this.put(-32, ltField);
 
-        // File to logging results
+        /*
+         * Logging Job Results Properties
+         */
         String resultFile = properties.getProperty("job.result.logfile");
         this.put(-33, resultFile);
         String regexChar = properties.getProperty("job.result.regex");
@@ -263,44 +290,61 @@ public class AbstractMR {
         String resultPosition = properties.getProperty("job.result.position");
         this.put(-36, resultPosition);
 
-
-        // Script to DFS format
+        /*
+         * DFS Formatting Properties
+         */
         String scriptFormat = properties.getProperty("hadoop.dir.format.script");
         this.put(-37, scriptFormat);
         String hadooptestDir = properties.getProperty("hadooptest.dir");
         this.put(-38, hadooptestDir);
+
+        /*
+         * Expected result file
+         */
+        String expectedResultFile = properties.getProperty("expected.result.file");
+        this.put(-39, expectedResultFile);
+        String resultPath = properties.getProperty("result.path");
+        this.put(-40, resultPath);
+        String assertType = properties.getProperty("job.result.assert.type");
+        this.put(-43, assertType);
+
+        /*
+         * Input external file
+         */
+        String externalFile = properties.getProperty("job.input.file");
+        this.put(-41, externalFile);
+        String inputDir = properties.getProperty("job.input.dir");
+        this.put(-42, inputDir);
     }
 
+    /*
+     * Getting Configurations to MapReduce Components
+     */
     private Configuration getConfMR() throws IOException, InterruptedException {
         log.info("Reading MR configuration!");
 
-        //   Thread.sleep(sleep);
         Configuration conf = new Configuration();
         String jthost = this.get(-2) + ":" + this.get(-4);
-
         jthost = (String) jthost;
-
-        conf.set("mapred.job.tracker", jthost);
-        //conf.set("mapreduce.jobtracker.address", jthost);
-
         String joptions = (String) this.get(-11);
         String memtask = (String) this.get(-12);
+        
+        conf.set("mapred.job.tracker", jthost);
         conf.set("mapred.child.java.opts", joptions);
         conf.set("mapred.child.java.opts", memtask);
 
         return conf;
     }
 
+    /*
+     * Getting Configurations to HDFS Components
+     */
     private Configuration getConfHDFS() throws IOException, InterruptedException {
         log.info("Reading HDFS configuration!");
 
-        // Thread.sleep(sleep);
         Configuration conf = new Configuration();
-
         String nnhost = "hdfs://" + this.get(-1) + ":" + this.get(-3);
-
         nnhost = (String) nnhost;
-
         String dirname = (String) this.get(-5);
         String dirdata = (String) this.get(-6);
         String dirtmp = (String) this.get(-7);
@@ -309,7 +353,6 @@ public class AbstractMR {
         String replication = (String) this.get(-10);
         String joptions = (String) this.get(-11);
 
-        //conf.set("fs.defaultFS", nnhost);
         conf.set("fs.default.name", nnhost);
         conf.set("dfs.name.dir", dirname);
         conf.set("dfs.data.dir", dirdata);
@@ -322,9 +365,8 @@ public class AbstractMR {
         return conf;
     }
 
-
     /*
-     *  DFS manipulations
+     *  DFS manipulations methods
      *
      */
     private void dfsFormatting(String dirHadoopTest) throws RemoteException, IOException, InterruptedException {
@@ -334,11 +376,14 @@ public class AbstractMR {
         formatDFSProcess.waitFor();
     }
 
-    private void putFileHDFS(String file, String dir) {
+    protected void putFileHDFS() {
         try {
+            log.info("Putting file on HDFS!");
             String hadoopdir = (String) get(-14);
+            String externalFile = (String) get(-41);
+            String inputDir = (String) get(-42);
 
-            String command = hadoopdir + "/bin/hadoop dfs -put " + file + " " + dir + "teste";
+            String command = hadoopdir + "/bin/hadoop dfs -put " + externalFile + " " + inputDir + "teste";
             log.info("Command: " + command);
             Process putProcess = Runtime.getRuntime().exec(command);
             putProcess.waitFor();
@@ -383,42 +428,44 @@ public class AbstractMR {
 
                 String jar = (String) get(-15);
                 String job = (String) get(-16);
-                String param = get(-21) + " " + get(-22);
-                String command = hadoopdir + "bin/hadoop jar "
-                        + jar + " " + job + " " + get(-21) + " " + get(-22);
+                //String param = get(-21) + " " + get(-22);
+                String param = (String) get(-17);
+                String command = hadoopdir + "bin/hadoop jar " + jar + " " + job + " " + param;
                 log.info("Running: " + command);
                 Process jobProcess = Runtime.getRuntime().exec(command);
                 jobProcess.waitFor();
+                // If asserting stdout
+                if (Integer.valueOf((String) get(-43)) == 1) {
+                    // Getting Result
+                    BufferedReader br = new BufferedReader(new InputStreamReader(jobProcess.getInputStream()));
+                    StringBuffer sb = new StringBuffer();
+                    String line;
+                    String result = "";
+                    String[] lineSplitted;
 
-                // Getting Result
-                BufferedReader br = new BufferedReader(new InputStreamReader(jobProcess.getInputStream()));
-                StringBuffer sb = new StringBuffer();
-                String line;
-                String result = "";
-                String[] lineSplitted;
+                    while ((line = br.readLine()) != null) {
+                        // Splitting the line
+                        String regex = (String) get(-34);
+                        if (regex.isEmpty() || regex.equals("\" \"") || regex.equals("")) {
+                            lineSplitted = line.split(" ");
+                        } else {
+                            lineSplitted = line.split(regex);
+                        }
+                        // Comparing the first line word
+                        if (lineSplitted[0].equals(new String((String) get(-35)))) {
+                            result = lineSplitted[Integer.valueOf((String) get(-36))];
+                        }
+                        // Append the line to String Buffer
+                        sb.append(line).append("\n");
+                    }
 
-                while ((line = br.readLine()) != null) {
-                    // Splitting the line
-                    String regex = (String) get(-34);
-                    if (regex.isEmpty() || regex.equals("\" \"") || regex.equals("")) {
-                        lineSplitted = line.split(" ");
-                    } else {
-                        lineSplitted = line.split(regex);
-                    }
-                    // Comparing the first line word
-                    if (lineSplitted[0].equals(new String((String) get(-35)))) {
-                        result = lineSplitted[Integer.valueOf((String) get(-36))];
-                    }
-                    // Append the line to String Buffer
-                    sb.append(line).append("\n");
+                    String answer = sb.toString();
+
+                    log.info("Output: " + answer);
+                    log.info("Result: " + result);
+
+                    jobResult = BigDecimal.valueOf(Double.valueOf(result));
                 }
-
-                String answer = sb.toString();
-
-                log.info("Output: " + answer);
-                log.info("Result: " + result);
-
-                jobResult = BigDecimal.valueOf(Double.valueOf(result));
             } catch (RemoteException re) {
                 log.info(re.toString());
             } catch (IOException ioe) {
@@ -595,7 +642,7 @@ public class AbstractMR {
         // JobTracker
         jtThread = initJT();
         jtThread.start();
-        jtThread.sleep(sleep);
+        jtThread.sleep(5000);
         jtThread.yield();
     }
 
@@ -965,24 +1012,28 @@ public class AbstractMR {
      *  Asserting results
      *
      */
-    protected void assertResult() throws RemoteException {
-        /*
-        ArrayList al = new ArrayList();
-        al.add("michel	2");
-        al.add("albonico	1");
+    protected void assertResult(int type) throws RemoteException {
+        log.info("Asserting job output result!");
 
-        // Verify output
-        validateJobOutput("/output/", al);
-         */
+        switch(type) {
+            case 1:
+                 validateJobOutputInStdout();
+                 break;
+            case 2:
+                 validateJobOutputInDir();
+                 break;
+            default:
+                 validateJobOutputInStdout();
+                 break;
+        }
+    }
 
-        //Unit Test
+    private void validateJobOutputInStdout() throws RemoteException {
         if (jobResult != null) {
             String pivalue = (String) get(-20);
             BigDecimal expected;
             expected = BigDecimal.valueOf(Double.valueOf(pivalue));
 
-            //double expected = Double.valueOf(pivalue);
-            //log.info("Expected job result: " + expected + "\n Returned job result: " + jobResult);
             System.out.println("expected:" + expected + "  jobResult:" + jobResult
                     + "  duration:" + jobDuration);
             log.info("expected:" + expected + "  jobResult:" + jobResult
@@ -994,65 +1045,57 @@ public class AbstractMR {
         }
     }
 
-    // DFS validate output
-    private void validateJobOutput(String outPath, ArrayList expectedResults) {
-
+    private void validateJobOutputInDir() {
         try {
+            log.info("Reading expected result file...");
+            ArrayList expectedResults = new ArrayList();
+            if (new File((String) get(-39)).canRead()) {
+                FileInputStream expectedFile = new FileInputStream((String) get(-39));
+                BufferedReader readerExpected = new BufferedReader(new InputStreamReader(expectedFile));
+                String lineExpected = "";
+                while ((lineExpected = readerExpected.readLine()) != null) {
+                    expectedResults.add(lineExpected);
+                   // log.info("Expected: " + lineExpected);
+                }
+                readerExpected.close();
+                expectedFile.close();
+            }
 
-            log.info("Validating Job output result!");
+            String outPath = (String) get(-40);
             log.log(Level.INFO, "Reading {0}...", outPath);
-
             Path outputdir = new Path(outPath);
-
             Path outputFiles[] = FileUtil.stat2Paths(outputdir.getFileSystem(getConfHDFS()).listStatus(outputdir, new OutputLogFilter()));
-
             int countexpres = 0;
 
             if (outputFiles.length > 0) {
-
-
                 for (int ii = 0; ii < outputFiles.length; ii++) {
-
                     Path file = outputFiles[ii];
-
                     log.log(Level.INFO, "Reading file {0}...", file);
-
                     FileSystem hdfs = outputdir.getFileSystem(getConfHDFS());
-
                     if (hdfs.isFile(file)) {
-
                         InputStream is = outputdir.getFileSystem(getConfHDFS()).open(file);
                         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-                        while (reader.ready()) {
-                            Assert.assertTrue(expectedResults.get(countexpres).toString().equals((String) reader.readLine()));
+                        String line = "";
+                        while ((line = reader.readLine()) != null) {
+                            Assert.assertTrue(expectedResults.get(countexpres).toString().equals(line));
                             countexpres++;
-                            log.info("Line " + countexpres + ": " + (String) reader.readLine());
+                            log.info("Line " + countexpres + ": " + line);
                         }
-
                         reader.close();
                         is.close();
-
                     } else {
                         log.log(Level.INFO, "File {0} not found!", file);
                         Assert.fail();
                     }
                 }
-
             } else {
                 log.info("No files in " + outPath + "!");
                 Assert.fail();
             }
-
-
         } catch (IOException ioe) {
-
             log.info(ioe.toString());
-
         } catch (InterruptedException ie) {
-
             log.info(ie.toString());
-
         }
     }
 
