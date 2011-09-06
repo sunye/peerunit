@@ -40,7 +40,7 @@ class HierarchicalStrategy implements CoordinationStrategy {
         LOG.entering("HierarchicalStrategy", "testcaseExecution()");
 
         for (Integer order : testers.getSchedule().orders()) {
-            testers.execute(order);
+            testers.hierarchicalExecute(order);
         }
     }
 }

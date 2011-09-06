@@ -61,8 +61,16 @@ public class TesterSetImpl implements TesterSet {
         coordinator.execute(md);
     }
 
-    public void execute(Integer order) throws InterruptedException {
-        coordinator.execute(order);
+    public void dependencyExecute(MethodDescription md, TesterSet ts) throws InterruptedException {
+        coordinator.dependencyExecute(md,ts);
+    }
+
+    public void hierarchicalExecute(Integer order) throws InterruptedException {
+        coordinator.hierarchicalExecute(order);
+    }
+
+    public void globalExecute(Integer order, TesterSet ts) throws InterruptedException {
+        coordinator.globalExecute(order, ts);
     }
 
     public ArrayList<String> execute(Integer order, TesterSet testers, ArrayList<String> errors) throws InterruptedException {
