@@ -73,13 +73,6 @@ public class TesterSetImpl implements TesterSet {
         coordinator.globalExecute(order, ts);
     }
 
-    public ArrayList<String> execute(Integer order, TesterSet testers, ArrayList<String> errors) throws InterruptedException {
-
-        errors = coordinator.execute(order, testers, errors);
-        return(errors);
-        
-    }
-
     public Schedule getSchedule() {
         return coordinator.getSchedule();
     }
