@@ -98,8 +98,8 @@ public class ResultSet implements Serializable {
     @Override
     public String toString() {
         long average = this.size() == 0 ? 0 : accumulatedDelay/size();
-        return String.format("Step: %d. Pass: %d. Fails: %d. Errors: %d. " +
-			     "Inconclusive: %d.  Time elapsed: %d msec. Average: %d msec. \t Method: %s",
+        return String.format("Level: %d. Pass: %d. Fails: %d. Errors: %d. " +
+			     "Inconclusive: %d. Time elapsed: %d msec. Average: %d msec. \t Method: %s",
 			     method.getOrder(), passes.intValue(), failures.intValue(), errors.intValue(), 
                              inconclusives.intValue(), getDelay(), average, method.getName());
     }

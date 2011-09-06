@@ -16,7 +16,6 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.coordinator;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -34,22 +33,15 @@ class GlobalStrategy implements CoordinationStrategy {
 
     /**
      * Global execution of test steps.
-     * Hierarchical followed by Dependency strategy
+     * Hierarchical and Dependent strategy
      *
      * @throws InterruptedException
      */
-    
     public void testcaseExecution() throws InterruptedException {
         LOG.entering("GlobalStrategy", "testCaseExecution()");
 
-        boolean error = false;
-        ArrayList<String> errors = new ArrayList<String>();
-        
         for (Integer order : testers.getSchedule().orders()) {
-
-            errors = testers.execute(order, testers, errors);
-
+            testers.globalExecute(order, testers);
         }
-        
     }
 }

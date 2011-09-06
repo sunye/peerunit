@@ -30,7 +30,11 @@ public interface TesterSet {
 
     void execute(MethodDescription md) throws InterruptedException;
 
-    void execute(Integer order) throws InterruptedException;
+    void dependencyExecute(MethodDescription md, TesterSet ts) throws InterruptedException;
+
+    void hierarchicalExecute(Integer order) throws InterruptedException;
+
+    void globalExecute(Integer order, TesterSet ts) throws InterruptedException;
 
     ArrayList<String> execute(Integer order, TesterSet testers, ArrayList<String> errors) throws InterruptedException;
 
