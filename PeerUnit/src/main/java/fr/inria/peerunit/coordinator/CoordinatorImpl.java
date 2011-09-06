@@ -243,7 +243,7 @@ public class CoordinatorImpl implements Runnable {
     public void dependencyExecute(MethodDescription md, TesterSet testers) throws InterruptedException {
         boolean error = false;
         ResultSet rs;
-        if (dependencyOk(md)) {
+        if (!hasDependencyError(md)) {
             testers.execute(md);
             rs = testers.getResult(md);
             int errors = 0;
@@ -257,7 +257,7 @@ public class CoordinatorImpl implements Runnable {
             }
         }
         else {
-            dependencyError(md, testers);
+            setDependencyError(md, testers);
         }
     }
 
@@ -322,7 +322,7 @@ public class CoordinatorImpl implements Runnable {
                 Collections.synchronizedMap(new TreeMap<MethodDescription, ResultSet>());
 
         for (MethodDescription action : schedule.methodsFor(level)) {
-            if (dependencyOk(action)) {
+            if (!hasDependencyError(action)) {
                 ResultSet result = new ResultSet(action);
                 verdict.putResult(action, result);
                 result.start();
@@ -336,7 +336,7 @@ public class CoordinatorImpl implements Runnable {
                 actionsXntesters.put(action, new AtomicInteger(testers.size()));
                 actionsXresult.put(action, result);
             } else {
-                dependencyError(action, ts);
+                setDependencyError(action, ts);
             }
         }
         while (runningTesters.intValue() > 0) {
@@ -348,105 +348,11 @@ public class CoordinatorImpl implements Runnable {
                 result.stop();
                 LOG.fine("Method " + result.getMethodDescription() + " executed in "
                         + result.getDelay() + " msec");
-                if (resultError(result)) {
+                if (hasResultError(result)) {
                     errorActions.add(result.getMethodDescription().getName());
                 }
             }
         }
-    }
-
-    public ArrayList<String> execute(Integer order, TesterSet testerSet, ArrayList<String> errors) throws InterruptedException {
-
-        LOG.entering("CoordinatorImpl", "executeGlobal()", order);
-
-        boolean error = false;
-        ArrayList<String> errorActions = errors;
-
-        ArrayList<Tester> testersExecuting = new ArrayList<Tester>();
-
-        // Get the methods list
-        Collection<MethodDescription> orderMd = schedule.methodsFor(order);
-
-        ArrayList<Object> result = new ArrayList<Object>();
-
-        for (MethodDescription action : orderMd) {
-
-            ResultSet res = new ResultSet(action);
-            result.add(res);
-            verdict.putResult(action, res);
-            res.start();
-
-            error = false;
-            for (String depend : action.getDepends()) {
-                if (errorActions.contains(depend)) {
-                    error = true;
-
-                    //  res = new ResultSet(action);
-                    res.addSimulatedError();
-
-                    testerSet.setResult(action, res);
-                    errorActions.add(action.getName());
-                    LOG.log(Level.FINEST, "Action {0} was not executed due to its dependence!", action.getName());
-                    res.stop();
-
-                    break;
-                }
-            }
-
-            if (!error) {
-
-                Collection<Tester> testers = schedule.testersFor(action);
-
-                String message = String.format("Method %s will be executed by %d testers", action, testers.size());
-                LOG.fine(message);
-
-                testersExecuting.clear();
-
-                for (Tester orderTester : testers) {
-
-                    executor.submit(new MethodExecute(orderTester, action));
-
-                    if (!testersExecuting.contains(orderTester)) {
-
-                        testersExecuting.add(orderTester);
-
-                    }
-
-                }
-            }
-
-        }
-
-        // Stopping result sets
-        if (!error) {
-
-            for (Object r : result) {
-                // Casting
-                ResultSet rs = (ResultSet) r;
-
-                // Set the testers executing number.
-                runningTesters.set(schedule.testersFor(rs.getMethodDescription()).size());
-
-                // Waiting for executions finish
-                waitForExecutionFinished();
-
-                rs.stop();
-
-                // Errors
-                if (rs.getErrors() > 0
-                        || rs.getInconclusives() > 0
-                        || rs.getfailures() > 0) {
-                    errorActions.add(rs.getMethodDescription().getName());
-                }
-
-                LOG.fine("Method " + rs.getMethodDescription() + " executed in " + rs.getDelay() + " msec");
-
-            }
-
-        }
-
-        return (errorActions);
-
     }
 
     public void setResult(MethodDescription md, ResultSet rs) throws InterruptedException {
@@ -575,16 +481,16 @@ public class CoordinatorImpl implements Runnable {
         this.listenners.add(listenner);
     }
 
-    private boolean dependencyOk(MethodDescription md) {
+    private boolean hasDependencyError(MethodDescription md) {
         for (String depend : md.getDepends()) {
             if (errorActions.contains(depend)) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
-    private void dependencyError(MethodDescription md, TesterSet ts) throws InterruptedException {
+    private void setDependencyError(MethodDescription md, TesterSet ts) throws InterruptedException {
         ResultSet rs = new ResultSet(md);
         rs.addSimulatedError();
         ts.setResult(md, rs);
@@ -592,7 +498,7 @@ public class CoordinatorImpl implements Runnable {
         LOG.log(Level.FINEST, "Action {0} was not executed due to its dependence!", md.getName());
     }
 
-    private boolean resultError(ResultSet rs) {
+    private boolean hasResultError(ResultSet rs) {
         if (rs.getErrors() > 0
                 || rs.getInconclusives() > 0
                 || rs.getfailures() > 0) {
