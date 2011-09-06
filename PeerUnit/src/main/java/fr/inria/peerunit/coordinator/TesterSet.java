@@ -36,8 +36,6 @@ public interface TesterSet {
 
     void globalExecute(Integer order, TesterSet ts) throws InterruptedException;
 
-    ArrayList<String> execute(Integer order, TesterSet testers, ArrayList<String> errors) throws InterruptedException;
-
     Schedule getSchedule();
 
     public ResultSet getResult(MethodDescription md);
