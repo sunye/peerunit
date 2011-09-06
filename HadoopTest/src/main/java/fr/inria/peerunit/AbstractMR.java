@@ -149,16 +149,16 @@ public class AbstractMR {
     protected void clear() {
     }
 
-    @BeforeClass(range = "*", timeout = 100000)
+    @BeforeClass(range = "*", timeout = 10000)
     public void bc() throws IOException, FileNotFoundException, InterruptedException {
-        setEnvironmentProperties();
-        readPropertiesHadoop();
+        setPeerUnitProperties();
+        setHadoopProperties();
     }
 
     /*
      * PeerUnit Properties
      */
-    private void setEnvironmentProperties() throws FileNotFoundException, IOException, InterruptedException {
+    private void setPeerUnitProperties() throws FileNotFoundException, IOException, InterruptedException {
         if (new File("peerunit.properties").exists()) {
             String filename = "peerunit.properties";
             FileInputStream fs = new FileInputStream(filename);
@@ -175,7 +175,7 @@ public class AbstractMR {
      * Reading Hadoop Properties (hadoop.properties)
      *
      */
-    synchronized private void readPropertiesHadoop() throws IOException, InterruptedException {
+    synchronized private void setHadoopProperties() throws IOException, InterruptedException {
         log.info("Reading Hadoop properties!");
         
         Properties properties = new Properties();
@@ -521,7 +521,7 @@ public class AbstractMR {
     private class startNameNode implements Runnable {
         public void run() {
             try {
-                readPropertiesHadoop();
+                setHadoopProperties();
                 Configuration conf = getConfHDFS();
                 nn = new NameNode(conf);
                 NNode = nn;
@@ -536,7 +536,7 @@ public class AbstractMR {
     private Thread initNN() throws IOException, InterruptedException {
         log.info("Starting NameNode!");
 
-        readPropertiesHadoop();
+        setHadoopProperties();
         nnode = new startNameNode();
         Thread nnT = new Thread(nnode);
 
@@ -1106,7 +1106,7 @@ public class AbstractMR {
      */
     private void lowerTester() throws InterruptedException, RemoteException, IOException {
 
-        readPropertiesHadoop();
+        setHadoopProperties();
 
         log.info("Starting lower tester...");
 
