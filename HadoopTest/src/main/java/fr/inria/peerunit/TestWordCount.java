@@ -33,7 +33,7 @@ public class TestWordCount extends AbstractMR {
 
     @TestStep(order = 5, timeout = 200000, range = "0")
     public void a4() throws Exception, InterruptedException {
-       assertResult(Integer.valueOf((String) get(-43)));
+       assertResult();
     }
 
     @TestStep(order = 6, timeout = 30000, range = "*")

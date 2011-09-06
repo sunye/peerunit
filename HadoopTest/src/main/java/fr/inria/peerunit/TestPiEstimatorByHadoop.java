@@ -28,7 +28,7 @@ public class TestPiEstimatorByHadoop extends AbstractMR {
 
     @TestStep(order = 4, timeout = 10000, range = "0")
     public void a4() throws Exception, InterruptedException {
-        assertResult(Integer.valueOf((String) get(-43)));
+        assertResult();
     }
 
     @TestStep(order = 5, timeout = 30000, range = "*")

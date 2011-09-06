@@ -1012,8 +1012,10 @@ public class AbstractMR {
      *  Asserting results
      *
      */
-    protected void assertResult(int type) throws RemoteException {
+    protected void assertResult() throws RemoteException {
         log.info("Asserting job output result!");
+
+        int type = Integer.valueOf((String) get(-43));
 
         switch(type) {
             case 1:
