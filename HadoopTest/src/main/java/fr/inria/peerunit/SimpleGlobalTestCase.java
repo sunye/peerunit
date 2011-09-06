@@ -5,28 +5,34 @@ import fr.inria.peerunit.tester.Assert;
 import java.util.logging.Logger;
 
 /**
- * Simple dependence test case
+ * A simple global test case involving dependency and hierarchy
  * 
  * @author jeugenio
  */
-public class DependencyTestCase {
+public class SimpleGlobalTestCase {
 
-    private static final Logger LOG = Logger.getLogger(DependencyTestCase.class.getName());
+    private static final Logger LOG = Logger.getLogger(SimpleGlobalTestCase.class.getName());
 
     @TestStep(order = 0, range = "*", timeout = 1000)
     public void a0() {
         System.out.println("a0; range=*; ok");
     }
 
-    @TestStep(order = 1, range = "0", depend = "a0", timeout = 1000 )
+    @TestStep(order = 1, range = "0", depend = "a0", timeout = 10000)
     public void a1() throws InterruptedException {
-        System.out.println("a1; range=1; depend=a0; fail");
+        for (int i = 0; i < 10; i++) {
+            System.out.println("a1; order=1; range=1; depend=a0; fail");
+            Thread.sleep(300);
+        }
         Assert.fail("action a1 fail!");
     }
 
-    @TestStep(order = 2, range = "1", depend = "a0", timeout = 1000)
+    @TestStep(order = 1, range = "1", depend = "a0", timeout = 10000)
     public void a2() throws InterruptedException {
-        System.out.println("a2; range=1; depend=a0; ok");
+        for (int i = 0; i < 10; i++) {
+            System.out.println("a2; order=1; range=1; depend=a0; ok");
+            Thread.sleep(500);
+        }
     }
 
     @TestStep(order = 3, range = "*", depend = "a0,a1,a2", timeout = 1000)
