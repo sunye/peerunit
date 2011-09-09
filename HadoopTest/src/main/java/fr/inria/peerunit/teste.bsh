@@ -1,0 +1,8 @@
+for (int a=0; a<5; a++) {
+
+    System.out.println("Valor de A: " + a);
+    Thread.sleep(500);
+
+}
+
+int b = 2/0;
