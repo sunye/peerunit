@@ -246,13 +246,7 @@ public class CoordinatorImpl implements Runnable {
         if (!hasDependencyError(md)) {
             testers.execute(md);
             rs = testers.getResult(md);
-            int errors = 0;
-            errors += rs.getErrors();
-            errors += rs.getInconclusives();
-            errors += rs.getfailures();
-            if (rs.getErrors() > 0
-                    || rs.getInconclusives() > 0
-                    || rs.getfailures() > 0) {
+            if (hasResultError(rs)) {
                 errorActions.add(md.getName());
             }
         }
@@ -384,7 +378,7 @@ public class CoordinatorImpl implements Runnable {
      * Waits for all expected testers to register their methods (TestSteps).
      */
     public void waitForTesterRegistration() throws InterruptedException {
-        LOG.fine("Waiting for registration. Expecting " + expectedTesters + " testers.");
+        LOG.log(Level.FINE, "Waiting for registration. Expecting {0} testers.", expectedTesters);
 
         TesterRegistration reg;
 
@@ -394,7 +388,7 @@ public class CoordinatorImpl implements Runnable {
                 schedule.put(m, reg.tester());
             }
             registeredTesters.add(reg.tester());
-            LOG.finest("Total tester registrations: " + registeredTesters.size());
+            LOG.log(Level.FINEST, "Total tester registrations: {0}", registeredTesters.size());
         }
         LOG.exiting("CoordinatorImpl", "waitForTesterRegistration()");
     }
