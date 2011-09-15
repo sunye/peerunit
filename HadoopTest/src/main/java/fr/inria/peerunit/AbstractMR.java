@@ -8,82 +8,59 @@ package fr.inria.peerunit;
 /*
  * MapReduce Classes
  */
-import org.apache.hadoop.mapred.JobTracker;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.TaskTracker;
-import org.apache.hadoop.hdfs.server.namenode.NameNode;
-import org.apache.hadoop.hdfs.server.datanode.DataNode;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.mapred.OutputLogFilter;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.FileUtil;
-
-/*
- * PeerUnit Classes
- */
-import fr.inria.peerunit.remote.GlobalVariables;
-import fr.inria.peerunit.parser.BeforeClass;
-import fr.inria.peerunit.parser.SetGlobals;
-import fr.inria.peerunit.parser.SetId;
-import fr.inria.peerunit.util.TesterUtil;
-import fr.inria.peerunit.tester.Assert;
-
-/*
- * Java Classes
- */
-import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.rmi.RemoteException;
-import java.util.logging.Logger;
-import java.util.Map;
-import java.util.Properties;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FileUtil;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.OutputLogFilter;
+
+import fr.inria.peerunit.parser.BeforeClass;
+import fr.inria.peerunit.parser.SetGlobals;
+import fr.inria.peerunit.parser.SetId;
+import fr.inria.peerunit.remote.GlobalVariables;
+import fr.inria.peerunit.tester.Assert;
+import fr.inria.peerunit.util.TesterUtil;
 
 public abstract class AbstractMR {
 
     // PeerUnit vars
     private static final Logger LOG = Logger.getLogger(AbstractMR.class.getName());
-    //private FileHandler fh;
     private int id;
     private GlobalVariables globals;
     private TesterUtil defaults;
-    private int size;
     private int sleep;
-    private int instanceNumber;
-    // HadoopTest vars
     private static JobConf job;
-    private static JobTracker jobTracker;
-    private static TaskTracker taskTracker;
-    private static NameNode nameNode;
-    //private static Thread jobThread;
     private static BigDecimal jobResult;
     private static double jobDuration;
-    private static NameNode nn;
-    private static DataNode dn;
     private static Process nnProcess;
     private static Process dnProcess;
     private static Process jtProcess;
     private static Process ttProcess;
-    private static StartNameNode nnode;
-    //private static StartDataNode dnode;
     private static StartNameNodeByHadoop nnodeHadoop;
-    //private static StartDataNodeByHadoop dnodeHadoop;
-    //private static ArrayList mutationOutputList;
-    //private static Thread rwcThread;
-    // Hadoop components threads
     private static Thread nnThread;
     private static Thread dnThread;
     private static Thread jtThread;
     private static Thread ttThread;
+    
+    private HadoopMasterWrapper master = new HadoopMasterWrapper(this);
+    private HadoopWorkerWrapper worker = new HadoopWorkerWrapper(this);
 
     @SetId
     public void setId(int i) {
@@ -142,16 +119,17 @@ public abstract class AbstractMR {
         } else {
             defaults = TesterUtil.instance;
         }
-        size = defaults.getObjects();
+        //size = defaults.getObjects();
         sleep = defaults.getSleep();
-        instanceNumber = defaults.getObjects();
+        //instanceNumber = defaults.getObjects();
     }
 
-    /*
+    /**
      * Reading Hadoop Properties (hadoop.properties)
      *
+     * @TODO: Why is this method synchronized?
      */
-    synchronized private void setHadoopProperties() throws IOException, InterruptedException {
+    synchronized public void setHadoopProperties() throws IOException, InterruptedException {
         LOG.info("Reading Hadoop properties!");
 
         Properties properties = new Properties();
@@ -296,7 +274,7 @@ public abstract class AbstractMR {
     /*
      * Getting Configurations to MapReduce Components
      */
-    private Configuration getConfMR() throws IOException, InterruptedException {
+    public Configuration getConfMR() throws IOException, InterruptedException {
         LOG.info("Reading MR configuration!");
 
         Configuration conf = new Configuration();
@@ -315,7 +293,7 @@ public abstract class AbstractMR {
     /*
      * Getting Configurations to HDFS Components
      */
-    private Configuration getConfHDFS() throws IOException, InterruptedException {
+    public Configuration getConfHDFS() throws IOException, InterruptedException {
         LOG.info("Reading HDFS configuration!");
 
         Configuration conf = new Configuration();
@@ -441,227 +419,37 @@ public abstract class AbstractMR {
         }
     }
 
-    /*
-     *  Runners to custom MapReduce applications
-     *
-     */
-    private class RunPiEstimator implements Runnable {
 
-        public void run() {
-            try {
-                LOG.info("Starting PiEstimator!");
 
-                PiEstimator pi = new PiEstimator();
-                String[] argumentos = {(String) get(-21), (String) get(-22), (String) get(-2), (String) get(-4)};
-                pi.run(argumentos);
-                jobResult = pi.getResult();
-                jobDuration = PiEstimator.duration;
-            } catch (IOException ioe) {
-            } catch (Exception e) {
-            }
-        }
-    }
-
-    private class RunWordCount implements Runnable {
-
-        public void run() {
-            try {
-                LOG.info("Starting WordCount!");
-
-                //WordCount wc = new WordCount();
-                String[] argumentos = {"/input/", "/output/", "note", "9001"};
-                WordCount.run(argumentos);
-            } catch (IOException ioe) {
-                LOG.info(ioe.toString());
-            } catch (Exception e) {
-                LOG.info(e.toString());
-            }
-        }
-    }
-
-    /*
-     * Starting Hadoop components by Hadoop API
-     *
-     */
-    // NameNode
-    private class StartNameNode implements Runnable {
-
-        public void run() {
-            try {
-                setHadoopProperties();
-                Configuration conf = getConfHDFS();
-                nn = new NameNode(conf);
-                nameNode = nn;
-
-                Thread.sleep(5000);
-            } catch (IOException ioe) {
-            } catch (InterruptedException ie) {
-            }
-        }
-    }
-
-    private Thread initNN() throws IOException, InterruptedException {
-        LOG.info("Starting NameNode!");
-
-        setHadoopProperties();
-        nnode = new StartNameNode();
-        Thread nnT = new Thread(nnode);
-
-        return nnT;
-    }
-
-    // JobTracker
-    private class StartJobTracker implements Runnable {
-
-        public void run() {
-            try {
-                LOG.info("Starting JobTracker!");
-
-                Configuration conf = getConfMR();
-                job = new JobConf(conf);
-                jobTracker = JobTracker.startTracker(job);
-                jobTracker.offerService();
-            } catch (IOException ioe) {
-                LOG.info(ioe.toString());
-            } catch (InterruptedException ie) {
-                LOG.info(ie.toString());
-            }
-        }
-    }
-
-    private Thread initJT() throws IOException, InterruptedException {
-        LOG.info("Starting JobTracker!");
-
-        StartJobTracker jtracker = new StartJobTracker();
-        Thread jtT = new Thread(jtracker);
-
-        return jtT;
-    }
-
-    // DataNode
-    private class StartDataNode implements Runnable {
-
-        public void run() {
-            try {
-                Configuration cfg = getConfHDFS();
-                String dirname = (String) get(-5);
-                String dirdata = (String) get(-6);
-                cfg.set("dfs.name.dir", dirname);
-                cfg.set("dfs.data.dir", dirdata);
-
-                String[] args = {"-rollback"};
-
-                dn = DataNode.createDataNode(args, cfg);
-
-                String serveraddr = dn.getNamenode();
-                LOG.log(Level.INFO, "DataNode connected with NameNode: {0}", serveraddr);
-
-                Thread.currentThread().join();
-            } catch (IOException ioe) {
-            } catch (InterruptedException ie) {
-            }
-        }
-    }
-
-    private Thread initDN() throws IOException, InterruptedException {
-        LOG.info("Starting DataNode!");
-
-        StartDataNode datanode = new StartDataNode();
-        Thread dnT = new Thread(datanode);
-
-        return dnT;
-    }
-
-    // TaskTracker
-    private class StartTaskTracker implements Runnable {
-
-        public void run() {
-            try {
-                LOG.info("Starting TaskTracker!");
-
-                Configuration conf = getConfMR();
-                JobConf job = new JobConf(conf);
-                taskTracker = new TaskTracker(job);
-                taskTracker.run();
-            } catch (IOException ioe) {
-                LOG.info(ioe.toString());
-            } catch (InterruptedException ie) {
-                LOG.info(ie.toString());
-            }
-        }
-    }
-
-    private Thread initTT() throws IOException, InterruptedException {
-        LOG.info("Starting TaskTracker!");
-
-        StartTaskTracker ttracker = new StartTaskTracker();
-        Thread ttT = new Thread(ttracker);
-
-        return ttT;
-    }
 
     protected void startMaster() throws RemoteException, IOException, InterruptedException {
         // Formatting DFS dir
         dfsFormatting((String) get(-38));
-
-        // NameNode
-        nnThread = initNN();
-        nnThread.start();
-        nnThread.join();
-
-        // JobTracker
-        jtThread = initJT();
-        jtThread.start();
-        Thread.sleep(5000);
-        Thread.yield();
+        master.startMaster();
     }
-
-    protected void startWorkers() throws IOException, InterruptedException {
-        // TaskTrackers
-        ttThread = initTT();
-        ttThread.start();
-        Thread.yield();
-
-        // DataNodes
-        dnThread = initDN();
-        dnThread.start();
-        dnThread.join();
-    }
-
+    
     protected void stopMaster() throws IOException {
-        LOG.info("Stopping JobTracker...");
-        // JTracker.stopTracker();
-        if (jtThread.isAlive()) {
-            jtThread.interrupt();
-        }
-
-        LOG.info("Stopping NameNode...");
-        // nn.stop();
-        if (nnThread.isAlive()) {
-            nnThread.interrupt();
-        }
+        master.stopMaster();
     }
+    
+    protected void startWorkers() throws IOException, InterruptedException {
+    	worker.startWorkers();
+    }
+
+
 
     protected void stopWorkers() throws IOException {
-        LOG.info("Stopping Datanode...");
-        //dn.shutdown();
-        if (dnThread.isAlive()) {
-            dnThread.interrupt();
-        }
-
-        LOG.info("Stopping TaskTracker...");
-        // TTracker.shutdown();
-        if (ttThread.isAlive()) {
-            ttThread.interrupt();
-        }
+    	worker.stopWorkers();
     }
 
 
-    /*
+    /**
      * Starting Hadoop by Hadoop binaries
      * 
+     * @TODO: Remove this code. Next time, use the ANT classes to start another JVM.
+     * 
      */
-    // NameNode
+    @Deprecated
     private class StartDataNodeByHadoop implements Runnable {
 
         public void run() {
@@ -718,6 +506,7 @@ public abstract class AbstractMR {
         }
     }
 
+    @Deprecated
     private Thread initNNByHadoop() throws IOException, InterruptedException {
         LOG.info("Starting NameNode!");
 
@@ -728,6 +517,12 @@ public abstract class AbstractMR {
     }
 
     // DataNode
+    /**
+     * 
+     * @author sunye
+     * @TODO: Remove this code. Next time, use the ANT classes to start another JVM.
+     */
+    @Deprecated
     private class StartNameNodeByHadoop implements Runnable {
 
         public void run() {
@@ -784,6 +579,7 @@ public abstract class AbstractMR {
         }
     }
 
+    @Deprecated
     private Thread initDNByHadoop() throws IOException, InterruptedException {
         LOG.info("Starting DataNode!");
 
@@ -793,7 +589,11 @@ public abstract class AbstractMR {
         return dnT;
     }
 
-    // JobTracker
+    /**
+     * 
+     * @author sunye
+     * @TODO: Remove this code. Next time, use the ANT classes to start another JVM.
+     */
     private class StartJobTrackerByHadoop implements Runnable {
 
         public void run() {
@@ -852,6 +652,7 @@ public abstract class AbstractMR {
         }
     }
 
+    @Deprecated
     private Thread initJTByHadoop() throws IOException, InterruptedException {
         LOG.info("Starting JobTracker!");
 
@@ -861,7 +662,13 @@ public abstract class AbstractMR {
         return jtT;
     }
 
-    // TaskTracker
+
+    /**
+     * 
+     * @author sunye
+     * @TODO: Remove this code. Next time, use the ANT classes to start another JVM.
+     */
+    @Deprecated
     private class StartTaskTrackerByHadoop implements Runnable {
 
         public void run() {
@@ -919,6 +726,7 @@ public abstract class AbstractMR {
         }
     }
 
+    @Deprecated
     private Thread initTTByHadoop() throws IOException, InterruptedException {
         LOG.info("Starting TaskTracker!");
 
@@ -928,6 +736,7 @@ public abstract class AbstractMR {
         return ttT;
     }
 
+    @Deprecated
     protected void startMasterByHadoop() throws RemoteException, IOException, InterruptedException {
         // Formatting DFS dir
         dfsFormatting((String) get(-38));
@@ -945,6 +754,7 @@ public abstract class AbstractMR {
         jtThread.join();
     }
 
+    @Deprecated
     protected void startSlavesByHadoop() throws IOException, InterruptedException {
         // DataNodes
         dnThread = initDNByHadoop();
@@ -959,6 +769,7 @@ public abstract class AbstractMR {
         ttThread.join();
     }
 
+    @Deprecated
     protected void stopSlavesByHadoop() {
         // DataNodes
         LOG.info("Stopping Datanode...");
@@ -969,6 +780,7 @@ public abstract class AbstractMR {
         ttProcess.destroy();
     }
 
+    @Deprecated
     protected void stopMasterByHadoop() {
         // JobTracker
         LOG.info("Stopping JobTracker...");
