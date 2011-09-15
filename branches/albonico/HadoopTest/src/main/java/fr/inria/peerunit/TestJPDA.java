@@ -5,25 +5,21 @@ package fr.inria.peerunit;
  */
 
 // PeerUnit classes
-import fr.inria.peerunit.parser.TestStep;
-import fr.inria.peerunit.parser.AfterClass;
-import fr.inria.peerunit.tester.Assert;
+import java.util.logging.Logger;
 
-// Java classes
-import java.io.IOException;
-import java.math.BigDecimal;
+import fr.inria.peerunit.parser.TestStep;
 
 
 public class TestJPDA extends AbstractMR {
-
+	private static Logger LOG = Logger.getLogger(TestJPDA.class.getName());
 
     // Threads vars to Hadoop manipulation
-    protected static Thread ttThread;
+    protected  Thread ttThread;
 
    @TestStep(order=1, timeout = 100000, range = "1")
    public void lTester() throws Exception {
 
-	log.info("Starting Lower Tester...");
+	LOG.info("Starting Lower Tester...");
 
      //   lowerTester();
 
@@ -37,7 +33,7 @@ public class TestJPDA extends AbstractMR {
          
          ttThread.start();
          Thread.sleep(5000);
-         ttThread.yield();
+         Thread.yield();
 
     }
 
