@@ -4,10 +4,11 @@ import com.sun.jdi.*;
 import com.sun.jdi.connect.*;
 import java.io.IOException;
 import java.util.Map;
-
+@SuppressWarnings("restriction")
 public class VMAcquirer {
 
-  static VirtualMachine vm;
+
+static VirtualMachine vm;
   static AttachingConnector connector;
 
   /**
