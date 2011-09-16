@@ -18,7 +18,6 @@ package fr.inria.peerunit.coordinator;
 
 import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
-import java.util.ArrayList;
 
 /**
  *
@@ -26,9 +25,9 @@ import java.util.ArrayList;
  */
 public interface TesterSet {
 
-    void execute(String str) throws InterruptedException;
+    void execute(String... str) throws InterruptedException;
 
-    void execute(MethodDescription md) throws InterruptedException;
+    void execute(MethodDescription... md) throws InterruptedException;
 
     void dependencyExecute(MethodDescription md, TesterSet ts) throws InterruptedException;
 

@@ -39,7 +39,7 @@ public class TesterSetImpl implements TesterSet {
         coordinator = ci;
     }
 
-    public void execute(String str) throws InterruptedException {
+    public void execute(String... str) throws InterruptedException {
         
         if (methods == null) {
             // Lazy initialization of methods Map.
@@ -50,15 +50,15 @@ public class TesterSetImpl implements TesterSet {
             }
         }
 
-        if (methods.containsKey(str)) {
-            coordinator.execute(methods.get(str));
+        if (methods.containsKey(str[0])) {
+            coordinator.execute(methods.get(str[0]));
         } else {
-            LOG.log(Level.WARNING, "Method not found: {0}", str);
+            LOG.log(Level.WARNING, "Method not found: {0}", str[0]);
         }
     }
 
-    public void execute(MethodDescription md) throws InterruptedException {
-        coordinator.execute(md);
+    public void execute(MethodDescription... md) throws InterruptedException {
+        coordinator.execute(md[0]);
     }
 
     public void dependencyExecute(MethodDescription md, TesterSet ts) throws InterruptedException {

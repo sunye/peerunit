@@ -8,9 +8,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.inria.peerunit</groupId>
     <artifactId>PeerUnit</artifactId>
-    <version>1.1-HADOOPTEST-SNAPSHOT</version>
+    <version>1.1-ALBONICO</version>
     <packaging>jar</packaging>
-    <name>PeerUnit-Trunk</name>
+    <name>PeerUnit-Albonico</name>
     <url>http://peerunit.gforge.inria.fr/</url>
     <licenses>
         <license>

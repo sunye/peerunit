@@ -5,8 +5,8 @@
     <groupId>fr.inria.psychedelic</groupId>
     <artifactId>Psychedelic</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <name>Psychedelic</name>
+    <version>1.0-ALBONICO</version>
+    <name>Psychedelic-Albonico</name>
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
