@@ -33,6 +33,7 @@ public class HadoopMasterWrapper {
     private NameNode nameNode;
     
 	private JobTracker jobTracker;
+    private final AbstractMR amr;
     
    
 	/**
@@ -41,7 +42,7 @@ public class HadoopMasterWrapper {
 	//private AbstractMR amr;
 
 	public HadoopMasterWrapper(AbstractMR amr) {
-		//this.amr = amr;
+		this.amr = amr;
 	}
 
 	public void startMaster() throws RemoteException, IOException,
