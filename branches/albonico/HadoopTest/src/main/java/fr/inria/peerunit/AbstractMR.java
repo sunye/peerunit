@@ -58,20 +58,28 @@ public abstract class AbstractMR {
     private static Thread dnThread;
     private static Thread jtThread;
     private static Thread ttThread;
-    private HadoopMasterWrapper master = new HadoopMasterWrapper(this);
-    private final HadoopTaskTrackerWrapper taskTracker;
-    private final HadoopDataNodeWrapper dataNode;
+    private HadoopMasterWrapper master;
+    private HadoopTaskTrackerWrapper taskTracker;
+    private HadoopDataNodeWrapper dataNode;
 
     
-    public AbstractMR() throws RemoteException, IOException, InterruptedException {
+    @BeforeClass(range = "*", timeout = 10000)
+    public void bc() throws IOException, FileNotFoundException,
+            InterruptedException {
         
-        String name = (String) get(-5);
+            String name = (String) get(-5);
         String data = (String) get(-6);
         Configuration config = this.getConfMR();
         Configuration hdfsConf = this.getConfHDFS();
         taskTracker = new HadoopTaskTrackerWrapper(config);
         dataNode = new HadoopDataNodeWrapper(hdfsConf, name, data);
+        master = new HadoopMasterWrapper(this);
+        
+        
+        setPeerUnitProperties();
+        setHadoopProperties();
     }
+    
     
     @SetId
     public void setId(int i) {
@@ -113,12 +121,7 @@ public abstract class AbstractMR {
     protected void clear() {
     }
 
-    @BeforeClass(range = "*", timeout = 10000)
-    public void bc() throws IOException, FileNotFoundException,
-            InterruptedException {
-        setPeerUnitProperties();
-        setHadoopProperties();
-    }
+
 
     /*
      * PeerUnit Properties
