@@ -96,7 +96,8 @@ public class PiEstimator extends Configured implements Tool {
         private double[][] q;
         private int[][] d;
 
-        /** Initialize to H(startindex),
+        /** 
+         * Initialize to H(startindex),
          * so the sequence begins with H(startindex+1).
          */
         HaltonSequence(long startindex) {

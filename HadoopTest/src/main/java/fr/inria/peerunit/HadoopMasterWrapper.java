@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.JobTracker;
 
@@ -29,15 +30,18 @@ public class HadoopMasterWrapper {
 
 	private  StartNameNode nnode;
 	private  JobConf job;
-	private static JobTracker jobTracker;
-
+    private NameNode nameNode;
+    
+	private JobTracker jobTracker;
+    
+   
 	/**
 	 * @TODO: Find a way to remove this attribute.
 	 */
-	private AbstractMR amr;
+	//private AbstractMR amr;
 
 	public HadoopMasterWrapper(AbstractMR amr) {
-		this.amr = amr;
+		//this.amr = amr;
 	}
 
 	public void startMaster() throws RemoteException, IOException,
@@ -92,9 +96,9 @@ public class HadoopMasterWrapper {
 
 		public void run() {
 			try {
-				// GS: setHadoopProperties();
+				amr.setHadoopProperties();
 				Configuration conf = amr.getConfHDFS();
-				//nn = new NameNode(conf);
+				nameNode = new NameNode(conf);
 				// nameNode = nn;
 
 				Thread.sleep(5000);
