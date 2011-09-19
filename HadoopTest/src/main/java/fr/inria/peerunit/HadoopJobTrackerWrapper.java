@@ -21,10 +21,10 @@ import org.apache.hadoop.mapred.JobTracker;
  *         This class should not depend on the TestCase.
  * 
  */
-public class HadoopMasterWrapper {
+public class HadoopJobTrackerWrapper {
 
 	private static final Logger LOG = Logger
-			.getLogger(HadoopMasterWrapper.class.getName());
+			.getLogger(HadoopJobTrackerWrapper.class.getName());
 	private  Thread nameNodeThread;
 	private  Thread jobTrackerThread;
 
@@ -41,7 +41,7 @@ public class HadoopMasterWrapper {
 	 */
 	//private AbstractMR amr;
 
-	public HadoopMasterWrapper(AbstractMR amr) {
+	public HadoopJobTrackerWrapper(AbstractMR amr) {
 		this.amr = amr;
 	}
 
