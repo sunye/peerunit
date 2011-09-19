@@ -29,7 +29,6 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>fr.inria.peerunit</groupId>
   <artifactId>HadoopTest</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>

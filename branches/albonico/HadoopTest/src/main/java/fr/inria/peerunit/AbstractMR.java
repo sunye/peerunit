@@ -58,7 +58,7 @@ public abstract class AbstractMR {
     private static Thread dnThread;
     private static Thread jtThread;
     private static Thread ttThread;
-    private HadoopMasterWrapper master;
+    private HadoopJobTrackerWrapper master;
     private HadoopTaskTrackerWrapper taskTracker;
     private HadoopDataNodeWrapper dataNode;
 
@@ -73,7 +73,7 @@ public abstract class AbstractMR {
         Configuration hdfsConf = this.getConfHDFS();
         taskTracker = new HadoopTaskTrackerWrapper(config);
         dataNode = new HadoopDataNodeWrapper(hdfsConf, name, data);
-        master = new HadoopMasterWrapper(this);
+        master = new HadoopJobTrackerWrapper(this);
         
         
         setPeerUnitProperties();
