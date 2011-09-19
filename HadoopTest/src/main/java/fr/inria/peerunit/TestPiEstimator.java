@@ -4,13 +4,12 @@ package fr.inria.peerunit;
  * @author albonico  
  */
 // PeerUnit classes
-import fr.inria.peerunit.parser.TestStep;
 
-// Java classes
+import fr.inria.peerunit.parser.TestStep;
 import java.io.IOException;
 
 public class TestPiEstimator extends AbstractMR {
-
+   
     @TestStep(order = 1, timeout = 30000, range = "0")
     public void a0() throws IOException, InterruptedException {
         startMaster();
@@ -40,9 +39,12 @@ public class TestPiEstimator extends AbstractMR {
     public void a5() throws IOException, InterruptedException {
         stopWorkers();
     }
-
+  
+/*
     @TestStep(order = 6, timeout = 30000, range = "0")
     public void a6() throws IOException, InterruptedException {
         stopMaster();
     }
+ * 
+ */
 }

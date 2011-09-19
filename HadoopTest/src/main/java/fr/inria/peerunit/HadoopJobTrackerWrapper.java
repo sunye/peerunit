@@ -86,7 +86,7 @@ public class HadoopJobTrackerWrapper {
 	private Thread initNameNode() throws IOException, InterruptedException {
 		LOG.info("Starting NameNode!");
 
-		amr.setHadoopProperties();
+	//	amr.setHadoopProperties();
 		nnode = new StartNameNode();
 		Thread nnT = new Thread(nnode);
 
@@ -97,7 +97,7 @@ public class HadoopJobTrackerWrapper {
 
 		public void run() {
 			try {
-				amr.setHadoopProperties();
+		//		amr.setHadoopProperties();
 				Configuration conf = amr.getConfHDFS();
 				nameNode = new NameNode(conf);
 				// nameNode = nn;

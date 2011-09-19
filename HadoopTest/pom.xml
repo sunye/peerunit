@@ -54,6 +54,7 @@
           		<target>1.5</target>
         	</configuration>
 	</plugin>
+        <!--
 	<plugin>
         	<groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-assembly-plugin</artifactId>
@@ -73,7 +74,7 @@
                       </execution>
                 </executions>
 	</plugin>
-	
+	-->
 	<!-- 
 		Please, download Pitest package and install it with the follow command:
 		#mvn install:install-file -DgroupId=org.pitest -DartifactId=pitest -Dversion=0.15 -Dpackaging=jar -Dfile=/path/to/file
@@ -242,7 +243,7 @@
     <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>2.2</version>
+        <version>1.4.1</version>
         <scope>compile</scope>
     </dependency>
         

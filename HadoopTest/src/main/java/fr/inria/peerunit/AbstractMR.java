@@ -5,9 +5,6 @@ package fr.inria.peerunit;
  *
  */
 
-/*
- * MapReduce Classes
- */
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,21 +63,21 @@ public abstract class AbstractMR {
     @BeforeClass(range = "*", timeout = 10000)
     public void bc() throws IOException, FileNotFoundException,
             InterruptedException {
+
+        setPeerUnitProperties();
+        setHadoopProperties();
+
+        String name = getHadoopPropertie("hadoop.dir.name");
+        String data = getHadoopPropertie("hadoop.dir.data");
         
-            String name = (String) get(-5);
-        String data = (String) get(-6);
         Configuration config = this.getConfMR();
         Configuration hdfsConf = this.getConfHDFS();
         taskTracker = new HadoopTaskTrackerWrapper(config);
         dataNode = new HadoopDataNodeWrapper(hdfsConf, name, data);
         master = new HadoopJobTrackerWrapper(this);
-        
-        
-        setPeerUnitProperties();
-        setHadoopProperties();
+
     }
-    
-    
+       
     @SetId
     public void setId(int i) {
         id = i;
@@ -121,8 +118,6 @@ public abstract class AbstractMR {
     protected void clear() {
     }
 
-
-
     /*
      * PeerUnit Properties
      */
@@ -143,9 +138,8 @@ public abstract class AbstractMR {
     /**
      * Reading Hadoop Properties (hadoop.properties)
      * 
-     * @TODO: Why is this method synchronized?
      */
-    synchronized public void setHadoopProperties() throws IOException,
+    private void setHadoopProperties() throws IOException,
             InterruptedException {
         LOG.info("Reading Hadoop properties!");
 
@@ -155,142 +149,13 @@ public abstract class AbstractMR {
         fis = new FileInputStream(file);
         properties.load(fis);
 
-        /**
-         * JobTracker and NameNode Properties
-         */
-        String nnaddr = properties.getProperty("hadoop.namenode");
-        this.put(-1, nnaddr);
-        String jtaddr = properties.getProperty("hadoop.jobtracker");
-        this.put(-2, jtaddr);
-        String nnport = properties.getProperty("hadoop.namenode.port");
-        this.put(-3, nnport);
-        String jtport = properties.getProperty("hadoop.jobtracker.port");
-        this.put(-4, jtport);
+        put(-1,properties);
 
-        /**
-         * DFS Properties
-         */
-        String dfsname = properties.getProperty("hadoop.dir.name");
-        this.put(-5, dfsname);
-        String dfsdata = properties.getProperty("hadoop.dir.data");
-        this.put(-6, dfsdata);
-        String hadooptmp = properties.getProperty("hadoop.dir.tmp");
-        this.put(-7, hadooptmp);
-        String dfssnn = properties.getProperty("hadoop.dir.secnn");
-        this.put(-8, dfssnn);
+    }
 
-        /*
-         * Hadoop Properties
-         */
-        String hadooplog = properties.getProperty("hadoop.dir.log");
-        this.put(-9, hadooplog);
-        String hadooprep = properties.getProperty("hadoop.dfs.replication");
-        this.put(-10, hadooprep);
-        String version = properties.getProperty("hadoop.version");
-        this.put(-13, version);
-        String hadoopdir = properties.getProperty("hadoop.dir.install");
-        this.put(-14, hadoopdir);
-
-
-        /*
-         * JVM Properties
-         */
-        String javaopt = properties.getProperty("hadoop.java.options");
-        this.put(-11, javaopt);
-        String memtask = properties.getProperty("mapred.child.java.opts");
-        this.put(-12, memtask);
-
-        /*
-         * Mutants Generation Properties
-         */
-        String mutantclass = properties.getProperty("mutant.class");
-        this.put(-18, mutantclass);
-        String mutantoutputdir = properties.getProperty("mutant.output.dir");
-        this.put(-19, mutantoutputdir);
-
-        /*
-         * Custom PiEstimator Properties
-         */
-        String pivalue = properties.getProperty("pi.value");
-        this.put(-20, pivalue);
-        String pinmaps = properties.getProperty("pi.nMaps");
-        this.put(-21, pinmaps);
-        String pinsamples = properties.getProperty("pi.nSamples");
-        this.put(-22, pinsamples);
-
-        /*
-         * Custom WordCount Properties
-         */
-        String inputdir = properties.getProperty("wordcount.input");
-        this.put(-23, inputdir);
-        String outputdir = properties.getProperty("wordcount.output");
-        this.put(-24, outputdir);
-        String wfile = properties.getProperty("wordcount.file");
-        this.put(-25, wfile);
-        String wcsleep = properties.getProperty("wordcount.sleep");
-        this.put(-26, wcsleep);
-
-        /*
-         * External Classes Execution Properties
-         */
-        String jobJar = properties.getProperty("job.jar");
-        this.put(-15, jobJar);
-        String jobClass = properties.getProperty("job.class");
-        this.put(-16, jobClass);
-        String jobParameters = properties.getProperty("job.parameters");
-        this.put(-17, jobParameters);
-
-        /*
-         * Lower Tester Properties
-         */
-        String ltPort = properties.getProperty("lower.tester.port");
-        this.put(-30, ltPort);
-        String ltClass = properties.getProperty("lower.tester.class");
-        this.put(-31, ltClass);
-        String ltField = properties.getProperty("lower.tester.field");
-        this.put(-32, ltField);
-
-        /*
-         * Logging Job Results Properties
-         */
-        String resultFile = properties.getProperty("job.result.logfile");
-        this.put(-33, resultFile);
-        String regexChar = properties.getProperty("job.result.regex");
-        this.put(-34, regexChar);
-        String likeWord = properties.getProperty("job.result.like");
-        this.put(-35, likeWord);
-        String resultPosition = properties.getProperty("job.result.position");
-        this.put(-36, resultPosition);
-
-        /*
-         * DFS Formatting Properties
-         */
-        String scriptFormat = properties.getProperty("hadoop.dir.format.script");
-        this.put(-37, scriptFormat);
-        String hadooptestDir = properties.getProperty("hadooptest.dir");
-        this.put(-38, hadooptestDir);
-
-        /*
-         * Expected result file
-         */
-        String expectedResultFile = properties.getProperty("expected.result.file");
-        this.put(-39, expectedResultFile);
-        String resultPath = properties.getProperty("result.path");
-        this.put(-40, resultPath);
-        String assertType = properties.getProperty("job.result.assert.type");
-        this.put(-43, assertType);
-
-        /*
-         * Input external file
-         */
-        String externalFile = properties.getProperty("job.input.file");
-        this.put(-41, externalFile);
-        String inputDir = properties.getProperty("job.input.dir");
-        this.put(-42, inputDir);
-
-
-
-
+    private String getHadoopPropertie(String propertie) throws RemoteException, IOException {
+        Properties hadoopProperties = (Properties) get(-1);
+        return (String) hadoopProperties.getProperty(propertie);
     }
 
     /*
@@ -299,12 +164,11 @@ public abstract class AbstractMR {
     public Configuration getConfMR() throws IOException, InterruptedException {
         LOG.info("Reading MR configuration!");
 
-        Configuration conf = new Configuration();
-        String jthost = this.get(-2) + ":" + this.get(-4);
-        jthost = (String) jthost;
-        String joptions = (String) this.get(-11);
-        String memtask = (String) this.get(-12);
+        String jthost = getHadoopPropertie("hadoop.jobtracker") + ":" + getHadoopPropertie("hadoop.jobtracker.port");
+        String joptions = getHadoopPropertie("hadoop.java.options");
+        String memtask = getHadoopPropertie("mapred.child.java.opts");
 
+        Configuration conf = new Configuration();
         conf.set("mapred.job.tracker", jthost);
         conf.set("mapred.child.java.opts", joptions);
         conf.set("mapred.child.java.opts", memtask);
@@ -318,17 +182,15 @@ public abstract class AbstractMR {
     public Configuration getConfHDFS() throws IOException, InterruptedException {
         LOG.info("Reading HDFS configuration!");
 
-        Configuration conf = new Configuration();
-        String nnhost = "hdfs://" + this.get(-1) + ":" + this.get(-3);
-        nnhost = (String) nnhost;
-        String dirname = (String) this.get(-5);
-        String dirdata = (String) this.get(-6);
-        String dirtmp = (String) this.get(-7);
-        String dirsnn = (String) this.get(-8);
-        String dirlog = (String) this.get(-9);
-        String replication = (String) this.get(-10);
-        String joptions = (String) this.get(-11);
+        String nnhost = "hdfs://" + getHadoopPropertie("hadoop.namenode") + ":" + getHadoopPropertie("hadoop.namenode.port");
+        String dirname = getHadoopPropertie("hadoop.dir.name");
+        String dirdata = getHadoopPropertie("hadoop.dir.data");
+        String dirtmp = getHadoopPropertie("hadoop.dir.tmp");
+        String dirlog = getHadoopPropertie("hadoop.dir.log");
+        String replication = getHadoopPropertie("hadoop.dfs.replication");
+        String joptions = getHadoopPropertie("hadoop.java.options");
 
+        Configuration conf = new Configuration();
         conf.set("fs.default.name", nnhost);
         conf.set("dfs.name.dir", dirname);
         conf.set("dfs.data.dir", dirdata);
@@ -336,7 +198,6 @@ public abstract class AbstractMR {
         conf.set("hadoop.tmp.dir", dirtmp);
         conf.set("hadoop.log.dir", dirlog);
         conf.set("mapred.child.java.opts", joptions);
-        conf.set("fs.checkpoint.dir", dirsnn);
 
         return conf;
     }
@@ -344,10 +205,10 @@ public abstract class AbstractMR {
     /*
      * DFS manipulations methods
      */
-    private void dfsFormatting(String dirHadoopTest) throws RemoteException,
+    protected void dfsFormatting(String hadoopDirData) throws RemoteException,
             IOException, InterruptedException {
-        LOG.info("Formatting DFS dir: " + dirHadoopTest + "!");
-        String scriptFormat = (String) get(-37) + " " + dirHadoopTest;
+        LOG.info("Formatting DFS dir: " +  hadoopDirData + "!");
+        String scriptFormat = getHadoopPropertie("hadoop.dir.format.script") + " " + hadoopDirData;
         Process formatDFSProcess = Runtime.getRuntime().exec(scriptFormat);
         formatDFSProcess.waitFor();
     }
@@ -355,10 +216,9 @@ public abstract class AbstractMR {
     protected void putFileHDFS() {
         try {
             LOG.info("Putting file on HDFS!");
-            String hadoopdir = (String) get(-14);
-            String externalFile = (String) get(-41);
-            String inputDir = (String) get(-42);
-
+            String hadoopdir = getHadoopPropertie("hadoop.dir.install");
+            String externalFile = getHadoopPropertie("job.input.file");
+            String inputDir = getHadoopPropertie("job.input.dir");
             String command = hadoopdir + "/bin/hadoop dfs -put " + externalFile
                     + " " + inputDir + "teste";
             LOG.info("Command: " + command);
@@ -376,29 +236,16 @@ public abstract class AbstractMR {
     /*
      * Sending Jobs
      */
-    protected void sendJob() throws InterruptedException, RemoteException {
-        /*
-        14 - hadoopdir
-        15 - jobJar
-        16 - jobClass
-        17 - jobParameters
-        34 - resultRegex
-        35 - resultLike
-        36 - resultPosition
-        43 - assertType	
-         */
+    protected void sendJob() throws InterruptedException, RemoteException, IOException {
+        String hadoopdir = getHadoopPropertie("hadoop.dir.install");
+        String jar = getHadoopPropertie("job.jar");
+        String job = getHadoopPropertie("job.class");
+        String param = getHadoopPropertie("job.parameters");
+        String command = hadoopdir + "bin/hadoop jar " + jar + " " + job + " " + param;
+        String regex = getHadoopPropertie("job.result.regex");
 
-        String hadoopdir = (String) get(-14);
-        String jar = (String) get(-15);
-        String job = (String) get(-16);
-        // String param = get(-21) + " " + get(-22);
-        String param = (String) get(-17);
-        String command = hadoopdir + "bin/hadoop jar " + jar + " "
-                + job + " " + param;
-        String regex = (String) get(-34);
-
-        RunSendJob sjob = new RunSendJob(Integer.valueOf((String) get(-43)), command, regex,
-                ((String) get(-35)), Integer.valueOf((String) get(-36)));
+        RunSendJob sjob = new RunSendJob(Integer.valueOf((String) getHadoopPropertie("job.result.assert.type")), command, regex,
+                ((String) getHadoopPropertie("job.result.like")), Integer.valueOf((String) getHadoopPropertie("job.result.position")));
 
         Thread sjThread = new Thread(sjob);
         sjThread.start();
@@ -486,7 +333,7 @@ public abstract class AbstractMR {
     protected void startMaster() throws RemoteException, IOException,
             InterruptedException {
         // Formatting DFS dir
-        dfsFormatting((String) get(-38));
+        dfsFormatting(getHadoopPropertie("hadoop.dir.data"));
         master.startMaster();
     }
 
@@ -517,7 +364,7 @@ public abstract class AbstractMR {
         public void run() {
             try {
                 // Hadoop dir
-                String hadoopdir = (String) get(-14);
+                String hadoopdir = getHadoopPropertie("hadoop.dir.install");
 
                 String command = "java -Xmx1000m -Dcom.sun.management.jmxremote"
                         + " -Dcom.sun.management.jmxremote"
@@ -625,7 +472,7 @@ public abstract class AbstractMR {
         public void run() {
             try {
                 // Hadoop dir
-                String hadoopdir = (String) get(-14);
+                String hadoopdir = getHadoopPropertie("hadoop.dir.install");
 
                 String command = "java -Xmx1000m -Dcom.sun.management.jmxremote"
                         + " -Dcom.sun.management.jmxremote"
@@ -733,7 +580,7 @@ public abstract class AbstractMR {
             try {
                 LOG.info("Starting JobTracker!");
 
-                String hadoopdir = (String) get(-14);
+                String hadoopdir = getHadoopPropertie("hadoop.dir.install");
 
                 String command = "java -Xmx1000m -Dcom.sun.management.jmxremote"
                         + " -Dcom.sun.management.jmxremote"
@@ -842,7 +689,7 @@ public abstract class AbstractMR {
         public void run() {
             try {
 
-                String hadoopdir = (String) get(-14);
+                String hadoopdir = getHadoopPropertie("hadoop.dir.install");
 
                 // String command =
                 // "/home/michel/hadoop-0.20.2/bin/start-track.sh";
@@ -911,7 +758,7 @@ public abstract class AbstractMR {
     protected void startMasterByHadoop() throws RemoteException, IOException,
             InterruptedException {
         // Formatting DFS dir
-        dfsFormatting((String) get(-38));
+        dfsFormatting(getHadoopPropertie("hadooptest.dir"));
 
         // NameNode
         nnThread = initNNByHadoop();
@@ -965,12 +812,13 @@ public abstract class AbstractMR {
     }
 
     /*
-     * Asserting results
+     * Asserting result
      */
-    protected void assertResult() throws RemoteException {
+    protected void assertResult() throws RemoteException, IOException {
         LOG.info("Asserting job output result!");
 
-        int type = Integer.valueOf((String) get(-43));
+        // job.result.assert.type in hadoop.properties (0 to stdout and 2 to output file)
+        int type = Integer.valueOf(getHadoopPropertie("job.result.assert.type"));
 
         switch (type) {
             case 1:
@@ -985,9 +833,10 @@ public abstract class AbstractMR {
         }
     }
 
-    private void validateJobOutputInStdout() throws RemoteException {
+    private void validateJobOutputInStdout() throws RemoteException, IOException {
         if (jobResult != null) {
-            String pivalue = (String) get(-20);
+            // -20 is the expected result ->
+            String pivalue = getHadoopPropertie("job.result.expected");
             BigDecimal expected;
             expected = BigDecimal.valueOf(Double.valueOf(pivalue));
 
@@ -1006,9 +855,8 @@ public abstract class AbstractMR {
         try {
             LOG.info("Reading expected result file...");
             List<String> expectedResults = new ArrayList<String>();
-            if (new File((String) get(-39)).canRead()) {
-                FileInputStream expectedFile = new FileInputStream(
-                        (String) get(-39));
+            if (new File(getHadoopPropertie("job.result.expected.file")).canRead()) {
+                FileInputStream expectedFile = new FileInputStream(getHadoopPropertie("job.result.expected.file"));
                 BufferedReader readerExpected = new BufferedReader(
                         new InputStreamReader(expectedFile));
                 String lineExpected = "";
@@ -1020,7 +868,7 @@ public abstract class AbstractMR {
                 expectedFile.close();
             }
 
-            String outPath = (String) get(-40);
+            String outPath = getHadoopPropertie("job.result.path");
             LOG.log(Level.INFO, "Reading {0}...", outPath);
             Path outputdir = new Path(outPath);
             Path outputFiles[] = FileUtil.stat2Paths(outputdir.getFileSystem(getConfHDFS()).listStatus(outputdir, new OutputLogFilter()));
