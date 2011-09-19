@@ -37,7 +37,6 @@ import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.tester.Assert;
 import fr.inria.peerunit.util.TesterUtil;
-import org.apache.hadoop.util.RunJar;
 
 public abstract class AbstractMR {
 
@@ -60,8 +59,20 @@ public abstract class AbstractMR {
     private static Thread jtThread;
     private static Thread ttThread;
     private HadoopMasterWrapper master = new HadoopMasterWrapper(this);
-    private HadoopWorkerWrapper worker = new HadoopWorkerWrapper(this);
+    private final HadoopTaskTrackerWrapper taskTracker;
+    private final HadoopDataNodeWrapper dataNode;
 
+    
+    public AbstractMR() throws RemoteException, IOException, InterruptedException {
+        
+        String name = (String) get(-5);
+        String data = (String) get(-6);
+        Configuration config = this.getConfMR();
+        Configuration hdfsConf = this.getConfHDFS();
+        taskTracker = new HadoopTaskTrackerWrapper(config);
+        dataNode = new HadoopDataNodeWrapper(hdfsConf, name, data);
+    }
+    
     @SetId
     public void setId(int i) {
         id = i;
@@ -481,11 +492,13 @@ public abstract class AbstractMR {
     }
 
     protected void startWorkers() throws IOException, InterruptedException {
-        worker.startWorkers();
+        taskTracker.start();
+        dataNode.start();
     }
 
     protected void stopWorkers() throws IOException {
-        worker.stopWorkers();
+        taskTracker.stop();
+        dataNode.stop();
     }
 
     /**
