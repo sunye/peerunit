@@ -55,9 +55,10 @@ public abstract class AbstractMR {
     private static Thread dnThread;
     private static Thread jtThread;
     private static Thread ttThread;
-    private HadoopJobTrackerWrapper master;
+    private HadoopJobTrackerWrapper jobTracker;
     private HadoopTaskTrackerWrapper taskTracker;
     private HadoopDataNodeWrapper dataNode;
+    private HadoopNameNodeWrapper nameNode;
 
     
     @BeforeClass(range = "*", timeout = 10000)
@@ -72,9 +73,11 @@ public abstract class AbstractMR {
         
         Configuration config = this.getConfMR();
         Configuration hdfsConf = this.getConfHDFS();
+        
         taskTracker = new HadoopTaskTrackerWrapper(config);
         dataNode = new HadoopDataNodeWrapper(hdfsConf, name, data);
-        master = new HadoopJobTrackerWrapper(this);
+        jobTracker = new HadoopJobTrackerWrapper(config);
+        nameNode = new HadoopNameNodeWrapper(hdfsConf);
 
     }
        
@@ -334,11 +337,13 @@ public abstract class AbstractMR {
             InterruptedException {
         // Formatting DFS dir
         dfsFormatting(getHadoopPropertie("hadoop.dir.data"));
-        master.startMaster();
+        jobTracker.start();
+        nameNode.start();
     }
 
     protected void stopMaster() throws IOException {
-        master.stopMaster();
+        jobTracker.stop();
+        nameNode.stop();
     }
 
     protected void startWorkers() throws IOException, InterruptedException {

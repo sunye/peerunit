@@ -9,7 +9,6 @@ import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.JobTracker;
 
@@ -28,12 +27,12 @@ public class HadoopJobTrackerWrapper {
 	private  Thread nameNodeThread;
 	private  Thread jobTrackerThread;
 
-	private  StartNameNode nnode;
+
 	private  JobConf job;
-    private NameNode nameNode;
+
     
 	private JobTracker jobTracker;
-    private final AbstractMR amr;
+    private Configuration configuration;
     
    
 	/**
@@ -41,73 +40,28 @@ public class HadoopJobTrackerWrapper {
 	 */
 	//private AbstractMR amr;
 
-	public HadoopJobTrackerWrapper(AbstractMR amr) {
-		this.amr = amr;
+	public HadoopJobTrackerWrapper(Configuration conf) {
+		this.configuration = conf;
 	}
 
-	public void startMaster() throws RemoteException, IOException,
+	public void start() throws RemoteException, IOException,
 			InterruptedException {
 
-		// NameNode
-		nameNodeThread = initNameNode();
-		nameNodeThread.start();
-		nameNodeThread.join();
-
 		// JobTracker
-		jobTrackerThread = initJobTracker();
+		jobTrackerThread = new Thread(new StartJobTracker());
 		jobTrackerThread.start();
 		Thread.sleep(5000);
 		Thread.yield();
 	}
 
-	public void stopMaster() throws IOException {
+	public void stop() throws IOException {
 		LOG.info("Stopping JobTracker...");
 		// JTracker.stopTracker();
 		if (jobTrackerThread.isAlive()) {
 			jobTrackerThread.interrupt();
 		}
-
-		LOG.info("Stopping NameNode...");
-		// nn.stop();
-		if (nameNodeThread.isAlive()) {
-			nameNodeThread.interrupt();
-		}
 	}
 
-	private Thread initJobTracker() throws IOException, InterruptedException {
-		LOG.info("Starting JobTracker!");
-
-		StartJobTracker jtracker = new StartJobTracker();
-		Thread jtT = new Thread(jtracker);
-
-		return jtT;
-	}
-
-	private Thread initNameNode() throws IOException, InterruptedException {
-		LOG.info("Starting NameNode!");
-
-	//	amr.setHadoopProperties();
-		nnode = new StartNameNode();
-		Thread nnT = new Thread(nnode);
-
-		return nnT;
-	}
-
-	private class StartNameNode implements Runnable {
-
-		public void run() {
-			try {
-		//		amr.setHadoopProperties();
-				Configuration conf = amr.getConfHDFS();
-				nameNode = new NameNode(conf);
-				// nameNode = nn;
-
-				Thread.sleep(5000);
-			} catch (IOException ioe) {
-			} catch (InterruptedException ie) {
-			}
-		}
-	}
 
 	// JobTracker
 	private class StartJobTracker implements Runnable {
@@ -115,9 +69,7 @@ public class HadoopJobTrackerWrapper {
 		public void run() {
 			try {
 				LOG.info("Starting JobTracker!");
-
-				Configuration conf = amr.getConfMR();
-				job = new JobConf(conf);
+				job = new JobConf(configuration);
 				jobTracker = JobTracker.startTracker(job);
 				jobTracker.offerService();
 			} catch (IOException ioe) {
