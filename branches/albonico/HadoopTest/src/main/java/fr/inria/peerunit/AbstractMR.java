@@ -342,6 +342,7 @@ public abstract class AbstractMR {
         
         
         saveHadoopProperties();
+        loadHadoopProperties();
         Configuration config = this.getConfMR();
         Configuration hdfsConf = this.getConfHDFS();
         dfsFormatting(getHadoopProperty("hadoop.dir.data"));
