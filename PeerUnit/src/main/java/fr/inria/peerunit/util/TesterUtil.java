@@ -24,7 +24,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * 
@@ -108,7 +107,7 @@ public class TesterUtil {
             peerName = Integer.valueOf(this.getProperty("tester.peers")).intValue();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Property error: tester.peers");
         }
         return peerName;
     }
@@ -152,7 +151,7 @@ public class TesterUtil {
                 address = InetAddress.getLocalHost().getHostAddress();
             } catch (UnknownHostException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                System.out.println("Property error: tester.server");
             }
         }
 
@@ -377,9 +376,12 @@ public class TesterUtil {
         Class<?> result = null;
         try {
             String className = this.getProperty("fr.inria.peerunit.coordinator.strategy");
-             result = Class.forName(className);
+            result = Class.forName(className);
         } catch (ClassNotFoundException ex) {
-
+            System.out.println("Property error, using default for: fr.inria.peerunit.coordinator.strategy");
+            result = null;
+        } finally {
+            result = null;
         }
 
         return result;

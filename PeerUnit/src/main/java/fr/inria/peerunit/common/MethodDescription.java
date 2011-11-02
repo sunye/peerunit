@@ -21,10 +21,11 @@ import java.io.Serializable;
 import fr.inria.peerunit.tester.AfterClassMethod;
 import fr.inria.peerunit.tester.BeforeClassMethod;
 import fr.inria.peerunit.tester.TestStepMethod;
+import java.util.ArrayList;
 
 /**
  * @author sunye
- * 
+ *
  */
 public class MethodDescription implements Comparable<MethodDescription>,
         Serializable {
@@ -42,26 +43,32 @@ public class MethodDescription implements Comparable<MethodDescription>,
      * Method execution timeout (in milliseconds).
      */
     private int timeout;
+    /**
+     *
+     * @param depend
+     */
+    private String depend;
 
     /*
      * Create a method description
      */
-    public MethodDescription(String name, int order, int timeout) {
+    public MethodDescription(String name, int order, int timeout, String depend) {
         this.timeout = timeout;
         this.name = name;
         this.order = order;
+        this.depend = depend;
     }
 
     public MethodDescription(TestStepMethod method) {
-        this(method.method().getName(), method.order(), method.timeout());
+        this(method.method().getName(), method.order(), method.timeout(), method.depend());
     }
 
     public MethodDescription(BeforeClassMethod method) {
-        this(method.method().getName(), Integer.MIN_VALUE, method.timeout());
+        this(method.method().getName(), Integer.MIN_VALUE, method.timeout(), method.depend());
     }
 
     public MethodDescription(AfterClassMethod method) {
-        this(method.method().getName(), Integer.MAX_VALUE, method.timeout());
+        this(method.method().getName(), Integer.MAX_VALUE, method.timeout(), method.depend());
     }
 
 
@@ -111,9 +118,9 @@ public class MethodDescription implements Comparable<MethodDescription>,
             return false;
         } else {
             MethodDescription other = (MethodDescription) o;
-            return name.equals(other.name) &&
-                    order == other.order &&
-                    timeout == other.timeout;
+            return name.equals(other.name)
+                    && order == other.order
+                    && timeout == other.timeout;
         }
     }
 
@@ -144,5 +151,22 @@ public class MethodDescription implements Comparable<MethodDescription>,
 
     public int getOrder() {
         return order;
+    }
+
+    public String getDepend() {
+        return depend;
+    }
+
+    public ArrayList<String> getDepends() {
+        ArrayList<String> depends = new ArrayList<String>();
+        // depend is null in before and after class methods.
+        if (depend != null) {
+            String[] tmp = depend.split(",");
+            //depends.addAll(Arrays.asList(tmp));
+            for (String token : tmp) {
+                depends.add(token.trim());
+            }
+        }
+        return depends;
     }
 }

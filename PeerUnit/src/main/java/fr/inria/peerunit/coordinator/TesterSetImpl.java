@@ -16,7 +16,9 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.coordinator;
 
+import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -37,7 +39,7 @@ public class TesterSetImpl implements TesterSet {
         coordinator = ci;
     }
 
-    public void execute(String str) throws InterruptedException {
+    public void execute(String... str) throws InterruptedException {        
         if (methods == null) {
             // Lazy initialization of methods Map.
             LOG.log(Level.FINE, "Method map initialization.");
@@ -47,18 +49,38 @@ public class TesterSetImpl implements TesterSet {
             }
         }
 
-        if (methods.containsKey(str)) {
-            coordinator.execute(methods.get(str));
+        if (methods.containsKey(str[0])) {
+            coordinator.execute(methods.get(str[0]));
         } else {
-            LOG.log(Level.WARNING, "Method not found: {0}", str);
+            LOG.log(Level.WARNING, "Method not found: {0}", str[0]);
         }
     }
 
-    public void execute(MethodDescription md) throws InterruptedException {
-        coordinator.execute(md);
+    public void execute(MethodDescription... md) throws InterruptedException {
+        coordinator.execute(md[0]);
+    }
+
+    public void dependencyExecute(MethodDescription md, TesterSet ts) throws InterruptedException {
+        coordinator.dependencyExecute(md,ts);
+    }
+
+    public void hierarchicalExecute(Integer order) throws InterruptedException {
+        coordinator.hierarchicalExecute(order);
+    }
+
+    public void globalExecute(Integer order, TesterSet ts) throws InterruptedException {
+        coordinator.globalExecute(order, ts);
     }
 
     public Schedule getSchedule() {
         return coordinator.getSchedule();
+    }
+    
+    public ResultSet getResult(MethodDescription md) {
+        return coordinator.getResultFor(md);
+    }
+
+    public void setResult(MethodDescription md, ResultSet rs) throws InterruptedException {
+            coordinator.setResult(md, rs);
     }
 }

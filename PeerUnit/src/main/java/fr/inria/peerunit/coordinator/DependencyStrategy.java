@@ -1,4 +1,4 @@
-    /*
+/*
 This file is part of PeerUnit.
 
 PeerUnit is free software: you can redistribute it and/or modify
@@ -20,29 +20,24 @@ import fr.inria.peerunit.common.MethodDescription;
 import java.util.logging.Logger;
 
 /**
+ * Dependent execution strategy
  *
- * @author sunye
+ * @author albonico, jeugenio
  */
-class SequencialStrategy implements CoordinationStrategy {
+class DependencyStrategy implements CoordinationStrategy {
 
-    private static final Logger LOG = Logger.getLogger(SequencialStrategy.class.getName());
+    private static final Logger LOG = Logger.getLogger(DependencyStrategy.class.getName());
     private TesterSet testers;
 
     public void init(TesterSet ts) {
         testers = ts;
     }
 
-    /**
-     * Sequencial execution of test steps.
-     * 
-     * @param schedule
-     * @throws InterruptedException
-     */
     public void testcaseExecution() throws InterruptedException {
-        LOG.entering("SequencialStrategy", "testCaseExecution()");
+        LOG.entering("DependencyStrategy", "testCaseExecution()");
 
-        for (MethodDescription each : testers.getSchedule().methods()) {
-                testers.execute(each);
+        for (MethodDescription action : testers.getSchedule().methods()) {
+               testers.dependencyExecute(action, testers);
         }
     }
 }

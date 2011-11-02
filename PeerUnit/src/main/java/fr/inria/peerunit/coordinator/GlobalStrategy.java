@@ -16,16 +16,15 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.coordinator;
 
-import fr.inria.peerunit.common.MethodDescription;
 import java.util.logging.Logger;
 
 /**
  *
- * @author sunye
+ * @author albonico
  */
-class SequencialStrategy implements CoordinationStrategy {
+class GlobalStrategy implements CoordinationStrategy {
 
-    private static final Logger LOG = Logger.getLogger(SequencialStrategy.class.getName());
+    private static final Logger LOG = Logger.getLogger(GlobalStrategy.class.getName());
     private TesterSet testers;
 
     public void init(TesterSet ts) {
@@ -33,16 +32,16 @@ class SequencialStrategy implements CoordinationStrategy {
     }
 
     /**
-     * Sequencial execution of test steps.
-     * 
-     * @param schedule
+     * Global execution of test steps.
+     * Hierarchical and Dependent strategy
+     *
      * @throws InterruptedException
      */
     public void testcaseExecution() throws InterruptedException {
-        LOG.entering("SequencialStrategy", "testCaseExecution()");
+        LOG.entering("GlobalStrategy", "testCaseExecution()");
 
-        for (MethodDescription each : testers.getSchedule().methods()) {
-                testers.execute(each);
+        for (Integer order : testers.getSchedule().orders()) {
+            testers.globalExecute(order, testers);
         }
     }
 }
