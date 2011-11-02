@@ -130,7 +130,7 @@ public class TesterImplTest {
 
     @Test
     public void testRegister() {
-        MethodDescription md = new MethodDescription("first", 1, 1000);
+        MethodDescription md = new MethodDescription("first", 1, 1000, "*");
 
         assertEquals(3, coord.getSchedule().size());
 

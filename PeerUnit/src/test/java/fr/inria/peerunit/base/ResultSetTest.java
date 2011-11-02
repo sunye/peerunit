@@ -54,7 +54,7 @@ public class ResultSetTest {
         result.add(sr2);
 
         assertTrue(result.getErrors() == 1);
-        assertTrue(result.getfailures() == 1);
+        assertTrue(result.getFailures() == 1);
         assertTrue(result.getInconclusives() == 0);
         assertTrue(result.getPass() == 0);
         assertTrue(result.size() == 2);
@@ -81,8 +81,8 @@ public class ResultSetTest {
         SingleResult sr = new SingleResult(1, md);
         ResultSet rs = sr.asResultSet();
 
-        String expected = String.format("Step: %d. Pass: %d. Fails: %d. Errors: %d. " +
-                "Inconclusive: %d.  Time elapsed: %d msec. Average: %d msec. \t Method: %s",
+        String expected = String.format("Level: %d. Pass: %d. Fails: %d. Errors: %d. " +
+                "Inconclusive: %d. Time elapsed: %d msec. Average: %d msec. \t Method: %s",
                 0, 1, 0, 0, 0, 0, 0, "name");
 
         assertEquals(rs.toString(), expected);
@@ -137,8 +137,8 @@ public class ResultSetTest {
      * Test of getfailures method, of class ResultSet.
      */
     @Test
-    public void testGetfailures() {
-        System.out.println("getfailures");
+    public void testGetFailures() {
+        System.out.println("getFailures");
 
     }
 

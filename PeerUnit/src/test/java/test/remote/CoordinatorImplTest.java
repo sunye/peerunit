@@ -63,9 +63,9 @@ public class CoordinatorImplTest {
     public void setup() {
         tester = mock(Tester.class);
         methods = new ArrayList<MethodDescription>(3);
-        methods.add(new MethodDescription("first", 1, 10));
-        methods.add(new MethodDescription("second", 2, 10));
-        methods.add(new MethodDescription("third", 3, 10));
+        methods.add(new MethodDescription("first", 1, 10, "*"));
+        methods.add(new MethodDescription("second", 2, 10, "*"));
+        methods.add(new MethodDescription("third", 3, 10, "*"));
 
     }
 

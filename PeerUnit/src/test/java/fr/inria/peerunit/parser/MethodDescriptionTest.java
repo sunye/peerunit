@@ -26,9 +26,9 @@ public class MethodDescriptionTest {
 
     @Before
     public void setUp() {
-        m1 = new MethodDescription("setup", 1, 100);
-        m2 = new MethodDescription("calculate", 2, 200);
-        m3 = new MethodDescription("terdown", 3, 300);
+        m1 = new MethodDescription("setup", 1, 100, "*");
+        m2 = new MethodDescription("calculate", 2, 200, "*");
+        m3 = new MethodDescription("terdown", 3, 300, "*");
     }
 
 
@@ -48,7 +48,7 @@ public class MethodDescriptionTest {
      */
     @Test
     public void testEquals() {
-        MethodDescription clone = new MethodDescription("setup", 1, 100);
+        MethodDescription clone = new MethodDescription("setup", 1, 100, "*");
         assertEquals(m1, m1);
         assertEquals(m1, clone);
         assertFalse(m1.equals(m2));
