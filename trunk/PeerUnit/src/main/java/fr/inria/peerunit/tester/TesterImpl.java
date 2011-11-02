@@ -82,7 +82,7 @@ public class TesterImpl extends AbstractTester implements Serializable {
      */
     public TesterImpl(Coordinator boot, GlobalVariables gv) throws RemoteException {
         super(gv);
-        remoteTester = new RemoteTesterImpl();
+        remoteTester = new RemoteTesterImpl ();
         coord = boot;
         int i = coord.register(remoteTester);
         this.setId(i);

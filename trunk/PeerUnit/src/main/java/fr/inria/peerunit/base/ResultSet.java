@@ -90,13 +90,18 @@ public class ResultSet implements Serializable {
         }
     }
 
+    // Michel
+    public void addSimulatedError() {
+        errors.incrementAndGet();
+    }
+
     @Override
     public String toString() {
         long average = this.size() == 0 ? 0 : accumulatedDelay/size();
-        return String.format("Step: %d. Pass: %d. Fails: %d. Errors: %d. " +
-			     "Inconclusive: %d.  Time elapsed: %d msec. Average: %d msec. \t Method: %s",
-			     method.getOrder(), passes.intValue(), failures.intValue(), errors.intValue(), inconclusives.intValue(),
-			     getDelay(), average, method.getName());
+        return String.format("Level: %d. Pass: %d. Fails: %d. Errors: %d. " +
+			     "Inconclusive: %d. Time elapsed: %d msec. Average: %d msec. \t Method: %s",
+			     method.getOrder(), passes.intValue(), failures.intValue(), errors.intValue(), 
+                             inconclusives.intValue(), getDelay(), average, method.getName());
     }
 
     public void start() {
@@ -123,7 +128,7 @@ public class ResultSet implements Serializable {
         return errors.intValue();
     }
 
-    public int getfailures() {
+    public int getFailures() {
         return failures.intValue();
     }
 

@@ -41,6 +41,7 @@ public class TestStepMethod extends TestMethod {
         order = ts.order();
         method = m;
         range = this.newRange(ts.range());
+        depend = ts.depend();
 
     }
 
@@ -51,4 +52,5 @@ public class TestStepMethod extends TestMethod {
     public final int order() {
         return order;
     }
+
 }

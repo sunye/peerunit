@@ -41,5 +41,7 @@ public @interface TestStep {
     int order() default -1;
 
     int timeout() default -1;
-    
+
+    String depend() default "";
+
 }

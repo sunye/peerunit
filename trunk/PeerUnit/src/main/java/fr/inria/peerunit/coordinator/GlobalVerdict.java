@@ -36,11 +36,12 @@ public class GlobalVerdict {
     private int passVerdicts = 0;
     private int incVerdicts = 0;
     private int failVerdicts = 0;
-    private int index;
+    private int errors = 0;
+    private int relaxIndex;
     private Map<MethodDescription, ResultSet> results;
 
     public GlobalVerdict(int i) {
-        index = i;
+        relaxIndex = i;
         results = Collections.synchronizedMap(new TreeMap<MethodDescription, ResultSet>());
     }
 
@@ -104,8 +105,14 @@ public class GlobalVerdict {
         for (ResultSet each : results.values()) {
             result.append(each).append("\n");
             accumulatedDelay += each.getDelay() ;
+            passVerdicts += each.getPass();
+            incVerdicts += each.getInconclusives();
+            failVerdicts += each.getFailures();
+            errors += each.getErrors();
         }
-        result.append("Accumulated Time Elapsed: ").append(accumulatedDelay).append("\n");
+        result.append("Global Verdict with relax index " + relaxIndex + "% is " + getGlobalVerdict() + "\n");
+        result.append("LocalVerdicts are (Pass:" + passVerdicts + ") (Inconc.: " + incVerdicts + ") (Fail: " + failVerdicts + ")\n");
+        result.append("Accumulated Time Elapsed: ").append(accumulatedDelay).append(" msec\n");
         result.append("------------------------------\n");
 
         return result.toString();
@@ -115,7 +122,7 @@ public class GlobalVerdict {
 
         if (failVerdicts > 0) {
             globalVerdict = Verdicts.FAIL;
-        } else if ((((double) incVerdicts / (passVerdicts + incVerdicts)) * 100) <= index) {
+        } else if ((((double) incVerdicts / (passVerdicts + incVerdicts)) * 100) <= relaxIndex) {
             globalVerdict = Verdicts.PASS;
         } else {
             globalVerdict = Verdicts.INCONCLUSIVE;

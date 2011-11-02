@@ -16,6 +16,7 @@ along with PeerUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.inria.peerunit.coordinator;
 
+import fr.inria.peerunit.base.ResultSet;
 import fr.inria.peerunit.common.MethodDescription;
 
 /**
@@ -24,9 +25,20 @@ import fr.inria.peerunit.common.MethodDescription;
  */
 public interface TesterSet {
 
-    void execute(String str) throws InterruptedException;
+    void execute(String... str) throws InterruptedException;
 
-    void execute(MethodDescription md) throws InterruptedException;
+    void execute(MethodDescription... md) throws InterruptedException;
+
+    void dependencyExecute(MethodDescription md, TesterSet ts) throws InterruptedException;
+
+    void hierarchicalExecute(Integer order) throws InterruptedException;
+
+    void globalExecute(Integer order, TesterSet ts) throws InterruptedException;
 
     Schedule getSchedule();
+
+    public ResultSet getResult(MethodDescription md);
+
+    public void setResult(MethodDescription md, ResultSet rs) throws InterruptedException;
+
 }
