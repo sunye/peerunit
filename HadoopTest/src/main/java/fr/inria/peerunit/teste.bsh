@@ -1,8 +1,10 @@
-for (int a=0; a<5; a++) {
 
-    System.out.println("Valor de A: " + a);
-    Thread.sleep(500);
+        set("klass", classForName("AbstractMR"));
 
-}
+        Method[] methods = klass.getMethods();
 
-int b = 2/0;
+        for (Method method : methods) {
+
+            System.out.println("Method: " + method.getName());
+
+        }

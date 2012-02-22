@@ -235,6 +235,10 @@ public abstract class AbstractMR {
      * Sending Jobs
      */
     protected void sendJob() throws InterruptedException, RemoteException, IOException {
+       
+        //LOG.info("Waiting for DataNodes and TaskTracker connect on Masters!");
+       // Thread.currentThread().sleep(15000);
+
         String hadoopdir = getHadoopProperty("hadoop.dir.install");
         String jar = getHadoopProperty("job.jar");
         String job = getHadoopProperty("job.class");
@@ -386,6 +390,10 @@ public abstract class AbstractMR {
     protected void stopWorkers() throws IOException {
         taskTracker.stop();
         dataNode.stop();
+    }
+
+    protected void killWorker() throws IOException {
+        taskTracker.stop();
     }
 
     /**

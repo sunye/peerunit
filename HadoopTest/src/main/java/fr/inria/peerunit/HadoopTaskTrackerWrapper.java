@@ -42,6 +42,7 @@ public class HadoopTaskTrackerWrapper {
 		// TTracker.shutdown();
 		if (taskTrackerThread.isAlive()) {
 			taskTrackerThread.interrupt();
+                        LOG.info("TaskTracker is stopped!");
 		}
 	}
 
