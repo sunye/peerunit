@@ -15,19 +15,20 @@ public class TestPiEstimator extends AbstractMR {
         startMaster();
     }
 
-    @TestStep(order = 2, timeout = 30000, range = "*")
+    @TestStep(order = 2, timeout = 200000, range = "*")
     public void a1() throws IOException, InterruptedException {
         startWorkers();
     }
 
-    @TestStep(order = 3, range = "0", timeout = 120000)
+    @TestStep(order = 3, range = "0", timeout = 3850000)
     public void a2() throws Exception, InterruptedException {
         sendJob();
     }
 
-    @TestStep(order = 3, range = "0", timeout = 120000)
+    @TestStep(order = 3, range = "1", timeout = 120000)
     public void a3() throws Exception, InterruptedException {
-        // killWorker();
+        Thread.currentThread().sleep(10000);
+        killWorker();
     }
 
     @TestStep(order = 4, timeout = 10000, range = "0")
@@ -40,11 +41,8 @@ public class TestPiEstimator extends AbstractMR {
         stopWorkers();
     }
   
-/*
     @TestStep(order = 6, timeout = 30000, range = "0")
     public void a6() throws IOException, InterruptedException {
         stopMaster();
     }
- * 
- */
 }
