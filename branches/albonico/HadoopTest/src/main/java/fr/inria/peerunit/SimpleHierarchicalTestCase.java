@@ -6,7 +6,6 @@ package fr.inria.peerunit;
 
 import fr.inria.peerunit.parser.TestStep;
 
-import java.rmi.registry.Registry;
 import java.util.logging.Logger;
 
 /**
