@@ -55,6 +55,7 @@
         	</configuration>
 	</plugin>
         <!--
+	-->
 	<plugin>
         	<groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-assembly-plugin</artifactId>
@@ -74,7 +75,6 @@
                       </execution>
                 </executions>
 	</plugin>
-	-->
 	<!-- 
 		Please, download Pitest package and install it with the follow command:
 		#mvn install:install-file -DgroupId=org.pitest -DartifactId=pitest -Dversion=0.15 -Dpackaging=jar -Dfile=/path/to/file
@@ -100,7 +100,7 @@
     <dependency>
       <groupId>fr.inria.peerunit</groupId>
       <artifactId>PeerUnit</artifactId>
-      <version>1.1-ALBONICO</version>
+      <version>1.1-SNAPSHOT</version>
     </dependency>
      
     <dependency>
