@@ -168,7 +168,7 @@ public abstract class AbstractMR {
         Configuration conf = new Configuration();
         conf.set("mapred.job.tracker", jthost);
         conf.set("mapred.child.java.opts", joptions);
-        conf.set("mapred.child.java.opts", memtask);
+        //conf.set("mapred.child.java.opts", memtask);
 
         return conf;
     }
@@ -179,7 +179,8 @@ public abstract class AbstractMR {
     public Configuration getConfHDFS() throws IOException, InterruptedException {
         LOG.info("Reading HDFS configuration!");
 
-        String nnhost = "hdfs://" + getHadoopProperty("hadoop.namenode") + ":" + getHadoopProperty("hadoop.namenode.port");
+        String nnhost = "hdfs://" + getHadoopProperty("hadoop.namenode") + ":"
+                + getHadoopProperty("hadoop.namenode.port");
         String dirname = getHadoopProperty("hadoop.dir.name");
         String dirdata = getHadoopProperty("hadoop.dir.data");
         String dirtmp = getHadoopProperty("hadoop.dir.tmp");
@@ -234,7 +235,7 @@ public abstract class AbstractMR {
     /*
      * Sending Jobs
      */
-    protected void sendJob() throws InterruptedException, RemoteException, IOException {
+    protected void sendJob() throws RemoteException, IOException {
        
         //LOG.info("Waiting for DataNodes and TaskTracker connect on Masters!");
        // Thread.currentThread().sleep(15000);
@@ -246,13 +247,20 @@ public abstract class AbstractMR {
         String command = hadoopdir + "bin/hadoop jar " + jar + " " + job + " " + param;
         String regex = getHadoopProperty("job.result.regex");
 
-        RunSendJob sjob = new RunSendJob(Integer.valueOf((String) getHadoopProperty("job.result.assert.type")), command, regex,
-                ((String) getHadoopProperty("job.result.like")), Integer.valueOf((String) getHadoopProperty("job.result.position")));
+        RunSendJob sjob = new RunSendJob(
+                Integer.valueOf((String) getHadoopProperty("job.result.assert.type")),
+                command, regex, ((String) getHadoopProperty("job.result.like")),
+                Integer.valueOf((String) getHadoopProperty("job.result.position")));
 
         Thread sjThread = new Thread(sjob);
         sjThread.start();
-        Thread.sleep(1000);
-        sjThread.join();
+        try {
+            //Thread.sleep(1000);
+            sjThread.join();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+            Logger.getLogger(AbstractMR.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private class RunSendJob implements Runnable {
@@ -288,6 +296,11 @@ public abstract class AbstractMR {
                 LOG.info("Running: " + command);
                 Process jobProcess = Runtime.getRuntime().exec(command);
                 jobProcess.waitFor();
+                //jobProcess.wait();
+                if (jobProcess.exitValue()!= 0){
+                    System.out.println("Command: " + command + " returned " + jobProcess.exitValue());
+                    Assert.fail();
+                }
                 // If asserting stdout
                 if (assertType == 1) {
                     // Getting Result
@@ -322,12 +335,12 @@ public abstract class AbstractMR {
 
                     jobResult = BigDecimal.valueOf(Double.valueOf(result));
                 }
-            } catch (RemoteException re) {
-                LOG.info(re.toString());
-            } catch (IOException ioe) {
-                LOG.info(ioe.toString());
-            } catch (InterruptedException ie) {
-                LOG.info(ie.toString());
+            } catch (Exception e) {
+                Logger.getLogger(TestPiEstimator.class.getName()).log(Level.SEVERE,
+                    null, e.getStackTrace().toString());
+                System.out.println("Exception executing " + command);
+                e.printStackTrace();
+                Assert.fail();
             }
         }
     }
@@ -378,13 +391,16 @@ public abstract class AbstractMR {
         
         String name = getHadoopProperty("hadoop.dir.name");
         String data = getHadoopProperty("hadoop.dir.data");
-        
-        
+
+        Runtime.getRuntime().exec("rm -rf "+data);
+
         taskTracker = new HadoopTaskTrackerWrapper(this.getConfMR());
         dataNode = new HadoopDataNodeWrapper(this.getConfHDFS(), name, data);
-        
+                
         taskTracker.start();
+        //System.out.println("ok taskTracker.start();");
         dataNode.start();
+        //System.out.println("ok dataNode.start();");
     }
 
     protected void stopWorkers() throws IOException {
@@ -394,6 +410,12 @@ public abstract class AbstractMR {
 
     protected void killWorker() throws IOException {
         taskTracker.stop();
+    }
+
+    private void startMasterByHadoop2() {
+        Launcher l= new Launcher();
+
+    //    Launcher l= new Launcher(new Class(org.apache.hadoop.mapred.JobTracker),);
     }
 
     /**

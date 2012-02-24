@@ -66,17 +66,25 @@ public class HadoopJobTrackerWrapper {
 	// JobTracker
 	private class StartJobTracker implements Runnable {
 
-		public void run() {
+		public void run(){
 			try {
 				LOG.info("Starting JobTracker!");
+/*                                System.out.println("configuration: mapred.job.tracker="
+                                        + configuration.get("mapred.job.tracker")
+                                        + "mapred.child.java.opts=" + configuration.get("mapred.child.java.opts"));
+ */
 				job = new JobConf(configuration);
+/*                                System.out.println("job: mapred.job.tracker="
+                                        + job.get("mapred.job.tracker")
+                                        + "mapred.child.java.opts=" + job.get("mapred.child.java.opts"));
+*/
 				jobTracker = JobTracker.startTracker(job);
-				jobTracker.offerService();
+				jobTracker.offerService();                                
 			} catch (IOException ioe) {
 				LOG.info(ioe.toString());
 			} catch (InterruptedException ie) {
 				LOG.info(ie.toString());
-			}
+			}                               
 		}
 	}
 }

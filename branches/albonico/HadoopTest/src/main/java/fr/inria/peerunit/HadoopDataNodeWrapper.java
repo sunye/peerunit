@@ -24,14 +24,22 @@ public class HadoopDataNodeWrapper {
 		this.dirData = dirData;
 	}
 
-	protected void start() throws IOException, InterruptedException {
-		cfg.set("dfs.name.dir", dirName);
-		cfg.set("dfs.data.dir", dirData);
+	protected void start() throws IOException{
+		//cfg.set("dfs.name.dir", dirName);
+		//cfg.set("dfs.data.dir", dirData);
 		LOG.info("Starting DataNode!");
 		
 		dataNodeThread = new Thread(new DataNodeThread());
 		dataNodeThread.start();
-		dataNodeThread.join();
+                
+        try {
+            dataNodeThread.join();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+            Logger.getLogger(HadoopDataNodeWrapper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+                 
+             //   Thread.yield();
 	}
 
 	protected void stop() throws IOException {
@@ -48,16 +56,17 @@ public class HadoopDataNodeWrapper {
 			try {
 
 				String[] args = { "-rollback" };
-
+                                //System.out.println("DataNodeThread.cfg="+cfg.toString());
 				dataNode = DataNode.createDataNode(args, cfg);
 
-				String serveraddr = dataNode.getNamenode();
+				String serveraddr = dataNode.getNameNodeAddr().toString();
 				LOG.log(Level.INFO, "DataNode connected with NameNode: {0}",
 						serveraddr);
 
-				Thread.currentThread().join();
-			} catch (IOException ioe) {
-			} catch (InterruptedException ie) {
+				//Thread.currentThread().join();
+			} catch (Exception e) {
+                            LOG.log(Level.INFO, "Exception on DataNodeThread!");
+                            e.printStackTrace();
 			}
 		}
 	}
