@@ -34,6 +34,7 @@ import fr.inria.peerunit.parser.SetId;
 import fr.inria.peerunit.remote.GlobalVariables;
 import fr.inria.peerunit.tester.Assert;
 import fr.inria.peerunit.util.TesterUtil;
+import org.apache.tools.ant.launch.Launcher;
 
 public abstract class AbstractMR {
 
@@ -250,7 +251,10 @@ public abstract class AbstractMR {
         RunSendJob sjob = new RunSendJob(
                 Integer.valueOf((String) getHadoopProperty("job.result.assert.type")),
                 command, regex, ((String) getHadoopProperty("job.result.like")),
-                Integer.valueOf((String) getHadoopProperty("job.result.position")));
+                Integer.valueOf((String) getHadoopProperty("job.result.position")),
+                Integer.valueOf((String) getHadoopProperty("job.result.time.position")),
+                ((String) getHadoopProperty("job.result.time.like"))
+                );
 
         Thread sjThread = new Thread(sjob);
         sjThread.start();
@@ -270,15 +274,19 @@ public abstract class AbstractMR {
         private final String regex;
         private final String resultLike;
         private final int resultPosition;
+        private final int timeExecutionPosition;
+        private final String timeExecutionLike;
 
         public RunSendJob(int assertType, String command, String regex, String resultLike,
-                int resultPosition) {
+                int resultPosition, int timeExecutionPosition, String timeExecutionLike) {
 
             this.assertType = assertType;
             this.command = command;
             this.regex = regex;
             this.resultLike = resultLike;
             this.resultPosition = resultPosition;
+            this.timeExecutionPosition = timeExecutionPosition;
+            this.timeExecutionLike = timeExecutionLike;
         }
 
         /**
@@ -309,6 +317,7 @@ public abstract class AbstractMR {
                     StringBuffer sb = new StringBuffer();
                     String line;
                     String result = "";
+                    String timeExecution = "";
                     String[] lineSplitted;
 
                     while ((line = br.readLine()) != null) {
@@ -324,6 +333,12 @@ public abstract class AbstractMR {
                         if (lineSplitted[0].equals(resultLike)) {
                             result = lineSplitted[resultPosition];
                         }
+                        
+                        // Result time line
+                        if (lineSplitted[0].equals(timeExecutionLike)) {
+                            timeExecution = lineSplitted[timeExecutionPosition];
+                        }
+                        
                         // Append the line to String Buffer
                         sb.append(line).append("\n");
                     }
@@ -332,8 +347,11 @@ public abstract class AbstractMR {
 
                     LOG.info("Output: " + answer);
                     LOG.info("Result: " + result);
+                    LOG.info("Time execution: " + timeExecution);
 
                     jobResult = BigDecimal.valueOf(Double.valueOf(result));
+                    jobDuration = Double.valueOf(timeExecution);
+                    
                 }
             } catch (Exception e) {
                 Logger.getLogger(TestPiEstimator.class.getName()).log(Level.SEVERE,
