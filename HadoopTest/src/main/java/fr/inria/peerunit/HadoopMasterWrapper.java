@@ -57,6 +57,7 @@ public class HadoopMasterWrapper {
 		jobTrackerThread.start();
 		Thread.sleep(5000);
 		Thread.yield();
+
 	}
 
 	public void stopMaster() throws IOException {
