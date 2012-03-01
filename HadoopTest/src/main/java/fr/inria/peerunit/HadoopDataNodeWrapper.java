@@ -31,7 +31,7 @@ public class HadoopDataNodeWrapper {
 		
 		dataNodeThread = new Thread(new DataNodeThread());
 		dataNodeThread.start();
-                
+
         try {
             dataNodeThread.join();
         } catch (InterruptedException ex) {
