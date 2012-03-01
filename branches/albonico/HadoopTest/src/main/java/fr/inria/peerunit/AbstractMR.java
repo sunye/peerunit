@@ -236,7 +236,7 @@ public abstract class AbstractMR {
     /*
      * Sending Jobs
      */
-    protected void sendJob() throws RemoteException, IOException {
+    protected void sendJob() throws RemoteException, IOException, InterruptedException {
        
         //LOG.info("Waiting for DataNodes and TaskTracker connect on Masters!");
        // Thread.currentThread().sleep(15000);
@@ -258,13 +258,16 @@ public abstract class AbstractMR {
 
         Thread sjThread = new Thread(sjob);
         sjThread.start();
-        try {
+            sjThread.join();
+/*        try {
             //Thread.sleep(1000);
             sjThread.join();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
             Logger.getLogger(AbstractMR.class.getName()).log(Level.SEVERE, null, ex);
         }
+ *
+ */
     }
 
     private class RunSendJob implements Runnable {
@@ -274,6 +277,7 @@ public abstract class AbstractMR {
         private final String regex;
         private final String resultLike;
         private final int resultPosition;
+        private int exitValue;
         private final int timeExecutionPosition;
         private final String timeExecutionLike;
 
@@ -285,6 +289,7 @@ public abstract class AbstractMR {
             this.regex = regex;
             this.resultLike = resultLike;
             this.resultPosition = resultPosition;
+            this.exitValue=0;
             this.timeExecutionPosition = timeExecutionPosition;
             this.timeExecutionLike = timeExecutionLike;
         }
@@ -305,9 +310,10 @@ public abstract class AbstractMR {
                 Process jobProcess = Runtime.getRuntime().exec(command);
                 jobProcess.waitFor();
                 //jobProcess.wait();
-                if (jobProcess.exitValue()!= 0){
-                    System.out.println("Command: " + command + " returned " + jobProcess.exitValue());
-                    Assert.fail();
+                exitValue = jobProcess.exitValue();
+                if (exitValue != 0){
+                    System.out.println("Error Command: " + command + " returned " + jobProcess.exitValue());
+                    return;
                 }
                 // If asserting stdout
                 if (assertType == 1) {
@@ -358,7 +364,6 @@ public abstract class AbstractMR {
                     null, e.getStackTrace().toString());
                 System.out.println("Exception executing " + command);
                 e.printStackTrace();
-                Assert.fail();
             }
         }
     }
@@ -426,12 +431,15 @@ public abstract class AbstractMR {
         dataNode.stop();
     }
 
-    protected void killWorker() throws IOException {
-        taskTracker.stop();
+    protected void killWorker() throws InterruptedException, IOException {
+        //taskTracker.stop();
+        Process jobProcess = Runtime.getRuntime().exec("kill -9 java");
+        jobProcess.waitFor();
+
     }
 
     private void startMasterByHadoop2() {
-        Launcher l= new Launcher();
+    //    Launcher l= new Launcher();
 
     //    Launcher l= new Launcher(new Class(org.apache.hadoop.mapred.JobTracker),);
     }
