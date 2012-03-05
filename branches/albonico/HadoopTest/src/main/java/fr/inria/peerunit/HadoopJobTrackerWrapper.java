@@ -32,7 +32,7 @@ public class HadoopJobTrackerWrapper {
 
     
 	private JobTracker jobTracker;
-    private Configuration configuration;
+        private Configuration configuration;
     
    
 	/**
@@ -44,15 +44,15 @@ public class HadoopJobTrackerWrapper {
 		this.configuration = conf;
 	}
 
-	public void start() throws RemoteException, IOException,
-			InterruptedException {
+	public void start() throws RemoteException, IOException, InterruptedException {
 
 		// JobTracker
 		jobTrackerThread = new Thread(new StartJobTracker());
 		jobTrackerThread.start();
 		Thread.sleep(5000);
 		Thread.yield();
-	}
+           
+        }
 
 	public void stop() throws IOException {
 		LOG.info("Stopping JobTracker...");
