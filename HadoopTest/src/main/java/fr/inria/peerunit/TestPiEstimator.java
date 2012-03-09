@@ -75,7 +75,7 @@ public class TestPiEstimator extends AbstractMR {
     }
 
     @TestStep(order = 5, range = "*", depend = "a1", timeout = 60000)
-    public void a5() throws IOException, InterruptedException {
+    public void a5() throws IOException, InterruptedException, Exception {
 //        System.out.println("a5():");
         stopWorkers();
     }
