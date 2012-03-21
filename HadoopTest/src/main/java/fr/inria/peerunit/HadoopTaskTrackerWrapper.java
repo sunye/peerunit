@@ -43,26 +43,30 @@ public class HadoopTaskTrackerWrapper {
         protected void kill() throws Exception {
             
             try {
-                 //   Security.setProperty("RuntimePermission", "stopThread");
                     taskTrackerThread.stop();
                 } catch (Exception e) {
+                    LOG.info("Error on kill TaskTracker (stop()).");
                     e.printStackTrace();
                 }
+            
+            try {
+                taskTrackerThread.interrupt();
+            } catch (Exception e) {
+                 LOG.info("Error on kill TaskTracker (interrupt()).");
+                e.printStackTrace();
+            }
             
         }
 
 	protected void stop() throws IOException, Exception {
 
 		LOG.info("Stopping TaskTracker...");
-                
-                //System.exit(0); // Mata o testador
-                
-                taskTracker.shutdown();
+               
                 if (taskTrackerThread.isAlive()) {
-                   //LOG.info("TaskTracker thread is alive!");
+                   taskTracker.shutdown();
                    taskTrackerThread.interrupt();
                 } else {
-                   //LOG.info("TaskTracker thread is not alive!");
+                   LOG.info("TaskTracker thread is not alive in this Tester!");
                 }
                 
 	
