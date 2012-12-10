@@ -1,0 +1,6 @@
+mvn install:install-file -DgroupId=com.sun -DartifactId=tools -Dversion=1.4.2 -Dpackaging=jar -Dfile=/usr/lib/jvm/java-6-sun/lib/tools.jar
+
+install hadoop-0.20.2
+altered properly hadoop.properties
+altered peerunit.properties
+./run-psychedelic teste.class /dir/output/

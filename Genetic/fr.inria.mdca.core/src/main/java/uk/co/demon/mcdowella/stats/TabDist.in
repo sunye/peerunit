@@ -1,6 +1,0 @@
-# Test input for 2xn chi-squared
-# This is the data in table 9.4 of 'Applied Nonparametric Statistics'
-# but unfortunately we are not evaluating the same statistics so
-# you can't match up the results
-23 8 9 3 2
-42 8 4 0 0
