@@ -372,19 +372,14 @@ public class TesterUtil {
         return port;
     }
 
-    public Class<?> getCoordinationStrategyClass() {
-        Class<?> result = null;
-        try {
-            String className = this.getProperty("fr.inria.peerunit.coordinator.strategy");
-            result = Class.forName(className);
-        } catch (ClassNotFoundException ex) {
+    public String getCoordinationStrategyClass() {
+        String strategyClass;
+        strategyClass = this.getProperty("fr.inria.peerunit.coordinator.strategy");
+        if (strategyClass == null) {
             System.out.println("Property error, using default for: fr.inria.peerunit.coordinator.strategy");
-            result = null;
-        } finally {
-            result = null;
+            strategyClass = "fr.inria.peerunit.coordinator.SequencialStrategy";
         }
-
-        return result;
+        return strategyClass;
     }
 
 

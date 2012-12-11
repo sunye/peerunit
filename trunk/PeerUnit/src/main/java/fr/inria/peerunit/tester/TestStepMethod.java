@@ -23,13 +23,17 @@ import fr.inria.peerunit.parser.TestStep;
 /**
  *
  * @author sunye
+ * @author jeugenio
  */
 public class TestStepMethod extends TestMethod {
 
     /**
-     *
+     * TestStep attributes
      */
-    private int order;
+    protected int order;
+    protected String depend;
+    protected int answers;
+    protected String when;
 
     /**
      *
@@ -37,20 +41,25 @@ public class TestStepMethod extends TestMethod {
      */
     public TestStepMethod(final Method m) {
         TestStep ts = m.getAnnotation(fr.inria.peerunit.parser.TestStep.class);
-        timeout = ts.timeout();
-        order = ts.order();
         method = m;
-        range = this.newRange(ts.range());
+        order = ts.order();
         depend = ts.depend();
-
+        answers = ts.answers();
+        range = this.newRange(ts.range());
+        when = ts.when();
+        timeout = ts.timeout();
     }
-
-    /**
-     *
-     * @return
-     */
-    public final int order() {
+    public int getAnswers() {
+        return answers;
+    }
+    public String getDepend() {
+        return depend;
+    }
+    public String getWhen() {
+        return when;
+    }
+    public final int getOrder() {
         return order;
     }
-
+    
 }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 /**
  * @author sunye
+ * @author jeugenio
  *
  */
 public class MethodDescription implements Comparable<MethodDescription>,
@@ -38,37 +39,50 @@ public class MethodDescription implements Comparable<MethodDescription>,
      * Method name
      */
     private String name;
+    /**
+     * Hierarchy level
+     */
     private int order;
+    /**
+     * Required answers
+     */
+    private int answers = -1;
+    /**
+     * Trigger for fault injection
+     */
+    private String when;
+    /**
+     * Dependency actions
+     */
+    private String depend;
     /**
      * Method execution timeout (in milliseconds).
      */
     private int timeout;
-    /**
-     *
-     * @param depend
-     */
-    private String depend;
 
     /*
      * Create a method description
      */
-    public MethodDescription(String name, int order, int timeout, String depend) {
-        this.timeout = timeout;
+    public MethodDescription(String name, int order, int answers, String when, 
+            String depend, int timeout) {
         this.name = name;
         this.order = order;
+        this.answers = answers;
+        this.when = when;
         this.depend = depend;
+        this.timeout = timeout;
     }
 
     public MethodDescription(TestStepMethod method) {
-        this(method.method().getName(), method.order(), method.timeout(), method.depend());
+        this(method.method().getName(), method.getOrder(), method.getAnswers(), method.getWhen(), method.getDepend(), method.timeout());
     }
 
     public MethodDescription(BeforeClassMethod method) {
-        this(method.method().getName(), Integer.MIN_VALUE, method.timeout(), method.depend());
+        this(method.method().getName(), Integer.MIN_VALUE, -1, "", "", method.timeout());
     }
 
     public MethodDescription(AfterClassMethod method) {
-        this(method.method().getName(), Integer.MAX_VALUE, method.timeout(), method.depend());
+        this(method.method().getName(), Integer.MAX_VALUE, -1, "", "", method.timeout());
     }
 
 
@@ -103,7 +117,8 @@ public class MethodDescription implements Comparable<MethodDescription>,
      */
     @Override
     public String toString() {
-        return String.format("Method: %s Order: %d", name, order);
+        return String.format("Method: %s", name);
+        //return String.format("Method: %s Order: %d Depend: %s Answers: %d When: %s Timeout: %d", name, order, depend, answers, when, timeout);
     }
 
     /*
@@ -153,6 +168,10 @@ public class MethodDescription implements Comparable<MethodDescription>,
         return order;
     }
 
+    public int getAnswers() {
+        return answers;
+    }
+   
     public String getDepend() {
         return depend;
     }
@@ -169,4 +188,12 @@ public class MethodDescription implements Comparable<MethodDescription>,
         }
         return depends;
     }
+    public String getWhen() {
+        return when;
+    }
+
+    public void setAnswers(int nanswers) {
+        answers = nanswers;
+    }
+   
 }
