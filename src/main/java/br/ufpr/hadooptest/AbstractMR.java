@@ -2,7 +2,8 @@ package br.ufpr.hadooptest;
 
 /**
  * @author albonico
- *
+ * @author jeugenio
+ * 
  */
 
 import java.io.BufferedReader;
@@ -67,6 +68,7 @@ public abstract class AbstractMR {
     // Variables needed to wait for put file process
     protected static int assertType, waitForPutFile;
     
+    /**
     @BeforeClass(range = "*", timeout = 10000)
     public void bc() throws IOException, FileNotFoundException,
             InterruptedException {
@@ -74,7 +76,8 @@ public abstract class AbstractMR {
         setPeerUnitProperties();
 
     }
-       
+    */
+    
     @SetId
     public void setId(int i) {
         id = i;
@@ -118,11 +121,15 @@ public abstract class AbstractMR {
     /*
      * PeerUnit Properties
      */
-    private void setPeerUnitProperties() throws FileNotFoundException,
-            IOException, InterruptedException {
+    public void setPeerUnitProperties() {
         if (new File("peerunit.properties").exists()) {
             String filename = "peerunit.properties";
-            FileInputStream fs = new FileInputStream(filename);
+            FileInputStream fs = null;
+            try {
+                fs = new FileInputStream(filename);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(AbstractMR.class.getName()).log(Level.SEVERE, null, ex);
+            }
             defaults = new TesterUtil(fs);
         } else {
             defaults = TesterUtil.instance;
