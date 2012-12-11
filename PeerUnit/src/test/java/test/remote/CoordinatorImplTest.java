@@ -43,6 +43,7 @@ import fr.inria.peerunit.util.TesterUtil;
 
 /**
  * @author sunye
+ * @author jeugenio
  *
  */
 public class CoordinatorImplTest {
@@ -63,9 +64,9 @@ public class CoordinatorImplTest {
     public void setup() {
         tester = mock(Tester.class);
         methods = new ArrayList<MethodDescription>(3);
-        methods.add(new MethodDescription("first", 1, 10, "*"));
-        methods.add(new MethodDescription("second", 2, 10, "*"));
-        methods.add(new MethodDescription("third", 3, 10, "*"));
+        methods.add(new MethodDescription("first", 1, 1, "", "", 10));
+        methods.add(new MethodDescription("second", 2, 1, "", "", 10));
+        methods.add(new MethodDescription("third", 3, 1, "", "", 10));
 
     }
 
