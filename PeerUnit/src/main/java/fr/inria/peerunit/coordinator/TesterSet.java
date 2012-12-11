@@ -22,6 +22,7 @@ import fr.inria.peerunit.common.MethodDescription;
 /**
  *
  * @author sunye
+ * @author jeugenio
  */
 public interface TesterSet {
 

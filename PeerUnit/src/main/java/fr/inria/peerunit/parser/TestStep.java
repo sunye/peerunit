@@ -25,23 +25,29 @@ import java.lang.annotation.Target;
  * in runtime
  * Meta-annotation Target indicates that this annotation type can be used
  * to annotate only method declarations.
+ * @author 
+ * @author jeugenio
  */
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface TestStep {
 
+    int order() default -1;
+
+    int answers() default -1;
+    
     /**
      * Range of peers where the test step should be executed.
      * 
      * @return a String in the form: "*", "54" or "4-17".
      */
     String range() default "*";
-
-    int order() default -1;
-
-    int timeout() default -1;
+    
+    String when() default "";
 
     String depend() default "";
+
+    int timeout() default -1;
 
 }

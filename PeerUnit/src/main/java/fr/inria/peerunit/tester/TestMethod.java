@@ -17,7 +17,6 @@ public abstract class TestMethod {
     protected Range range;
     protected Method method;
     protected int timeout;
-    protected String depend;
 
     public Range range() {
         return range;
@@ -27,16 +26,12 @@ public abstract class TestMethod {
         return method;
     }
 
-    public int timeout() {
-        return timeout;
-    }
-
     protected Range newRange(String str) {
         return Range.fromString(str);
     }
 
-    public String depend() {
-        return depend;
+    public int timeout() {
+        return timeout;
     }
 
 }

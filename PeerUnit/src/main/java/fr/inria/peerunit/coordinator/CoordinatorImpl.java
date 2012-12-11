@@ -107,7 +107,7 @@ public class CoordinatorImpl implements Runnable {
                 tu.getCoordinationStrategyClass());
     }
 
-    public CoordinatorImpl(int testerNbr, int relaxIndex, Class<?> strategyClass) {
+    public CoordinatorImpl(int testerNbr, int relaxIndex, String strategyClass) {
         this(testerNbr, relaxIndex, new RemoteCoordinatorImpl(testerNbr), strategyClass);
     }
 
@@ -122,7 +122,7 @@ public class CoordinatorImpl implements Runnable {
      * @param rci
      */
     private CoordinatorImpl(int testerNbr, int relaxIndex, RemoteCoordinatorImpl rci,
-            Class<?> strategyClass) {
+            String strategyClass) {
 
         LOG.log(Level.FINEST, "Creating a CoordinatorImpl for {0} testers.", testerNbr);
 
@@ -133,18 +133,14 @@ public class CoordinatorImpl implements Runnable {
         runningTesters = new AtomicInteger(0);
         verdict = new GlobalVerdict(relaxIndex);
         remoteCoordinator = rci;
-
-        if (strategyClass == null) {
-            strategyClass = GlobalStrategy.class;
-        }
-
-        LOG.log(Level.FINEST, "Coordination strategy: {0}", strategyClass.getName());
+        
+        LOG.log(Level.FINEST, "Coordination strategy: {0}", strategyClass);
         TesterSet ts = new TesterSetImpl(this);
         try {
-            strategy = (CoordinationStrategy) strategyClass.newInstance();
+            strategy = (CoordinationStrategy) Class.forName(strategyClass).newInstance();
             strategy.init(ts);
         } catch (Exception e) {
-            LOG.log(Level.WARNING, "Error while initializing class: {0}", strategyClass.getName());
+            LOG.log(Level.WARNING, "Error while initializing class: {0}", strategyClass);
             LOG.log(Level.WARNING, null, e);
             strategy = new SequencialStrategy();
             strategy.init(ts);
@@ -220,6 +216,10 @@ public class CoordinatorImpl implements Runnable {
         result.start();
 
         Collection<Tester> testers = schedule.testersFor(md);
+        // update the answer number if it did not be assigned
+        if (md.getAnswers() == -1){
+            md.setAnswers(testers.size());
+        }
         String message = String.format("Method %s will be executed by %d testers", md, testers.size());
         LOG.fine(message);
         //System.out.println(message);
@@ -277,6 +277,10 @@ public class CoordinatorImpl implements Runnable {
             result.start();
 
             Collection<Tester> testers = schedule.testersFor(action);
+            // update the answer number if it did not be assigned
+            if (action.getAnswers() == -1){
+                action.setAnswers(testers.size());
+            }
             LOG.log(Level.FINE, "Method {0} will be executed by {1} testers", new Object[]{action, testers.size()});
             runningTesters.set(runningTesters.get() + testers.size());
             for (Tester tester : testers) {
@@ -306,8 +310,8 @@ public class CoordinatorImpl implements Runnable {
      * @param level
      * @throws InterruptedException
      */
-    public void globalExecute(Integer level, TesterSet ts) throws InterruptedException {
-        LOG.entering("CoordinatorImpl", "globalExecute(Integer,TesterSet)", level);
+    public void globalExecuteOld(Integer level, TesterSet ts) throws InterruptedException {
+        LOG.entering("CoordinatorImpl", "globalExecuteOld(Integer,TesterSet)", level);
 
         Map<MethodDescription, AtomicInteger> actionsXntesters =
                 Collections.synchronizedMap(new TreeMap<MethodDescription, AtomicInteger>());
@@ -322,6 +326,10 @@ public class CoordinatorImpl implements Runnable {
                 result.start();
 
                 Collection<Tester> testers = schedule.testersFor(action);
+                // update the answer number if it did not be assigned
+                if (action.getAnswers() == -1){
+                    action.setAnswers(testers.size());
+                }
                 LOG.log(Level.FINE, "Method {0} will be executed by {1} testers", new Object[]{action, testers.size()});
                 runningTesters.set(runningTesters.get() + testers.size());
                 for (Tester tester : testers) {
@@ -346,6 +354,84 @@ public class CoordinatorImpl implements Runnable {
                     errorActions.add(result.getMethodDescription().getName());
                 }
             }
+        }
+    }
+
+    /**
+     * Dispatches the actions of a given hierarchical level(order) verifying their dependencies
+     * Waits until all tester have executed the actions.
+     *
+     * @param level
+     * @throws InterruptedException
+     */
+    public void globalExecute(Integer level, TesterSet ts) throws InterruptedException {
+        LOG.entering("CoordinatorImpl", "globalExecute(Integer,TesterSet)", level);
+
+        Map<MethodDescription, AtomicInteger> actionsXntesters =
+                Collections.synchronizedMap(new TreeMap<MethodDescription, AtomicInteger>());
+
+        Map<MethodDescription, ResultSet> actionsXresult =
+                Collections.synchronizedMap(new TreeMap<MethodDescription, ResultSet>());
+
+        runningTesters.set(0); // the number of required answers (n_r)
+        
+        for (MethodDescription action : schedule.methodsFor(level)) {
+            if (!hasDependencyError(action)) {
+                ResultSet result = new ResultSet(action);
+                verdict.putResult(action, result);
+                result.start();
+                
+                Collection<Tester> testers = schedule.testersFor(action);
+                // update the answer number if it did not be assigned
+                if (action.getAnswers() == -1){
+                    action.setAnswers(testers.size());
+                }
+                LOG.log(Level.FINE, "Method {0} will be executed by {1} testers", 
+                        new Object[]{action.getName(), action.getAnswers()});
+                for (Tester tester : testers) {
+                    executor.submit(new MethodExecute(tester, action));
+                }
+                runningTesters.set(runningTesters.get() + action.getAnswers());
+                //actionsXntesters.put(action, new AtomicInteger(testers.size()));
+                actionsXresult.put(action, result);
+            } else {
+                setDependencyError(action, ts);
+            }
+        }
+        while ((runningTesters.intValue() > 0) ) {  // || actionsXresult.get(action).getDelay() 
+            ResultSet rs = remoteCoordinator.results().take();
+            MethodDescription action;
+            action= rs.getMethodDescription();
+            if ((action.getAnswers() > 0) 
+                    && (action.getAnswers()< schedule.testersFor(action).size())) {
+                if (rs.getPass() > 0) {
+                    runningTesters.decrementAndGet();
+                    action.setAnswers(action.getAnswers()-1);
+                    verdict.getResultFor(action).add(rs);
+                }
+            }
+            else {
+                runningTesters.decrementAndGet();
+                verdict.getResultFor(action).add(rs);
+            }
+        }
+        for (MethodDescription action : schedule.methodsFor(level)) {
+            // if the action has a different number of required answers
+            if (action.getAnswers() != schedule.testersFor(action).size()) {
+                if (action.getAnswers() != 0){
+                    verdict.getResultFor(action).addSimulatedError();
+                    errorActions.add(action.getName());
+                }
+            }
+            else {
+                if (verdict.getResultFor(action).getPass() != action.getAnswers()) {
+                    verdict.getResultFor(action).addSimulatedError();
+                    errorActions.add(action.getName());
+                }               
+            }
+            verdict.getResultFor(action).stop();
+            LOG.fine("Method " + action.getName() + " executed in "
+                        + verdict.getResultFor(action).getDelay() + " msec");
         }
     }
 

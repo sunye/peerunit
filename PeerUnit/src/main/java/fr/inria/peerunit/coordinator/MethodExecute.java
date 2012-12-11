@@ -20,12 +20,14 @@ import java.rmi.RemoteException;
 
 import fr.inria.peerunit.common.MethodDescription;
 import fr.inria.peerunit.remote.Tester;
+import java.io.IOException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * @author Eduardo Almeida.
+ * @author jeugenio
  * @version 1.0
  * @since 1.0
  * @see java.lang.Runnable
@@ -58,7 +60,29 @@ public class MethodExecute implements Runnable {
     public void run() {
         LOG.entering("MethodExecute", "run()");
         try {
-            tester.execute(md);
+            if (!md.getWhen().equals("")) {
+                LOG.log(Level.WARNING, "md.getWhen()={0}", md.getWhen());
+                Process jtProcess = null;           
+                try {
+                    jtProcess = Runtime.getRuntime().exec(md.getWhen());
+                } catch (IOException ex) {
+                    Logger.getLogger(MethodExecute.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                try {
+                    jtProcess.waitFor();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MethodExecute.class.getName()).log(Level.SEVERE, null, ex);
+                }               
+                /**try {
+                    jtProcess.waitFor();
+                } catch (InterruptedException ex) {
+                    LOG.warning(ex.toString());
+                }  */                     
+            }
+            if (md.getAnswers() > 0) {
+                tester.execute(md);
+            }
+            //tester.execute(md);
         } catch (RemoteException e) {
             LOG.log(Level.SEVERE,null, e);
             for (StackTraceElement each : e.getStackTrace()) {

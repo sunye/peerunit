@@ -1,4 +1,4 @@
-    /*
+/*
 This file is part of PeerUnit.
 
 PeerUnit is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 /**
  *
  * @author albonico
+ * @author jeugenio
  */
 class GlobalStrategy implements CoordinationStrategy {
 
