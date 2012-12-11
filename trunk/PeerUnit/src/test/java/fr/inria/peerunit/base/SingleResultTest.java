@@ -21,9 +21,10 @@ import fr.inria.peerunit.coordinator.Verdicts;
 /**
  *
  * @author sunye
+ * @author jeugenio
  */
 public class SingleResultTest {
-    private MethodDescription md = new MethodDescription("n", 1 ,0, "*");
+    private MethodDescription md = new MethodDescription("n", 1, 1, "", "", 0);
 
     private SingleResult result = new SingleResult(1, md);
 
@@ -98,7 +99,7 @@ public class SingleResultTest {
      */
     @Test
     public void testGetMethodDescription() {
-        MethodDescription m = new MethodDescription("name", 1, 0, "*");
+        MethodDescription m = new MethodDescription("name", 1, 1, "", "", 0);
         SingleResult r = new SingleResult(1, m);
 
         assertEquals(m, r.getMethodDescription());

@@ -27,6 +27,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author sunye
+ * @author jeugenio
  */
 public class TestCaseWrapperTest {
 
@@ -115,7 +116,7 @@ public class TestCaseWrapperTest {
     @Test
     public void testInvokeFailure() throws Exception {
         wrapper.register(Sample.class);
-        MethodDescription md = new MethodDescription("failure", 2, 1000, "*");
+        MethodDescription md = new MethodDescription("failure", 2, 1, "", "", 1000);
 
         assertNotNull("Method not found", wrapper.getMethod(md));
 
@@ -135,7 +136,7 @@ public class TestCaseWrapperTest {
     @Test
     public void testInvokeFailureBis() throws Exception {
         wrapper.register(Sample.class);
-        MethodDescription md = new MethodDescription("failureBis", 3, 1000, "*");
+        MethodDescription md = new MethodDescription("failureBis", 3, 1, "", "", 1000);
 
         assertNotNull(wrapper.getMethod(md));
 
@@ -155,7 +156,7 @@ public class TestCaseWrapperTest {
     @Test
     public void testInvokePass() throws Exception {
         wrapper.register(Sample.class);
-        MethodDescription md = new MethodDescription("first", 1, 1000, "*");
+        MethodDescription md = new MethodDescription("first", 1, 1, "", "", 1000);
         
         assertNotNull(wrapper.getMethod(md));
         try {
