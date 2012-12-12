@@ -161,7 +161,7 @@ public abstract class AbstractMR {
         hadoopProperties = (Properties) get(-1);
     }
 
-    private String getHadoopProperty(String propertie) throws RemoteException, IOException {
+    private String getHadoopProperty(String propertie) {
         return (String) hadoopProperties.getProperty(propertie);
     }
 
@@ -179,7 +179,12 @@ public abstract class AbstractMR {
         conf.set("mapred.job.tracker", jthost);
         conf.set("mapred.child.java.opts", joptions);
         //conf.set("mapred.child.java.opts", memtask);
-
+        conf.set("mapreduce.tasktracker.healthchecker.script.timeout", "70000");
+        conf.set("mapred.task.timeout", "70000");
+        conf.set("mapreduce.tasktracker.healthchecker.interval", "70000");
+        conf.set("mapreduce.jobtracker.expire.trackers.interval", "70000");
+        LOG.info("mapred.task.timeout="+conf.get("mapred.task.timeout"));
+        
         waitForPutFile = Integer.valueOf((String) getHadoopProperty("job.input.wait.time"));
         assertType = Integer.valueOf((String) getHadoopProperty("job.result.assert.type"));
         
@@ -216,13 +221,21 @@ public abstract class AbstractMR {
     /*
      * DFS manipulations methods
      */
-    protected void dfsFormatting(String hadoopDirData) throws RemoteException,
-            IOException, InterruptedException {
+    protected void dfsFormatting(String hadoopDirData) {
         
         LOG.info("Formatting DFS dir: " +  hadoopDirData + "!");
         String scriptFormat = getHadoopProperty("hadoop.dir.format.script") + " " + hadoopDirData;
-        Process formatDFSProcess = Runtime.getRuntime().exec(scriptFormat);
-        formatDFSProcess.waitFor();
+        Process formatDFSProcess;
+        try {
+            formatDFSProcess = Runtime.getRuntime().exec(scriptFormat);
+            try {
+                formatDFSProcess.waitFor();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(AbstractMR.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(AbstractMR.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     protected void putFileHDFS() {
@@ -437,6 +450,29 @@ public abstract class AbstractMR {
         taskTracker.stop();
         dataNode.stop();
     }
+
+    /**
+     * when Map
+     */
+    public void waitMapRunning() {
+        
+        String logFile = getHadoopProperty("hadoop.dir.log") + "hadoop-hadooptest-jobtracker-note.log";
+        try {
+            FileInputStream fis = new FileInputStream(new File(logFile));
+            BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+
+            String line;
+            while ((line = in.readLine()) != null) {
+                // if trigger
+                if (line.contains("org.apache.hadoop.mapred.TaskTracker: LaunchTaskActio")){
+                    break;
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(AbstractMR.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 
     protected void killWorker() throws IOException, Exception {
         LOG.info("killWorker: Abnormally killing worker.");
