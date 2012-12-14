@@ -81,8 +81,6 @@ public class GlobalVerdict {
      *
      */
     public Verdicts getGlobalVerdict() {
-        calculateVerdict();
-
         return globalVerdict;
     }
 
@@ -105,10 +103,6 @@ public class GlobalVerdict {
         for (ResultSet each : results.values()) {
             result.append(each).append("\n");
             accumulatedDelay += each.getDelay() ;
-            passVerdicts += each.getPass();
-            incVerdicts += each.getInconclusives();
-            failVerdicts += each.getFailures();
-            errors += each.getErrors();
         }
         result.append("Global Verdict with relax index " + relaxIndex + "% is " + getGlobalVerdict() + "\n");
         result.append("LocalVerdicts are (Pass:" + passVerdicts + ") (Inconc.: " + incVerdicts + ") (Fail: " + failVerdicts + ")\n");
@@ -118,8 +112,14 @@ public class GlobalVerdict {
         return result.toString();
     }
 
-    private void calculateVerdict() {
+    public void calculateVerdict() {
 
+        for (ResultSet each : results.values()) {
+            passVerdicts += each.getPass();
+            incVerdicts += each.getInconclusives();
+            failVerdicts += each.getFailures();
+            errors += each.getErrors();
+        }
         if (failVerdicts > 0) {
             globalVerdict = Verdicts.FAIL;
         } else if ((((double) incVerdicts / (passVerdicts + incVerdicts)) * 100) <= relaxIndex) {

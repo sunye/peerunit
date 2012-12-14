@@ -176,13 +176,13 @@ public class CoordinatorImpl implements Runnable {
     }
 
     /**
-     * Waits for all testers to quit and calculates the global verdict
-     * for a test case.
+     * Calculates and show the global verdict for a test case.
      * @param chrono
      */
     public void printVerdict() {
-        LOG.fine(verdict.toString());
+        verdict.calculateVerdict();
         System.out.println(verdict);
+        LOG.fine(verdict.toString());
     }
 
     /**
@@ -359,7 +359,7 @@ public class CoordinatorImpl implements Runnable {
 
     /**
      * Dispatches the actions of a given hierarchical level(order) verifying their dependencies
-     * Waits until all tester have executed the actions.
+     * Waits until all necessary tester have executed the actions.
      *
      * @param level
      * @throws InterruptedException
@@ -425,7 +425,6 @@ public class CoordinatorImpl implements Runnable {
             }
             else {
                 if (verdict.getResultFor(action).getPass() != action.getAnswers()) {
-                    verdict.getResultFor(action).addSimulatedError();
                     errorActions.add(action.getName());
                 }               
             }
