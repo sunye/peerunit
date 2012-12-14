@@ -179,6 +179,11 @@ public abstract class AbstractMR {
         conf.set("mapred.job.tracker", jthost);
         conf.set("mapred.child.java.opts", joptions);
         //conf.set("mapred.child.java.opts", memtask);
+        /** static values for default JobTracker */
+        conf.set("mapred.tasktracker.expiry.interval", "60000"); //dafault= 10 * 60 * 1000);
+        conf.set("mapred.jobtracker.retirejob.interval", "100000");//default= 24 * 60 * 60 * 1000);
+        conf.set("mapred.jobtracker.retirejob.check", "100000");//default= 60 * 1000);
+        
         conf.set("mapreduce.tasktracker.healthchecker.script.timeout", "70000");
         conf.set("mapred.task.timeout", "70000");
         conf.set("mapreduce.tasktracker.healthchecker.interval", "70000");
@@ -412,8 +417,8 @@ public abstract class AbstractMR {
         jobTracker = new HadoopJobTrackerWrapper(config);
         nameNode = new HadoopNameNodeWrapper(hdfsConf);
         
-        jobTracker.start();
         nameNode.start();
+        jobTracker.start();
     }
 
     
