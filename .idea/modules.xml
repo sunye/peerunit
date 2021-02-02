@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/PeerUnitProject.iml" filepath="$PROJECT_DIR$/PeerUnitProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.bacteria/fr.inria.mdca.bacteria.iml" filepath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.bacteria/fr.inria.mdca.bacteria.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.core/fr.inria.mdca.core.iml" filepath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.core/fr.inria.mdca.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.ga/fr.inria.mdca.ga.iml" filepath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.ga/fr.inria.mdca.ga.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.io/fr.inria.mdca.io.iml" filepath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.io/fr.inria.mdca.io.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/fr.inria.mdca.mba.iml" filepath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/fr.inria.mdca.mba.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.model/fr.inria.mdca.model.iml" filepath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.model/fr.inria.mdca.model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.pathcreator/fr.inria.mdca.pathcreator.iml" filepath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.pathcreator/fr.inria.mdca.pathcreator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.triskell.moba/fr.inria.triskell.moba.iml" filepath="$PROJECT_DIR$/peerunit-genetic/fr.inria.triskell.moba/fr.inria.triskell.moba.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.triskell.moga/fr.inria.triskell.moga.iml" filepath="$PROJECT_DIR$/peerunit-genetic/fr.inria.triskell.moga/fr.inria.triskell.moga.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-benchmarks/peerunit-benchmarks.iml" filepath="$PROJECT_DIR$/peerunit-benchmarks/peerunit-benchmarks.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-core/peerunit-core.iml" filepath="$PROJECT_DIR$/peerunit-core/peerunit-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-dhtmodel/peerunit-dhtmodel.iml" filepath="$PROJECT_DIR$/peerunit-dhtmodel/peerunit-dhtmodel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/peerunit-genetic.iml" filepath="$PROJECT_DIR$/peerunit-genetic/peerunit-genetic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-mockdht/peerunit-mockdht.iml" filepath="$PROJECT_DIR$/peerunit-mockdht/peerunit-mockdht.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-openchord/peerunit-openchord.iml" filepath="$PROJECT_DIR$/peerunit-openchord/peerunit-openchord.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-psychedelic/peerunit-psychedelic.iml" filepath="$PROJECT_DIR$/peerunit-psychedelic/peerunit-psychedelic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/peerunit-tutorial/peerunit-tutorial.iml" filepath="$PROJECT_DIR$/peerunit-tutorial/peerunit-tutorial.iml" />
+    </modules>
+  </component>
+</project>

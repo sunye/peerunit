@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>peerunit-genetic</artifactId>
+        <groupId>org.atlanmod.peerunit</groupId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+    <groupId>fr.inria.triskell.moga</groupId>
+    <artifactId>fr.inria.triskell.moga</artifactId>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>trove</groupId>
+            <artifactId>trove</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jdesktop</groupId>
+            <artifactId>swing-worker</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream -->
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.4.15</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/net.sf.jgap/jgap -->
+        <dependency>
+            <groupId>net.sf.jgap</groupId>
+            <artifactId>jgap</artifactId>
+            <version>3.4.4</version>
+        </dependency>
+
+
+
+        <!--
+                <dependency>
+                    <groupId>appframework-1.0.3</groupId>
+                    <artifactId>appframework-1.0.3</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>jcgrid</groupId>
+                    <artifactId>jcgrid</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>jgap</groupId>
+                    <artifactId>jgap</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>jfreechart-1.0.11</groupId>
+                    <artifactId>jfreechart-1.0.11</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>tablelayout</groupId>
+                    <artifactId>TableLayout</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>jcommon-1.0.14</groupId>
+                    <artifactId>jcommon-1.0.14</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>commons-codec-1.3</groupId>
+                    <artifactId>commons-codec-1.3</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>junit-addons-1.4</groupId>
+                    <artifactId>junit-addons-1.4</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>commons-cli-1.0</groupId>
+                    <artifactId>commons-cli-1.0</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>xpp3_min-1.1.3.4.o</groupId>
+                    <artifactId>xpp3_min-1.1.3.4.O</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>junit3.8.1</groupId>
+                    <artifactId>junit3.8.1</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>swing-layout-1.0.3</groupId>
+                    <artifactId>swing-layout-1.0.3</artifactId>
+                    <version>1.0</version>
+                </dependency>
+                -->
+    </dependencies>
+</project>

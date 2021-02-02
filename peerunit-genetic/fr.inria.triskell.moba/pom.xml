@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>peerunit-genetic</artifactId>
+        <groupId>org.atlanmod.peerunit</groupId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+    <groupId>fr.inria.triskell.moba</groupId>
+    <artifactId>fr.inria.triskell.moba</artifactId>
+
+</project>

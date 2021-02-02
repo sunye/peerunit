@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/peerunit-benchmarks/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-dhtmodel/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.bacteria/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.ga/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.io/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.model/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.pathcreator/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.triskell.moba/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-genetic/fr.inria.triskell.moga/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-mockdht/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-openchord/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-psychedelic/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/peerunit-tutorial/src/main/java" charset="UTF-8" />
+  </component>
+</project>

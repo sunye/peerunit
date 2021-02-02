@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="peerunit-mockdht" />
+        <module name="fr.inria.triskell.moba" />
+        <module name="peerunit-openchord" />
+        <module name="peerunit-dhtmodel" />
+        <module name="peerunit-core" />
+        <module name="peerunit-tutorial" />
+        <module name="fr.inria.mdca.ga" />
+        <module name="fr.inria.mdca.bacteria" />
+        <module name="peerunit-psychedelic" />
+        <module name="fr.inria.mdca.io" />
+        <module name="fr.inria.mdca.model" />
+        <module name="fr.inria.mdca.mba" />
+        <module name="fr.inria.mdca.pathcreator" />
+        <module name="fr.inria.mdca.core" />
+        <module name="fr.inria.triskell.moga" />
+        <module name="peerunit-benchmarks" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="fr.inria.mdca.bacteria" target="11" />
+      <module name="fr.inria.mdca.core" target="11" />
+      <module name="fr.inria.mdca.ga" target="11" />
+      <module name="fr.inria.mdca.io" target="11" />
+      <module name="fr.inria.mdca.mba" target="11" />
+      <module name="fr.inria.mdca.model" target="11" />
+      <module name="fr.inria.mdca.pathcreator" target="11" />
+      <module name="fr.inria.triskell.moba" target="11" />
+      <module name="fr.inria.triskell.moga" target="11" />
+      <module name="peerunit-benchmarks" target="11" />
+      <module name="peerunit-core" target="11" />
+      <module name="peerunit-dhtmodel" target="11" />
+      <module name="peerunit-genetic" target="11" />
+      <module name="peerunit-mockdht" target="11" />
+      <module name="peerunit-openchord" target="11" />
+      <module name="peerunit-psychedelic" target="11" />
+      <module name="peerunit-tutorial" target="11" />
+      <module name="PeerUnitProject" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
