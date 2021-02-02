@@ -3,7 +3,8 @@ package fr.inria.mdca.mba.ga;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import fr.inria.mdca.core.model.BaseInstance;
 import fr.inria.mdca.mba.BactereologicAlgorithm;
@@ -15,7 +16,7 @@ public class NaiveGeneticAlgorithm {
 
 	private BactereologicAlgorithm bactereologicAlgorithm;
 	
-	static Logger logger = Logger.getLogger(NaiveGeneticAlgorithm.class);
+	static Logger logger = LogManager.getLogger(NaiveGeneticAlgorithm.class);
 	
 	private int iteration;
 	private int starvation;

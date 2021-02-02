@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -100,7 +99,6 @@ public class TestBA {
 	@Test
 	@Ignore
 	public void testRun() {
-		BasicConfigurator.configure();
 		ba.run();
 		System.out.println(ba.getSolution().getInstanceSet().toString());
 		assertTrue(ba.getSolution().getInstanceSet().size()==7);

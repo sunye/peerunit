@@ -3,7 +3,6 @@ package test;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -114,7 +113,6 @@ ArrayList<BaseModelElement> elements=new ArrayList<BaseModelElement>();
 	@Test
 	@Ignore
 	public void testRun() {
-		BasicConfigurator.configure();
 		ba.run();
 		System.out.println(ba.getSolution().getInstanceSet().toString());
 		assert(ba.getSolution().getInstanceSet().size()==7);

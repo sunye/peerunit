@@ -2,7 +2,8 @@ package fr.inria.mdca.mba;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import fr.inria.mdca.core.model.BaseInstance;
@@ -20,7 +21,7 @@ public class MemorizationFunction {
 		this.memorizationThreshold = memorizationThreshold;
 	}
 
-	static Logger logger = Logger.getLogger(MemorizationFunction.class);
+	static Logger logger = LogManager.getLogger(MemorizationFunction.class);
 	
 	public void run() {
 		if(!this.bactereologicAlgorithm.getMedium().isEmpty()){

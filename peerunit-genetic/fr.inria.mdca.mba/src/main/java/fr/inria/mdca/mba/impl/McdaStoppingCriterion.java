@@ -1,6 +1,7 @@
 package fr.inria.mdca.mba.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import fr.inria.mdca.mba.StoppingCriterion;
 
@@ -8,7 +9,7 @@ public class McdaStoppingCriterion extends StoppingCriterion {
 
 	private float expectedFitness=0;
 	
-	static Logger logger = Logger.getLogger(McdaStoppingCriterion.class);
+	static Logger logger = LogManager.getLogger(McdaStoppingCriterion.class);
 	
 	public McdaStoppingCriterion(float expectedFitness) {
 		super();

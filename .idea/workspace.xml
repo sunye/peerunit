@@ -5,11 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="76fc57d5-bd46-4bbd-b6bb-3c8929c5952f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__de_uniba_wiai_lspi_OpenChord_1_0_5.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_16.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/peerunit-core/peerunit-core.iml" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-core/peerunit-core.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/peerunit-genetic/InstanceGenerator/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/InstanceGenerator/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-core/TesterImplTest.log.1" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-core/TesterImplTest.log.1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-core/logs/Tester0.log.1" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-core/logs/Tester0.log.1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-core/logs/Tester0.log.2" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-core/logs/Tester0.log.2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-core/logs/Tester1.log.1" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-core/logs/Tester1.log.1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-core/logs/Tester2.log.1" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-core/logs/Tester2.log.1" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.ga/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.ga/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.ga/src/main/java/fr/inria/mdca/ga/GeneticAlgorithm.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.ga/src/main/java/fr/inria/mdca/ga/GeneticAlgorithm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.ga/src/test/java/test/TestGA.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.ga/src/test/java/test/TestGA.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/BactereologicAlgorithm.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/BactereologicAlgorithm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/FitnessFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/FitnessFunction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/MemorizationFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/MemorizationFunction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/ga/NaiveGeneticAlgorithm.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/ga/NaiveGeneticAlgorithm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/impl/McdaStoppingCriterion.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/main/java/fr/inria/mdca/mba/impl/McdaStoppingCriterion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/MainTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/MainTest2.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/MainTest2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/MainTest3.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/MainTest3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/TestBA.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/TestBA.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/TestBA2.java" beforeDir="false" afterPath="$PROJECT_DIR$/peerunit-genetic/fr.inria.mdca.mba/src/test/java/test/TestBA2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,6 +73,17 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -136,7 +167,8 @@
       <updated>1612258988189</updated>
       <workItem from="1612258990229" duration="31000" />
       <workItem from="1612259088624" duration="12669000" />
-      <workItem from="1612282772796" duration="386000" />
+      <workItem from="1612282772796" duration="2391000" />
+      <workItem from="1612285464189" duration="629000" />
     </task>
     <servers />
   </component>

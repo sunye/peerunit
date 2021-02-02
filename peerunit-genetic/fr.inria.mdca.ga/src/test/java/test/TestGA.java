@@ -2,7 +2,6 @@ package test;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,7 +47,7 @@ public class TestGA {
 				model.addElement(element);
 			}
 			
-			BasicConfigurator.configure();
+			//BasicConfigurator.configure();
 	}
 
 	@Test

@@ -17,7 +17,6 @@
       <module fileurl="file://$PROJECT_DIR$/peerunit-dhtmodel/peerunit-dhtmodel.iml" filepath="$PROJECT_DIR$/peerunit-dhtmodel/peerunit-dhtmodel.iml" />
       <module fileurl="file://$PROJECT_DIR$/peerunit-genetic/peerunit-genetic.iml" filepath="$PROJECT_DIR$/peerunit-genetic/peerunit-genetic.iml" />
       <module fileurl="file://$PROJECT_DIR$/peerunit-mockdht/peerunit-mockdht.iml" filepath="$PROJECT_DIR$/peerunit-mockdht/peerunit-mockdht.iml" />
-      <module fileurl="file://$PROJECT_DIR$/peerunit-openchord/peerunit-openchord.iml" filepath="$PROJECT_DIR$/peerunit-openchord/peerunit-openchord.iml" />
       <module fileurl="file://$PROJECT_DIR$/peerunit-psychedelic/peerunit-psychedelic.iml" filepath="$PROJECT_DIR$/peerunit-psychedelic/peerunit-psychedelic.iml" />
       <module fileurl="file://$PROJECT_DIR$/peerunit-tutorial/peerunit-tutorial.iml" filepath="$PROJECT_DIR$/peerunit-tutorial/peerunit-tutorial.iml" />
     </modules>

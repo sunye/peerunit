@@ -2,7 +2,8 @@ package fr.inria.mdca.mba;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import fr.inria.mdca.core.model.BaseInstance;
 import fr.inria.mdca.util.ColumnCombinationBuilder;
@@ -10,7 +11,7 @@ import fr.inria.mdca.util.ColumnCombinationBuilder;
 public abstract class FitnessFunction {
 
 	
-	static Logger logger = Logger.getLogger(FitnessFunction.class);
+	static Logger logger = LogManager.getLogger(FitnessFunction.class);
 	
 	
 	private BactereologicAlgorithm bactereologicAlgorithm;

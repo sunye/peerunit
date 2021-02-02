@@ -5,7 +5,6 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/peerunit-benchmarks/pom.xml" />
-        <option value="$PROJECT_DIR$/peerunit-openchord/pom.xml" />
       </list>
     </option>
   </component>

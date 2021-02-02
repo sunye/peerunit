@@ -8,7 +8,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="peerunit-mockdht" />
         <module name="fr.inria.triskell.moba" />
-        <module name="peerunit-openchord" />
         <module name="peerunit-dhtmodel" />
         <module name="peerunit-core" />
         <module name="peerunit-tutorial" />

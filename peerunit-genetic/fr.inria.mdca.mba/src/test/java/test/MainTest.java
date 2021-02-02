@@ -2,8 +2,6 @@ package test;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.BasicConfigurator;
-
 import fr.inria.mdca.core.model.BaseInstance;
 import fr.inria.mdca.core.model.BaseModel;
 import fr.inria.mdca.core.model.BaseModelElement;
@@ -92,7 +90,6 @@ public class MainTest {
         ba = new BactereologicAlgorithm(instances, ff, gf, mmf, fff, sc, mf, model);
         ba.setMaxAlgTurn(100000);
         ba.setLocalsearchProb(0.1f);
-        BasicConfigurator.configure();
         ba.run();
         System.out.println(ba.getSolution().getInstanceSet().toString());
 
