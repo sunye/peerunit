@@ -38,4 +38,5 @@ buildNumber.properties
 # IDE
 .classpath
 .project
+.idea
 *.iml
